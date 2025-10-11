@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>天文奥秘 - 夏日科技探索</title>
+    <link rel="stylesheet" href="main.css">
+    <link rel="stylesheet" href="css/astronomy.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-left">
+            <img src="img/black64.png" alt="网站logo" class="logo">
+            <span class="site-name">夏日科技探索</span>
+        </div>
+        <ul class="navbar-menu">
+            <li><a href="index.html">首页</a></li>
+            <li><a href="blog.html">星空笔记</a></li>
+            <li><a href="astronomy.html" class="active">天文</a></li>
+            <li><a href="nature.html">自然</a></li>
+            <li><a href="st.html">科技</a></li>
+            <li><a href="video.html">视频</a></li>
+            <li><a href="contact.html">联系</a></li>
+        </ul>
+        <div class="nav-toggle" id="navToggle">&#9776;</div>
+    </nav>
+
+    <main class="page-container">
+        <section class="realtime-data-section">
+            <h2 class="section-title">🪐 宇宙动态</h2>
+            <div id="moonPhase" class="realtime-card">
+                <h3>月相实时数据</h3>
+                <p>加载中...</p>
+            </div>
+            <div id="issLocation" class="realtime-card">
+                <h3>国际空间站 (ISS) 位置</h3>
+                <p>加载中...</p>
+            </div>
+        </section>
+
+        <section class="astronomy-section">
+            <div class="page-header">
+                <h1>🔭 天文探索</h1>
+                <p>分享宇宙的奥秘与观测心得</p>
+            </div>
+            <div class="astro-cards-grid" id="astroCardContainer">
+                </div>
+        </section>
+
+        <section class="tools-section">
+            <h2 class="section-title">🛠 实用工具</h2>
+            <div class="tool-placeholder"> 观星指南、光年计算器等功能正在开发中... </div>
+        </section>
+    </main>
+
+    <footer class="page-footer">
+        <p>&copy; 2025 夏日科技探索. All rights reserved.</p>
+    </footer>
+
+    <script src="js/astronomy.js"></script>
+</body>
+</html>

@@ -1,0 +1,219 @@
+/* 文章页面专用样式 */
+/* 加载和错误消息样式 */
+.loading,
+.error-message {
+    text-align: center;
+    padding: 2rem;
+    color: rgba(255, 255, 255, 0.8); /* 确保在深色背景下可见 */
+}
+
+.loading {
+    font-size: 1.1rem;
+}
+
+.error-message {
+    background: rgba(255, 165, 0, 0.15); /* 柔和的警示色背景 */
+    border: 1px solid rgba(255, 165, 0, 0.3);
+    border-radius: 8px;
+    margin: 2rem 0;
+    padding: 20px;
+}
+
+/* **统一容器样式**：将 Glassmorphism 样式应用到 .article-content */
+.article-content {
+    /* 容器样式 (原 .article-container 样式) */
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 30px;
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(15px);
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+
+    /* 正文基础样式 */
+    line-height: 1.8;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 1.1rem;
+}
+
+/* 返回链接 (在错误信息中或文章顶部使用) */
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #4dd0e1;
+    text-decoration: none;
+    font-weight: 500;
+    margin-bottom: 30px;
+    padding: 10px 20px;
+    background: rgba(77, 208, 225, 0.1);
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.back-link:hover {
+    background: rgba(77, 208, 225, 0.2);
+    transform: translateX(-3px);
+}
+
+/* 文章头部（通过 JS 渲染） */
+.article-header {
+    text-align: center;
+    margin-bottom: 40px;
+    padding-bottom: 25px;
+    border-bottom: 2px solid rgba(77, 208, 225, 0.3);
+}
+
+.article-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 20px;
+    line-height: 1.3;
+    text-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+    /* 渐变文本效果 */
+    background: linear-gradient(135deg, #ffffff 0%, #4dd0e1 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* 文章元数据（通过 JS 渲染） */
+.article-meta {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 20px;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 1rem;
+}
+
+.meta-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.meta-item i {
+    color: #4dd0e1;
+    font-style: normal; /* 确保图标字符不会倾斜 */
+}
+
+/* Markdown 内容样式（应用到 JS 渲染的 .post-body 内部） */
+.article-content .post-body p {
+    margin-bottom: 1.5em;
+    text-align: justify;
+}
+
+.article-content .post-body h2 {
+    color: #4dd0e1;
+    margin: 2em 0 1em 0;
+    font-size: 1.8rem;
+    border-bottom: 1px solid rgba(77, 208, 225, 0.2);
+    padding-bottom: 10px;
+}
+
+.article-content .post-body h3 {
+    color: #a8d8ea;
+    margin: 1.8em 0 1em 0;
+    font-size: 1.4rem;
+}
+
+.article-content .post-body blockquote {
+    border-left: 4px solid #4dd0e1;
+    padding-left: 20px;
+    margin: 2em 0;
+    font-style: italic;
+    color: rgba(255, 255, 255, 0.8);
+    background: rgba(77, 208, 225, 0.05);
+    padding: 20px;
+    border-radius: 0 8px 8px 0;
+}
+
+.article-content .post-body code {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: 'Courier New', monospace;
+    color: #a8d8ea;
+}
+
+.article-content .post-body pre {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 20px;
+    border-radius: 8px;
+    overflow-x: auto;
+    margin: 2em 0;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.article-content .post-body ul,
+.article-content .post-body ol {
+    margin: 1.5em 0;
+    padding-left: 1.5em;
+}
+
+.article-content .post-body li {
+    margin-bottom: 0.5em;
+}
+
+/* 文章操作区（在 HTML 中，与文章内容容器 article-content 同级） */
+.article-footer {
+    margin-top: 50px;
+    padding-top: 25px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    text-align: center;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.article-actions {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.action-btn:hover {
+    background: rgba(77, 208, 225, 0.2);
+    transform: translateY(-3px);
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+    .article-content {
+        padding: 20px;
+    }
+
+    .article-title {
+        font-size: 2rem;
+    }
+
+    .article-meta {
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .article-actions {
+        flex-direction: column;
+        align-items: center;
+    }
+}

@@ -1,0 +1,359 @@
+/* 天文页面统一设计 */
+:root {
+	--theme-color: #4dd0e1;
+	--theme-color-rgb: 77, 208, 225;
+}
+
+html,
+body {
+	background-image: url(../img/th1.webp);
+	background-size: cover;
+	background-position: center;
+	background-repeat: no-repeat;
+	background-attachment: fixed;
+	display: flex;
+	flex-direction: column;
+	overflow: auto !important;
+	margin: 0;
+	padding: 0;
+	font-family: "Noto Serif SC", "Helvetica", "PingFang SC", "Microsoft YaHei", sans-serif;
+	width: 100%;
+	justify-content: center;
+	align-items: center;
+	overflow-y: auto !important;
+	overflow-x: hidden !important;
+	height: auto !important;
+	min-height: 100vh;
+}
+
+/* 确保所有内容可见 */
+.astronomy-container {
+	position: relative;
+	z-index: 1;
+	padding-top: 100px;
+	/* 为导航栏留出空间 */
+}
+
+/* 移除任何可能限制高度的样式 */
+main {
+	min-height: calc(100vh - 200px);
+}
+
+/* 修复后的主容器 */
+.astronomy-container {
+	position: relative;
+	padding: 120px 20px 40px;
+	max-width: 1200px;
+	margin: 0 auto;
+	width: 100%;
+	box-sizing: border-box;
+	flex: 1;
+	min-height: auto;
+	/* 移除固定的最小高度 */
+}
+
+/* 头部和标题样式 - 统一风格 */
+.astronomy-header {
+	text-align: center;
+	margin-bottom: 40px;
+	color: white;
+}
+
+.astronomy-header h1 {
+	font-size: 2.8rem;
+	margin-bottom: 15px;
+	text-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+	background: linear-gradient(135deg, #ffffff 0%, #a8d8ea 100%);
+	-webkit-background-clip: text;
+	-webkit-text-fill-color: transparent;
+	background-clip: text;
+}
+
+.astronomy-header p {
+	font-size: 1.2rem;
+	color: rgba(255, 255, 255, 0.9);
+	font-style: italic;
+}
+
+.section-title {
+	color: #4dd0e1;
+	border-bottom: 2px solid rgba(77, 208, 225, 0.3);
+	padding-bottom: 10px;
+	margin-bottom: 30px;
+	font-size: 1.8rem;
+	text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+/* 实时数据部分 - 统一卡片样式 */
+.realtime-data-section {
+	display: flex;
+	gap: 25px;
+	margin-bottom: 50px;
+	flex-wrap: wrap;
+	justify-content: center;
+}
+
+.realtime-card {
+	flex: 1;
+	min-width: 300px;
+	min-height: 140px;
+	background: rgba(255, 255, 255, 0.08);
+	backdrop-filter: blur(15px);
+	border-radius: 15px;
+	padding: 25px;
+	box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+	border: 1px solid rgba(255, 255, 255, 0.1);
+	color: white;
+	transition: all 0.3s ease;
+}
+
+.realtime-card:hover {
+	background: rgba(255, 255, 255, 0.12);
+	transform: translateY(-3px);
+	box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+}
+
+.realtime-card h3 {
+	color: #a8d8ea;
+	margin-top: 0;
+	margin-bottom: 15px;
+	font-size: 1.3rem;
+}
+
+.realtime-card p {
+	margin: 8px 0;
+	color: rgba(255, 255, 255, 0.9);
+}
+
+.realtime-card strong {
+	color: #4dd0e1;
+}
+
+/* 卡片网格和单卡片样式 - 统一设计 */
+.astro-cards-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+	gap: 30px;
+	margin-top: 30px;
+	justify-items: center;
+	max-width: 100%;
+}
+
+.astro-card {
+	background: rgba(255, 255, 255, 0.08);
+	backdrop-filter: blur(15px);
+	border-radius: 20px;
+	padding: 0;
+	overflow: hidden;
+	transition: all 0.3s ease;
+	box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+	cursor: pointer;
+	border: 1px solid rgba(255, 255, 255, 0.1);
+	width: 100%;
+	max-width: 350px;
+}
+
+.astro-card:hover {
+	transform: translateY(-8px);
+	background: rgba(255, 255, 255, 0.12);
+	box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+}
+
+.card-image {
+	width: 100%;
+	height: 200px;
+	object-fit: cover;
+	display: block;
+}
+
+.card-content {
+	padding: 25px;
+}
+
+.card-content h3 {
+	margin-top: 0;
+	color: #4dd0e1;
+	font-size: 1.4rem;
+	margin-bottom: 12px;
+}
+
+.card-content p {
+	color: rgba(255, 255, 255, 0.9);
+	line-height: 1.6;
+	margin-bottom: 15px;
+}
+
+.card-content small {
+	color: rgba(255, 255, 255, 0.7);
+	font-size: 0.9rem;
+}
+
+/* 工具部分样式 */
+.tools-section {
+	margin-top: 50px;
+}
+
+.tool-placeholder {
+	background: rgba(255, 255, 255, 0.08);
+	backdrop-filter: blur(10px);
+	border-radius: 12px;
+	padding: 30px;
+	text-align: center;
+	color: rgba(255, 255, 255, 0.8);
+	border: 1px solid rgba(255, 255, 255, 0.1);
+	font-style: italic;
+}
+
+/* 底部版权信息 - 与首页统一 */
+.astronomy-footer {
+	width: 100%;
+	text-align: center;
+	padding: 25px;
+	color: rgba(255, 255, 255, 0.7);
+	border-top: 1px solid rgba(255, 255, 255, 0.15);
+	background: rgba(0, 0, 0, 0.4);
+	backdrop-filter: blur(15px);
+	box-sizing: border-box;
+	margin-top: auto;
+	/* 这个会让页脚保持在底部 */
+	font-size: 0.9rem;
+	line-height: 1.4;
+	flex-shrink: 0;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+	.astronomy-container {
+		padding: 100px 15px 30px;
+	}
+
+	.astronomy-header h1 {
+		font-size: 2.2rem;
+	}
+
+	.realtime-data-section {
+		flex-direction: column;
+		gap: 20px;
+	}
+
+	.realtime-card {
+		min-width: 100%;
+	}
+
+	.astro-cards-grid {
+		grid-template-columns: 1fr;
+		gap: 25px;
+	}
+
+	.astro-card {
+
+		max-width: 100%;
+		margin: 0 10px;
+	}
+
+	.card-image {
+		height: 180px;
+		width: 100%;
+	}
+
+	.card-content {
+		padding: 20px 15px;
+	}
+}
+
+/* 在 astronomy.css 的 @media (max-width: 480px) 部分添加 */
+@media (max-width: 480px) {
+	.astronomy-container {
+		padding: 80px 10px 20px;
+	}
+
+	.astronomy-header h1 {
+		font-size: 1.8rem;
+		line-height: 1.2;
+		margin-bottom: 10px;
+	}
+
+	.astronomy-header p {
+		font-size: 1rem;
+	}
+
+	.section-title {
+		font-size: 1.5rem;
+		padding-bottom: 8px;
+		margin-bottom: 20px;
+	}
+
+	/* 确保卡片在超小屏幕上完全适配 */
+	.realtime-card,
+	.astro-card {
+		padding: 15px;
+		margin: 0;
+		width: 100%;
+		box-sizing: border-box;
+	}
+
+	.card-content {
+		padding: 12px 10px;
+	}
+
+	.card-content h3 {
+		font-size: 1.1rem;
+		margin-bottom: 8px;
+	}
+
+	.card-content p {
+		font-size: 0.9rem;
+		line-height: 1.4;
+	}
+
+	.card-image {
+		height: 150px;
+	}
+
+	/* 网格布局优化 */
+	.realtime-data-section,
+	.astro-cards-grid {
+		gap: 15px;
+	}
+
+	/* 确保文字不会溢出 */
+	.realtime-card p,
+	.card-content p {
+		word-wrap: break-word;
+		overflow-wrap: break-word;
+	}
+
+	/* 底部优化 */
+	.astronomy-footer {
+		padding: 20px 15px;
+		font-size: 0.8rem;
+	}
+}
+
+/* 针对超小屏幕的额外优化 */
+@media (max-width: 360px) {
+	.astronomy-container {
+		padding: 70px 8px 15px;
+	}
+
+	.astronomy-header h1 {
+		font-size: 1.6rem;
+	}
+
+	.section-title {
+		font-size: 1.3rem;
+	}
+
+	.realtime-card,
+	.astro-card {
+		padding: 12px;
+	}
+
+	.card-content {
+		padding: 10px 8px;
+	}
+
+	.card-image {
+		height: 130px;
+	}
+}

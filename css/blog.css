@@ -1,0 +1,226 @@
+/* 博客页面基础样式 */
+.blog-page {
+    background-image: url(../img/th1.webp);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    display: flex;
+    flex-direction: column;
+    /* 修正：移除 !important，保持默认的 flow 和 flex 布局 */
+    overflow-x: hidden; 
+    overflow-y: auto; 
+    margin: 0;
+    padding: 0;
+    font-family: "Noto Serif SC", "Helvetica", "PingFang SC", "Microsoft YaHei", sans-serif;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    /* 修正：移除 !important */
+    height: auto; 
+    min-height: 100vh;
+}
+
+/* 博客容器 */
+.blog-container {
+    position: relative;
+    /* 留出导航栏空间 */
+    padding: 120px 20px 40px; 
+    max-width: 800px;
+    margin: 0 auto;
+    width: 100%;
+    box-sizing: border-box;
+    flex: 1;
+    min-height: auto;
+}
+
+/* 博客头部 */
+.blog-header {
+    text-align: center;
+    margin-bottom: 50px;
+    color: white;
+}
+
+.blog-header h1 {
+    font-size: 2.8rem;
+    margin-bottom: 15px;
+    text-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+    /* 渐变文本效果 */
+    background: linear-gradient(135deg, #ffffff 0%, #4dd0e1 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.blog-subtitle {
+    font-size: 1.2rem;
+    color: rgba(255, 255, 255, 0.9);
+    font-style: italic;
+}
+
+/* 博客列表样式 */
+.blog-list {
+    margin-bottom: 40px;
+}
+
+/* 单篇文章卡片 (Glassmorphism 玻璃拟态) */
+.blog-post {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(15px);
+    border-radius: 15px;
+    padding: 30px;
+    margin-bottom: 25px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+}
+
+.blog-post:hover {
+    background: rgba(255, 255, 255, 0.12);
+    transform: translateY(-5px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+}
+
+/* 文章元数据 */
+.post-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.post-meta time {
+    /* 确保时间元素在 flex 布局中正常显示 */
+    margin-right: 15px;
+}
+
+.post-category {
+    background: rgba(77, 208, 225, 0.2);
+    color: #4dd0e1;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+}
+
+.post-title {
+    margin: 0 0 15px 0;
+}
+
+.post-title a {
+    color: #4dd0e1;
+    text-decoration: none;
+    font-size: 1.4rem;
+    font-weight: 600;
+    transition: color 0.3s ease;
+}
+
+.post-title a:hover {
+    color: #a8d8ea;
+}
+
+.post-excerpt {
+    color: rgba(255, 255, 255, 0.9);
+    line-height: 1.6;
+    margin-bottom: 15px;
+}
+
+.post-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.read-time {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.read-more {
+    color: #4dd0e1;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.read-more:hover {
+    color: #a8d8ea;
+    transform: translateX(3px);
+}
+
+/* 分页样式 */
+.pagination {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 0;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.current-page {
+    font-size: 0.9rem;
+}
+
+.next-page {
+    color: #4dd0e1;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.next-page:hover {
+    color: #a8d8ea;
+}
+
+/* 列表为空时的提示信息 */
+.no-posts-msg {
+    text-align: center;
+    padding: 40px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .blog-container {
+        padding: 100px 15px 30px;
+    }
+
+    .blog-header h1 {
+        font-size: 2.2rem;
+    }
+
+    .blog-post {
+        padding: 20px;
+    }
+
+    .post-meta {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .post-footer {
+        flex-direction: column;
+        gap: 10px;
+        align-items: flex-start;
+    }
+}
+
+@media (max-width: 480px) {
+    .blog-container {
+        padding: 80px 10px 20px;
+    }
+
+    .blog-header h1 {
+        font-size: 1.8rem;
+    }
+
+    .post-title a {
+        font-size: 1.2rem;
+    }
+}

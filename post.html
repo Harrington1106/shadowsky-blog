@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="blog-page">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文章阅读 | 星空笔记</title> 
+    <link rel="stylesheet" href="main.css">
+    <link rel="stylesheet" href="css/blog.css">
+    <link rel="stylesheet" href="css/post.css">
+    </head>
+
+<body class="blog-page"> 
+    <nav class="navbar">
+        <div class="navbar-left"> 
+            <img src="img/black64.png" alt="网站logo" class="logo">
+            <span class="site-name">夏日科技探索</span>
+        </div>
+        <ul class="navbar-menu">
+            <li><a href="index.html">首页</a></li>
+            <li><a href="blog.html" class="active">星空笔记</a></li>
+            <li><a href="astronomy.html">天文</a></li>
+            <li><a href="nature.html">自然</a></li>
+            <li><a href="st.html">科技</a></li>
+            <li><a href="video.html">视频</a></li>
+            <li><a href="contact.html">联系</a></li>
+        </ul>
+        <div class="nav-toggle" id="navToggle">&#9776;</div>
+    </nav> 
+    
+    <main class="blog-container">
+        <div class="article-content" id="article-content">
+            <div class="loading">正在加载文章...</div>
+        </div>
+        
+        <footer class="article-footer">
+            <p>感谢您的阅读！如果您喜欢这篇文章，请分享给更多人。</p>
+            <div class="article-actions"> 
+                <a href="#" class="action-btn">👍 点赞</a> 
+                <a href="#" class="action-btn">📤 分享</a> 
+                <a href="blog.html" class="action-btn">📚 更多文章</a> 
+            </div>
+        </footer>
+    </main>
+
+    <footer class="blog-footer">
+        <p>&copy; 2025 夏日科技探索. All rights reserved.</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/marked@12.0.0/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
+    <script src="main.js"></script>
+    <script src="js/post.js"></script>
+</body>
+
+</html>

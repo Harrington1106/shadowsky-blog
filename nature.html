@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>自然探索 - 夏日科技探索</title>
+	<link rel="stylesheet" href="main.css">
+	<link rel="stylesheet" href="css/nature.css">
+</head>
+
+<body>
+	<nav class="navbar">
+		<div class="navbar-left"> <img src="img/black64.png" alt="网站logo" class="logo">
+			<span class="site-name">夏日科技探索</span> </div>
+		<ul class="navbar-menu">
+			<li><a href="index.html">首页</a></li>
+			<li><a href="blog.html">星空笔记</a></li>
+			<li><a href="astronomy.html">天文</a></li>
+			<li><a href="nature.html" class="active">自然</a></li>
+			<li><a href="st.html">科技</a></li>
+			<li><a href="video.html">视频</a></li>
+			<li><a href="contact.html">联系</a></li>
+		</ul>
+		<div class="nav-toggle" id="navToggle">&#9776;</div>
+	</nav>
+	<main class="page-container">
+		<section class="page-header">
+			<h1>🌿 自然探索</h1>
+			<p>发现地球的奇迹，保护我们的家园</p>
+		</section>
+		<section class="realtime-data-section">
+			<h2 class="section-title">🌍 实时环境数据</h2>
+			<div class="realtime-cards-grid">
+				<div id="weatherCard" class="nature-card">
+					<h3>🌤️ 当前天气</h3>
+					<p>温度: <strong>加载中...</strong></p>
+					<p>湿度: <strong>加载中...</strong></p>
+					<p>天气状况: <strong>加载中...</strong></p>
+				</div>
+				<div id="airQualityCard" class="nature-card">
+					<h3>💨 空气质量</h3>
+					<p>AQI指数: <strong>加载中...</strong></p>
+					<p>PM2.5: <strong>加载中...</strong></p>
+					<p>空气质量: <strong>加载中...</strong></p>
+				</div>
+				<div id="seasonCard" class="nature-card">
+					<h3>🍂 季节信息</h3>
+					<p>当前季节: <strong>加载中...</strong></p>
+					<p>二十四节气: <strong>加载中...</strong></p>
+					<p>日照时长: <strong>加载中...</strong></p>
+				</div>
+			</div>
+		</section>
+		<section class="nature-showcase">
+			<h2 class="section-title">🏞️ 自然景观探索</h2>
+			<div class="nature-cards-grid" id="natureCardContainer"> <!-- 卡片将通过JavaScript动态生成 --> </div>
+		</section>
+		<section class="eco-knowledge">
+			<h2 class="section-title">♻️ 环保知识</h2>
+			<div class="eco-tips-container" id="ecoTipsContainer"> <!-- 环保小贴士将通过JavaScript动态生成 --> </div>
+		</section>
+		<section class="phenomenon-section">
+			<h2 class="section-title">📅 自然现象日历</h2>
+			<div class="phenomenon-calendar">
+				<div class="calendar-item"> <span class="date">每月15日</span> <span class="event">满月观测最佳时机</span> </div>
+				<div class="calendar-item"> <span class="date">春秋分</span> <span class="event">昼夜等长，季节交替</span> </div>
+				<div class="calendar-item"> <span class="date">夏季</span> <span class="event">观星最佳季节</span> </div>
+				<div class="calendar-item"> <span class="date">冬季</span> <span class="event">候鸟迁徙观察期</span> </div>
+			</div>
+		</section>
+		<section class="interactive-tools">
+			<h2 class="section-title">🛠️ 自然工具</h2>
+			<div class="tools-grid">
+				<div class="tool-card">
+					<h3>🗺️ 自然保护区分布</h3>
+					<div class="map-placeholder">
+						<p>中国主要自然保护区分布图</p>
+						<p>（地图功能开发中...）</p>
+					</div>
+				</div>
+				<div class="tool-card">
+					<h3>📸 自然摄影展示</h3>
+					<div class="photo-placeholder">
+						<p>精选自然风光摄影作品</p>
+						<p>（图库整理中...）</p>
+					</div>
+				</div>
+			</div>
+		</section>
+	</main>
+	<footer class="page-footer">
+		<p>&copy; 2025 夏日科技探索. All rights reserved.</p>
+	</footer>
+	<script src="js/nature.js"></script>
+</body>
+
+</html>

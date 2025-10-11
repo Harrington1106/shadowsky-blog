@@ -1,0 +1,263 @@
+/* 联系页面专用样式 - 紫色调 */
+html, body { 
+    background-image: url(../img/th1.webp); 
+    background-size: cover; 
+    background-position: center; 
+    background-repeat: no-repeat; 
+    background-attachment: fixed; 
+    display: flex; 
+    flex-direction: column; 
+    overflow: auto !important; 
+    margin: 0; 
+    padding: 0; 
+    font-family: "Noto Serif SC", "Helvetica", "PingFang SC", "Microsoft YaHei", sans-serif; 
+    width: 100%; 
+    justify-content: center; 
+    align-items: center; 
+    overflow-y: auto !important; 
+    overflow-x: hidden !important; 
+    height: auto !important; 
+    min-height: 100vh; 
+} 
+
+/* 主容器 */ 
+.contact-container { 
+    position: relative; 
+    padding: 120px 20px 40px; 
+    max-width: 1200px; 
+    margin: 0 auto; 
+    width: 100%; 
+    box-sizing: border-box; 
+    flex: 1; 
+    min-height: auto; 
+} 
+
+/* 头部和标题样式 */ 
+.contact-header { 
+    text-align: center; 
+    margin-bottom: 50px; 
+    color: white; 
+} 
+
+.contact-header h1 { 
+    font-size: 2.8rem; 
+    margin-bottom: 15px; 
+    text-shadow: 0 4px 15px rgba(0, 0, 0, 0.6); 
+    background: linear-gradient(135deg, #ffffff 0%, #9C27B0 100%); 
+    -webkit-background-clip: text; 
+    -webkit-text-fill-color: transparent; 
+    background-clip: text; 
+} 
+
+.contact-header p { 
+    font-size: 1.2rem; 
+    color: rgba(255, 255, 255, 0.9); 
+    font-style: italic; 
+} 
+
+.section-title { 
+    color: #9C27B0; 
+    border-bottom: 2px solid rgba(156, 39, 176, 0.3); 
+    padding-bottom: 10px; 
+    margin-bottom: 30px; 
+    font-size: 1.8rem; 
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5); 
+} 
+
+/* 联系内容布局 */ 
+.contact-content { 
+    display: grid; 
+    grid-template-columns: 1fr 1fr; 
+    gap: 40px; 
+    margin-bottom: 50px; 
+} 
+
+/* 联系信息卡片 */ 
+.contact-info { 
+    background: rgba(255, 255, 255, 0.08); 
+    backdrop-filter: blur(15px); 
+    border-radius: 15px; 
+    padding: 30px; 
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3); 
+    border: 1px solid rgba(255, 255, 255, 0.1); 
+    color: white; 
+} 
+
+.contact-info h3 { 
+    color: #9C27B0; 
+    margin-top: 0; 
+    margin-bottom: 20px; 
+    font-size: 1.5rem; 
+} 
+
+.contact-info p { 
+    line-height: 1.6; 
+    margin-bottom: 20px; 
+    color: rgba(255, 255, 255, 0.9); 
+} 
+
+/* 社交账号 */ 
+.social-links { 
+    display: flex; 
+    flex-wrap: wrap; 
+    gap: 15px; 
+    margin-top: 25px; 
+} 
+
+.social-link { 
+    display: flex; 
+    align-items: center; 
+    gap: 10px; 
+    background: rgba(156, 39, 176, 0.2); 
+    color: #E1BEE7; 
+    padding: 12px 20px; 
+    border-radius: 8px; 
+    text-decoration: none; 
+    transition: all 0.3s ease; 
+    border: 1px solid rgba(156, 39, 176, 0.3); 
+} 
+
+.social-link:hover { 
+    background: rgba(156, 39, 176, 0.3); 
+    transform: translateY(-3px); 
+    box-shadow: 0 5px 15px rgba(156, 39, 176, 0.3); 
+} 
+
+/* 联系表单 */ 
+.contact-form { 
+    background: rgba(255, 255, 255, 0.08); 
+    backdrop-filter: blur(15px); 
+    border-radius: 15px; 
+    padding: 30px; 
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3); 
+    border: 1px solid rgba(255, 255, 255, 0.1); 
+} 
+
+.form-group { 
+    margin-bottom: 20px; 
+} 
+
+.form-group label { 
+    display: block; 
+    margin-bottom: 8px; 
+    color: rgba(255, 255, 255, 0.9); 
+    font-weight: 500; 
+} 
+
+.form-control { 
+    width: 100%; 
+    padding: 12px 15px; 
+    background: rgba(255, 255, 255, 0.1); 
+    border: 1px solid rgba(255, 255, 255, 0.2); 
+    border-radius: 8px; 
+    color: white; 
+    font-size: 1rem; 
+    box-sizing: border-box; 
+    transition: all 0.3s ease; 
+} 
+
+.form-control:focus { 
+    outline: none; 
+    border-color: #9C27B0; 
+    box-shadow: 0 0 0 2px rgba(156, 39, 176, 0.3); 
+} 
+
+textarea.form-control { 
+    min-height: 150px; 
+    resize: vertical; 
+} 
+
+.submit-btn { 
+    background: linear-gradient(135deg, #9C27B0 0%, #7B1FA2 100%); 
+    color: white; 
+    border: none; 
+    padding: 12px 30px; 
+    border-radius: 8px; 
+    font-size: 1rem; 
+    font-weight: 500; 
+    cursor: pointer; 
+    transition: all 0.3s ease; 
+    display: inline-flex; 
+    align-items: center; 
+    gap: 8px; 
+} 
+
+.submit-btn:hover { 
+    transform: translateY(-3px); 
+    box-shadow: 0 8px 20px rgba(156, 39, 176, 0.4); 
+} 
+
+/* 网站初衷部分 */ 
+.mission-section { 
+    background: rgba(255, 255, 255, 0.08); 
+    backdrop-filter: blur(15px); 
+    border-radius: 15px; 
+    padding: 40px; 
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3); 
+    border: 1px solid rgba(255, 255, 255, 0.1); 
+    margin-bottom: 50px; 
+    text-align: center; 
+} 
+
+.mission-section p { 
+    font-size: 1.2rem; 
+    line-height: 1.8; 
+    color: rgba(255, 255, 255, 0.9); 
+    margin-bottom: 0; 
+    font-style: italic; 
+} 
+
+/* 底部版权信息 */ 
+.contact-footer { 
+    width: 100%; 
+    text-align: center; 
+    padding: 25px; 
+    color: rgba(255, 255, 255, 0.7); 
+    border-top: 1px solid rgba(255, 255, 255, 0.15); 
+    background: rgba(0, 0, 0, 0.4); 
+    backdrop-filter: blur(15px); 
+    box-sizing: border-box; 
+    margin-top: auto; 
+    font-size: 0.9rem; 
+    line-height: 1.4; 
+    flex-shrink: 0; 
+} 
+
+/* 响应式设计 */ 
+@media (max-width: 768px) { 
+    .contact-container { 
+        padding: 100px 15px 30px; 
+    } 
+    .contact-header h1 { 
+        font-size: 2.2rem; 
+    } 
+    .contact-content { 
+        grid-template-columns: 1fr; 
+        gap: 30px; 
+    } 
+    .social-links { 
+        justify-content: center; 
+    } 
+    .mission-section { 
+        padding: 30px 20px; 
+    } 
+} 
+
+@media (max-width: 480px) { 
+    .contact-container { 
+        padding: 80px 10px 20px; 
+    } 
+    .contact-header h1 { 
+        font-size: 1.8rem; 
+    } 
+    .section-title { 
+        font-size: 1.5rem; 
+    } 
+    .contact-info, .contact-form, .mission-section { 
+        padding: 20px; 
+    } 
+    .social-link { 
+        padding: 10px 15px; 
+        font-size: 0.9rem; 
+    } 
+}
