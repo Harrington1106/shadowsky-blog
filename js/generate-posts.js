@@ -16,6 +16,24 @@ if (!fs.existsSync(postsDir)) {
 }
 
 // ------------------------
+// 工具函数
+// ------------------------
+
+// 计算阅读时间：按平均 200 字/分钟
+function calcReadTime(text) {
+    const plainText = text.replace(/[#*>\-\[\]\(\)`]/g, ''); // 去掉 Markdown 符号
+    const words = plainText.length;
+    const minutes = Math.max(1, Math.round(words / 200)); // 至少 1 分钟
+    return minutes;
+}
+
+// 生成摘要：取前 100 个字符
+function generateExcerpt(text, maxLength = 100) {
+    const plainText = text.replace(/[#*>\-\[\]\(\)`]/g, ''); // 去掉 Markdown 符号
+    return plainText.slice(0, maxLength) + (plainText.length > maxLength ? '...' : '');
+}
+
+// ------------------------
 // 扫描 Markdown 文件并解析 Front Matter
 // ------------------------
 const files = fs.readdirSync(postsDir)
@@ -23,22 +41,27 @@ const files = fs.readdirSync(postsDir)
     .map(file => {
         const filePath = path.join(postsDir, file);
         const content = fs.readFileSync(filePath, 'utf8');
-        const match = content.match(/^---\n([\s\S]+?)\n---/);
-        if (!match) return null;
 
-        const frontMatter = match[1];
+        // 解析 Front Matter
+        const match = content.match(/^---\n([\s\S]+?)\n---/);
         const metadata = {};
-        frontMatter.split('\n').forEach(line => {
-            const [key, value] = line.split(':').map(s => s.trim());
-            if (key && value) metadata[key] = value.replace(/['"]/g, '');
-        });
+        let bodyContent = content;
+
+        if (match) {
+            const frontMatter = match[1];
+            frontMatter.split('\n').forEach(line => {
+                const [key, value] = line.split(':').map(s => s.trim());
+                if (key && value) metadata[key] = value.replace(/['"]/g, '');
+            });
+            bodyContent = content.slice(match[0].length); // 去掉 Front Matter
+        }
 
         return {
             title: metadata.title || '无标题',
             date: metadata.date || '未知日期',
             category: metadata.category || '未分类',
-            excerpt: metadata.excerpt || '暂无摘要',
-            readTime: parseInt(metadata.readTime) || 5,
+            excerpt: metadata.excerpt || generateExcerpt(bodyContent, 120),
+            readTime: parseInt(metadata.readTime) || calcReadTime(bodyContent),
             file
         };
     })
