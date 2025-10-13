@@ -5,14 +5,6 @@
     "category": "技术思考",
     "excerpt": "在移动设备普及的今天，响应式设计不仅仅是技术实现，更是一种设计哲学。",
     "readTime": 8,
-    "file": "web-responsive-design.md"
-  },
-  {
-    "title": "冬季猎户座观测指南",
-    "date": "2024-01-18",
-    "category": "天文观测",
-    "excerpt": "冬季是观测猎户座的最佳时机，这份指南将带你认识这个壮丽的星座及其周边天体。",
-    "readTime": 10,
-    "file": "winter-orion-guide.md"
+    "file": "postsweb-responsive-design.md"
   }
 ]
