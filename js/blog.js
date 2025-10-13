@@ -68,6 +68,27 @@ function renderBlogList(blogPosts) {
 		container.insertAdjacentHTML('beforeend', articleHTML);
 	});
 }
+const articleHTML = `
+<article class="blog-post">
+    ${post.coverImage ? `<img src="posts/${post.coverImage}" alt="${post.title}" class="post-cover"/>` : ''}
+    <div class="post-meta">
+        <time datetime="${post.date}">${post.date}</time> |
+        <span class="post-category">${post.category}</span> |
+        <span class="post-author">by ${post.author}</span>
+    </div>
+    <h2 class="post-title">
+        <a href="post.html?file=${post.file}">${post.title}</a>
+    </h2>
+    <p class="post-excerpt">${post.excerpt}</p>
+    <div class="post-tags">
+        ${post.tags.map(tag => `<span class="tag">${tag}</span>`).join(' ')}
+    </div>
+    <div class="post-footer">
+        <span class="read-time">📖 ${post.readTime} min read</span>
+        <a href="post.html?file=${post.file}" class="read-more">Read more →</a>
+    </div>
+</article>
+`;
 
 // ------------------------
 // 初始化页面

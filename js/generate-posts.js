@@ -56,12 +56,16 @@ const files = fs.readdirSync(postsDir)
             bodyContent = content.slice(match[0].length); // 去掉 Front Matter
         }
 
+        // ✅ 把扩展的字段放到这里
         return {
-            title: metadata.title || '无标题',
-            date: metadata.date || '未知日期',
-            category: metadata.category || '未分类',
+            title: metadata.title || 'No Title',
+            date: metadata.date || 'Unknown Date',
+            category: metadata.category || 'Uncategorized',
             excerpt: metadata.excerpt || generateExcerpt(bodyContent, 120),
             readTime: parseInt(metadata.readTime) || calcReadTime(bodyContent),
+            author: metadata.author || 'Anonymous',
+            tags: metadata.tags ? metadata.tags.split(',').map(t => t.trim()) : [],
+            coverImage: metadata.coverImage || '',
             file
         };
     })
@@ -72,4 +76,4 @@ const files = fs.readdirSync(postsDir)
 // 写入 posts.json
 // ------------------------
 fs.writeFileSync(outputFile, JSON.stringify(files, null, 2));
-console.log(`已生成文章索引，共 ${files.length} 篇文章`);
+console.log(`✅ 已生成文章索引，共 ${files.length} 篇文章`);

@@ -1,8 +1,8 @@
 ---
-title: "我的新文章"
-date: "2025-10-13"
-category: "技术分享"
-excerpt: "这是文章摘要，简要说明文章内容"
-readTime: 7
+title: 我的第一篇文章
+date: 2025-10-13
+category: 日记
+author: Harrington
+tags: js, blog
 ---
-这里是文章正文...
+这里是正文内容...
