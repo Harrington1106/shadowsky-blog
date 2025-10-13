@@ -1,6 +1,5 @@
 {
   "scripts": {
-  "deploy": "git add . && git commit -m \"update site\" && git push && powershell -c \"$f=New-TemporaryFile; iwr https://host.retiehe.com/cli -OutFile $f; node $f --site shadowsky --outdir .; rm $f -Force\""
-}
-
+    "deploy": "git add . && git commit -m \"update site\" && git push && powershell -c \"$f=New-TemporaryFile; iwr https://host.retiehe.com/cli -OutFile $f; node $f --site shadowsky --outdir .; rm $f -Force\""
+  }
 }
