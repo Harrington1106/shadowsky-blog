@@ -184,3 +184,4 @@ function initBlogPage() {
 }
 
 document.addEventListener('DOMContentLoaded', initBlogPage);
+
