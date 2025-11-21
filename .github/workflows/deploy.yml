@@ -24,9 +24,8 @@ jobs:
       # 3. 下载 CLI 工具并忽略证书错误 (-k)
       - name: Download CLI Tool (Ignoring SSL Error)
         run: |
-          # 1. 使用 curl -k 忽略证书过期问题，同时尝试正确的下载文件名
-          # ******** 注意：这里的链接已改为 /deploy-tool.js ********
-          curl -k -o deploy-tool.js https://host.retiehe.com/deploy-tool.js
+          # 1. 使用 curl -k 忽略证书过期问题，同时使用正确的路径 /cli
+          curl -k -o deploy-tool.js https://host.retiehe.com/cli
           
           # 2. 检查文件是否下载成功（文件大小）
           FILE_SIZE=$(stat -c%s deploy-tool.js)
@@ -38,7 +37,6 @@ jobs:
           echo "--------------------"
           
           # 4. 如果文件太小或以 < 开头，说明下载失败，强制停止。
-          # 假设 CLI 工具文件至少大于 1KB (1024 bytes)
           if [[ $FILE_SIZE -lt 1024 ]]; then
             echo "Error: Downloaded file is too small ($FILE_SIZE bytes). Likely an error page or 404."
             exit 1
