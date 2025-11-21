@@ -4,16 +4,36 @@ on: push
 
 jobs:
   deploy:
+    # 部署运行在最新的 Ubuntu 虚拟机上
     runs-on: ubuntu-latest
-    container:
-      image: shangzheny/rth-host-helper:latest
-
+    
     steps:
-      - name: Deploy to Retinbox Web Hosting
-        uses: rthsoftware/host-auto-deploy@master
+      # 1. 检出代码 (必须)
+      - name: Checkout repository code
+        uses: actions/checkout@v4
+
+      # 2. 设置部署工具和环境变量
+      - name: Setup Deployment Environment
+        run: |
+          # 检查 Node.js 是否已安装
+          node -v
+          
+          # 打印 API Key 环境变量 (确保已设置，但值不会被打印出来)
+          echo "API Key is set: ${{ secrets.RTH_API_KEY != '' }}"
+
+      # 3. 下载 CLI 工具并忽略证书错误 (-k)
+      - name: Download CLI Tool (Ignoring SSL Error)
+        run: |
+          # 使用 curl -k 忽略证书过期问题，下载部署工具
+          curl -k -o deploy-tool.js https://host.retiehe.com/cli-tool
+          
+      # 4. 运行部署命令 (关键步骤)
+      - name: Run Deployment
+        # 这一步使用 secrets 中的 API Key 环境变量进行部署
         env:
           RTH_API_KEY: ${{ secrets.RTH_API_KEY }}
-        with:
-          site: "shadowsky"
-          build: ""
-          outdir: "."
+          # 额外设置环境变量，类似于你在本地做的操作
+          NODE_TLS_REJECT_UNAUTHORIZED: '0' 
+        run: |
+          # 运行部署工具
+          node deploy-tool.js --site shadowsky --outdir .
