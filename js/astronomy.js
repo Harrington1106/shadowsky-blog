@@ -302,3 +302,4 @@ async function initAstronomyPage() {
 }
 
 document.addEventListener('DOMContentLoaded', initAstronomyPage);
+

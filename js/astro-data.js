@@ -133,3 +133,4 @@
 
   window.AstroData = { fetchCached, getLocation, saveLocation, loadStarCatalog, loadAstronomyEvents, connectEventStream, loadISSPosition, loadWeather, loadBortle, calcMoonPhase, loadPlaceName };
 })();
+

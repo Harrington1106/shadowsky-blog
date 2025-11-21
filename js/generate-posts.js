@@ -78,3 +78,5 @@ const files = fs.readdirSync(postsDir)
 // ------------------------
 fs.writeFileSync(outputFile, JSON.stringify(files, null, 2));
 console.log(`已生成文章索引，共 ${files.length} 篇文章`);
+
+
