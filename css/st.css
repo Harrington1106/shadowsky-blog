@@ -1,0 +1,389 @@
+/* 科技页面统一设计 - 使用蓝色调科技感主题 */
+:root {
+	--theme-color: #2196F3;
+	--theme-color-rgb: 33, 150, 243;
+}
+
+/* 科技页面主内容区域 */
+.tech-page .main-content {
+	padding: 120px 20px 80px;
+	max-width: 1200px;
+	margin: 0 auto;
+}
+
+/* 头部和标题样式 - 科技主题 */
+.tech-header {
+	text-align: center;
+	margin-bottom: 40px;
+	color: white;
+	padding: 30px;
+	background: rgba(255, 255, 255, 0.05);
+	-webkit-backdrop-filter: blur(10px);
+	backdrop-filter: blur(10px);
+	border-radius: 20px;
+	border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.tech-header h1 {
+	font-size: 2.8rem;
+	margin-bottom: 15px;
+	text-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+	background: linear-gradient(135deg, #ffffff 0%, #2196F3 100%);
+	-webkit-background-clip: text;
+	-webkit-text-fill-color: transparent;
+	background-clip: text;
+}
+
+.tech-header p {
+	font-size: 1.2rem;
+	color: rgba(255, 255, 255, 0.9);
+	font-style: italic;
+}
+
+.section-title {
+	color: #2196F3;
+	border-bottom: 2px solid rgba(33, 150, 243, 0.3);
+	padding-bottom: 10px;
+	margin-bottom: 30px;
+	font-size: 1.8rem;
+	text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+/* 科技动态网格 */
+.tech-dynamics-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+	gap: 25px;
+	margin-bottom: 50px;
+}
+
+/* 基础卡片样式 */
+.tech-card {
+    background: rgba(255, 255, 255, 0.08);
+    -webkit-backdrop-filter: blur(15px);
+    backdrop-filter: blur(15px);
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+	color: white;
+	transition: all 0.3s ease;
+	min-height: 140px;
+}
+
+.tech-card:hover {
+	background: rgba(255, 255, 255, 0.12);
+	transform: translateY(-3px);
+	box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+}
+
+.tech-card h3 {
+	color: #2196F3;
+	margin-top: 0;
+	margin-bottom: 15px;
+	font-size: 1.3rem;
+}
+
+.tech-card p {
+	margin: 8px 0;
+	color: rgba(255, 255, 255, 0.9);
+}
+
+.tech-card strong {
+	color: #2196F3;
+}
+
+/* 技术领域网格 */
+.domains-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+	gap: 30px;
+	margin-top: 30px;
+	justify-items: center;
+	max-width: 100%;
+}
+
+.domain-card {
+    background: rgba(255, 255, 255, 0.08);
+    -webkit-backdrop-filter: blur(15px);
+    backdrop-filter: blur(15px);
+    border-radius: 20px;
+    padding: 0;
+    overflow: hidden;
+    transition: all 0.3s ease;
+	box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+	cursor: pointer;
+	border: 1px solid rgba(255, 255, 255, 0.1);
+	width: 100%;
+	max-width: 350px;
+}
+
+.domain-card:hover {
+	transform: translateY(-8px);
+	background: rgba(255, 255, 255, 0.12);
+	box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+}
+
+.domain-card-image {
+	width: 100%;
+	height: 200px;
+	object-fit: cover;
+	display: block;
+}
+
+.domain-card-content {
+	padding: 25px;
+}
+
+.domain-card-content h3 {
+	margin-top: 0;
+	color: #2196F3;
+	font-size: 1.4rem;
+	margin-bottom: 12px;
+}
+
+.domain-card-content p {
+	color: rgba(255, 255, 255, 0.9);
+	line-height: 1.6;
+	margin-bottom: 15px;
+}
+
+.domain-card-content small {
+	color: rgba(255, 255, 255, 0.7);
+	font-size: 0.9rem;
+}
+
+/* 产品网格 */
+.products-grid,
+.tools-grid,
+.resources-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+	gap: 25px;
+	margin-top: 30px;
+}
+
+.product-card,
+.tool-card,
+.resource-card {
+    background: rgba(255, 255, 255, 0.08);
+    -webkit-backdrop-filter: blur(15px);
+    backdrop-filter: blur(15px);
+    border-radius: 15px;
+    padding: 25px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+	text-align: center;
+}
+
+.product-card:hover,
+.tool-card:hover,
+.resource-card:hover {
+	background: rgba(255, 255, 255, 0.12);
+	transform: translateY(-5px);
+	box-shadow: 0 12px 35px rgba(0, 0, 0, 0.4);
+}
+
+.product-card h3,
+.tool-card h3,
+.resource-card h3 {
+	color: #2196F3;
+	margin-top: 0;
+	margin-bottom: 15px;
+	font-size: 1.2rem;
+}
+
+.product-card p,
+.tool-card p,
+.resource-card p {
+	color: rgba(255, 255, 255, 0.9);
+	margin: 0;
+	line-height: 1.5;
+}
+
+/* 标签样式 */
+.tech-tag {
+	display: inline-block;
+	background: rgba(33, 150, 243, 0.2);
+	color: #2196F3;
+	padding: 4px 12px;
+	border-radius: 15px;
+	font-size: 0.8rem;
+	margin: 5px 5px 5px 0;
+}
+
+/* 底部版权信息 */
+.tech-footer {
+    width: 100%;
+    text-align: center;
+    padding: 25px;
+    color: rgba(255, 255, 255, 0.7);
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+    background: rgba(0, 0, 0, 0.4);
+    -webkit-backdrop-filter: blur(15px);
+    backdrop-filter: blur(15px);
+    box-sizing: border-box;
+    margin-top: auto;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    flex-shrink: 0;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+	.tech-container {
+		padding: 100px 15px 30px;
+	}
+
+	.tech-header h1 {
+		font-size: 2.2rem;
+	}
+
+	.tech-dynamics-grid,
+	.domains-grid,
+	.products-grid,
+	.tools-grid,
+	.resources-grid {
+		grid-template-columns: 1fr;
+		gap: 20px;
+	}
+
+	.domain-card {
+		max-width: 100%;
+		margin: 0 10px;
+	}
+
+	.domain-card-content {
+		padding: 20px 15px;
+	}
+}
+
+/* 在 st.css 的 @media (max-width: 480px) 部分添加 */
+@media (max-width: 480px) {
+	.tech-container {
+		padding: 80px 10px 20px;
+	}
+
+	.tech-header h1 {
+		font-size: 1.8rem;
+		line-height: 1.2;
+		margin-bottom: 10px;
+	}
+
+	.tech-header p {
+		font-size: 1rem;
+	}
+
+	.section-title {
+		font-size: 1.5rem;
+		padding-bottom: 8px;
+		margin-bottom: 20px;
+	}
+
+	/* 确保卡片在超小屏幕上完全适配 */
+	.tech-card,
+	.domain-card,
+	.product-card,
+	.tool-card,
+	.resource-card {
+		padding: 15px;
+		margin: 0;
+		width: 100%;
+		box-sizing: border-box;
+	}
+
+	.domain-card-content {
+		padding: 12px 10px;
+	}
+
+	.domain-card-content h3 {
+		font-size: 1.1rem;
+		margin-bottom: 8px;
+	}
+
+	.domain-card-content p {
+		font-size: 0.9rem;
+		line-height: 1.4;
+	}
+
+	.domain-card-image {
+		height: 150px;
+	}
+
+	/* 网格布局优化 */
+	.tech-dynamics-grid,
+	.domains-grid,
+	.products-grid,
+	.tools-grid,
+	.resources-grid {
+		gap: 15px;
+	}
+
+	/* 确保文字不会溢出 */
+	.tech-card p,
+	.domain-card-content p,
+	.product-card p,
+	.tool-card p,
+	.resource-card p {
+		word-wrap: break-word;
+		overflow-wrap: break-word;
+	}
+
+	/* 标签优化 */
+	.tech-tag {
+		font-size: 0.7rem;
+		padding: 3px 8px;
+		margin: 3px 3px 3px 0;
+	}
+
+	/* 底部优化 */
+	.tech-footer {
+		padding: 20px 15px;
+		font-size: 0.8rem;
+	}
+}
+
+/* 针对超小屏幕的额外优化 */
+@media (max-width: 360px) {
+	.tech-container {
+		padding: 70px 8px 15px;
+	}
+
+	.tech-header h1 {
+		font-size: 1.6rem;
+	}
+
+	.section-title {
+		font-size: 1.3rem;
+	}
+
+	.tech-card,
+	.domain-card,
+	.product-card,
+	.tool-card,
+	.resource-card {
+		padding: 12px;
+	}
+
+	.domain-card-content {
+		padding: 10px 8px;
+	}
+
+	.domain-card-image {
+		height: 130px;
+	}
+}
+/* 滚动条优化 */
+::-webkit-scrollbar {
+	width: 8px;
+  }
+  ::-webkit-scrollbar-track {
+	background: rgba(0, 0, 0, 0.3);
+  }
+  ::-webkit-scrollbar-thumb {
+	background: var(--theme-color);
+	border-radius: 4px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+	background: #26c6da;
+  }
