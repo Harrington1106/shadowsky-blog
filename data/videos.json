@@ -1,0 +1,8 @@
+{
+  "my": [
+    { "id": 11, "title": "WebGL星空渲染实战", "thumbnail": "img/avatar.jpg", "duration": "16:02", "views": "1.2万", "likes": "0.6万", "category": "astronomy", "bilibiliUrl": "https://www.bilibili.com/video/BVxxxx" }
+  ],
+  "favorite": [
+    { "id": 210, "title": "NASA火星探测进展", "thumbnail": "img/avatar.jpg", "duration": "33:11", "views": "78万", "likes": "22万", "category": "astronomy", "bilibiliUrl": "https://www.bilibili.com/video/BVyyyy" }
+  ]
+}

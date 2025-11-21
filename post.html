@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="page blog-page">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>星空笔记 | 夏日科技探索</title>
+
+	<!-- 全局样式 -->
+	<link rel="stylesheet" href="main.css">
+
+	<!-- 页面样式 -->
+	<link rel="stylesheet" href="css/blog.css">
+	<link rel="stylesheet" href="css/post.css">
+
+	<!-- 外部库 -->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+	<link rel="stylesheet"
+		href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+
+	<!-- KaTeX 样式 -->
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+</head>
+
+<body class="page other-page">
+
+	<!-- 导航栏 -->
+	<nav class="navbar">
+
+		<div class="navbar__brand">
+			<img src="img/black64.png" alt="网站logo" class="logo">
+			<span class="navbar__site-name">夏日科技探索</span>
+		</div>
+
+		<ul class="navbar__menu">
+			<li class="navbar__item"><a href="index.html" class="navbar__link">首页</a></li>
+			<li class="navbar__item"><a href="blog.html" class="navbar__link">星空笔记</a></li>
+			<li class="navbar__item"><a href="astronomy.html" class="navbar__link">天文</a></li>
+			<li class="navbar__item"><a href="nature.html" class="navbar__link">自然</a></li>
+			<li class="navbar__item"><a href="st.html" class="navbar__link">科技</a></li>
+			<li class="navbar__item"><a href="video.html" class="navbar__link">视频</a></li>
+			<li class="navbar__item"><a href="contact.html" class="navbar__link">联系</a></li>
+		</ul>
+
+		<div class="navbar__toggle" id="navToggle">&#9776;</div>
+	</nav>
+
+	<!-- 主内容容器 -->
+	<main class="content blog-content">
+
+		<!-- 文章列表页 -->
+		<section class="blog-list">
+			<!-- JS 会动态渲染文章卡片 -->
+		</section>
+
+		<!-- 单篇文章详情页 -->
+		<article class="post-article">
+			<header class="post-header">
+				<h1 class="post-title" id="post-title">文章加载中...</h1>
+				<div class="post-meta">
+					<span class="meta-date" id="post-date">未知日期</span>
+					<span class="meta-author" id="post-author">作者：匿名</span>
+					<span class="meta-category" id="post-category">分类：未知</span>
+					<span class="meta-read-time" id="post-read-time">阅读时间：未知</span>
+				</div>
+			</header>
+
+			<div class="post-content" id="article-content">
+				<div class="loading">正在加载文章...</div>
+			</div>
+
+			<footer class="post-footer">
+				<p>感谢您的阅读！如果您喜欢这篇文章，请分享给更多人。</p>
+				<div class="post-actions">
+					<a href="#" class="action-btn">👍 点赞</a>
+					<a href="#" class="action-btn">📤 分享</a>
+					<a href="blog.html" class="action-btn">📚 更多文章</a>
+				</div>
+			</footer>
+		</article>
+
+	</main>
+
+	<!-- 页脚 -->
+	<footer class="page-footer">
+		<p class="page-footer__copyright">&copy; 2025 夏日科技探索 · All rights reserved.</p>
+	</footer>
+
+	<!-- JS 库 -->
+	<script src="https://cdn.jsdelivr.net/npm/marked@12.0.0/marked.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+	<!-- KaTeX 脚本 -->
+	<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+	<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+
+	<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
+
+	<!-- 自定义 JS -->
+	<script src="main.js"></script>
+	<script src="js/blog.js"></script>
+	<script src="js/post.js"></script>
+
+</body>
+
+</html>

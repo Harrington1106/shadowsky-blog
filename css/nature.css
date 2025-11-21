@@ -1,0 +1,341 @@
+/* 自然主题颜色 */
+:root {
+	--nature-primary: #4CAF50;
+	--nature-secondary: #388E3C;
+	--nature-accent: #8BC34A;
+	--nature-light: #C8E6C9;
+	--nature-dark: #2E7D32;
+}
+
+/* 自然页面主内容区域 */
+.nature-page .main-content {
+	padding: 120px 20px 80px;
+	max-width: 1200px;
+	margin: 0 auto;
+}
+
+/* 自然主题横幅 */
+.nature-hero {
+	background: linear-gradient(135deg, var(--nature-primary) 0%, var(--nature-dark) 100%);
+}
+
+/* 叶子装饰动画 */
+.leaf {
+	position: absolute;
+	background: rgba(255, 255, 255, 0.3);
+	border-radius: 50% 0 50% 0;
+	animation: float 6s ease-in-out infinite;
+}
+
+.leaf-1 {
+	width: 30px;
+	height: 30px;
+	top: 20%;
+	left: 10%;
+	animation-delay: 0s;
+}
+
+.leaf-2 {
+	width: 20px;
+	height: 20px;
+	top: 60%;
+	right: 15%;
+	animation-delay: 2s;
+}
+
+.leaf-3 {
+	width: 25px;
+	height: 25px;
+	bottom: 30%;
+	left: 20%;
+	animation-delay: 4s;
+}
+
+@keyframes float {
+
+	0%,
+	100% {
+		transform: translateY(0px) rotate(0deg);
+	}
+
+	50% {
+		transform: translateY(-20px) rotate(180deg);
+	}
+}
+
+/* 自然卡片样式 - 优化设计避免过长一条 */
+.nature-card {
+	background: rgba(255, 255, 255, 0.08);
+	-webkit-backdrop-filter: blur(15px);
+	backdrop-filter: blur(15px);
+	border-radius: 20px;
+	padding: 25px;
+	transition: all 0.3s ease;
+	border: 1px solid rgba(255, 255, 255, 0.1);
+	position: relative;
+	overflow: hidden;
+	max-width: 100%;
+	margin-bottom: 20px;
+}
+
+.nature-card::before {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	height: 3px;
+	background: linear-gradient(90deg, var(--nature-primary), var(--nature-accent));
+}
+
+.nature-card:hover {
+	transform: translateY(-5px);
+	background: rgba(255, 255, 255, 0.12);
+	box-shadow: 0 10px 30px rgba(76, 175, 80, 0.2);
+}
+
+/* 实时数据网格 */
+.realtime-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+	gap: 25px;
+	margin-top: 30px;
+}
+
+.weather-data,
+.eco-data {
+	display: flex;
+	flex-direction: column;
+	gap: 15px;
+}
+
+.weather-item,
+.eco-item {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 10px 0;
+	border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.weather-item:last-child,
+.eco-item:last-child {
+	border-bottom: none;
+}
+
+.label {
+	color: var(--text-muted);
+	font-size: 0.9em;
+}
+
+.value {
+	font-weight: 600;
+	color: var(--nature-primary);
+}
+
+/* 进度条样式 */
+.progress-bar {
+	flex: 1;
+	height: 6px;
+	background: rgba(255, 255, 255, 0.1);
+	border-radius: 3px;
+	margin: 0 15px;
+	overflow: hidden;
+}
+
+.progress-fill {
+	height: 100%;
+	background: linear-gradient(90deg, var(--nature-primary), var(--nature-accent));
+	border-radius: 3px;
+	transition: width 1s ease;
+}
+
+/* 自然景观网格 */
+.nature-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+	gap: 25px;
+	margin-top: 30px;
+}
+
+.nature-item {
+	background: rgba(255, 255, 255, 0.08);
+	border-radius: 15px;
+	overflow: hidden;
+	transition: all 0.3s ease;
+	border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.nature-item:hover {
+	transform: translateY(-5px);
+	box-shadow: 0 10px 30px rgba(76, 175, 80, 0.2);
+}
+
+.nature-image {
+	width: 100%;
+	height: 200px;
+	background: linear-gradient(135deg, var(--nature-primary), var(--nature-dark));
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: white;
+	font-size: 3em;
+}
+
+.nature-content {
+	padding: 20px;
+}
+
+.nature-type {
+	display: inline-block;
+	background: rgba(76, 175, 80, 0.2);
+	color: var(--nature-primary);
+	padding: 4px 12px;
+	border-radius: 20px;
+	font-size: 0.8em;
+	font-weight: 500;
+	margin-bottom: 10px;
+}
+
+.nature-title {
+	font-size: 1.3em;
+	font-weight: 600;
+	margin-bottom: 10px;
+	color: white;
+}
+
+.nature-description {
+	color: var(--text-muted);
+	margin-bottom: 15px;
+	line-height: 1.5;
+}
+
+.nature-details {
+	font-size: 0.9em;
+	color: var(--nature-accent);
+	padding: 10px;
+	background: rgba(139, 195, 74, 0.1);
+	border-radius: 8px;
+	border-left: 3px solid var(--nature-accent);
+}
+
+/* 环保知识轮播 */
+.eco-tips-carousel {
+	margin-top: 30px;
+	position: relative;
+}
+
+.eco-tip {
+	background: rgba(76, 175, 80, 0.1);
+	border-left: 4px solid var(--nature-primary);
+	padding: 25px;
+	border-radius: 15px;
+	margin-bottom: 20px;
+	transition: all 0.3s ease;
+}
+
+.eco-tip:hover {
+	background: rgba(76, 175, 80, 0.15);
+	transform: translateX(5px);
+}
+
+.eco-tip-header {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	margin-bottom: 10px;
+}
+
+.eco-tip-icon {
+	font-size: 1.5em;
+}
+
+.eco-tip-title {
+	font-weight: 600;
+	color: var(--nature-primary);
+}
+
+.eco-tip-content {
+	color: var(--text-muted);
+	line-height: 1.6;
+}
+
+/* 工具网格 */
+.tools-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+	gap: 25px;
+	margin-top: 30px;
+}
+
+.calendar-item {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 12px 0;
+	border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.calendar-item:last-child {
+	border-bottom: none;
+}
+
+.date {
+	color: var(--nature-primary);
+	font-weight: 500;
+}
+
+.event {
+	color: var(--text-muted);
+}
+
+/* 地图预览 */
+.map-preview {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	grid-template-rows: 1fr 1fr;
+	gap: 10px;
+	height: 200px;
+	margin-top: 15px;
+}
+
+.region {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: rgba(76, 175, 80, 0.1);
+	border: 2px solid var(--nature-primary);
+	border-radius: 10px;
+	color: var(--nature-primary);
+	font-weight: 500;
+	text-align: center;
+	transition: all 0.3s ease;
+}
+
+.region:hover {
+	background: rgba(76, 175, 80, 0.2);
+	transform: scale(1.05);
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+	.realtime-grid {
+		grid-template-columns: 1fr;
+	}
+
+	.nature-grid {
+		grid-template-columns: 1fr;
+	}
+
+	.tools-grid {
+		grid-template-columns: 1fr;
+	}
+
+	.map-preview {
+		grid-template-columns: 1fr;
+		grid-template-rows: repeat(4, 1fr);
+		height: 300px;
+	}
+}
+.progress-fill.w-78 { width: 78%; }
+.progress-fill.w-85 { width: 85%; }

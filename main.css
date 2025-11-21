@@ -1,0 +1,466 @@
+/* ==================== 字体定义 ==================== */
+@font-face {
+	font-family: 'Noto Serif SC';
+	font-style: normal;
+	font-weight: 400;
+	src: local('Noto Serif SC'), local('NotoSerifSC-Regular'), url('fonts/noto-serif-sc/NotoSerifSC-Regular.woff2') format('woff2');
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'Noto Serif SC';
+	font-style: normal;
+	font-weight: 700;
+	src: local('Noto Serif SC Bold'), local('NotoSerifSC-Bold'), url('fonts/noto-serif-sc/NotoSerifSC-Bold.woff2') format('woff2');
+	font-display: swap;
+}
+
+/* ==================== 根变量定义 ==================== */
+:root {
+	--theme-color: #4dd0e1;
+	--theme-color-rgb: 77, 208, 225;
+	--text-color-light: rgba(255, 255, 255, 0.95);
+	--background-blur: blur(15px);
+}
+
+/* ==================== 基础样式重置 ==================== */
+*,
+*::before,
+*::after {
+	font-family: "Noto Serif SC", "Helvetica", "PingFang SC", "Microsoft YaHei", sans-serif;
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+}
+
+html,
+body {
+    width: 100%;
+    height: auto;
+    min-height: 100vh;
+    background-image: url('img/th1.webp');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    display: block;
+    overflow: auto;
+}
+
+/* 主页样式：禁止滚动，使用 flex 居中布局 */
+body.home-page {
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+}
+
+/* 其他页面样式：允许滚动，恢复正常文档流 */
+body.other-page {
+	overflow: auto;
+	display: block;
+	height: auto;
+	min-height: 100vh;
+}
+
+/* ==================== 导航栏 ==================== */
+.navbar {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	z-index: 1000;
+	background-color: rgba(0, 0, 0, 0.3);
+	-webkit-backdrop-filter: var(--background-blur);
+	backdrop-filter: var(--background-blur);
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 1rem 2rem;
+}
+
+.navbar__brand {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+.logo {
+	height: 45px;
+	width: 45px;
+	border-radius: 50%;
+	object-fit: cover;
+	transition: transform 0.3s ease;
+}
+
+.logo:hover {
+	transform: scale(1.05);
+}
+
+.navbar__site-name {
+	font-size: 22px;
+	color: white;
+	font-weight: bold;
+	letter-spacing: 0.5px;
+	text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+.navbar__menu {
+	display: flex;
+	list-style: none;
+	gap: 1.5rem;
+}
+
+.navbar__link {
+	display: block;
+	color: white;
+	text-decoration: none;
+	font-weight: 500;
+	font-size: 16px;
+	text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+	transition: all 0.3s ease;
+	padding: 8px 12px;
+	border-radius: 6px;
+}
+
+.navbar__link:hover {
+	color: #a8d8ea;
+	background: rgba(168, 216, 234, 0.1);
+}
+
+.navbar__link.active {
+	color: var(--theme-color);
+	background: rgba(var(--theme-color-rgb), 0.15);
+}
+
+.navbar__toggle {
+	color: white;
+	padding: 8px;
+	border-radius: 4px;
+	transition: background 0.3s ease;
+	display: none;
+	cursor: pointer;
+	font-size: 1.5rem;
+}
+
+.navbar__toggle:hover {
+	background: rgba(255, 255, 255, 0.1);
+}
+
+/* ==================== 主内容 ==================== */
+.page-main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 50px;
+    padding: 40px 20px;
+}
+
+/* 首页居中优化，避让固定导航与页脚 */
+.home-page .page-main {
+    min-height: calc(100vh - 200px);
+    padding-top: 120px;
+    padding-bottom: 80px;
+    justify-content: center;
+    align-items: center;
+}
+
+/* ==================== Hero ==================== */
+.avatar {
+	width: 160px;
+	height: 160px;
+	border-radius: 50%;
+	object-fit: cover;
+	box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 0 0 4px rgba(255, 255, 255, 0.1);
+	transition: all 0.4s ease;
+	display: block;
+	margin: 0 auto;
+}
+
+.avatar:hover {
+	transform: scale(1.08);
+	box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4), 0 0 0 4px rgba(var(--theme-color-rgb), 0.3);
+}
+
+.hero__motto {
+	font-size: 2.4rem;
+	font-weight: 700;
+	color: rgb(255, 255, 255);
+	text-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+	line-height: 1.3;
+	background: linear-gradient(135deg, #ffffff 0%, #a8d8ea 100%);
+	-webkit-background-clip: text;
+	-webkit-text-fill-color: transparent;
+	background-clip: text;
+	display: block;
+	margin: 0 auto;
+	text-align: center;
+	padding: 25px;
+}
+
+.hero__description {
+	font-size: 1.4rem;
+	color: var(--text-color-light);
+	font-weight: 400;
+	line-height: 1.8;
+	max-width: 680px;
+	text-align: justify;
+	font-style: italic;
+	text-indent: 2em;
+	text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+	padding: 20px;
+	background: rgba(255, 255, 255, 0.05);
+	-webkit-backdrop-filter: blur(5px);
+	backdrop-filter: blur(5px);
+	border-radius: 12px;
+	border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* ==================== 标签 ==================== */
+.tag-list {
+	display: flex;
+	justify-content: center;
+	flex-wrap: wrap;
+	gap: 12px;
+	margin-top: 25px;
+}
+
+.tag {
+	background: linear-gradient(135deg, var(--theme-color) 0%, #26c6da 100%);
+	color: #fff;
+	padding: 12px 24px;
+	border-radius: 25px;
+	cursor: pointer;
+	transition: all 0.3s ease;
+	font-size: 1rem;
+	font-weight: 500;
+	box-shadow: 0 4px 15px rgba(var(--theme-color-rgb), 0.3);
+	border: none;
+	position: relative;
+	overflow: hidden;
+}
+
+.tag::before {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: -100%;
+	width: 100%;
+	height: 100%;
+	background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+	transition: left 0.5s;
+}
+
+.tag:hover {
+	transform: translateY(-3px);
+	box-shadow: 0 8px 25px rgba(var(--theme-color-rgb), 0.5);
+}
+
+.tag:hover::before {
+	left: 100%;
+}
+
+/* ==================== 主内容区域 ==================== */
+.main-content {
+	flex: 1;
+	width: 100%;
+	max-width: 1200px;
+	margin: 0 auto;
+	padding: 120px 20px 80px;
+	box-sizing: border-box;
+}
+
+/* 页面头部样式统一 */
+.page-header {
+	text-align: center;
+	margin-bottom: 40px;
+	padding: 30px;
+	background: rgba(255, 255, 255, 0.05);
+	-webkit-backdrop-filter: blur(10px);
+	backdrop-filter: blur(10px);
+	border-radius: 20px;
+	border: 1px solid rgba(255, 255, 255, 0.1);
+	color: white;
+}
+
+/* ==================== 页脚 ==================== */
+.page-footer {
+	width: 100%;
+	text-align: center;
+	padding: 25px;
+	color: rgba(255, 255, 255, 0.7);
+	border-top: 1px solid rgba(255, 255, 255, 0.15);
+	background: rgba(0, 0, 0, 0.4);
+	-webkit-backdrop-filter: var(--background-blur);
+	backdrop-filter: var(--background-blur);
+	font-size: 0.9rem;
+	line-height: 1.4;
+	margin-top: auto;
+}
+
+/* ==================== 响应式设计 ==================== */
+@media (max-width: 768px) {
+	.navbar {
+		padding: 0.8rem 1rem;
+	}
+
+	.navbar__site-name {
+		font-size: 18px;
+	}
+
+	.logo {
+		height: 35px;
+		width: 35px;
+	}
+
+	.navbar__menu {
+		display: none;
+	}
+
+	.navbar__toggle {
+		display: block;
+	}
+
+	.navbar__menu.active {
+		display: flex;
+		flex-direction: column;
+		position: absolute;
+		top: 100%;
+		right: 10px;
+		background-color: rgba(0, 0, 0, 0.9);
+		-webkit-backdrop-filter: blur(20px);
+		backdrop-filter: blur(20px);
+		border-radius: 12px;
+		padding: 12px 0;
+		gap: 0;
+		min-width: 140px;
+		box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+		border: 1px solid rgba(255, 255, 255, 0.15);
+		z-index: 1001;
+	}
+
+	.navbar__link {
+		padding: 10px 20px;
+		font-size: 14px;
+		text-align: left;
+	}
+
+	/* 移动端主内容优化 */
+	.page-main {
+		gap: 30px;
+		padding: 20px 15px;
+	}
+
+	/* 头像大小调整 */
+	.avatar {
+		width: 120px;
+		height: 120px;
+	}
+
+	/* 座右铭字体大小调整 */
+	.hero__motto {
+		font-size: 1.8rem;
+		padding: 15px;
+		line-height: 1.2;
+	}
+
+	/* 描述文本调整 */
+	.hero__description {
+		font-size: 1rem;
+		line-height: 1.6;
+		padding: 15px;
+		text-indent: 1.5em;
+		max-width: 100%;
+	}
+
+	/* 标签调整 */
+	.tag-list {
+		gap: 8px;
+		margin-top: 15px;
+	}
+
+	.tag {
+		padding: 8px 16px;
+		font-size: 0.85rem;
+		border-radius: 20px;
+	}
+
+
+	.page-footer {
+		padding: 15px;
+		font-size: 0.8rem;
+	}
+}
+
+/* 超小屏幕适配 */
+@media (max-width: 480px) {
+	.navbar {
+		padding: 0.6rem 0.8rem;
+	}
+
+	.navbar__site-name {
+		font-size: 16px;
+	}
+
+	.logo {
+		height: 30px;
+		width: 30px;
+	}
+
+	.page-main {
+		gap: 20px;
+		padding: 15px 10px;
+	}
+
+	.avatar {
+		width: 100px;
+		height: 100px;
+	}
+
+	.hero__motto {
+		font-size: 1.5rem;
+		padding: 10px;
+	}
+
+	.hero__description {
+		font-size: 0.9rem;
+		padding: 12px;
+		text-indent: 1em;
+		line-height: 1.5;
+	}
+
+	.tag-list {
+		gap: 6px;
+	}
+
+	.tag {
+		padding: 6px 12px;
+		font-size: 0.8rem;
+	}
+
+	.page-footer {
+		padding: 12px;
+		font-size: 0.75rem;
+	}
+}
+
+/* 横屏手机适配 */
+@media (max-width: 768px) and (orientation: landscape) {
+	.page-main {
+		gap: 20px;
+		padding: 15px 20px;
+	}
+
+	.hero__motto {
+		font-size: 1.6rem;
+		padding: 10px;
+	}
+
+	.hero__description {
+		font-size: 0.95rem;
+		padding: 12px;
+	}
+}

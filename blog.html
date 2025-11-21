@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="page blog-page">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>星空笔记 | 夏日科技探索</title>
+
+	<!-- 全局样式 -->
+	<link rel="stylesheet" href="main.css">
+
+	<!-- 页面样式 -->
+	<link rel="stylesheet" href="css/blog.css">
+
+	<!-- 外部库 -->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+
+<body class="page other-page">
+
+	<!-- 导航栏 -->
+	<nav class="navbar">
+
+		<div class="navbar__brand">
+			<img src="img/black64.png" alt="网站logo" class="logo">
+			<span class="navbar__site-name">夏日科技探索</span>
+		</div>
+
+		<ul class="navbar__menu">
+			<li class="navbar__item"><a href="index.html" class="navbar__link">首页</a></li>
+			<li class="navbar__item"><a href="blog.html" class="navbar__link">星空笔记</a></li>
+			<li class="navbar__item"><a href="astronomy.html" class="navbar__link">天文</a></li>
+			<li class="navbar__item"><a href="nature.html" class="navbar__link">自然</a></li>
+			<li class="navbar__item"><a href="st.html" class="navbar__link">科技</a></li>
+			<li class="navbar__item"><a href="video.html" class="navbar__link">视频</a></li>
+			<li class="navbar__item"><a href="contact.html" class="navbar__link">联系</a></li>
+		</ul>
+
+		<div class="navbar__toggle" id="navToggle">&#9776;</div>
+	</nav>
+
+	<!-- 主内容容器 -->
+	<main class="content blog-content">
+		<div class="page-header">
+			<h1>⭐星空笔记</h1>
+			<p>记录每一次探索的精彩瞬间</p>
+		</div>
+		<section class="blog-list">
+			<!-- JS 动态生成卡片 -->
+		</section>
+		<div class="pagination"></div>
+	</main>
+
+	<footer class="page-footer">
+		<p class="page-footer__copyright">&copy; 2025 夏日科技探索 · All rights reserved.</p>
+	</footer>
+
+	<!-- 自定义 JS -->
+	<script src="main.js"></script>
+	<script src="js/blog.js"></script>
+</body>
+
+</html>
