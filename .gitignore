@@ -1,1 +1,7 @@
 .env
+# (确保该文件存在于项目根目录 D:\shadowsky)
+# .gitignore 文件内容：
+
+node_modules/
+deploy-tool.js
+proxy-patch.js
