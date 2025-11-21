@@ -24,15 +24,29 @@ jobs:
       # 3. 下载 CLI 工具并忽略证书错误 (-k)
       - name: Download CLI Tool (Ignoring SSL Error)
         run: |
-          # 使用 curl -k 忽略证书过期问题，下载部署工具
+          # 1. 使用 curl -k 忽略证书过期问题，下载部署工具
           curl -k -o deploy-tool.js https://host.retiehe.com/cli-tool
+          
+          # 2. 检查文件是否下载成功（文件大小）
+          FILE_SIZE=$(stat -c%s deploy-tool.js)
+          echo "Downloaded deploy-tool.js size: $FILE_SIZE bytes"
+          
+          # 3. 打印文件内容的前几行，进行人工检查
+          echo "--- Content Head ---"
+          head -n 5 deploy-tool.js
+          echo "--------------------"
+          
+          # 4. (可选) 如果文件太小或以 < 开头，说明下载失败，强制停止。
+          # 假设 CLI 工具文件至少大于 1KB (1024 bytes)
+          if [[ $FILE_SIZE -lt 1024 ]]; then
+            echo "Error: Downloaded file is too small ($FILE_SIZE bytes). Likely an error page."
+            exit 1
+          fi
           
       # 4. 运行部署命令 (关键步骤)
       - name: Run Deployment
-        # 这一步使用 secrets 中的 API Key 环境变量进行部署
         env:
           RTH_API_KEY: ${{ secrets.RTH_API_KEY }}
-          # 额外设置环境变量，类似于你在本地做的操作
           NODE_TLS_REJECT_UNAUTHORIZED: '0' 
         run: |
           # 运行部署工具
