@@ -326,14 +326,14 @@ document.addEventListener('DOMContentLoaded', () => {
             // 2. Fetch GitHub Issues (Your "Mobile Cloud Database")
             // TODO: Replace with your actual username and repo name
             const GITHUB_USERNAME = 'Harrington1106'; 
-            const GITHUB_REPO = 'blog-moments';
+            const GITHUB_REPO = 'blog-add';
             
             let githubMoments = [];
             
             // Only fetch if username is configured (not default placeholder)
             if (GITHUB_USERNAME !== 'your-username') {
                 try {
-                    const githubResponse = await fetch(`https://api.github.com/repos/${GITHUB_USERNAME}/${GITHUB_REPO}/issues?labels=moment&state=open&sort=created&direction=desc`);
+                    const githubResponse = await fetch(`https://api.github.com/repos/${GITHUB_USERNAME}/${GITHUB_REPO}/issues?labels=moment&state=open&sort=created&direction=desc&per_page=100`);
                     if (githubResponse.ok) {
                         const issues = await githubResponse.json();
                         githubMoments = issues.map(issue => {

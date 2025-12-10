@@ -15,7 +15,8 @@ async function __initBookmarks() {
   // Fetch Categories Config
   let dynamicCategories = {};
   try {
-    const res = await fetch('public/data/categories.json');
+    // Fetch from the configured repository's main branch
+    const res = await fetch(`https://raw.githubusercontent.com/${owner}/${repo}/main/public/data/categories.json`);
     if (res.ok) {
       dynamicCategories = await res.json();
     }
@@ -393,7 +394,8 @@ async function __initBookmarks() {
 
   async function loadIssues() {
     if (!owner || !repo) return;
-    const url = `https://api.github.com/repos/${owner}/${repo}/issues?state=open&per_page=100`;
+    // Add labels=bookmark to filter only bookmark issues
+    const url = `https://api.github.com/repos/${owner}/${repo}/issues?labels=bookmark&state=open&per_page=100`;
     let data;
     try {
       const res = await fetch(url);
@@ -517,7 +519,8 @@ async function __initBookmarks() {
   }
 
   // Execute loads in parallel and cleanup incrementally to improve perceived speed
-  const localLoad = loadLocalBookmarks().then(() => cleanupUI());
+  // const localLoad = loadLocalBookmarks().then(() => cleanupUI());
+  const localLoad = Promise.resolve(); // Disable local JSON to enforce GitHub Issues source
   const issuesLoad = loadIssues().then(() => cleanupUI());
   
   await Promise.all([localLoad, issuesLoad]);
