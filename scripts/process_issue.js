@@ -135,13 +135,22 @@ async function handleCategory(data) {
     }
 
     if (categories[id]) {
+<<<<<<< HEAD
         console.log(`Category ${id} already exists, updating...`);
+=======
+        console。log(`Category ${id} already exists, updating...`);
+>>>>>>> c10a126f5580483102864d21a0967a78600dc271
     }
 
     categories[id] = { name, group };
 
+<<<<<<< HEAD
     fs.writeFileSync(filePath, JSON.stringify(categories, null, 2));
     console.log('Categories updated');
+=======
+    fs。writeFileSync(filePath， JSON.stringify(categories， null， 2));
+    console。log('Categories updated');
+>>>>>>> c10a126f5580483102864d21a0967a78600dc271
 }
 
 async function handleBookmark(data) {
@@ -151,17 +160,29 @@ async function handleBookmark(data) {
     const category = data['Category ID'];
 
     if (!title || !url || !category) {
+<<<<<<< HEAD
         console.error('Missing required bookmark fields');
         process.exit(1);
     }
 
     const filePath = path.join(__dirname, '../public/data/bookmarks.json');
+=======
+        console。error('Missing required bookmark fields');
+        process。exit(1);
+    }
+
+    const filePath = path.join(__dirname， '../public/data/bookmarks.json');
+>>>>>>> c10a126f5580483102864d21a0967a78600dc271
     let bookmarks = [];
     if (fs.existsSync(filePath)) {
         try {
             bookmarks = JSON.parse(fs.readFileSync(filePath, 'utf8'));
         } catch (e) {
+<<<<<<< HEAD
             console.error('Error reading bookmarks.json', e);
+=======
+            console.error('Error reading bookmarks.json'， e);
+>>>>>>> c10a126f5580483102864d21a0967a78600dc271
         }
     }
 
