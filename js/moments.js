@@ -310,9 +310,8 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             await new Promise(resolve => setTimeout(resolve, 600));
             
-            // 1. Fetch Local Data (Disabled as per user request)
+            // 1. Fetch Local Data (Prioritized for static builds)
             let localMoments = [];
-            /* 
             try {
                 const localResponse = await fetch(`public/data/moments.json?v=${Date.now()}`);
                 if (localResponse.ok) {
@@ -321,16 +320,20 @@ document.addEventListener('DOMContentLoaded', () => {
             } catch (e) {
                 console.warn('Failed to fetch local moments:', e);
             }
-            */
 
-            // 2. Fetch GitHub Issues (Your "Mobile Cloud Database")
-            // TODO: Replace with your actual username and repo name
+            // 2. Fetch GitHub Issues (Your "Mobile Cloud Database") - Only if local is empty or for merging
+            // If local data exists, we can skip API call to save rate limit, or merge if desired.
+            // For now, let's keep both but prefer local if API fails.
             const GITHUB_USERNAME = 'Harrington1106'; 
             const GITHUB_REPO = 'blog-add';
             
             let githubMoments = [];
             
-            // Only fetch if username is configured (not default placeholder)
+            // If we have local moments, we might want to skip API call if we trust sync script
+            // But for hybrid approach, we can fetch new ones. 
+            // Let's assume sync script runs periodically, so local is "cache".
+            // We can try API for "live" updates.
+            
             if (GITHUB_USERNAME !== 'your-username') {
                 try {
                     const githubResponse = await fetch(`https://api.github.com/repos/${GITHUB_USERNAME}/${GITHUB_REPO}/issues?labels=moment&state=open&sort=created&direction=desc&per_page=100`);
@@ -371,7 +374,11 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             // 3. Merge and Sort
-            allMoments = [...githubMoments, ...localMoments];
+            // Filter out duplicates if both sources are used (based on ID or content)
+            const localIds = new Set(localMoments.map(m => m.id));
+            const newGithubMoments = githubMoments.filter(m => !localIds.has(m.id));
+            
+            allMoments = [...newGithubMoments, ...localMoments];
             
             // Sort by date descending
             allMoments.sort((a, b) => safeDate(b.date) - safeDate(a.date));

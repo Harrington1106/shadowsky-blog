@@ -519,8 +519,8 @@ async function __initBookmarks() {
   }
 
   // Execute loads in parallel and cleanup incrementally to improve perceived speed
-  // const localLoad = loadLocalBookmarks().then(() => cleanupUI());
-  const localLoad = Promise.resolve(); // Disable local JSON to enforce GitHub Issues source
+  const localLoad = loadLocalBookmarks().then(() => cleanupUI());
+  // const localLoad = Promise.resolve(); // Disable local JSON to enforce GitHub Issues source
   const issuesLoad = loadIssues().then(() => cleanupUI());
   
   await Promise.all([localLoad, issuesLoad]);
