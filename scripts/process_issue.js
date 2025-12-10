@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const https = require('https');
 
 // Helper to parse Issue Form Body
 function parseIssueBody(body) {
@@ -28,6 +29,64 @@ function parseIssueBody(body) {
         data[currentKey] = currentValue.join('\n').trim();
     }
     return data;
+}
+
+// Helper to fetch GitHub Repo Metadata
+function fetchGitHubMetadata(url) {
+    return new Promise((resolve) => {
+        // 1. Check if it is a GitHub URL
+        // Match: github.com/owner/repo (ignoring sub-paths like /issues)
+        const match = url.match(/^https?:\/\/github\.com\/([^\/]+)\/([^\/]+)/);
+        if (!match) {
+            return resolve({});
+        }
+
+        const owner = match[1];
+        const repo = match[2].replace(/\.git$/, ''); // Remove .git if present
+        const apiUrl = `https://api.github.com/repos/${owner}/${repo}`;
+
+        const options = {
+            headers: {
+                'User-Agent': 'ShadowSky-Bookmark-Bot', // Custom UA
+                'Accept': 'application/vnd.github.v3+json'
+            }
+        };
+        
+        // Use token if available to avoid rate limits
+        if (process.env.GITHUB_TOKEN) {
+            options.headers['Authorization'] = `token ${process.env.GITHUB_TOKEN}`;
+        }
+
+        console.log(`Fetching GitHub metadata for ${owner}/${repo}...`);
+
+        https.get(apiUrl, options, (res) => {
+            if (res.statusCode !== 200) {
+                console.warn(`GitHub API returned ${res.statusCode} for ${url}`);
+                res.resume();
+                return resolve({});
+            }
+
+            let data = '';
+            res.on('data', (chunk) => data += chunk);
+            res.on('end', () => {
+                try {
+                    const json = JSON.parse(data);
+                    resolve({
+                        stars: json.stargazers_count,
+                        language: json.language,
+                        forks: json.forks_count,
+                        repoDesc: json.description
+                    });
+                } catch (e) {
+                    console.error('Failed to parse GitHub API response', e);
+                    resolve({});
+                }
+            });
+        }).on('error', (e) => {
+            console.error('GitHub API request failed', e);
+            resolve({});
+        });
+    });
 }
 
 async function main() {
@@ -76,13 +135,13 @@ async function handleCategory(data) {
     }
 
     if (categories[id]) {
-        console.log(`Category ${id} already exists, updating...`);
+        console。log(`Category ${id} already exists, updating...`);
     }
 
     categories[id] = { name, group };
 
-    fs.writeFileSync(filePath, JSON.stringify(categories, null, 2));
-    console.log('Categories updated');
+    fs。writeFileSync(filePath， JSON.stringify(categories， null， 2));
+    console。log('Categories updated');
 }
 
 async function handleBookmark(data) {
@@ -92,32 +151,43 @@ async function handleBookmark(data) {
     const category = data['Category ID'];
 
     if (!title || !url || !category) {
-        console.error('Missing required bookmark fields');
-        process.exit(1);
+        console。error('Missing required bookmark fields');
+        process。exit(1);
     }
 
-    const filePath = path.join(__dirname, '../public/data/bookmarks.json');
+    const filePath = path.join(__dirname， '../public/data/bookmarks.json');
     let bookmarks = [];
     if (fs.existsSync(filePath)) {
         try {
             bookmarks = JSON.parse(fs.readFileSync(filePath, 'utf8'));
         } catch (e) {
-            console.error('Error reading bookmarks.json', e);
+            console.error('Error reading bookmarks.json'， e);
         }
     }
+
+    // Fetch Metadata
+    const meta = await fetchGitHubMetadata(url);
 
     const newBookmark = {
         title,
         url,
-        desc,
+        // Use user-provided desc, fallback to GitHub repo desc, fallback to empty
+        desc: desc || meta.repoDesc || '', 
         category,
+        stars: meta.stars,       // undefined if not GH repo
+        language: meta.language, // undefined if not GH repo
+        forks: meta.forks,       // undefined if not GH repo
         addedAt: new Date().toISOString()
     };
 
     bookmarks.unshift(newBookmark);
 
     fs.writeFileSync(filePath, JSON.stringify(bookmarks, null, 2));
-    console.log('Bookmarks updated');
+    console.log('Bookmarks updated with metadata:', {
+        title,
+        stars: meta.stars,
+        lang: meta.language
+    });
 }
 
 main().catch(err => {
