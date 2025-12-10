@@ -1,0 +1,259 @@
+[
+  {
+    "title": "Rime (小狼毫) 输入法全平台（PC & Android）配置保姆级教程",
+    "date": "2025-12-10",
+    "category": "软件推荐",
+    "group": "效率工具",
+    "author": "Thoi",
+    "tags": [
+      "rime",
+      "input-method",
+      "windows",
+      "android",
+      "tutorial"
+    ],
+    "excerpt": "受够了流氓输入法的广告和隐私窥探？来试试 Rime（小狼毫/同文），一款开源、极度可定制、且完全属于你自己的输入法。本文将手把手教你如何在 PC 和 Android 上配置 Rime。",
+    "readTime": 15,
+    "coverImage": "https://images.unsplash.com/photo-1555421689-d68471e189f2?auto=format&fit=crop&q=80&w=1000",
+    "file": "2025-12-10-rime-input-guide.md"
+  },
+  {
+    "title": "踩坑记录：如何在个人网站优雅地嵌入 B 站视频（Bilibili Iframe）",
+    "date": "2025-12-09",
+    "category": "博客运维",
+    "group": "技术开发",
+    "author": "Thoi",
+    "tags": [
+      "bilibili",
+      "iframe",
+      "frontend",
+      "troubleshooting"
+    ],
+    "excerpt": "在为个人网站添加视频作品集功能时，我希望能直接嵌入 B 站（Bilibili）的视频。原本以为只是复制粘贴一段 <iframe 代码的简单任务，结果却是一场与 CORS、412 Precondition Failed、403 Forbidd...",
+    "readTime": 6,
+    "coverImage": "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&q=80&w=1000",
+    "file": "2025-12-09-bilibili-embedding-guide.md"
+  },
+  {
+    "title": "博客配图指南：从找图神器到 PicGo 一键上传",
+    "date": "2025-12-09",
+    "category": "博客运维",
+    "group": "技术开发",
+    "author": "Thoi",
+    "tags": [
+      "picgo",
+      "images",
+      "resources",
+      "blogging"
+    ],
+    "excerpt": "写博客，文字是骨架，图片是灵魂。很多朋友问我：你的文章配图都很好看，去哪里找的？找到图后怎么快速放到博客里？今天这篇文就来解决这两个痛点：找图源 + 图床工具 PicGo 的完美配合。",
+    "readTime": 3,
+    "coverImage": "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&q=80&w=1000",
+    "file": "2025-12-09-blog-images-and-picgo.md"
+  },
+  {
+    "title": "Obsidian 从入门到入土：打造你的第二大脑终极指南",
+    "date": "2025-12-09",
+    "category": "软件推荐",
+    "group": "效率工具",
+    "author": "Thoi",
+    "tags": [
+      "obsidian",
+      "pkm",
+      "productivity",
+      "knowledge-management"
+    ],
+    "excerpt": "Obsidian 不仅仅是一个笔记软件，它是一个可以伴随你一生的知识库。本文将带你从最基础的 Markdown 语法开始，一路探索双向链接、图谱、插件生态，直到构建自动化工作流，彻底掌握这个“第二大脑”神器。",
+    "readTime": 5,
+    "coverImage": "https://images.unsplash.com/photo-1544396821-4dd40b938ad3?auto=format&fit=crop&q=80&w=1000",
+    "file": "2025-12-09-obsidian-guide.md"
+  },
+  {
+    "title": "GitHub Trending 每日精选 (长期更新)",
+    "date": "2025-12-09",
+    "category": "开源生态",
+    "group": "技术开发",
+    "author": "Auto-Bot",
+    "tags": [
+      "github",
+      "trending",
+      "open-source"
+    ],
+    "excerpt": "每日自动更新 GitHub Trending 榜单，发现最酷的开源项目。去重收录，常看常新。",
+    "readTime": 5,
+    "coverImage": "https://images.unsplash.com/photo-1618401471353-b98afee0b2eb?auto=format&fit=crop&q=80&w=1000",
+    "file": "github-trending.md"
+  },
+  {
+    "title": "阿里云服务器搭建美国住宅IP保姆级教程",
+    "date": "2025-12-08",
+    "category": "服务器与运维",
+    "group": "技术开发",
+    "author": "Thoi",
+    "tags": [
+      "aliyun",
+      "server",
+      "ip",
+      "tutorial"
+    ],
+    "excerpt": "免责声明：本文仅供技术交流与学习使用，请勿用于非法用途。请遵守当地法律法规。 想要拥有一个专属的美国 IP 地址？无论是为了通过 IP 限制的服务，还是为了更流畅的海外访问体验，拥有一台位于美国的云服务器都是一个极佳的解决方案。 很多人听到...",
+    "readTime": 6,
+    "coverImage": "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=1000",
+    "file": "2025-12-08-alibaba-cloud-us-ip.md"
+  },
+  {
+    "title": "宝塔面板能干什么？服务器新手的“图形化”救星",
+    "date": "2025-12-08",
+    "category": "服务器与运维",
+    "group": "技术开发",
+    "author": "Thoi",
+    "tags": [
+      "bt-panel",
+      "linux",
+      "server",
+      "tutorial"
+    ],
+    "excerpt": "如果你是一个对 Linux 命令行感到头疼的小白，那么“宝塔面板 BT Panel”绝对是你管理服务器的神器。 简单来说，它把复杂的黑底白字命令行，变成了像 Windows 控制面板一样简单易用的网页界面。 那么，装了宝塔面板到底能干什么呢...",
+    "readTime": 2,
+    "coverImage": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=1000",
+    "file": "2025-12-08-bt-panel-guide.md"
+  },
+  {
+    "title": "Docker 能干什么？服务器软件安装的终极革命",
+    "date": "2025-12-08",
+    "category": "服务器与运维",
+    "group": "技术开发",
+    "author": "Thoi",
+    "tags": [
+      "docker",
+      "container",
+      "devops",
+      "tutorial"
+    ],
+    "excerpt": "如果你问现在的运维或开发者：“服务器上最伟大的发明是什么？” 很多人会毫不犹豫地回答：Docker。 对于普通用户来说，Docker 就是服务器上的“应用商店”和“沙盒”。 1. 软件安装：从“痛苦”到“秒装” 在没有 Docker 的时代...",
+    "readTime": 2,
+    "coverImage": "https://images.unsplash.com/photo-1605745341112-85968b19335b?auto=format&fit=crop&q=80&w=1000",
+    "file": "2025-12-08-docker-guide.md"
+  },
+  {
+    "title": "从域名到“备案”：构建个人网站的完整认知指南",
+    "date": "2025-12-08",
+    "category": "博客运维",
+    "group": "技术开发",
+    "author": "Thoi",
+    "tags": [
+      "tutorial",
+      "domain",
+      "hosting",
+      "icp",
+      "moe-icp"
+    ],
+    "excerpt": "想拥有一个属于自己的网站？本文从域名购买、服务器托管、技术栈选择到身份认证（备案），为你梳理构建个人网站所需的完整知识图谱。",
+    "readTime": 9,
+    "coverImage": "https://images.unsplash.com/photo-1467232004584-a241de8bcf5d?auto=format&fit=crop&q=80&w=1000",
+    "file": "2025-12-08-personal-homepage-guide.md"
+  },
+  {
+    "title": "图床神器 PicGo 保姆级教程：从安装到进阶插件玩法",
+    "date": "2025-12-08",
+    "category": "软件推荐",
+    "group": "效率工具",
+    "author": "Thoi",
+    "tags": [
+      "picgo",
+      "tutorial",
+      "markdown",
+      "productivity",
+      "tools"
+    ],
+    "excerpt": "写 Markdown 最头疼的就是图片去哪了？本文手把手教你配置 PicGo + Typora/Obsidian 工作流，更有水印、压缩、重命名等进阶插件玩法。",
+    "readTime": 9,
+    "coverImage": "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&q=80&w=1000",
+    "file": "2025-12-08-picgo-guide.md"
+  },
+  {
+    "title": "青龙面板能干什么？薅羊毛与自动化脚本的神器",
+    "date": "2025-12-08",
+    "category": "服务器与运维",
+    "group": "技术开发",
+    "author": "Thoi",
+    "tags": [
+      "qinglong",
+      "automation",
+      "script",
+      "python"
+    ],
+    "excerpt": "在服务器玩家的圈子里，“青龙面板”的大名可谓如雷贯耳。 它原本是一个支持 Python3、JavaScript、Shell、Typescript 的定时任务管理平台，但因为其强大的脚本兼容性，被广大网友开发成了“薅羊毛”神器。 1. 自动“...",
+    "readTime": 2,
+    "coverImage": "https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?auto=format&fit=crop&q=80&w=1000",
+    "file": "2025-12-08-qinglong-panel-guide.md"
+  },
+  {
+    "title": "打造最强私人追番中心：AutoBangumi + Jellyfin 全自动追番教程",
+    "date": "2025-12-08",
+    "category": "自托管服务",
+    "group": "技术开发",
+    "author": "Thoi",
+    "tags": [
+      "self-hosted",
+      "jellyfin",
+      "autobangumi",
+      "anime"
+    ],
+    "excerpt": "还在忍受视频网站的“圣光”、“暗牧”和超长广告？还在因为番剧版权分散在不同平台而烦恼？ 是时候利用你的服务器，搭建一套属于自己的全自动追番系统了！ 只需配置一次，系统就会自动订阅、下载、整理、刮削海报，你只需要躺在沙发上打开电视/手机，直接...",
+    "readTime": 7,
+    "coverImage": "https://images.unsplash.com/photo-1578632767115-351597cf2477?auto=format&fit=crop&q=80&w=1000",
+    "file": "2025-12-08-self-hosted-bangumi.md"
+  },
+  {
+    "title": "宝塔/青龙面板打不开？手把手教你服务器放行端口（防火墙设置）",
+    "date": "2025-12-08",
+    "category": "服务器与运维",
+    "group": "技术开发",
+    "author": "Thoi",
+    "tags": [
+      "server",
+      "firewall",
+      "port",
+      "troubleshooting"
+    ],
+    "excerpt": "很多新手在服务器上安装完宝塔面板、青龙面板或者 Docker 容器后，明明显示“安装成功”，但用浏览器访问 http://IP:8888 却怎么也打不开。 这通常不是你没装好，而是被服务器的 “防火墙” 安全组 给挡住了。 云服务器为了安全...",
+    "readTime": 3,
+    "coverImage": "https://images.unsplash.com/photo-1562813733-b31f71025d54?auto=format&fit=crop&q=80&w=1000",
+    "file": "2025-12-08-server-port-guide.md"
+  },
+  {
+    "title": "买了服务器能干什么？从入门到精通的服务器玩法大全",
+    "date": "2025-12-08",
+    "category": "服务器与运维",
+    "group": "技术开发",
+    "author": "Thoi",
+    "tags": [
+      "server",
+      "guide",
+      "self-hosted",
+      "beginner"
+    ],
+    "excerpt": "很多人在“双十一”或促销季冲动消费买了一台云服务器，结果吃灰一年最后过期。 其实，云服务器就是一台 24 小时不断电、连接高速网络的“超级电脑”。无论你买的是国内还是国外的服务器，都有无数种玩法等着你去探索。 本文将为你盘点那些实用、有趣甚...",
+    "readTime": 4,
+    "coverImage": "https://images.unsplash.com/photo-1558494949-ef2a0de422d0?auto=format&fit=crop&q=80&w=1000",
+    "file": "2025-12-08-server-usage-guide.md"
+  },
+  {
+    "title": "揭秘我的博客自动化工作流：从 Obsidian 到一键发布的“魔法”",
+    "date": "2025-12-07",
+    "category": "博客运维",
+    "group": "技术开发",
+    "author": "Thoi",
+    "tags": [
+      "workflow",
+      "obsidian",
+      "automation",
+      "nodejs"
+    ],
+    "excerpt": "写博客最痛苦的不是写文章，而是繁琐的发布流程。今天我把这套基于 Obsidian + Templater + Node.js 的自动化工作流源代码完全开源，送给每一位热爱写作的朋友。",
+    "readTime": 7,
+    "coverImage": "https://images.unsplash.com/photo-1499750310159-529800cf2c5a?auto=format&fit=crop&q=80&w=1000",
+    "file": "2025-12-07-blog-workflow.md"
+  }
+]

@@ -1,5 +1,28 @@
 {
+  "name": "shadowsky-blog",
+  "version": "1.0.0",
+  "description": "Personal blog built with HTML, CSS (Tailwind), and JS",
   "scripts": {
-  "deploy": "powershell -c \"$env:HTTP_PROXY='http://127.0.0.1:7890'; $env:HTTPS_PROXY='http://127.0.0.1:7890'; $env:NODE_TLS_REJECT_UNAUTHORIZED='0'; node deploy-tool.js --site shadowsky --outdir .\""
+    "update-posts": "node scripts/update_github_trending.js && node scripts/standardize_posts.js",
+    "admin": "node admin/server.js",
+    "css:build": "tailwindcss -i ./src/input.css -o ./css/style.css",
+    "deploy": "powershell -c \"$f=New-TemporaryFile; iwr https://host.retiehe.com/cli -OutFile $f; node $f --site shadowquake.top --outdir .; rm $f -Force\""
+  },
+  "devDependencies": {
+    "@tailwindcss/typography": "^0.5.19",
+    "@types/node": "^24.10.1",
+    "autoprefixer": "^10.4.22",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^3.4.1",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "axios": "^1.13.2",
+    "cheerio": "^1.1.2",
+    "clsx": "^2.1.1",
+    "date-fns": "^4.1.0",
+    "express": "^5.2.1",
+    "marked": "^17.0.1",
+    "tailwind-merge": "^3.4.0"
   }
 }

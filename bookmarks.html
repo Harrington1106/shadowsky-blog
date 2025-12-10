@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>网页收藏 - 夏日科技探索</title>
+    <link rel="icon" type="image/png" href="public/img/favicon256.png">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.loli.net">
+    <link rel="preconnect" href="https://gstatic.loli.net" crossorigin>
+    <link href="https://fonts.loli.net/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <link href="css/style.css" rel="stylesheet">
+    
+    <!-- Lucide Icons -->
+    <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
+    
+    <style>
+        body {
+            font-family: 'Inter', 'Noto Sans SC', sans-serif;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+        }
+        .dark .glass-card {
+            background: rgba(15, 23, 42, 0.6);
+        }
+        html.lenis, html.lenis body {
+            height: auto;
+        }
+        .lenis.lenis-smooth {
+            scroll-behavior: auto !important;
+        }
+        .lenis.lenis-smooth [data-lenis-prevent] {
+            overscroll-behavior: contain;
+        }
+        .lenis.lenis-stopped {
+            overflow: hidden;
+        }
+        .lenis.lenis-scrolling iframe {
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white font-sans transition-colors duration-300">
+
+    <!-- Navbar -->
+    <nav id="navbar" class="fixed w-full z-50 top-0 transition-all duration-300 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <a href="index.html" class="flex items-center group">
+                        <div class="relative">
+                            <div class="absolute -inset-1 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full blur opacity-25 group-hover:opacity-50 transition duration-200"></div>
+                            <img src="public/img/favicon256.png" alt="Logo" class="relative h-8 w-8 mr-2 dark:hidden">
+                            <img src="public/img/black256.png" alt="Logo" class="relative h-8 w-8 mr-2 hidden dark:block">
+                        </div>
+                        <span id="nav-title" class="font-bold text-xl tracking-tight transition-colors duration-300 text-gray-900 dark:text-white">
+                            夏日科技探索
+                        </span>
+                    </a>
+                </div>
+                
+                <div class="hidden lg:flex items-center space-x-1">
+                    <a href="index.html" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-600 hover:text-blue-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-white dark:hover:bg-white/10" title="首页">
+                        <i data-lucide="home" class="w-5 h-5"></i>
+                    </a>
+                    <a href="blog.html" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-600 hover:text-blue-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-white dark:hover:bg-white/10" title="星空笔记">
+                        <i data-lucide="sparkles" class="w-5 h-5"></i>
+                    </a>
+                    <a href="moments.html" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-600 hover:text-blue-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-white dark:hover:bg-white/10" title="随手拍">
+                        <i data-lucide="camera" class="w-5 h-5"></i>
+                    </a>
+                    <a href="bookmarks.html" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-blue-600 bg-blue-50/80 dark:bg-blue-900/30 dark:text-blue-400" title="收藏">
+                        <i data-lucide="heart" class="w-5 h-5"></i>
+                    </a>
+                    <a href="rss.html" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-600 hover:text-blue-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-white dark:hover:bg-white/10" title="订阅">
+                        <i data-lucide="radio" class="w-5 h-5"></i>
+                    </a>
+                    <a href="video.html" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-600 hover:text-blue-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-white dark:hover:bg-white/10" title="视频">
+                        <i data-lucide="clapperboard" class="w-5 h-5"></i>
+                    </a>
+                    <a href="about.html" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-600 hover:text-blue-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-white dark:hover:bg-white/10" title="关于">
+                        <i data-lucide="cat" class="w-5 h-5"></i>
+                    </a>
+                    
+                    <!-- Theme Toggle -->
+                    <button id="theme-toggle" aria-label="Toggle Theme" class="ml-4 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors focus:outline-none ring-2 ring-transparent focus:ring-blue-500">
+                        <i id="theme-toggle-icon" data-lucide="moon" class="w-5 h-5 text-gray-600 dark:text-gray-300"></i>
+                    </button>
+                </div>
+
+                <div class="lg:hidden flex items-center">
+                    <!-- Theme Toggle Mobile -->
+                    <button onclick="toggleTheme()" aria-label="Toggle Theme" class="mr-4 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                        <i data-lucide="moon" class="w-5 h-5 text-blue-600 dark:hidden"></i>
+                        <i data-lucide="sun" class="w-5 h-5 text-yellow-400 hidden dark:block"></i>
+                    </button>
+                    
+                    <button id="mobile-menu-btn" aria-label="Toggle Menu" class="p-2 rounded-md transition-colors text-slate-600 hover:bg-slate-100 dark:text-white dark:hover:bg-white/10">
+                        <i data-lucide="menu" class="w-6 h-6"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile menu -->
+        <div id="mobile-menu" class="lg:hidden absolute top-full left-0 w-full bg-white/95 dark:bg-black/95 backdrop-blur-xl border-t border-gray-100 dark:border-gray-800 shadow-2xl transition-all duration-300 ease-in-out transform opacity-0 -translate-y-4 pointer-events-none">
+            <div class="px-4 pt-4 pb-6 space-y-2">
+                <a href="index.html" class="flex items-center px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 text-gray-600 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-white/10 hover:shadow-sm hover:translate-x-1">
+                    <i data-lucide="home" class="w-5 h-5 mr-3"></i>
+                    首页
+                </a>
+                <a href="blog.html" class="flex items-center px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 text-gray-600 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-white/10 hover:shadow-sm hover:translate-x-1">
+                    <i data-lucide="sparkles" class="w-5 h-5 mr-3"></i>
+                    星空笔记
+                </a>
+                <a href="moments.html" class="flex items-center px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 text-gray-600 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-white/10 hover:shadow-sm hover:translate-x-1">
+                    <i data-lucide="camera" class="w-5 h-5 mr-3"></i>
+                    随手拍
+                </a>
+                <a href="bookmarks.html" class="flex items-center px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 text-blue-600 bg-blue-50 dark:bg-blue-900/20 dark:text-blue-400 shadow-sm">
+                    <i data-lucide="heart" class="w-5 h-5 mr-3"></i>
+                    收藏
+                </a>
+                <a href="rss.html" class="flex items-center px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 text-gray-600 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-white/10 hover:shadow-sm hover:translate-x-1">
+                    <i data-lucide="radio" class="w-5 h-5 mr-3"></i>
+                    订阅
+                </a>
+                <a href="video.html" class="flex items-center px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 text-gray-600 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-white/10 hover:shadow-sm hover:translate-x-1">
+                    <i data-lucide="clapperboard" class="w-5 h-5 mr-3"></i>
+                    视频
+                </a>
+                <a href="about.html" class="flex items-center px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 text-gray-600 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-white/10 hover:shadow-sm hover:translate-x-1">
+                    <i data-lucide="cat" class="w-5 h-5 mr-3"></i>
+                    关于
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="min-h-screen pt-24 pb-12 px-4 sm:px-6 lg:px-8">
+        <div id="bookmarks-container" class="max-w-7xl mx-auto animate-fade-in-up">
+            
+            <div class="text-center mb-12 sm:mb-16">
+                <h1 class="text-3xl font-black tracking-tight sm:text-5xl mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400">
+                    网页收藏
+                </h1>
+                <p class="text-base sm:text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
+                    精心挑选的各领域优质资源，连接广阔宇宙与数字世界的传送门。
+                </p>
+            </div>
+
+            <!-- Search Section -->
+            <div class="max-w-2xl mx-auto mb-12 relative group z-30">
+                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <i data-lucide="search" class="w-5 h-5 text-slate-400 group-focus-within:text-blue-500 transition-colors"></i>
+                </div>
+                <input type="text" id="bookmark-search" 
+                    class="block w-full pl-12 pr-4 py-4 border border-slate-200 dark:border-slate-800 rounded-2xl leading-5 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 sm:text-base transition-all shadow-sm hover:shadow-md hover:border-blue-300 dark:hover:border-blue-700" 
+                    placeholder="搜索收藏的网站、工具或资源..."
+                >
+                <div class="absolute inset-y-0 right-0 pr-4 flex items-center">
+                    <kbd class="hidden sm:inline-block px-2 py-0.5 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-medium text-slate-400 dark:text-slate-500 bg-slate-50 dark:bg-slate-800">
+                        /
+                    </kbd>
+                </div>
+            </div>
+
+            <div id="gh-bookmarks-config" data-owner="Harrington1106" data-repo="blog-bookmark" class="hidden"></div>
+
+            <!-- Category Navigation -->
+            <div class="sticky top-16 z-40 mb-12 py-3 bg-slate-50/95 dark:bg-slate-950/95 backdrop-blur-md border-b sm:border border-slate-200 dark:border-slate-800 -mx-4 px-4 sm:mx-0 sm:rounded-2xl transition-all duration-300 shadow-sm">
+                <div class="flex overflow-x-auto pb-2 sm:pb-0 gap-2 sm:flex-wrap sm:justify-center no-scrollbar">
+                    <!-- Dynamic categories injected by js/bookmarks.js -->
+                </div>
+            </div>
+
+            <!-- Container for Dynamic Category Sections -->
+            <div id="category-list" class="space-y-24"></div>
+
+            <!-- Sections will be injected dynamically by js/bookmarks.js -->
+
+
+<div id="no-results" class="hidden text-center py-20">
+                <div class="inline-flex p-4 rounded-full bg-slate-100 dark:bg-slate-800 mb-4">
+                    <i data-lucide="search-x" class="w-8 h-8 text-slate-400"></i>
+                </div>
+                <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2">未找到相关结果</h3>
+                <p class="text-slate-500 dark:text-slate-400">
+                    尝试更换关键词，或者浏览分类寻找灵感。
+                </p>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Back to Top Button -->
+    <button id="back-to-top" class="fixed bottom-8 right-8 p-3 rounded-full bg-blue-600 text-white shadow-lg transition-all duration-300 opacity-0 translate-y-10 hover:bg-blue-700 hover:scale-110 z-50 focus:outline-none ring-2 ring-blue-500 ring-offset-2 dark:ring-offset-slate-950" aria-label="Back to top">
+        <i data-lucide="arrow-up" class="w-6 h-6"></i>
+    </button>
+
+    <!-- Footer -->
+    <footer class="bg-white dark:bg-slate-950 text-slate-400 border-t border-slate-200 dark:border-slate-900 py-8 relative z-10">
+        <div class="max-w-7xl mx-auto px-4 flex justify-center items-center">
+            <p class="text-xs tracking-widest uppercase opacity-50 hover:opacity-100 transition-opacity cursor-default">
+                &copy; 2025 Thoi <span class="mx-2 text-blue-500">|</span> Designed with <span class="text-red-500 animate-pulse">❤️</span>
+            </p>
+        </div>
+    </footer>
+
+    <!-- Custom Context Menu -->
+    <div id="context-menu" class="fixed z-50 hidden min-w-[180px] bg-white/90 dark:bg-slate-900/90 backdrop-blur-lg rounded-xl shadow-2xl border border-slate-200 dark:border-slate-800 py-1.5 transform scale-95 opacity-0 transition-all duration-200 origin-top-left ring-1 ring-black/5">
+        <button onclick="window.location.reload()" class="w-full text-left px-4 py-2.5 text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:text-blue-600 dark:hover:text-blue-400 flex items-center gap-3 transition-colors">
+            <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+            刷新页面
+        </button>
+        <button id="ctx-back-to-top" class="w-full text-left px-4 py-2.5 text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:text-blue-600 dark:hover:text-blue-400 flex items-center gap-3 transition-colors">
+            <i data-lucide="arrow-up" class="w-4 h-4"></i>
+            回到顶部
+        </button>
+        <div class="h-px bg-slate-200 dark:bg-slate-800 my-1 mx-2"></div>
+        <button onclick="document.getElementById('bookmark-search').focus()" class="w-full text-left px-4 py-2.5 text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:text-blue-600 dark:hover:text-blue-400 flex items-center gap-3 transition-colors">
+            <i data-lucide="search" class="w-4 h-4"></i>
+            快速搜索
+        </button>
+        <div class="h-px bg-slate-200 dark:bg-slate-800 my-1 mx-2"></div>
+        <button onclick="window.location.href='index.html'" class="w-full text-left px-4 py-2.5 text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:text-blue-600 dark:hover:text-blue-400 flex items-center gap-3 transition-colors">
+            <i data-lucide="home" class="w-4 h-4"></i>
+            返回首页
+        </button>
+    </div>
+
+    <script src="js/main.js"></script>
+    <script src="js/click-effect.js"></script>
+    <script src="https://unpkg.com/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
+    <script>
+        lucide.createIcons();
+
+        // Smooth Scroll (Lenis)
+        const lenis = new Lenis({
+            duration: 1.2,
+            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+            direction: 'vertical',
+            gestureDirection: 'vertical',
+            smooth: true,
+            mouseMultiplier: 1,
+            smoothTouch: false,
+            touchMultiplier: 2,
+        });
+
+        let rafId;
+        function raf(time) {
+            lenis.raf(time);
+            rafId = requestAnimationFrame(raf);
+        }
+
+        rafId = requestAnimationFrame(raf);
+
+        // Handle bfcache
+        window.addEventListener('pageshow', (event) => {
+            if (event.persisted) {
+                lenis.start();
+                cancelAnimationFrame(rafId);
+                rafId = requestAnimationFrame(raf);
+            }
+        });
+
+    </script>
+    <script src="js/back-to-top.js"></script>
+    <script src="js/bookmarks.js"></script>
+    <script>
+
+        // Custom Context Menu Logic
+        const contextMenu = document.getElementById('context-menu');
+        
+        document.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+            
+            const { clientX: mouseX, clientY: mouseY } = e;
+            const menuWidth = contextMenu.offsetWidth || 180;
+            const menuHeight = contextMenu.offsetHeight || 200;
+            const winWidth = window.innerWidth;
+            const winHeight = window.innerHeight;
+            
+            // Adjust position to keep menu within viewport
+            let posX = mouseX;
+            let posY = mouseY;
+            
+            if (posX + menuWidth > winWidth) posX = winWidth - menuWidth - 10;
+            if (posY + menuHeight > winHeight) posY = winHeight - menuHeight - 10;
+            
+            contextMenu.style.left = `${posX}px`;
+            contextMenu.style.top = `${posY}px`;
+            
+            // Show menu
+            contextMenu.classList.remove('hidden');
+            // Small delay to allow display:block to apply before opacity transition
+            requestAnimationFrame(() => {
+                contextMenu.classList.remove('opacity-0', 'scale-95');
+                contextMenu.classList.add('opacity-100', 'scale-100');
+            });
+        });
+
+        // Close menu on click anywhere
+        document.addEventListener('click', (e) => {
+            if (!contextMenu.contains(e.target)) {
+                hideContextMenu();
+            }
+        });
+        
+        // Close menu on scroll
+        lenis.on('scroll', hideContextMenu);
+        
+        function hideContextMenu() {
+            if (contextMenu.classList.contains('hidden')) return;
+            
+            contextMenu.classList.remove('opacity-100', 'scale-100');
+            contextMenu.classList.add('opacity-0', 'scale-95');
+            
+            setTimeout(() => {
+                contextMenu.classList.add('hidden');
+            }, 200);
+        }
+    </script>
+</body>
+</html>

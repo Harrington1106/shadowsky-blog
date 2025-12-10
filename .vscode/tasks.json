@@ -1,0 +1,28 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Update Blog Posts Index",
+            "type": "shell",
+            "command": "node scripts/standardize_posts.js",
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "reveal": "silent"
+            },
+            "detail": "Scans public/posts/*.md and updates public/posts/posts.json"
+        },
+        {
+            "label": "Create New Post",
+            "type": "shell",
+            "command": "node scripts/create_post.js",
+            "problemMatcher": [],
+            "presentation": {
+                "focus": true
+            }
+        }
+    ]
+}

@@ -1,110 +1,666 @@
 <!DOCTYPE html>
-<html lang="zh-CN" class="page blog-page">
-
+<html lang="zh-CN">
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>星空笔记 | 夏日科技探索</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+    <title>文章详情 - 夏日科技探索</title>
+    <link rel="icon" type="image/png" href="public/img/favicon256.png">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.loli.net">
+    <link rel="preconnect" href="https://gstatic.loli.net" crossorigin>
+    <link href="https://fonts.loli.net/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&family=ZCOOL+KuaiLe&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS & Plugins -->
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'Noto Sans SC', 'sans-serif', '"ZCOOL KuaiLe"', 'cursive'],
+                        cute: ['"ZCOOL KuaiLe"', 'cursive'],
+                    },
+                    typography: (theme) => ({
+                        DEFAULT: {
+                            css: {
+                                maxWidth: 'none',
+                                color: theme('colors.gray.800'),
+                                fontFamily: theme('fontFamily.sans'),
+                                fontSize: '1rem', 
+                                '@screen sm': {
+                                    fontSize: '1.125rem',
+                                },
+                                lineHeight: '1.75',
+                                letterSpacing: '0.025em',
+                                p: {
+                                    marginTop: '1.25em',
+                                    marginBottom: '1.25em',
+                                    textAlign: 'justify',
+                                },
+                                'h1, h2, h3, h4': {
+                                    fontFamily: theme('fontFamily.sans'),
+                                    fontWeight: '700',
+                                    letterSpacing: '0.025em',
+                                    marginTop: '2em',
+                                    marginBottom: '1em',
+                                    lineHeight: '1.3',
+                                },
+                                h1: { 
+                                    fontSize: '1.875rem',
+                                    '@screen sm': { fontSize: '2.5rem' }
+                                },
+                                h2: { 
+                                    fontSize: '1.5rem',
+                                    '@screen sm': { fontSize: '2rem' }
+                                },
+                                h3: { 
+                                    fontSize: '1.25rem',
+                                    '@screen sm': { fontSize: '1.75rem' }
+                                },
+                                a: {
+                                    color: theme('colors.blue.600'),
+                                    textDecoration: 'none',
+                                    transition: 'color 0.2s',
+                                    '&:hover': {
+                                        color: theme('colors.blue.800'),
+                                        textDecoration: 'underline',
+                                    },
+                                },
+                                code: {
+                                    color: theme('colors.pink.600'),
+                                    backgroundColor: theme('colors.gray.100'),
+                                    padding: '0.25rem 0.4rem',
+                                    borderRadius: '0.25rem',
+                                    fontWeight: '600',
+                                    fontFamily: 'Consolas, Monaco, "Andale Mono", "Ubuntu Mono", monospace',
+                                },
+                                'code::before': { content: '""' },
+                                'code::after': { content: '""' },
+                                blockquote: {
+                                    fontStyle: 'normal',
+                                    borderLeftColor: theme('colors.blue.500'),
+                                    backgroundColor: theme('colors.blue.50'),
+                                    color: theme('colors.gray.700'),
+                                    padding: '1rem',
+                                    borderRadius: '0.5rem',
+                                },
+                            },
+                        },
+                        invert: {
+                            css: {
+                                color: theme('colors.gray.200'), // Softer white
+                                a: {
+                                    color: theme('colors.blue.400'),
+                                    '&:hover': {
+                                        color: theme('colors.blue.300'),
+                                    },
+                                },
+                                h1: { color: theme('colors.gray.100') },
+                                h2: { color: theme('colors.gray.100') },
+                                h3: { color: theme('colors.gray.100') },
+                                h4: { color: theme('colors.gray.100') },
+                                strong: { color: theme('colors.white') },
+                                code: { 
+                                    color: theme('colors.pink.400'),
+                                    backgroundColor: theme('colors.gray.800'),
+                                },
+                                blockquote: { 
+                                    color: theme('colors.gray.300'),
+                                    backgroundColor: 'rgba(30, 41, 59, 0.5)', // Slate-800 with opacity
+                                    borderLeftColor: theme('colors.blue.400'),
+                                },
+                            },
+                        },
+                    }),
+                }
+            }
+        }
+    </script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
 
-	<!-- 全局样式 -->
-	<link rel="stylesheet" href="main.css">
+    <!-- Markdown & Highlighting -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <link id="hljs-theme" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    
+    <!-- KaTeX -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
 
-	<!-- 页面样式 -->
-	<link rel="stylesheet" href="css/blog.css">
-	<link rel="stylesheet" href="css/post.css">
+    <style>
+        body {
+            font-family: 'Inter', 'Noto Sans SC', sans-serif;
+        }
+        /* Fallback background if JS fails */
+        html.dark body {
+            background-color: #000000;
+            color: #f3f4f6;
+        }
+        /* Markdown Content Styles */
+        .prose pre {
+            padding: 0;
+            border-radius: 0.5rem;
+            margin-top: 1.5em;
+            margin-bottom: 1.5em;
+            /* Default Light Theme Background */
+            background-color: #fafafa;
+            color: #383a42;
+            border: 1px solid #e5e7eb;
+            overflow: hidden; /* Changed from auto to hidden to contain header */
+            position: relative;
+        }
+        
+        /* Dark Mode Override */
+        html.dark .prose pre {
+            /* VS Code Dark Background */
+            background-color: #1e1e1e !important;
+            color: #d4d4d4 !important;
+            border-color: #404040;
+        }
 
-	<!-- 外部库 -->
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-	<link rel="stylesheet"
-		href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+        /* Code Block Header */
+        .code-header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 1rem;
+            background-color: #f3f4f6;
+            border-bottom: 1px solid #e5e7eb;
+            border-radius: 0.5rem 0.5rem 0 0;
+            z-index: 10;
+        }
+        html.dark .code-header {
+            background-color: #2d2d2d;
+            border-bottom-color: #404040;
+        }
+        
+        .window-controls {
+            display: flex;
+            gap: 0.4rem;
+        }
+        .window-dot {
+            width: 0.75rem;
+            height: 0.75rem;
+            border-radius: 50%;
+        }
+        .window-dot.red { background-color: #ff5f56; }
+        .window-dot.yellow { background-color: #ffbd2e; }
+        .window-dot.green { background-color: #27c93f; }
 
-	<!-- KaTeX 样式 -->
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+        .lang-label {
+            font-size: 0.75rem;
+            color: #6b7280;
+            font-family: monospace;
+            text-transform: uppercase;
+        }
+        html.dark .lang-label {
+            color: #9ca3af;
+        }
+
+        /* Force hljs container to be transparent so pre background shows */
+        .hljs {
+            background: transparent !important;
+            padding: 0 !important; /* Let pre handle padding */
+            font-family: 'Consolas', 'Monaco', 'Andale Mono', 'Ubuntu Mono', monospace;
+            font-size: 0.9em;
+            line-height: 1.6;
+            display: block;
+            overflow-x: auto;
+        }
+        
+        /* Override Tailwind Typography defaults for code blocks */
+        .prose pre {
+            /* Fix padding for code blocks */
+            padding: 1rem !important;
+            padding-top: 3.8rem !important; /* Space for window controls + padding */
+        }
+        .prose pre code {
+            background-color: transparent !important;
+            color: inherit !important;
+            padding: 0 !important;
+            font-weight: inherit !important;
+            border-radius: 0 !important;
+            /* Ensure code has breathing room from edges */
+            display: block;
+            padding-left: 0.5rem !important; 
+        }
+        /* Ensure Highlight.js block has padding too if needed, but pre padding usually handles it */
+        .hljs {
+            padding: 0 !important; /* Let pre handle padding */
+        }
+        
+        .hljs::-webkit-scrollbar {
+            height: 6px;
+        }
+        .hljs::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .hljs::-webkit-scrollbar-thumb {
+            background-color: rgba(156, 163, 175, 0.5);
+            border-radius: 3px;
+        }
+        .hljs::-webkit-scrollbar-thumb:hover {
+            background-color: rgba(156, 163, 175, 0.8);
+        }
+        html.dark .hljs::-webkit-scrollbar-thumb {
+            background-color: rgba(75, 85, 99, 0.5);
+        }
+        html.dark .hljs::-webkit-scrollbar-thumb:hover {
+            background-color: rgba(75, 85, 99, 0.8);
+        }
+
+        /* TOC Styles */
+        html {
+            scroll-padding-top: 5rem; /* Prevent fixed navbar from covering anchors */
+        }
+        
+        html.lenis, html.lenis body {
+            height: auto;
+        }
+        .lenis.lenis-smooth {
+            scroll-behavior: auto !important;
+        }
+        .lenis.lenis-smooth [data-lenis-prevent] {
+            overscroll-behavior: contain;
+        }
+        .lenis.lenis-stopped {
+            overflow: hidden;
+        }
+        .lenis.lenis-scrolling iframe {
+            pointer-events: none;
+        }
+
+        .toc-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        /* Sublist transitions */
+        .toc-sublist {
+            list-style: none;
+            margin-left: 0; /* Handled by padding in links or specific level classes */
+            overflow: hidden;
+            transition: all 0.3s ease-in-out;
+        }
+
+        /* TOC Links */
+        .toc-link {
+            display: block;
+            padding: 0.5rem 0.75rem;
+            color: #6b7280; /* Gray-500 */
+            text-decoration: none;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 0.9rem;
+            border-left: 3px solid transparent; /* Thicker border */
+            border-radius: 0 0.5rem 0.5rem 0;
+            margin-bottom: 4px;
+            line-height: 1.5;
+        }
+        html.dark .toc-link {
+            color: #9ca3af; /* Gray-400 */
+        }
+        
+        /* Hover State */
+        .toc-link:hover {
+            background-color: rgba(243, 244, 246, 0.8); /* lighter gray */
+            color: #111827;
+            border-left-color: #d1d5db;
+        }
+        html.dark .toc-link:hover {
+            background-color: rgba(31, 41, 55, 0.6);
+            color: #f3f4f6;
+            border-left-color: #4b5563;
+        }
+
+        /* Active State */
+        .toc-link.active {
+            border-left-color: #2563eb;
+            background-color: #eff6ff;
+            color: #1d4ed8;
+            font-weight: 600;
+            padding-left: 1rem; /* Visual indent */
+            transform: translateX(2px); /* Slight shift */
+        }
+        html.dark .toc-link.active {
+            border-left-color: #60a5fa;
+            background-color: rgba(59, 130, 246, 0.15);
+            color: #60a5fa;
+        }
+
+        /* Header Spacing */
+        #post-header {
+            padding-top: 1rem;
+            padding-bottom: 2rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* TOC Drawer Styling */
+        #toc-drawer {
+            backdrop-filter: blur(12px);
+            background-color: rgba(255, 255, 255, 0.95);
+        }
+        html.dark #toc-drawer {
+            background-color: rgba(23, 23, 23, 0.95);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background-color: rgba(156, 163, 175, 0.5);
+            border-radius: 3px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background-color: rgba(156, 163, 175, 0.8);
+        }
+        html.dark .custom-scrollbar::-webkit-scrollbar-thumb {
+            background-color: rgba(75, 85, 99, 0.5);
+        }
+        html.dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background-color: rgba(75, 85, 99, 0.8);
+        }
+    </style>
+    <script>
+        // Init theme immediately to prevent flash
+        (function() {
+            try {
+                const savedTheme = localStorage.getItem('theme');
+                const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                if (savedTheme === 'dark' || (!savedTheme && systemDark)) {
+                    document.documentElement.classList.add('dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                }
+            } catch(e) {}
+        })();
+    </script>
 </head>
+<body class="bg-gray-50 dark:bg-black text-gray-900 dark:text-gray-100 font-sans pt-16 transition-colors duration-500 overflow-x-hidden" data-force-scrolled-nav>
 
-<body class="page other-page">
+    <!-- Progress Bar -->
+    <div id="progress-container" class="fixed top-0 left-0 h-1 w-full z-[60] bg-transparent pointer-events-none">
+        <div id="progress-bar" class="h-full bg-gradient-to-r from-blue-400 to-indigo-600 w-0 transition-all duration-150 ease-out shadow-[0_0_10px_rgba(59,130,246,0.5)]"></div>
+    </div>
 
-	<!-- 导航栏 -->
-	<nav class="navbar">
+    <!-- Navbar -->
+    <nav id="navbar" class="fixed w-full z-50 top-0 transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <a href="index.html" class="flex items-center group">
+                        <div class="relative">
+                            <div class="absolute -inset-1 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full blur opacity-25 group-hover:opacity-50 transition duration-200"></div>
+                            <img src="public/img/favicon256.png" alt="Logo" class="relative h-8 w-8 mr-2 dark:hidden">
+                            <img src="public/img/black256.png" alt="Logo" class="relative h-8 w-8 mr-2 hidden dark:block">
+                        </div>
+                        <span id="nav-title" class="font-cute text-xl tracking-tight transition-colors duration-300 text-gray-900 dark:text-white">
+                            夏日科技探索
+                        </span>
+                    </a>
+                </div>
+                
+                <div class="hidden lg:flex items-center space-x-1">
+                    <a href="index.html" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-600 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-white/10 dark:hover:text-white" title="首页">
+                        <i data-lucide="home" class="w-5 h-5"></i>
+                    </a>
+                    <a href="blog.html" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 bg-blue-50/80 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400" title="星空笔记">
+                        <i data-lucide="sparkles" class="w-5 h-5"></i>
+                    </a>
+                    <a href="moments.html" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-600 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-white/10 dark:hover:text-white" title="随手拍">
+                        <i data-lucide="camera" class="w-5 h-5"></i>
+                    </a>
+                    <a href="bookmarks.html" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-600 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-white/10 dark:hover:text-white" title="收藏">
+                        <i data-lucide="heart" class="w-5 h-5"></i>
+                    </a>
+                    <a href="rss.html" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-600 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-white/10 dark:hover:text-white" title="订阅">
+                        <i data-lucide="radio" class="w-5 h-5"></i>
+                    </a>
+                    <a href="video.html" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-600 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-white/10 dark:hover:text-white" title="视频">
+                        <i data-lucide="clapperboard" class="w-5 h-5"></i>
+                    </a>
+                    <a href="about.html" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-600 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-white/10 dark:hover:text-white" title="关于">
+                        <i data-lucide="cat" class="w-5 h-5"></i>
+                    </a>
+                    
+                    <!-- Theme Toggle -->
+                    <button id="theme-toggle" class="ml-4 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors focus:outline-none ring-2 ring-transparent focus:ring-blue-500" aria-label="Toggle Theme">
+                        <i id="theme-toggle-icon" data-lucide="moon" class="w-5 h-5 text-gray-600 dark:text-gray-300"></i>
+                    </button>
+                </div>
 
-		<div class="navbar__brand">
-			<img src="img/black64.png" alt="网站logo" class="logo">
-			<span class="navbar__site-name">夏日科技探索</span>
-		</div>
+                <div class="lg:hidden flex items-center">
+                    <button onclick="toggleTheme()" class="mr-4 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors" aria-label="Toggle Theme">
+                        <i data-lucide="moon" class="w-5 h-5 text-blue-600 dark:hidden"></i>
+                        <i data-lucide="sun" class="w-5 h-5 text-yellow-400 hidden dark:block"></i>
+                    </button>
+                    
+                    <button id="mobile-menu-btn" class="p-2 rounded-md transition-colors text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800" aria-label="Toggle Menu">
+                        <i data-lucide="menu" class="w-6 h-6"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
 
-		<ul class="navbar__menu">
-			<li class="navbar__item"><a href="index.html" class="navbar__link">首页</a></li>
-			<li class="navbar__item"><a href="blog.html" class="navbar__link">星空笔记</a></li>
-			<li class="navbar__item"><a href="astronomy.html" class="navbar__link">天文</a></li>
-			<li class="navbar__item"><a href="nature.html" class="navbar__link">自然</a></li>
-			<li class="navbar__item"><a href="st.html" class="navbar__link">科技</a></li>
-			<li class="navbar__item"><a href="video.html" class="navbar__link">视频</a></li>
-			<li class="navbar__item"><a href="contact.html" class="navbar__link">联系</a></li>
-		</ul>
+        <!-- Mobile menu -->
+        <div id="mobile-menu" class="lg:hidden absolute top-full left-0 w-full bg-white/95 dark:bg-black/95 backdrop-blur-xl border-t border-gray-100 dark:border-gray-800 shadow-2xl transition-all duration-300 ease-in-out transform opacity-0 -translate-y-4 pointer-events-none">
+            <div class="px-4 pt-4 pb-6 space-y-2">
+                <a href="index.html" class="flex items-center px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 text-gray-600 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-white/10 hover:shadow-sm hover:translate-x-1">
+                    <i data-lucide="home" class="w-5 h-5 mr-3"></i>
+                    首页
+                </a>
+                <a href="blog.html" class="flex items-center px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 text-blue-600 bg-blue-50 dark:bg-blue-900/20 dark:text-blue-400 shadow-sm">
+                    <i data-lucide="sparkles" class="w-5 h-5 mr-3"></i>
+                    星空笔记
+                </a>
+                <a href="moments.html" class="flex items-center px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 text-gray-600 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-white/10 hover:shadow-sm hover:translate-x-1">
+                    <i data-lucide="camera" class="w-5 h-5 mr-3"></i>
+                    随手拍
+                </a>
+                <a href="bookmarks.html" class="flex items-center px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 text-gray-600 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-white/10 hover:shadow-sm hover:translate-x-1">
+                    <i data-lucide="heart" class="w-5 h-5 mr-3"></i>
+                    收藏
+                </a>
+                <a href="rss.html" class="flex items-center px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 text-gray-600 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-white/10 hover:shadow-sm hover:translate-x-1">
+                    <i data-lucide="radio" class="w-5 h-5 mr-3"></i>
+                    订阅
+                </a>
+                <a href="video.html" class="flex items-center px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 text-gray-600 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-white/10 hover:shadow-sm hover:translate-x-1">
+                    <i data-lucide="clapperboard" class="w-5 h-5 mr-3"></i>
+                    视频
+                </a>
+                <a href="about.html" class="flex items-center px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 text-gray-600 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-white/10 hover:shadow-sm hover:translate-x-1">
+                    <i data-lucide="cat" class="w-5 h-5 mr-3"></i>
+                    关于
+                </a>
+            </div>
+        </div>
+    </nav>
 
-		<div class="navbar__toggle" id="navToggle">&#9776;</div>
-	</nav>
+    <!-- Main Content -->
+    <article class="min-h-screen pb-20 relative">
+        <!-- Hero Header -->
+        <header id="post-header" class="relative w-full h-[50vh] min-h-[400px] flex items-end pb-12 mb-12 bg-gray-900 overflow-hidden group">
+            <!-- Background Image Layer -->
+            <div id="header-bg" class="absolute inset-0 w-full h-full bg-cover bg-center z-0 transition-transform duration-700 group-hover:scale-105"></div>
+            
+            <!-- Overlay/Mask Layer -->
+            <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent z-10"></div>
 
-	<!-- 主内容容器 -->
-	<main class="content blog-content">
+            <!-- Content Layer -->
+            <div class="relative z-20 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <!-- Back Button -->
+                <div class="mb-6">
+                    <a href="blog.html" class="inline-flex items-center text-sm font-medium text-white/90 hover:text-white transition-colors bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-full backdrop-blur-sm border border-white/10">
+                        <i data-lucide="arrow-left" class="w-4 h-4 mr-1.5"></i>
+                        返回文章列表
+                    </a>
+                </div>
 
-		<!-- 文章列表页 -->
-		<section class="blog-list">
-			<!-- JS 会动态渲染文章卡片 -->
-		</section>
+                <!-- Meta -->
+                <div class="flex flex-wrap items-center justify-start gap-4 text-sm text-gray-300 mb-4" id="post-meta">
+                    <!-- Meta info injected here -->
+                </div>
 
-		<!-- 单篇文章详情页 -->
-		<article class="post-article">
-			<header class="post-header">
-				<h1 class="post-title" id="post-title">文章加载中...</h1>
-				<div class="post-meta">
-					<span class="meta-date" id="post-date">未知日期</span>
-					<span class="meta-author" id="post-author">作者：匿名</span>
-					<span class="meta-category" id="post-category">分类：未知</span>
-					<span class="meta-read-time" id="post-read-time">阅读时间：未知</span>
-				</div>
-			</header>
+                <!-- Title -->
+                <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold font-sans text-white mb-6 leading-tight tracking-tight drop-shadow-lg" id="post-title">
+                    Loading...
+                </h1>
 
-			<div class="post-content" id="article-content">
-				<div class="loading">正在加载文章...</div>
-			</div>
+                <!-- Tags -->
+                <div class="flex flex-wrap justify-start gap-2" id="post-tags">
+                    <!-- Tags injected here -->
+                </div>
+            </div>
+        </header>
 
-			<footer class="post-footer">
-				<p>感谢您的阅读！如果您喜欢这篇文章，请分享给更多人。</p>
-				<div class="post-actions">
-					<a href="#" class="action-btn">👍 点赞</a>
-					<a href="#" class="action-btn">📤 分享</a>
-					<a href="blog.html" class="action-btn">📚 更多文章</a>
-				</div>
-			</footer>
-		</article>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-12">
+                <!-- Content Column -->
+                <div class="lg:col-span-3">
 
-	</main>
+                    <!-- Content -->
+                    <div class="prose md:prose-lg dark:prose-invert max-w-none" id="post-content">
+                        <div class="flex justify-center py-20">
+                            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Back to Blog -->
+                    <div class="mt-16 pt-8 border-t border-gray-100 dark:border-gray-800 text-center lg:text-left">
+                        <a href="blog.html" class="inline-flex items-center text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium transition-colors">
+                            <i data-lucide="arrow-left" class="mr-2 w-4 h-4"></i>
+                            返回文章列表
+                        </a>
+                    </div>
+                </div>
 
-	<!-- 页脚 -->
-	<footer class="page-footer">
-		<p class="page-footer__copyright">&copy; 2025 夏日科技探索 · All rights reserved.</p>
-	</footer>
+                <!-- Sidebar (Desktop TOC) -->
+                <aside class="hidden lg:block lg:col-span-1">
+                    <div class="sticky top-24 space-y-8">
+                        <!-- TOC Card -->
+                        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
+                            <h3 class="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider mb-4 flex items-center">
+                                <i data-lucide="list" class="w-4 h-4 mr-2 text-blue-500"></i> 目录
+                            </h3>
+                            <nav id="toc-desktop" class="max-h-[60vh] overflow-y-auto custom-scrollbar pr-2">
+                                <!-- TOC Content -->
+                            </nav>
+                        </div>
 
-	<!-- JS 库 -->
-	<script src="https://cdn.jsdelivr.net/npm/marked@12.0.0/marked.min.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+                        <!-- Recommendations Card -->
+                        <div id="recommendations-container-desktop" class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 hidden">
+                            <h3 class="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider mb-4 flex items-center">
+                                <i data-lucide="sparkles" class="w-4 h-4 mr-2 text-yellow-500"></i> 相关推荐
+                            </h3>
+                            <div id="recommendations-list-desktop" class="space-y-4">
+                                <!-- Recommendations will be injected here -->
+                            </div>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+        </div>
 
-	<!-- KaTeX 脚本 -->
-	<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
-	<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+        <!-- Floating TOC Button (Mobile Only) -->
+        <button id="toc-toggle" class="lg:hidden fixed right-6 bottom-24 z-40 p-3 bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded-full shadow-lg border border-gray-200 dark:border-gray-700 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-300 hover:scale-110 active:scale-95" aria-label="Toggle Table of Contents">
+            <i data-lucide="list" class="w-6 h-6"></i>
+        </button>
 
-	<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
+        <!-- TOC Drawer (Mobile Only) -->
+        <div id="toc-drawer" class="fixed top-0 right-0 h-full w-80 max-w-[85vw] bg-white/95 dark:bg-gray-900/95 backdrop-blur-2xl shadow-2xl z-50 transform translate-x-full transition-transform duration-300 ease-out border-l border-gray-200 dark:border-gray-800 lg:hidden flex flex-col">
+            <div class="p-5 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm">
+                <h3 class="text-base font-bold text-gray-900 dark:text-white flex items-center">
+                    <span class="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center mr-3 text-blue-600 dark:text-blue-400">
+                        <i data-lucide="list" class="w-5 h-5"></i>
+                    </span>
+                    文章目录
+                </h3>
+                <button id="toc-close" class="p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-500 hover:text-gray-900 dark:hover:text-white transition-all active:scale-95">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            
+            <div class="flex-1 overflow-y-auto custom-scrollbar p-5">
+                <nav id="toc-mobile" class="space-y-1">
+                    <!-- TOC will be injected here -->
+                </nav>
+                
+                <!-- Recommended Articles (Mobile) -->
+                <div class="mt-8 pt-6 border-t border-gray-100 dark:border-gray-800 hidden" id="recommendations-container-mobile">
+                    <h3 class="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-4 px-2">
+                        相关推荐
+                    </h3>
+                    <div id="recommendations-list-mobile" class="space-y-3">
+                        <!-- Recommendations will be injected here -->
+                    </div>
+                </div>
+            </div>
+        </div>
 
-	<!-- 自定义 JS -->
-	<script src="main.js"></script>
-	<script src="js/blog.js"></script>
-	<script src="js/post.js"></script>
 
+        <!-- Overlay -->
+        <div id="toc-overlay" class="fixed inset-0 bg-black/20 dark:bg-black/50 backdrop-blur-sm z-40 hidden opacity-0 transition-opacity duration-300"></div>
+    </article>
+
+    <!-- Footer -->
+    <footer class="bg-white dark:bg-black text-gray-600 dark:text-gray-400 border-t border-gray-200 dark:border-gray-800 py-8 relative z-10">
+        <div class="max-w-7xl mx-auto px-4 flex justify-center items-center">
+            <p class="text-xs tracking-widest uppercase opacity-50 hover:opacity-100 transition-opacity cursor-default">
+                &copy; 2025 Thoi <span class="mx-2 text-blue-500">|</span> Designed with <span class="text-red-500 animate-pulse">❤️</span>
+            </p>
+        </div>
+    </footer>
+
+    <!-- Back to Top Button -->
+    <button id="back-to-top" class="fixed bottom-8 right-8 p-3 rounded-full bg-blue-600 text-white shadow-lg transition-all duration-300 opacity-0 translate-y-10 hover:bg-blue-700 hover:scale-110 z-50 focus:outline-none ring-2 ring-blue-500 ring-offset-2 dark:ring-offset-slate-950" aria-label="Back to top">
+        <i data-lucide="arrow-up" class="w-6 h-6"></i>
+    </button>
+
+    <script src="js/main.js"></script>
+    <script src="js/post-viewer.js?v=2"></script>
+    <script src="js/click-effect.js"></script>
+    <script src="https://unpkg.com/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
+    <script src="js/context-menu.js"></script>
+    <script>
+        // Initialize Lenis for smooth scrolling
+        const lenis = new Lenis({
+            duration: 1.5,
+            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+            direction: 'vertical',
+            gestureDirection: 'vertical',
+            smooth: true,
+            mouseMultiplier: 1,
+            smoothTouch: true,
+            touchMultiplier: 2,
+        });
+
+        function raf(time) {
+            lenis.raf(time);
+            requestAnimationFrame(raf);
+        }
+
+        requestAnimationFrame(raf);
+        
+        // Make lenis global for context menu usage
+        window.lenis = lenis;
+
+    </script>
+    <script src="js/back-to-top.js"></script>
 </body>
-
 </html>
-
-

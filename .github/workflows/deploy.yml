@@ -4,50 +4,16 @@ on: push
 
 jobs:
   deploy:
-    # 部署运行在最新的 Ubuntu 虚拟机上
     runs-on: ubuntu-latest
-    
+    container:
+      image: shangzheny/rth-host-helper:latest
+
     steps:
-      # 1. 检出代码 (必须)
-      - name: Checkout repository code
-        uses: actions/checkout@v4
-
-      # 2. 设置部署工具和环境变量
-      - name: Setup Deployment Environment
-        run: |
-          # 检查 Node.js 是否已安装
-          node -v
-          
-          # 打印 API Key 环境变量 (确保已设置，但值不会被打印出来)
-          echo "API Key is set: ${{ secrets.RTH_API_KEY != '' }}"
-
-      # 3. 下载 CLI 工具并忽略证书错误 (-k)
-      - name: Download CLI Tool (Ignoring SSL Error)
-        run: |
-          # 1. 使用 curl -k 忽略证书过期问题，同时使用正确的路径 /cli
-          curl -k -L -o deploy-tool.js https://host.retiehe.com/cli
-          
-          # 2. 检查文件是否下载成功（文件大小）
-          FILE_SIZE=$(stat -c%s deploy-tool.js)
-          echo "Downloaded deploy-tool.js size: $FILE_SIZE bytes"
-          
-          # 3. 打印文件内容的前几行，进行人工检查
-          echo "--- Content Head ---"
-          head -n 5 deploy-tool.js
-          echo "--------------------"
-          
-          # 4. 如果文件太小或以 < 开头，说明下载失败，强制停止。
-          if [[ $FILE_SIZE -lt 1024 ]]; then
-            echo "Error: Downloaded file is too small ($FILE_SIZE bytes). Likely an error page or 404."
-            exit 1
-          fi
-          
-      # 4. 运行部署命令 (关键步骤)
-      - name: Run Deployment
+      - name: Deploy to Retinbox Web Hosting
+        uses: rthsoftware/host-auto-deploy@master
         env:
           RTH_API_KEY: ${{ secrets.RTH_API_KEY }}
-          # 允许 Node.js 忽略 SSL 证书错误
-          NODE_TLS_REJECT_UNAUTHORIZED: '0' 
-        run: |
-          # 运行部署工具
-          node deploy-tool.js --site shadowsky --outdir .
+        with:
+          site: "shadowquake.top"
+          build: ""
+          outdir: "."

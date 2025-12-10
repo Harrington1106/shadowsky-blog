@@ -1,69 +1,669 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
-
+<html lang="zh-CN" class="dark">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <meta name="description" content="一个热爱科技、喜欢阅读📕的大学生，最近对天文和自然地理充满兴趣">
-    <meta name="keywords" content="科技,天文,自然地理,阅读，测绘">
-    <meta name="robots" content="index,follow">
-    <meta name="author" content="THOI">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
     <title>夏日科技探索</title>
-    <link rel="stylesheet" href="main.css">
-    <link rel="stylesheet" href="css/component.css">
-    <link rel="icon" href="img/favicon256.png">
-    <link rel="preload" href="fonts/noto-serif-sc/NotoSerifSC-Regular.woff2" as="font" type="font/woff2" crossorigin>
-</head>
-
-<body class="home-page">
+    <link rel="icon" type="image/png" href="public/img/favicon256.png">
     
-    <nav class="navbar">
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.loli.net">
+    <link rel="preconnect" href="https://gstatic.loli.net" crossorigin>
+    <link href="https://fonts.loli.net/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <link href="css/style.css" rel="stylesheet">
+    
+    <!-- Lucide Icons -->
+    <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
+    
+    <style>
+        :root {
+            /* Default Blob Colors */
+            --blob-color-1: rgba(168, 85, 247, 0.4); /* Purple 400 */
+            --blob-color-2: rgba(253, 224, 71, 0.4); /* Yellow 300 */
+            --blob-color-3: rgba(244, 114, 182, 0.4); /* Pink 400 */
+            --blob-color-4: rgba(34, 211, 238, 0.4); /* Cyan 400 */
+        }
+        .dark {
+            --blob-color-1: rgba(147, 51, 234, 0.3); /* Purple 600 */
+            --blob-color-2: rgba(37, 99, 235, 0.3); /* Blue 600 */
+            --blob-color-3: rgba(79, 70, 229, 0.3); /* Indigo 600 */
+            --blob-color-4: rgba(13, 148, 136, 0.3); /* Teal 600 */
+        }
+
+        body {
+            font-family: 'Inter', 'Noto Sans SC', sans-serif;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+        .tilt-card {
+            transform-style: preserve-3d;
+        }
         
-        <div class="navbar__brand">
-            <img src="img/black64.png" alt="网站logo" class="logo">
-            <span class="navbar__site-name">夏日科技探索</span>
+        /* Glitch Effect */
+        .glitch {
+            position: relative;
+        }
+        .glitch::before, .glitch::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        .glitch::before {
+            left: 2px;
+            text-shadow: -1px 0 #ff00c1;
+            clip: rect(44px, 450px, 56px, 0);
+            animation: glitch-anim-1 3s infinite linear alternate-reverse;
+        }
+        .glitch::after {
+            left: -2px;
+            text-shadow: -1px 0 #00fff9;
+            clip: rect(44px, 450px, 56px, 0);
+            animation: glitch-anim-2 3s infinite linear alternate-reverse;
+        }
+        @keyframes glitch-anim-1 {
+            0% { clip: rect(20px, 9999px, 80px, 0); }
+            20% { clip: rect(60px, 9999px, 10px, 0); }
+            40% { clip: rect(10px, 9999px, 50px, 0); }
+            60% { clip: rect(90px, 9999px, 30px, 0); }
+            80% { clip: rect(30px, 9999px, 70px, 0); }
+            100% { clip: rect(50px, 9999px, 20px, 0); }
+        }
+        @keyframes glitch-anim-2 {
+            0% { clip: rect(10px, 9999px, 90px, 0); }
+            20% { clip: rect(80px, 9999px, 20px, 0); }
+            40% { clip: rect(20px, 9999px, 60px, 0); }
+            60% { clip: rect(50px, 9999px, 40px, 0); }
+            80% { clip: rect(70px, 9999px, 10px, 0); }
+            100% { clip: rect(30px, 9999px, 80px, 0); }
+        }
+        
+        /* Blob Animation for Ambient Light - Enhanced Movement */
+        @keyframes blob {
+            0% { transform: translate(0px, 0px) scale(1); }
+            33% { transform: translate(120px, -150px) scale(1.2); }
+            66% { transform: translate(-100px, 120px) scale(0.8); }
+            100% { transform: translate(0px, 0px) scale(1); }
+        }
+        .animate-blob {
+            animation: blob 10s infinite ease-in-out;
+        }
+        .animation-delay-2000 {
+            animation-delay: 2s;
+        }
+        .animation-delay-4000 {
+            animation-delay: 4s;
+        }
+        .animation-delay-6000 {
+            animation-delay: 6s;
+        }
+    </style>
+</head>
+<body class="bg-white dark:bg-black text-gray-900 dark:text-gray-100 font-sans transition-colors duration-500">
+
+    <!-- Navbar -->
+    <nav id="navbar" class="fixed w-full z-50 top-0 transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <a href="index.html" class="flex items-center group">
+                        <div class="relative">
+                            <div class="absolute -inset-1 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full blur opacity-25 group-hover:opacity-50 transition duration-200"></div>
+                            <img src="public/img/favicon256.png" alt="Logo" class="relative h-8 w-8 mr-2 dark:hidden">
+                            <img src="public/img/black256.png" alt="Logo" class="relative h-8 w-8 mr-2 hidden dark:block">
+                        </div>
+                        <span id="nav-title" class="font-bold text-xl tracking-tight transition-colors duration-300">
+                            夏日科技探索
+                        </span>
+                    </a>
+                </div>
+                
+                <div class="hidden lg:flex items-center space-x-1">
+                    <a href="index.html" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-blue-600 bg-blue-50/80 dark:bg-blue-900/30 dark:text-blue-400" title="首页">
+                        <i data-lucide="home" class="w-5 h-5"></i>
+                    </a>
+                    <a href="blog.html" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-600 hover:text-blue-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-white dark:hover:bg-white/10" title="星空笔记">
+                        <i data-lucide="sparkles" class="w-5 h-5"></i>
+                    </a>
+                    <a href="moments.html" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-600 hover:text-blue-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-white dark:hover:bg-white/10" title="随手拍">
+                        <i data-lucide="camera" class="w-5 h-5"></i>
+                    </a>
+                    <a href="bookmarks.html" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-600 hover:text-blue-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-white dark:hover:bg-white/10" title="收藏">
+                        <i data-lucide="heart" class="w-5 h-5"></i>
+                    </a>
+                    <a href="rss.html" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-600 hover:text-blue-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-white dark:hover:bg-white/10" title="订阅">
+                        <i data-lucide="radio" class="w-5 h-5"></i>
+                    </a>
+                    <a href="video.html" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-600 hover:text-blue-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-white dark:hover:bg-white/10" title="视频">
+                        <i data-lucide="clapperboard" class="w-5 h-5"></i>
+                    </a>
+                    <a href="about.html" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-600 hover:text-blue-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-white dark:hover:bg-white/10" title="关于">
+                        <i data-lucide="cat" class="w-5 h-5"></i>
+                    </a>
+                    
+                    <!-- Theme Toggle -->
+                    <button id="theme-toggle" class="ml-4 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors focus:outline-none ring-2 ring-transparent focus:ring-blue-500" aria-label="Toggle Theme">
+                        <i id="theme-toggle-icon" data-lucide="moon" class="w-5 h-5 text-gray-600 dark:text-gray-300"></i>
+                    </button>
+                </div>
+
+                <div class="lg:hidden flex items-center">
+                    <!-- Theme Toggle Mobile -->
+                    <button onclick="toggleTheme()" class="mr-4 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors" aria-label="Toggle Theme">
+                        <i data-lucide="moon" class="w-5 h-5 text-blue-600 dark:hidden"></i>
+                        <i data-lucide="sun" class="w-5 h-5 text-yellow-400 hidden dark:block"></i>
+                    </button>
+                    
+                    <button id="mobile-menu-btn" class="p-2 rounded-md transition-colors" aria-label="Toggle Menu">
+                        <i data-lucide="menu" class="w-6 h-6"></i>
+                    </button>
+                </div>
+            </div>
         </div>
-        
-        <ul class="navbar__menu">
-            <li class="navbar__item"><a href="index.html" class="navbar__link">首页</a></li>
-            <li class="navbar__item"><a href="blog.html" class="navbar__link">星空笔记</a></li>
-            <li class="navbar__item"><a href="astronomy.html" class="navbar__link">天文</a></li>
-            <li class="navbar__item"><a href="nature.html" class="navbar__link">自然</a></li>
-            <li class="navbar__item"><a href="st.html" class="navbar__link">科技</a></li>
-            <li class="navbar__item"><a href="video.html" class="navbar__link">视频</a></li>
-            <li class="navbar__item"><a href="contact.html" class="navbar__link">联系</a></li>
-        </ul>
-        
-        <div class="navbar__toggle" id="navToggle">&#9776;</div>
+
+        <!-- Mobile menu -->
+        <div id="mobile-menu" class="lg:hidden absolute top-full left-0 w-full bg-white/95 dark:bg-black/95 backdrop-blur-xl border-t border-gray-100 dark:border-gray-800 shadow-2xl transition-all duration-300 ease-in-out transform opacity-0 -translate-y-4 pointer-events-none">
+            <div class="px-4 pt-4 pb-6 space-y-2">
+                <a href="index.html" class="flex items-center px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 text-blue-600 bg-blue-50 dark:bg-blue-900/20 dark:text-blue-400 shadow-sm">
+                    <i data-lucide="home" class="w-5 h-5 mr-3"></i>
+                    首页
+                </a>
+                <a href="blog.html" class="flex items-center px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 text-gray-600 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-white/10 hover:shadow-sm hover:translate-x-1">
+                    <i data-lucide="sparkles" class="w-5 h-5 mr-3"></i>
+                    星空笔记
+                </a>
+                <a href="moments.html" class="flex items-center px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 text-gray-600 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-white/10 hover:shadow-sm hover:translate-x-1">
+                    <i data-lucide="camera" class="w-5 h-5 mr-3"></i>
+                    随手拍
+                </a>
+                <a href="bookmarks.html" class="flex items-center px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 text-gray-600 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-white/10 hover:shadow-sm hover:translate-x-1">
+                    <i data-lucide="heart" class="w-5 h-5 mr-3"></i>
+                    收藏
+                </a>
+                <a href="rss.html" class="flex items-center px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 text-gray-600 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-white/10 hover:shadow-sm hover:translate-x-1">
+                    <i data-lucide="radio" class="w-5 h-5 mr-3"></i>
+                    订阅
+                </a>
+                <a href="video.html" class="flex items-center px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 text-gray-600 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-white/10 hover:shadow-sm hover:translate-x-1">
+                    <i data-lucide="clapperboard" class="w-5 h-5 mr-3"></i>
+                    视频
+                </a>
+                <a href="about.html" class="flex items-center px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 text-gray-600 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-white/10 hover:shadow-sm hover:translate-x-1">
+                    <i data-lucide="cat" class="w-5 h-5 mr-3"></i>
+                    关于
+                </a>
+            </div>
+        </div>
     </nav>
 
-    <main class="page-main">
-        <section class="hero container">
-            <img src="img/avatar.jpg" alt="头像" class="avatar">
-            
-            <h1 class="hero__motto">
-            </h1>
-            
-            <p class="hero__description">当下这一刻是一个由趋近于零的概率事件无限积累后所呈现的非零实现。只要这一刻就好，这个念想的出现已经可以让我忽略所有。​
-            </p>
-            
-            <div class="tag-list">
-                <span class="tag">00后</span>
-                <span class="tag">b站up主</span>
-                <span class="tag">摄影</span>
-                <span class="tag">天文</span>
-                <span class="tag">搞机</span>
-                <span class="tag">图寻</span>
+    <!-- Hero Section -->
+    <div class="relative min-h-[100dvh] w-full flex items-center justify-center overflow-hidden transition-colors duration-500">
+        <!-- Dynamic Canvas Background -->
+        <div class="absolute inset-0 z-0">
+            <!-- Ambient Background Blobs -->
+            <div class="absolute inset-0 overflow-hidden pointer-events-none">
+                <div class="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-[80px] opacity-100 animate-blob bg-[var(--blob-color-1)]"></div>
+                <div class="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-[80px] opacity-100 animate-blob animation-delay-2000 bg-[var(--blob-color-2)]"></div>
+                <div class="absolute -bottom-32 left-20 w-[600px] h-[600px] rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-[80px] opacity-100 animate-blob animation-delay-4000 bg-[var(--blob-color-3)]"></div>
+                <div class="absolute bottom-[-20%] right-[-10%] w-[600px] h-[600px] rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-[80px] opacity-100 animate-blob animation-delay-6000 bg-[var(--blob-color-4)]"></div>
             </div>
-        </section>
-    </main>
+            <canvas id="canvas-network" class="w-full h-full relative z-10"></canvas>
+            <div class="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-white/90 dark:to-black/90 pointer-events-none transition-colors duration-500 z-20"></div>
+        </div>
+
+        <!-- Content -->
+        <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center w-full flex flex-col items-center justify-center pt-20 sm:pt-16 pb-16">
+            <div class="pointer-events-auto transform transition-all duration-500">
+                <!-- 3D Tilt Avatar -->
+                <div class="mb-6 sm:mb-8 relative inline-block group tilt-card transition-transform duration-100 ease-out" style="transform-style: preserve-3d;">
+                    <div class="absolute -inset-4 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 rounded-full blur-xl opacity-50 dark:opacity-70 group-hover:opacity-100 transition duration-500 animate-pulse-slow"></div>
+                    <img src="public/img/avatar.jpg" alt="Avatar" class="relative w-32 h-32 sm:w-40 sm:h-40 rounded-full border-4 border-white dark:border-black object-cover shadow-2xl transform translate-z-10 transition-all duration-500">
+                    <div class="absolute bottom-2 right-2 w-6 h-6 sm:w-8 sm:h-8 bg-green-500 border-4 border-white dark:border-black rounded-full z-20 shadow-[0_0_15px_rgba(34,197,94,0.8)]" title="Online"></div>
+                </div>
+
+                <h1 class="text-4xl sm:text-7xl md:text-8xl font-black tracking-tighter mb-4 sm:mb-6 drop-shadow-2xl">
+                    <span class="block mb-2 animate-fade-in-up text-gray-800 dark:text-white">探索未知</span>
+                    <span class="block text-transparent bg-clip-text bg-gradient-to-r from-cyan-500 via-blue-600 to-purple-600 animate-gradient-x bg-[length:200%_auto] glitch" data-text="记录美好">
+                        记录美好
+                    </span>
+                </h1>
+                
+                <p id="typing-text" class="mt-4 max-w-2xl mx-auto text-base sm:text-xl md:text-2xl text-gray-600 dark:text-gray-300 leading-relaxed font-medium min-h-[5rem] h-auto overflow-hidden tracking-wide px-4">
+                    <!-- Typing effect will populate this -->
+                </p>
+
+                <!-- About Me Tags - Enhanced Layout -->
+                <div class="mt-8 sm:mt-10 opacity-0 animate-fade-in-up-delay mb-8 sm:mb-12">
+                    <div class="flex flex-wrap gap-2 sm:gap-3 justify-center max-w-3xl mx-auto px-2">
+                        <!-- Tag Item -->
+                        <div class="px-4 py-1.5 sm:px-6 sm:py-2 bg-transparent border border-gray-300 dark:border-gray-700 rounded-full cursor-default hover:border-blue-500 dark:hover:border-blue-400 transition-colors duration-300">
+                            <span class="text-gray-600 dark:text-gray-400 font-medium tracking-wider text-xs sm:text-sm">#00后</span>
+                        </div>
+                        
+                        <div class="px-4 py-1.5 sm:px-6 sm:py-2 bg-transparent border border-gray-300 dark:border-gray-700 rounded-full cursor-default hover:border-purple-500 dark:hover:border-purple-400 transition-colors duration-300">
+                            <span class="text-gray-600 dark:text-gray-400 font-medium tracking-wider text-xs sm:text-sm">#UP主</span>
+                        </div>
+                        
+                        <div class="px-4 py-1.5 sm:px-6 sm:py-2 bg-transparent border border-gray-300 dark:border-gray-700 rounded-full cursor-default hover:border-yellow-500 dark:hover:border-yellow-400 transition-colors duration-300">
+                            <span class="text-gray-600 dark:text-gray-400 font-medium tracking-wider text-xs sm:text-sm">#摄影</span>
+                        </div>
+
+                         <div class="px-4 py-1.5 sm:px-6 sm:py-2 bg-transparent border border-gray-300 dark:border-gray-700 rounded-full cursor-default hover:border-blue-500 dark:hover:border-blue-400 transition-colors duration-300">
+                            <span class="text-gray-600 dark:text-gray-400 font-medium tracking-wider text-xs sm:text-sm">#天文</span>
+                        </div>
+                        
+                        <div class="px-4 py-1.5 sm:px-6 sm:py-2 bg-transparent border border-gray-300 dark:border-gray-700 rounded-full cursor-default hover:border-green-500 dark:hover:border-green-400 transition-colors duration-300">
+                            <span class="text-gray-600 dark:text-gray-400 font-medium tracking-wider text-xs sm:text-sm">#极客</span>
+                        </div>
+                         <div class="px-4 py-1.5 sm:px-6 sm:py-2 bg-transparent border border-gray-300 dark:border-gray-700 rounded-full cursor-default hover:border-red-500 dark:hover:border-red-400 transition-colors duration-300">
+                            <span class="text-gray-600 dark:text-gray-400 font-medium tracking-wider text-xs sm:text-sm">#探索者</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Absolute Footer -->
+        <div class="absolute bottom-4 w-full text-center z-20 pointer-events-none">
+            <p class="text-[10px] sm:text-xs tracking-widest uppercase text-gray-400 dark:text-gray-500 opacity-60">
+                &copy; 2025 Thoi <span class="mx-2 text-blue-500">|</span> Designed with <span class="text-red-500 animate-pulse">❤️</span>
+            </p>
+        </div>
+    </div>
+
+    <!-- Custom Context Menu -->
+    <div id="custom-context-menu" class="fixed z-[9999] w-64 bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl border border-gray-200 dark:border-gray-700 rounded-xl shadow-2xl py-1 transform scale-95 opacity-0 transition-all duration-200 origin-top-left hidden font-sans">
+        <div class="p-1 space-y-1">
+            <!-- Refresh -->
+            <button type="button" onclick="location.reload(); hideContextMenu()" class="w-full flex items-center gap-3 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition-colors">
+                <i data-lucide="refresh-cw" class="w-4 h-4 text-green-500"></i>
+                <span>刷新页面</span>
+            </button>
+            
+            <!-- Full Screen -->
+            <button type="button" onclick="toggleFullScreen(); hideContextMenu()" class="w-full flex items-center gap-3 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition-colors">
+                <i data-lucide="expand" class="w-4 h-4 text-blue-500"></i>
+                <span>全屏模式</span>
+            </button>
+            
+            <!-- Theme -->
+            <button type="button" onclick="toggleTheme(); hideContextMenu()" class="w-full flex items-center gap-3 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition-colors">
+                <i data-lucide="sun-moon" class="w-4 h-4 text-purple-500"></i>
+                <span>切换主题</span>
+            </button>
+
+            <div class="h-px bg-gray-200 dark:bg-gray-700 my-1 mx-2"></div>
+
+            <!-- Streamer Settings Submenu Trigger -->
+            <div class="relative group">
+                <button type="button" class="w-full flex items-center justify-between px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition-colors">
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="palette" class="w-4 h-4 text-blue-500"></i>
+                        <span>背景流光</span>
+                    </div>
+                    <i data-lucide="chevron-right" class="w-3 h-3 text-gray-400"></i>
+                </button>
+
+                <!-- Submenu Content -->
+                <div class="absolute left-full top-0 ml-2 w-72 bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl border border-gray-200 dark:border-gray-700 rounded-xl shadow-2xl p-4 opacity-0 invisible transform -translate-x-2 transition-all duration-200 group-hover:opacity-100 group-hover:visible group-hover:translate-x-0 origin-top-left">
+                    <h3 class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">流光设置</h3>
+                    
+                    <!-- Monet Palettes -->
+                    <div class="mb-4">
+                        <span class="text-[10px] font-medium text-gray-400 dark:text-gray-500 block mb-2">莫奈配色推荐</span>
+                        <div class="flex gap-2">
+                            <button type="button" onclick="applyPalette('water-lilies')" class="flex-1 h-8 rounded-lg bg-gradient-to-r from-[#6b8cce] to-[#8fae9b] hover:ring-2 ring-blue-400 transition-all" title="睡莲"></button>
+                            <button type="button" onclick="applyPalette('sunrise')" class="flex-1 h-8 rounded-lg bg-gradient-to-r from-[#ff9a76] to-[#a8aabc] hover:ring-2 ring-orange-400 transition-all" title="日出"></button>
+                            <button type="button" onclick="applyPalette('haystacks')" class="flex-1 h-8 rounded-lg bg-gradient-to-r from-[#f4d03f] to-[#8d6e63] hover:ring-2 ring-yellow-400 transition-all" title="干草堆"></button>
+                        </div>
+                    </div>
+
+                    <!-- Manual Colors -->
+                    <div class="mb-4">
+                        <span class="text-[10px] font-medium text-gray-400 dark:text-gray-500 block mb-2">自定义颜色</span>
+                        <div class="flex justify-between items-center px-1">
+                            <div class="relative group/color cursor-pointer">
+                                <div class="w-8 h-8 rounded-full border-2 border-white dark:border-gray-800 shadow-md transition-transform hover:scale-110 ring-1 ring-gray-200 dark:ring-gray-700 bg-[var(--blob-color-1)]"></div>
+                                <input type="color" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" oninput="updateBlobColor(1, this.value)" title="流光 1">
+                            </div>
+                            <div class="relative group/color cursor-pointer">
+                                <div class="w-8 h-8 rounded-full border-2 border-white dark:border-gray-800 shadow-md transition-transform hover:scale-110 ring-1 ring-gray-200 dark:ring-gray-700 bg-[var(--blob-color-2)]"></div>
+                                <input type="color" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" oninput="updateBlobColor(2, this.value)" title="流光 2">
+                            </div>
+                            <div class="relative group/color cursor-pointer">
+                                <div class="w-8 h-8 rounded-full border-2 border-white dark:border-gray-800 shadow-md transition-transform hover:scale-110 ring-1 ring-gray-200 dark:ring-gray-700 bg-[var(--blob-color-3)]"></div>
+                                <input type="color" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" oninput="updateBlobColor(3, this.value)" title="流光 3">
+                            </div>
+                            <div class="relative group/color cursor-pointer">
+                                <div class="w-8 h-8 rounded-full border-2 border-white dark:border-gray-800 shadow-md transition-transform hover:scale-110 ring-1 ring-gray-200 dark:ring-gray-700 bg-[var(--blob-color-4)]"></div>
+                                <input type="color" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" oninput="updateBlobColor(4, this.value)" title="流光 4">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Speed -->
+                    <div class="space-y-2 mb-4">
+                        <div class="flex justify-between items-center">
+                            <span class="text-[10px] font-medium text-gray-400 dark:text-gray-500">流动速度</span>
+                            <span id="speed-display" class="text-[10px] text-gray-400 font-mono">10s</span>
+                        </div>
+                        <input type="range" min="2" max="30" value="10" step="1" class="w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 accent-blue-600" oninput="updateAnimationSpeed(this.value)" aria-label="Animation Speed">
+                    </div>
+
+                    <!-- Confirm Button -->
+                    <button type="button" onclick="hideContextMenu()" class="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold transition-colors shadow-lg shadow-blue-500/30">
+                        确定
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Global Scripts -->
+    <script src="js/main.js"></script>
+    <script src="js/click-effect.js"></script>
     
-    <script src="main.js"></script>
+    <!-- Page Specific Scripts -->
+    <script>
+        // 1. Canvas Particle Network (Theme Aware)
+        const canvas = document.getElementById('canvas-network');
+        if (canvas) {
+            const ctx = canvas.getContext('2d');
+            let width, height;
+            let particles = [];
+            
+            // Mouse interaction
+            let mouse = { x: null, y: null };
+            window.addEventListener('mousemove', (e) => {
+                mouse.x = e.clientX;
+                mouse.y = e.clientY;
+            });
+            window.addEventListener('mouseleave', () => {
+                mouse.x = null;
+                mouse.y = null;
+            });
 
-    <footer class="page-footer">
-        <p class="page-footer__copyright">&copy; 2025 夏日科技探索 · All rights reserved.</p>
-    </footer>
+            const particleCount = window.innerWidth < 768 ? 60 : 120;
+            const connectionDistance = 180;
+            const moveSpeed = 0.8;
+
+            function resize() {
+                width = canvas.width = window.innerWidth;
+                height = canvas.height = window.innerHeight;
+            }
+
+            class Particle {
+                constructor() {
+                    this.x = Math.random() * width;
+                    this.y = Math.random() * height;
+                    this.vx = (Math.random() - 0.5) * moveSpeed;
+                    this.vy = (Math.random() - 0.5) * moveSpeed;
+                    this.size = Math.random() * 2 + 1;
+                    this.setColors();
+                }
+                
+                setColors() {
+                    const isDark = document.documentElement.classList.contains('dark');
+                    if (isDark) {
+                        const colors = ['#06b6d4', '#8b5cf6', '#3b82f6']; 
+                        this.color = colors[Math.floor(Math.random() * colors.length)];
+                    } else {
+                        const colors = ['#0ea5e9', '#6366f1', '#8b5cf6']; 
+                        this.color = colors[Math.floor(Math.random() * colors.length)];
+                    }
+                }
+
+                update() {
+                    this.x += this.vx;
+                    this.y += this.vy;
+
+                    // Wall bounce
+                    if (this.x < 0 || this.x > width) this.vx *= -1;
+                    if (this.y < 0 || this.y > height) this.vy *= -1;
+
+                    // Mouse Interaction (Repulsion)
+                    if (mouse.x != null) {
+                        let dx = mouse.x - this.x;
+                        let dy = mouse.y - this.y;
+                        let distance = Math.sqrt(dx * dx + dy * dy);
+                        const forceRadius = 250;
+
+                        if (distance < forceRadius) {
+                            const forceDirectionX = dx / distance;
+                            const forceDirectionY = dy / distance;
+                            const force = (forceRadius - distance) / forceRadius;
+                            const directionX = forceDirectionX * force * 3; 
+                            const directionY = forceDirectionY * force * 3;
+                            
+                            this.vx -= directionX;
+                            this.vy -= directionY;
+                        }
+                    }
+                    
+                    // Speed limit
+                    const maxSpeed = 4;
+                    if (Math.abs(this.vx) > maxSpeed) this.vx *= 0.9;
+                    if (Math.abs(this.vy) > maxSpeed) this.vy *= 0.9;
+                }
+
+                draw() {
+                    ctx.fillStyle = this.color;
+                    ctx.shadowBlur = 10;
+                    ctx.shadowColor = this.color;
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.shadowBlur = 0;
+                }
+            }
+
+            function initParticles() {
+                particles = [];
+                for (let i = 0; i < particleCount; i++) {
+                    particles.push(new Particle());
+                }
+            }
+
+            function animate() {
+                ctx.clearRect(0, 0, width, height);
+                const isDark = document.documentElement.classList.contains('dark');
+                
+                for (let i = 0; i < particles.length; i++) {
+                    const p = particles[i];
+                    p.update();
+                    p.draw();
+
+                    // Connect particles
+                    for (let j = i + 1; j < particles.length; j++) {
+                        const p2 = particles[j];
+                        const dx = p.x - p2.x;
+                        const dy = p.y - p2.y;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+
+                        if (dist < connectionDistance) {
+                            if (isDark) {
+                                ctx.strokeStyle = `rgba(100, 149, 237, ${0.2 * (1 - dist / connectionDistance)})`;
+                            } else {
+                                ctx.strokeStyle = `rgba(99, 102, 241, ${0.15 * (1 - dist / connectionDistance)})`;
+                            }
+                            ctx.lineWidth = 0.8;
+                            ctx.beginPath();
+                            ctx.moveTo(p.x, p.y);
+                            ctx.lineTo(p2.x, p2.y);
+                            ctx.stroke();
+                        }
+                    }
+                }
+                window.animationId = requestAnimationFrame(animate);
+            }
+
+            window.addEventListener('resize', () => {
+                resize();
+                initParticles();
+            });
+            
+            // Listen for theme changes to update particle colors
+            window.addEventListener('themeChange', () => {
+                particles.forEach(p => p.setColors());
+            });
+
+            resize();
+            initParticles();
+            animate();
+            
+            // Handle bfcache
+            window.addEventListener('pageshow', (event) => {
+                if (event.persisted) {
+                    cancelAnimationFrame(window.animationId);
+                    animate();
+                }
+            });
+        }
+
+        // 2. Typewriter Effect
+        const textToType = "当下这一刻是一个由趋近于零的概率事件无限积累后所呈现的非零实现。只要这一刻就好，这个念想的出现已经可以让我忽略所有。";
+        const typingElement = document.getElementById('typing-text');
+        if (typingElement) {
+            let typeIndex = 0;
+            function typeWriter() {
+                if (typeIndex < textToType.length) {
+                    typingElement.textContent += textToType.charAt(typeIndex);
+                    typeIndex++;
+                    setTimeout(typeWriter, 50); 
+                }
+            }
+            setTimeout(typeWriter, 800);
+        }
+
+        // 3. 3D Tilt Effect for Avatar
+        const tilt = document.querySelector('.tilt-card');
+        if (tilt) {
+            tilt.addEventListener('mousemove', (e) => {
+                const rect = tilt.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+
+                // Max rotation 20 deg
+                const rotateX = ((y - centerY) / centerY) * -20; 
+                const rotateY = ((x - centerX) / centerX) * 20;
+
+                tilt.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.05)`;
+            });
+            tilt.addEventListener('mouseleave', () => {
+                tilt.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale(1)';
+            });
+        }
+
+        // 4. Custom Context Menu Logic
+        const contextMenu = document.getElementById('custom-context-menu');
+        const scope = document.querySelector('body');
+
+        // Prevent default right-click and show custom menu
+        scope.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+            
+            // Calculate position
+            let x = e.clientX;
+            let y = e.clientY;
+            
+            // Adjust if out of bounds (simple check)
+            if (x + 256 > window.innerWidth) x = window.innerWidth - 260;
+            if (y + 300 > window.innerHeight) y = window.innerHeight - 310;
+
+            contextMenu.style.left = `${x}px`;
+            contextMenu.style.top = `${y}px`;
+            contextMenu.classList.remove('hidden');
+            
+            // Small delay for animation
+            setTimeout(() => {
+                contextMenu.classList.remove('opacity-0', 'scale-95', 'translate-y-2');
+                contextMenu.classList.add('opacity-100', 'scale-100', 'translate-y-0');
+            }, 10);
+        });
+
+        // Hide menu on click anywhere
+        document.addEventListener('click', (e) => {
+            if (!contextMenu.contains(e.target)) {
+                hideContextMenu();
+            }
+        });
+
+        // Hide menu on scroll
+        window.addEventListener('scroll', hideContextMenu);
+
+        function hideContextMenu() {
+            contextMenu.classList.add('opacity-0', 'scale-95', 'translate-y-2');
+            contextMenu.classList.remove('opacity-100', 'scale-100', 'translate-y-0');
+            setTimeout(() => {
+                contextMenu.classList.add('hidden');
+            }, 200);
+        }
+
+        // Monet Color Palettes
+        const monetPalettes = {
+            'water-lilies': ['#6b8cce', '#8fae9b', '#d8e6e2', '#4a6fa5'],
+            'sunrise': ['#ff9a76', '#ffc7a2', '#a8aabc', '#819ca9'],
+            'haystacks': ['#f4d03f', '#e67e22', '#8d6e63', '#d7ccc8']
+        };
+
+        function applyPalette(name) {
+            const colors = monetPalettes[name];
+            if (colors) {
+                colors.forEach((color, index) => {
+                    updateBlobColor(index + 1, color);
+                });
+            }
+        }
+
+        // Color Picker Logic
+        function updateBlobColor(id, color) {
+            // Convert hex to rgba with opacity
+            let r, g, b;
+            if (color.startsWith('#')) {
+                r = parseInt(color.substr(1,2), 16);
+                g = parseInt(color.substr(3,2), 16);
+                b = parseInt(color.substr(5,2), 16);
+            }
+            const rgbaColor = `rgba(${r}, ${g}, ${b}, 0.6)`;
+            
+            document.documentElement.style.setProperty(`--blob-color-${id}`, rgbaColor);
+            
+            // Try to update input value if exists
+            // This is tricky because inputs are inside context menu which might be hidden or regenerated
+            // But inputs are static in DOM, so we can try
+            // Note: input type=color only accepts hex
+            // We don't necessarily need to update the input value for the user to see the effect
+        }
+
+        // Animation Speed Logic
+        function updateAnimationSpeed(seconds) {
+            const blobs = document.querySelectorAll('.animate-blob');
+            blobs.forEach(blob => {
+                blob.style.animationDuration = `${seconds}s`;
+            });
+            document.getElementById('speed-display').textContent = `${seconds}s`;
+        }
+
+        // Full Screen Logic
+        function toggleFullScreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => {
+                    console.log(`Error attempting to enable full-screen mode: ${err.message} (${err.name})`);
+                });
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            }
+        }
+    </script>
 </body>
-
 </html>
-

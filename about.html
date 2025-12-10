@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>关于我 - 夏日科技探索</title>
+    <link rel="icon" type="image/png" href="public/img/favicon256.png">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.loli.net">
+    <link rel="preconnect" href="https://gstatic.loli.net" crossorigin>
+    <link href="https://fonts.loli.net/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Serif+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <link href="css/style.css" rel="stylesheet">
+    
+    <!-- Lucide Icons -->
+    <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .serif {
+            font-family: 'Noto Serif SC', serif;
+        }
+        html.lenis, html.lenis body {
+            height: auto;
+        }
+        .lenis.lenis-smooth {
+            scroll-behavior: auto !important;
+        }
+        .lenis.lenis-smooth [data-lenis-prevent] {
+            overscroll-behavior: contain;
+        }
+        .lenis.lenis-stopped {
+            overflow: hidden;
+        }
+        .lenis.lenis-scrolling iframe {
+            pointer-events: none;
+        }
+        
+        /* Starry Background */
+        .star {
+            position: absolute;
+            background: currentColor;
+            border-radius: 50%;
+            opacity: 0;
+            animation: twinkle var(--duration) ease-in-out infinite;
+            animation-delay: var(--delay);
+        }
+        @keyframes twinkle {
+            0% { opacity: 0; transform: scale(0.5); }
+            50% { opacity: var(--opacity); transform: scale(1); }
+            100% { opacity: 0; transform: scale(0.5); }
+        }
+    </style>
+</head>
+<body class="bg-white dark:bg-gray-950 text-gray-800 dark:text-gray-200 transition-colors duration-500">
+    <!-- Starry Background Container -->
+    <div id="stars-container" class="fixed inset-0 pointer-events-none z-0 overflow-hidden text-blue-300/30 dark:text-white/30"></div>
+
+    <!-- Navbar -->
+    <nav id="navbar" class="fixed w-full z-50 top-0 transition-all duration-300 bg-white/80 dark:bg-gray-950/80 backdrop-blur-md border-b border-gray-100 dark:border-gray-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <a href="index.html" class="flex items-center group">
+                        <div class="relative">
+                            <div class="absolute -inset-1 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full blur opacity-25 group-hover:opacity-50 transition duration-200"></div>
+                            <img src="public/img/favicon256.png" alt="Logo" class="relative h-8 w-8 mr-2 dark:hidden">
+                            <img src="public/img/black256.png" alt="Logo" class="relative h-8 w-8 mr-2 hidden dark:block">
+                        </div>
+                        <span id="nav-title" class="font-bold text-xl tracking-tight transition-colors duration-300 text-gray-900 dark:text-white">
+                            夏日科技探索
+                        </span>
+                    </a>
+                </div>
+                
+                <div class="hidden lg:flex items-center space-x-1">
+                    <a href="index.html" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-600 hover:text-blue-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-white dark:hover:bg-white/10" title="首页">
+                        <i data-lucide="home" class="w-5 h-5"></i>
+                    </a>
+                    <a href="blog.html" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-600 hover:text-blue-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-white dark:hover:bg-white/10" title="星空笔记">
+                        <i data-lucide="sparkles" class="w-5 h-5"></i>
+                    </a>
+                    <a href="moments.html" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-600 hover:text-blue-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-white dark:hover:bg-white/10" title="随手拍">
+                        <i data-lucide="camera" class="w-5 h-5"></i>
+                    </a>
+                    <a href="bookmarks.html" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-600 hover:text-blue-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-white dark:hover:bg-white/10" title="收藏">
+                        <i data-lucide="heart" class="w-5 h-5"></i>
+                    </a>
+                    <a href="rss.html" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-600 hover:text-blue-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-white dark:hover:bg-white/10" title="订阅">
+                        <i data-lucide="radio" class="w-5 h-5"></i>
+                    </a>
+                    <a href="video.html" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-600 hover:text-blue-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-white dark:hover:bg-white/10" title="视频">
+                        <i data-lucide="clapperboard" class="w-5 h-5"></i>
+                    </a>
+                    <a href="about.html" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-blue-600 bg-blue-50/80 dark:bg-blue-900/30 dark:text-blue-400" title="关于">
+                        <i data-lucide="cat" class="w-5 h-5"></i>
+                    </a>
+                    
+                    <!-- Theme Toggle -->
+                    <button id="theme-toggle" class="ml-4 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors focus:outline-none ring-2 ring-transparent focus:ring-blue-500" aria-label="Toggle Theme">
+                        <i id="theme-toggle-icon" data-lucide="moon" class="w-5 h-5 text-gray-600 dark:text-gray-300"></i>
+                    </button>
+                </div>
+
+                <div class="lg:hidden flex items-center">
+                    <!-- Theme Toggle Mobile -->
+                    <button onclick="toggleTheme()" class="mr-4 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors" aria-label="Toggle Theme">
+                        <i data-lucide="moon" class="w-5 h-5 text-blue-600 dark:hidden"></i>
+                        <i data-lucide="sun" class="w-5 h-5 text-yellow-400 hidden dark:block"></i>
+                    </button>
+                    
+                    <button id="mobile-menu-btn" class="p-2 rounded-md transition-colors text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800" aria-label="Toggle Menu">
+                        <i data-lucide="menu" class="w-6 h-6"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile menu -->
+        <div id="mobile-menu" class="lg:hidden absolute top-full left-0 w-full bg-white/95 dark:bg-black/95 backdrop-blur-xl border-t border-gray-100 dark:border-gray-800 shadow-2xl transition-all duration-300 ease-in-out transform opacity-0 -translate-y-4 pointer-events-none">
+            <div class="px-4 pt-4 pb-6 space-y-2">
+                <a href="index.html" class="flex items-center px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 text-gray-600 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-white/10 hover:shadow-sm hover:translate-x-1">
+                    <i data-lucide="home" class="w-5 h-5 mr-3"></i>
+                    首页
+                </a>
+                <a href="blog.html" class="flex items-center px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 text-gray-600 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-white/10 hover:shadow-sm hover:translate-x-1">
+                    <i data-lucide="sparkles" class="w-5 h-5 mr-3"></i>
+                    星空笔记
+                </a>
+                <a href="moments.html" class="flex items-center px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 text-gray-600 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-white/10 hover:shadow-sm hover:translate-x-1">
+                    <i data-lucide="camera" class="w-5 h-5 mr-3"></i>
+                    随手拍
+                </a>
+                <a href="bookmarks.html" class="flex items-center px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 text-gray-600 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-white/10 hover:shadow-sm hover:translate-x-1">
+                    <i data-lucide="heart" class="w-5 h-5 mr-3"></i>
+                    收藏
+                </a>
+                <a href="rss.html" class="flex items-center px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 text-gray-600 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-white/10 hover:shadow-sm hover:translate-x-1">
+                    <i data-lucide="radio" class="w-5 h-5 mr-3"></i>
+                    订阅
+                </a>
+                <a href="video.html" class="flex items-center px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 text-gray-600 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-white/10 hover:shadow-sm hover:translate-x-1">
+                    <i data-lucide="clapperboard" class="w-5 h-5 mr-3"></i>
+                    视频
+                </a>
+                <a href="about.html" class="flex items-center px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 text-blue-600 bg-blue-50 dark:bg-blue-900/20 dark:text-blue-400 shadow-sm">
+                    <i data-lucide="cat" class="w-5 h-5 mr-3"></i>
+                    关于
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="max-w-3xl mx-auto px-6 pt-24 pb-24">
+        
+        <!-- Profile Section with Elegant Card Design -->
+        <div class="relative mb-20 animate-fade-in-up">
+            <!-- Background Decorative Elements -->
+            <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full max-w-lg bg-gradient-to-b from-blue-50/50 to-transparent dark:from-blue-900/10 dark:to-transparent blur-3xl -z-10 rounded-full opacity-60"></div>
+            
+            <div class="text-center">
+                <div class="relative inline-block mb-8 group cursor-default">
+                    <div class="absolute -inset-2 bg-gradient-to-tr from-blue-100 to-indigo-100 dark:from-blue-900/30 dark:to-indigo-900/30 rounded-full blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+                    <img src="public/img/avatar.jpg" alt="Avatar" class="relative w-32 h-32 rounded-full object-cover ring-4 ring-white dark:ring-gray-900 shadow-2xl mx-auto transition-all duration-700 ease-out">
+                    <div class="absolute bottom-1 right-1 w-4 h-4 bg-green-500 border-2 border-white dark:border-gray-900 rounded-full" title="Available"></div>
+                </div>
+                
+                <h1 class="text-4xl font-serif font-bold text-gray-900 dark:text-white mb-4 tracking-tight">Thoi</h1>
+                
+                <div class="flex items-center justify-center space-x-2 text-sm text-gray-500 dark:text-gray-400 font-medium tracking-wide uppercase">
+                    <span>大四学生</span>
+                    <span class="w-1 h-1 bg-gray-300 dark:bg-gray-600 rounded-full"></span>
+                    <span>学习者</span>
+                    <span class="w-1 h-1 bg-gray-300 dark:bg-gray-600 rounded-full"></span>
+                    <span>探索者</span>
+                </div>
+            </div>
+        </div>
+        
+        <article class="prose dark:prose-invert prose md:prose-lg mx-auto prose-headings:font-serif prose-p:text-gray-600 dark:prose-p:text-gray-300 prose-a:no-underline hover:prose-a:text-blue-600 transition-colors opacity-0 animate-fade-in-up [animation-delay:300ms]">
+            <!-- Introduction: Narrative style with Drop Cap -->
+            <div class="relative">
+                <span class="absolute -left-4 -top-4 text-6xl text-gray-100 dark:text-gray-800 font-serif font-bold -z-10 select-none">"</span>
+                <p class="lead text-xl text-gray-600 dark:text-gray-300 italic mb-12 text-center font-serif leading-relaxed">
+                    仰望星空，是为了更好地脚踏实地。<br>
+                    构建代码，是为了更自由地表达思想。
+                </p>
+            </div>
+
+            <p class="first-letter:text-5xl first-letter:font-serif first-letter:font-bold first-letter:text-gray-900 dark:first-letter:text-white first-letter:mr-3 first-letter:float-left leading-relaxed text-justify">
+                很高兴你能来到这里。如果你已经浏览过前面的页面，你会发现这里是一个有些"安静"的地方。没有弹窗，没有广告，甚至没有复杂的交互。这正是我想呈现的——一个在数字洪流中可以片刻驻足的角落。
+            </p>
+            <p class="indent-[2em] text-justify">
+                我是 Thoi，一个在多元兴趣中探索成长的大四学生。虽然我涉足的领域不少——从代码构建到星空观测，以及更多未知的领域——尽管尚不够精通，但我始终保持着好奇与热情，在学习的道路上稳步前行。夜晚，我则化身为星空的观察者，试图透过望远镜捕捉那些穿越了亿万光年的光子，在宏大宇宙中寻找成长的动力。
+            </p>
+
+            <!-- Divider -->
+            <div class="flex items-center justify-center my-12 opacity-30">
+                <div class="w-16 h-px bg-gray-400"></div>
+                <i data-lucide="star" class="w-4 h-4 mx-4 text-gray-400"></i>
+                <div class="w-16 h-px bg-gray-400"></div>
+            </div>
+
+            <!-- Tech & Interests: Modern Grid Layout -->
+            <div class="not-prose grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 mb-16">
+                <!-- Left: Code -->
+                <div class="group p-6 rounded-2xl bg-gray-50 dark:bg-gray-900/50 hover:bg-blue-50/50 dark:hover:bg-blue-900/10 transition-colors duration-300 border border-transparent hover:border-blue-100 dark:hover:border-blue-900/30">
+                    <div class="flex items-center mb-4">
+                        <div class="p-2 bg-white dark:bg-gray-800 rounded-lg shadow-sm mr-3 text-blue-500">
+                            <i data-lucide="code-2" class="w-5 h-5"></i>
+                        </div>
+                        <h3 class="text-lg font-bold text-gray-900 dark:text-white font-serif">构建</h3>
+                    </div>
+                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-4 leading-relaxed">
+                        崇尚简洁与高效。我相信好的代码应该像诗歌一样，逻辑清晰，韵律优美。
+                    </p>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="px-2 py-1 bg-white dark:bg-gray-800 rounded text-xs font-mono text-gray-600 dark:text-gray-400 border border-gray-100 dark:border-gray-700">React</span>
+                        <span class="px-2 py-1 bg-white dark:bg-gray-800 rounded text-xs font-mono text-gray-600 dark:text-gray-400 border border-gray-100 dark:border-gray-700">TypeScript</span>
+                        <span class="px-2 py-1 bg-white dark:bg-gray-800 rounded text-xs font-mono text-gray-600 dark:text-gray-400 border border-gray-100 dark:border-gray-700">Tailwind</span>
+                    </div>
+                </div>
+
+                <!-- Right: Explore -->
+                <div class="group p-6 rounded-2xl bg-gray-50 dark:bg-gray-900/50 hover:bg-indigo-50/50 dark:hover:bg-indigo-900/10 transition-colors duration-300 border border-transparent hover:border-indigo-100 dark:hover:border-indigo-900/30">
+                    <div class="flex items-center mb-4">
+                        <div class="p-2 bg-white dark:bg-gray-800 rounded-lg shadow-sm mr-3 text-indigo-500">
+                            <i data-lucide="telescope" class="w-5 h-5"></i>
+                        </div>
+                        <h3 class="text-lg font-bold text-gray-900 dark:text-white font-serif">探索</h3>
+                    </div>
+                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-4 leading-relaxed">
+                        被未知与宏大所吸引。无论是深空摄影还是 RSS 阅读，都是对世界边界的拓展。
+                    </p>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="px-2 py-1 bg-white dark:bg-gray-800 rounded text-xs font-mono text-gray-600 dark:text-gray-400 border border-gray-100 dark:border-gray-700">Astro</span>
+                        <span class="px-2 py-1 bg-white dark:bg-gray-800 rounded text-xs font-mono text-gray-600 dark:text-gray-400 border border-gray-100 dark:border-gray-700">Nature</span>
+                        <span class="px-2 py-1 bg-white dark:bg-gray-800 rounded text-xs font-mono text-gray-600 dark:text-gray-400 border border-gray-100 dark:border-gray-700">RSS</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Philosophy Block -->
+            <div class="relative bg-gradient-to-br from-gray-50 to-white dark:from-gray-900 dark:to-gray-900 border border-gray-100 dark:border-gray-800 p-8 rounded-2xl shadow-sm mb-16">
+                <i data-lucide="quote" class="absolute top-6 left-6 w-8 h-8 text-gray-200 dark:text-gray-700 -z-10"></i>
+                <p class="text-gray-700 dark:text-gray-300 italic text-center font-serif text-lg leading-loose">
+                    "在这个信息爆炸的时代，我希望通过 RSS 订阅回归阅读的本质，通过精选的网页收藏构建知识的图谱。去除了多余的装饰，只保留最核心的阅读体验。"
+                </p>
+            </div>
+
+            <!-- Interaction Zone -->
+            <div class="flex flex-col items-center justify-center my-16 not-prose">
+                <button id="wave-btn" class="group relative inline-flex items-center justify-center px-8 py-3 font-semibold text-white transition-all duration-300 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full hover:shadow-lg hover:shadow-blue-500/30 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 dark:focus:ring-offset-gray-900 overflow-hidden">
+                    <span class="relative z-10 flex items-center">
+                        <span class="mr-2 text-xl group-hover:animate-wave origin-bottom-right inline-block">👋</span>
+                        <span>Say Hi to Thoi</span>
+                    </span>
+                    <div class="absolute inset-0 bg-white/20 group-hover:translate-x-full transition-transform duration-700 -skew-x-12 origin-left"></div>
+                </button>
+                <p id="wave-text" class="mt-4 text-sm text-gray-400 dark:text-gray-500 opacity-0 transition-opacity duration-500 transform translate-y-2 font-medium">Thanks for stopping by! ✨</p>
+            </div>
+
+            <style>
+                @keyframes wave {
+                    0% { transform: rotate(0deg); }
+                    10% { transform: rotate(14deg); }
+                    20% { transform: rotate(-8deg); }
+                    30% { transform: rotate(14deg); }
+                    40% { transform: rotate(-4deg); }
+                    50% { transform: rotate(10deg); }
+                    60% { transform: rotate(0deg); }
+                    100% { transform: rotate(0deg); }
+                }
+                .animate-wave {
+                    animation-name: wave;
+                    animation-duration: 2.5s;
+                    animation-iteration-count: infinite;
+                    transform-origin: 70% 70%;
+                    display: inline-block;
+                }
+            </style>
+
+            <!-- Closing -->
+            <p class="text-center text-gray-500 dark:text-gray-400">
+                这个网站是我数字生命的一部分，它会随着我的成长而缓慢生长。<br>
+                如果你能在这里找到一篇有用的文章，一张喜欢的图片，那便是我最大的荣幸。
+            </p>
+            
+            <div class="flex items-center justify-center mt-12 mb-4">
+                <span class="font-serif italic text-gray-400 text-sm">—— 2025. Thoi</span>
+            </div>
+        </article>
+
+        <!-- Minimal Footer Contact -->
+        <div class="mt-20 flex flex-col items-center">
+            <div class="flex flex-wrap justify-center gap-4 max-w-2xl mx-auto px-4">
+                <a href="mailto:contact@shadowsky.com" class="p-3 text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 rounded-full transition-all duration-300" aria-label="Email" title="Email">
+                    <i data-lucide="mail" class="w-5 h-5"></i>
+                </a>
+                <a href="https://github.com/shadowsky" target="_blank" rel="noopener" class="p-3 text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 rounded-full transition-all duration-300" aria-label="GitHub" title="GitHub">
+                    <i data-lucide="github" class="w-5 h-5"></i>
+                </a>
+                <a href="https://gitlab.com/" target="_blank" rel="noopener" class="p-3 text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 rounded-full transition-all duration-300" aria-label="GitLab" title="GitLab">
+                    <i data-lucide="gitlab" class="w-5 h-5"></i>
+                </a>
+                <a href="https://twitter.com/shadowsky" target="_blank" rel="noopener" class="p-3 text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 rounded-full transition-all duration-300" aria-label="Twitter" title="Twitter">
+                    <i data-lucide="twitter" class="w-5 h-5"></i>
+                </a>
+                <a href="https://www.linkedin.com/" target="_blank" rel="noopener" class="p-3 text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 rounded-full transition-all duration-300" aria-label="LinkedIn" title="LinkedIn">
+                    <i data-lucide="linkedin" class="w-5 h-5"></i>
+                </a>
+                <a href="https://www.instagram.com/" target="_blank" rel="noopener" class="p-3 text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 rounded-full transition-all duration-300" aria-label="Instagram" title="Instagram">
+                    <i data-lucide="instagram" class="w-5 h-5"></i>
+                </a>
+                <a href="https://www.youtube.com/" target="_blank" rel="noopener" class="p-3 text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 rounded-full transition-all duration-300" aria-label="YouTube" title="YouTube">
+                    <i data-lucide="youtube" class="w-5 h-5"></i>
+                </a>
+                <a href="https://space.bilibili.com/" target="_blank" rel="noopener" class="p-3 text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 rounded-full transition-all duration-300" aria-label="Bilibili" title="Bilibili">
+                    <i data-lucide="tv" class="w-5 h-5"></i>
+                </a>
+                <a href="https://www.twitch.tv/" target="_blank" rel="noopener" class="p-3 text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 rounded-full transition-all duration-300" aria-label="Twitch" title="Twitch">
+                    <i data-lucide="twitch" class="w-5 h-5"></i>
+                </a>
+                <a href="https://steamcommunity.com/" target="_blank" rel="noopener" class="p-3 text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 rounded-full transition-all duration-300" aria-label="Steam" title="Steam">
+                    <i data-lucide="gamepad-2" class="w-5 h-5"></i>
+                </a>
+                <a href="https://dribbble.com/" target="_blank" rel="noopener" class="p-3 text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 rounded-full transition-all duration-300" aria-label="Dribbble" title="Dribbble">
+                    <i data-lucide="dribbble" class="w-5 h-5"></i>
+                </a>
+                <a href="https://www.figma.com/" target="_blank" rel="noopener" class="p-3 text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 rounded-full transition-all duration-300" aria-label="Figma" title="Figma">
+                    <i data-lucide="figma" class="w-5 h-5"></i>
+                </a>
+                <a href="https://codepen.io/" target="_blank" rel="noopener" class="p-3 text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 rounded-full transition-all duration-300" aria-label="CodePen" title="CodePen">
+                    <i data-lucide="codepen" class="w-5 h-5"></i>
+                </a>
+                <a href="https://t.me/" target="_blank" rel="noopener" class="p-3 text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 rounded-full transition-all duration-300" aria-label="Telegram" title="Telegram">
+                    <i data-lucide="send" class="w-5 h-5"></i>
+                </a>
+            </div>
+            <p class="mt-8 text-xs text-gray-300 dark:text-gray-700 font-serif">Designed with <i data-lucide="heart" class="inline w-3 h-3 mx-1 text-red-400"></i> in 2025</p>
+        </div>
+
+    </main>
+
+    <!-- Back to Top Button -->
+    <button id="back-to-top" class="fixed bottom-8 right-8 p-3 rounded-full bg-blue-600 text-white shadow-lg transition-all duration-300 opacity-0 translate-y-10 hover:bg-blue-700 hover:scale-110 z-50 focus:outline-none ring-2 ring-blue-500 ring-offset-2 dark:ring-offset-slate-950" aria-label="Back to top">
+        <i data-lucide="arrow-up" class="w-6 h-6"></i>
+    </button>
+
+    <!-- Footer -->
+    <footer class="border-t border-gray-100 dark:border-gray-800 py-12 mt-12">
+        <div class="max-w-3xl mx-auto px-6 text-center">
+            <p class="text-sm text-gray-400 dark:text-gray-600 font-serif">
+                &copy; 2025 Thoi. All rights reserved.
+            </p>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+    <script src="js/click-effect.js"></script>
+    <script src="js/context-menu.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script src="https://unpkg.com/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
+    <script>
+        // Mobile menu toggle
+        const btn = document.getElementById('mobile-menu-btn');
+        const menu = document.getElementById('mobile-menu');
+
+        btn.addEventListener('click', () => {
+            menu.classList.toggle('opacity-0');
+            menu.classList.toggle('-translate-y-4');
+            menu.classList.toggle('pointer-events-none');
+        });
+
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // Smooth Scroll (Lenis)
+        window.lenis = new Lenis({
+            duration: 1.2,
+            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+            direction: 'vertical',
+            gestureDirection: 'vertical',
+            smooth: true,
+            mouseMultiplier: 1,
+            smoothTouch: false,
+            touchMultiplier: 2,
+        })
+
+        let rafId;
+        function raf(time) {
+            window.lenis.raf(time)
+            rafId = requestAnimationFrame(raf)
+        }
+
+        rafId = requestAnimationFrame(raf)
+
+        // Handle bfcache
+        window.addEventListener('pageshow', (event) => {
+            if (event.persisted) {
+                window.lenis.start();
+                cancelAnimationFrame(rafId);
+                rafId = requestAnimationFrame(raf);
+            }
+        });
+
+    </script>
+    <script src="js/back-to-top.js"></script>
+    <script>
+
+        // Interaction Button
+        const waveBtn = document.getElementById('wave-btn');
+        const waveText = document.getElementById('wave-text');
+        if (waveBtn) {
+            waveBtn.addEventListener('click', () => {
+                // Confetti
+                const count = 200;
+                const defaults = {
+                    origin: { y: 0.7 }
+                };
+                function fire(particleRatio, opts) {
+                    confetti(Object.assign({}, defaults, opts, {
+                        particleCount: Math.floor(count * particleRatio)
+                    }));
+                }
+                fire(0.25, { spread: 26, startVelocity: 55, });
+                fire(0.2, { spread: 60, });
+                fire(0.35, { spread: 100, decay: 0.91, scalar: 0.8 });
+                fire(0.1, { spread: 120, startVelocity: 25, decay: 0.92, scalar: 1.2 });
+                fire(0.1, { spread: 120, startVelocity: 45, });
+                // Show Text
+                waveText.style.opacity = '1';
+                waveText.style.transform = 'translateY(0)';
+                // Button feedback
+                waveBtn.innerHTML = '✨Received!';
+                waveBtn.disabled = true;
+                waveBtn.classList.remove('bg-gradient-to-r');
+                waveBtn.classList.add('bg-green-500', 'cursor-default');
+            });
+        }
+
+        // Generate Stars
+        const starsContainer = document.getElementById('stars-container');
+        if (starsContainer) {
+            const starCount = 60;
+            for (let i = 0; i < starCount; i++) {
+                const star = document.createElement('div');
+                star.classList.add('star');
+                const x = Math.random() * 100;
+                const y = Math.random() * 100;
+                const size = Math.random() * 3 + 1;
+                const duration = Math.random() * 3 + 2;
+                const delay = Math.random() * 5;
+                const opacity = Math.random() * 0.5 + 0.3;
+                star.style.left = `${x}%`;
+                star.style.top = `${y}%`;
+                star.style.width = `${size}px`;
+                star.style.height = `${size}px`;
+                star.style.setProperty('--duration', `${duration}s`);
+                star.style.setProperty('--delay', `${delay}s`);
+                star.style.setProperty('--opacity', opacity);
+                starsContainer.appendChild(star);
+            }
+        }
+    </script>
+</body>
+</html>

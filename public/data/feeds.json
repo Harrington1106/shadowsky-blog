@@ -1,0 +1,56 @@
+[
+    {
+        "id": "sspai",
+        "title": "少数派 sspai",
+        "url": "https://sspai.com/feed",
+        "icon": "https://www.google.com/s2/favicons?domain=sspai.com&sz=32"
+    },
+    {
+        "id": "ithome",
+        "title": "IT之家",
+        "url": "https://www.ithome.com/rss/",
+        "icon": "https://www.google.com/s2/favicons?domain=ithome.com&sz=32"
+    },
+    {
+        "id": "36kr",
+        "title": "36氪",
+        "url": "https://www.36kr.com/feed",
+        "icon": "https://www.google.com/s2/favicons?domain=36kr.com&sz=32"
+    },
+    {
+        "id": "ruanyifeng",
+        "title": "阮一峰的网络日志",
+        "url": "http://www.ruanyifeng.com/blog/atom.xml",
+        "icon": "https://www.google.com/s2/favicons?domain=ruanyifeng.com&sz=32"
+    },
+    {
+        "id": "techcrunch",
+        "title": "TechCrunch",
+        "url": "https://techcrunch.com/feed/",
+        "icon": "https://www.google.com/s2/favicons?domain=techcrunch.com&sz=32"
+    },
+    {
+        "id": "theverge",
+        "title": "The Verge",
+        "url": "https://www.theverge.com/rss/index.xml",
+        "icon": "https://www.google.com/s2/favicons?domain=theverge.com&sz=32"
+    },
+    {
+        "id": "arlmy",
+        "title": "素生",
+        "url": "https://z.arlmy.me/atom.xml",
+        "icon": "https://www.google.com/s2/favicons?domain=z.arlmy.me&sz=32"
+    },
+    {
+        "id": "scarsu",
+        "title": "ScarSu",
+        "url": "https://scarsu.com/rss.xml",
+        "icon": "https://www.google.com/s2/favicons?domain=scarsu.com&sz=32"
+    },
+      {
+        "id": "祝融",
+        "title": "祝融说",
+        "url": "https://zhurongshuo.com/index.xml",
+        "icon": "https://www.google.com/s2/favicons?domain=https://zhurongshuo.com/&sz=32"
+    }
+]

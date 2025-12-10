@@ -1,0 +1,36 @@
+name: Add Bookmark
+description: Add a new bookmark to the collection
+title: "[Bookmark]: "
+labels: ["add-bookmark"]
+body:
+  - type: input
+    id: title
+    attributes:
+      label: Title
+      description: The title of the bookmark.
+      placeholder: My Awesome Site
+    validations:
+      required: true
+  - type: input
+    id: url
+    attributes:
+      label: URL
+      description: The link to the website.
+      placeholder: https://example.com
+    validations:
+      required: true
+  - type: textarea
+    id: desc
+    attributes:
+      label: Description
+      description: A brief description of the site.
+    validations:
+      required: false
+  - type: input
+    id: category
+    attributes:
+      label: Category ID
+      description: The ID of the category this belongs to (e.g., 'ai_tools').
+      placeholder: ai_tools
+    validations:
+      required: true

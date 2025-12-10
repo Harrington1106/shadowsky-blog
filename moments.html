@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+    <title>随手拍 - 夏日科技探索</title>
+    <link rel="icon" type="image/png" href="public/img/favicon256.png">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.loli.net">
+    <link rel="preconnect" href="https://gstatic.loli.net" crossorigin>
+    <link href="https://fonts.loli.net/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&family=ZCOOL+KuaiLe&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <link href="css/style.css" rel="stylesheet">
+    
+    <!-- Lucide Icons -->
+    <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
+    
+    <style>
+        body {
+            font-family: 'Inter', 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            opacity: 0; /* Ensure hidden before animation starts */
+        }
+        
+        /* Blob Animation */
+        @keyframes blob {
+            0% { transform: translate(0px, 0px) scale(1); }
+            33% { transform: translate(30px, -50px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
+            100% { transform: translate(0px, 0px) scale(1); }
+        }
+        .animate-blob {
+            animation: blob 7s infinite;
+        }
+        .animation-delay-2000 {
+            animation-delay: 2s;
+        }
+        .animation-delay-4000 {
+            animation-delay: 4s;
+        }
+        html.lenis, html.lenis body {
+            height: auto;
+        }
+        .lenis.lenis-smooth {
+            scroll-behavior: auto !important;
+        }
+        .lenis.lenis-smooth [data-lenis-prevent] {
+            overscroll-behavior: contain;
+        }
+        .lenis.lenis-stopped {
+            overflow: hidden;
+        }
+        .lenis.lenis-scrolling iframe {
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-black text-gray-900 dark:text-gray-100 font-sans pt-16 transition-colors duration-500" data-force-scrolled-nav>
+
+    <!-- Navbar -->
+    <nav id="navbar" class="fixed w-full z-50 top-0 transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <a href="index.html" class="flex items-center group">
+                        <div class="relative">
+                            <div class="absolute -inset-1 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full blur opacity-25 group-hover:opacity-50 transition duration-200"></div>
+                            <img src="public/img/favicon256.png" alt="Logo" class="relative h-8 w-8 mr-2 dark:hidden">
+                            <img src="public/img/black256.png" alt="Logo" class="relative h-8 w-8 mr-2 hidden dark:block">
+                        </div>
+                        <span id="nav-title" class="font-cute text-xl tracking-tight transition-colors duration-300 text-gray-900 dark:text-white">
+                            随手拍
+                        </span>
+                    </a>
+                </div>
+                
+                <div class="hidden lg:flex items-center space-x-1">
+                    <a href="index.html" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-600 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-white/10 dark:hover:text-white" title="首页">
+                        <i data-lucide="home" class="w-5 h-5"></i>
+                    </a>
+                    <a href="blog.html" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-600 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-white/10 dark:hover:text-white" title="星空笔记">
+                        <i data-lucide="sparkles" class="w-5 h-5"></i>
+                    </a>
+                    <a href="moments.html" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 bg-blue-50/80 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400" title="随手拍">
+                        <i data-lucide="camera" class="w-5 h-5"></i>
+                    </a>
+                    <a href="bookmarks.html" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-600 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-white/10 dark:hover:text-white" title="收藏">
+                        <i data-lucide="heart" class="w-5 h-5"></i>
+                    </a>
+                    <a href="rss.html" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-600 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-white/10 dark:hover:text-white" title="订阅">
+                        <i data-lucide="radio" class="w-5 h-5"></i>
+                    </a>
+                    <a href="video.html" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-600 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-white/10 dark:hover:text-white" title="视频">
+                        <i data-lucide="clapperboard" class="w-5 h-5"></i>
+                    </a>
+                    <a href="about.html" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-600 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-white/10 dark:hover:text-white" title="关于">
+                        <i data-lucide="cat" class="w-5 h-5"></i>
+                    </a>
+                    
+                    <!-- Theme Toggle -->
+                    <button type="button" id="theme-toggle" class="ml-4 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors focus:outline-none ring-2 ring-transparent focus:ring-blue-500" aria-label="Toggle Theme">
+                        <i id="theme-toggle-icon" data-lucide="moon" class="w-5 h-5 text-gray-600 dark:text-gray-300"></i>
+                    </button>
+                </div>
+
+                <div class="lg:hidden flex items-center">
+                    <!-- Theme Toggle Mobile -->
+                    <button type="button" onclick="toggleTheme()" class="mr-4 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors" aria-label="Toggle Theme">
+                        <i data-lucide="moon" class="w-5 h-5 text-blue-600 dark:hidden"></i>
+                        <i data-lucide="sun" class="w-5 h-5 text-yellow-400 hidden dark:block"></i>
+                    </button>
+                    
+                    <button type="button" id="mobile-menu-btn" class="p-2 rounded-md transition-colors text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800" aria-label="Toggle Menu">
+                        <i data-lucide="menu" class="w-6 h-6"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile menu -->
+        <div id="mobile-menu" class="lg:hidden absolute top-full left-0 w-full bg-white/95 dark:bg-black/95 backdrop-blur-xl border-t border-gray-100 dark:border-gray-800 shadow-2xl transition-all duration-300 ease-in-out transform opacity-0 -translate-y-4 pointer-events-none">
+            <div class="px-4 pt-4 pb-6 space-y-2">
+                <a href="index.html" class="flex items-center px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 text-gray-600 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-white/10 hover:shadow-sm hover:translate-x-1">
+                    <i data-lucide="home" class="w-5 h-5 mr-3"></i>
+                    首页
+                </a>
+                <a href="blog.html" class="flex items-center px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 text-gray-600 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-white/10 hover:shadow-sm hover:translate-x-1">
+                    <i data-lucide="sparkles" class="w-5 h-5 mr-3"></i>
+                    星空笔记
+                </a>
+                <a href="moments.html" class="flex items-center px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 text-blue-600 bg-blue-50 dark:bg-blue-900/20 dark:text-blue-400 shadow-sm">
+                    <i data-lucide="camera" class="w-5 h-5 mr-3"></i>
+                    随手拍
+                </a>
+                <a href="bookmarks.html" class="flex items-center px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 text-gray-600 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-white/10 hover:shadow-sm hover:translate-x-1">
+                    <i data-lucide="heart" class="w-5 h-5 mr-3"></i>
+                    收藏
+                </a>
+                <a href="rss.html" class="flex items-center px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 text-gray-600 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-white/10 hover:shadow-sm hover:translate-x-1">
+                    <i data-lucide="radio" class="w-5 h-5 mr-3"></i>
+                    订阅
+                </a>
+                <a href="video.html" class="flex items-center px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 text-gray-600 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-white/10 hover:shadow-sm hover:translate-x-1">
+                    <i data-lucide="clapperboard" class="w-5 h-5 mr-3"></i>
+                    视频
+                </a>
+                <a href="about.html" class="flex items-center px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 text-gray-600 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-white/10 hover:shadow-sm hover:translate-x-1">
+                    <i data-lucide="cat" class="w-5 h-5 mr-3"></i>
+                    关于
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="bg-gray-50 dark:bg-black min-h-screen py-20 transition-colors duration-500 relative overflow-hidden">
+        <!-- Background Decorations -->
+        <div class="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
+            <div class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-blue-400/20 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
+            <div class="absolute top-[-10%] right-[-10%] w-96 h-96 bg-purple-400/20 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
+            <div class="absolute -bottom-32 left-20 w-72 h-72 bg-pink-400/20 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-4000"></div>
+        </div>
+
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div class="text-center mb-8 sm:mb-16">
+          <h1 class="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 sm:text-6xl tracking-tight mb-4 sm:mb-6 animate-fade-in">生活瞬间</h1>
+          <p class="max-w-2xl mx-auto text-lg sm:text-xl text-gray-500 dark:text-gray-400 leading-relaxed animate-fade-in animation-delay-100">
+            用镜头捕捉美好，用一句话记录当下。
+          </p>
+        </div>
+
+        <!-- Stats Section -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <div class="bg-white dark:bg-neutral-900 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 animate-fade-in" style="animation-delay: 0.1s">
+                <div class="text-xs text-gray-500 dark:text-gray-400 mb-1">瞬间总数</div>
+                <div class="text-2xl font-bold text-gray-900 dark:text-white" id="stats-count">0</div>
+            </div>
+            <div class="bg-white dark:bg-neutral-900 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 animate-fade-in" style="animation-delay: 0.2s">
+                <div class="text-xs text-gray-500 dark:text-gray-400 mb-1">记录天数</div>
+                <div class="text-2xl font-bold text-gray-900 dark:text-white" id="stats-days">0</div>
+            </div>
+            <div class="bg-white dark:bg-neutral-900 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 animate-fade-in" style="animation-delay: 0.3s">
+                <div class="text-xs text-gray-500 dark:text-gray-400 mb-1">足迹点</div>
+                <div class="text-2xl font-bold text-gray-900 dark:text-white" id="stats-locations">0</div>
+            </div>
+            <div class="bg-white dark:bg-neutral-900 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 animate-fade-in" style="animation-delay: 0.4s">
+                <div class="text-xs text-gray-500 dark:text-gray-400 mb-1">最近更新</div>
+                <div class="text-xl font-bold text-blue-600 dark:text-blue-400" id="stats-latest">--</div>
+            </div>
+        </div>
+
+        <!-- Heatmap Section -->
+        <div class="bg-white dark:bg-neutral-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 mb-8 animate-fade-in hidden md:block" style="animation-delay: 0.5s">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-sm font-medium text-gray-900 dark:text-white flex items-center">
+                    <i data-lucide="activity" class="w-4 h-4 mr-2 text-blue-500"></i>
+                    活跃度热力图
+                </h3>
+                <div class="flex items-center space-x-2 text-xs text-gray-400">
+                    <span>少</span>
+                    <div class="flex space-x-1">
+                        <div class="w-2.5 h-2.5 rounded-sm bg-gray-100 dark:bg-gray-800"></div>
+                        <div class="w-2.5 h-2.5 rounded-sm bg-blue-200 dark:bg-blue-900/40"></div>
+                        <div class="w-2.5 h-2.5 rounded-sm bg-blue-400 dark:bg-blue-600"></div>
+                        <div class="w-2.5 h-2.5 rounded-sm bg-blue-600 dark:bg-blue-400"></div>
+                    </div>
+                    <span>多</span>
+                </div>
+            </div>
+            <div id="heatmap-container" class="flex justify-between overflow-hidden">
+                <!-- Heatmap will be rendered here -->
+            </div>
+        </div>
+
+        <!-- Search and Filter -->
+        <div class="sticky top-20 z-30 bg-gray-50/95 dark:bg-black/95 backdrop-blur-md py-4 mb-8 -mx-4 px-4 sm:mx-0 sm:px-0 transition-all duration-300" id="filter-bar">
+            <div class="flex flex-col md:flex-row gap-4 items-center justify-between">
+                <!-- Search -->
+                <div class="relative w-full md:w-64 group">
+                    <input type="text" id="search-input" placeholder="搜索瞬间、标签或地点..." 
+                        class="w-full pl-10 pr-4 py-2.5 rounded-xl border-none bg-white dark:bg-neutral-900 shadow-sm focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all group-hover:shadow-md text-sm text-gray-800 dark:text-gray-200 placeholder-gray-400">
+                    <i data-lucide="search" class="absolute left-3.5 top-2.5 w-5 h-5 text-gray-400 group-hover:text-blue-500 transition-colors"></i>
+                </div>
+
+                <!-- Tags -->
+                <div class="flex-1 w-full overflow-x-auto pb-2 md:pb-0 scrollbar-hide">
+                    <div class="flex space-x-2 px-1" id="tag-filters">
+                        <!-- Tags will be injected here -->
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="flex items-center space-x-3 shrink-0">
+                     <!-- Random Button -->
+                     <button id="btn-random" class="p-2.5 rounded-xl bg-white dark:bg-neutral-900 text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400 transition-all hover:scale-105 active:scale-95 shadow-sm border border-gray-100 dark:border-gray-800" title="随机漫游">
+                        <i data-lucide="shuffle" class="w-5 h-5"></i>
+                    </button>
+
+                    <div class="h-6 w-px bg-gray-200 dark:bg-gray-700 mx-1"></div>
+
+                    <!-- View Switcher -->
+                    <div class="flex bg-white dark:bg-neutral-900 rounded-xl p-1 shadow-sm border border-gray-100 dark:border-gray-800">
+                        <button id="view-grid" class="p-1.5 rounded-lg bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 transition-all" title="网格视图">
+                            <i data-lucide="layout-grid" class="w-5 h-5"></i>
+                        </button>
+                        <button id="view-timeline" class="p-1.5 rounded-lg text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700 transition-all" title="时间轴视图">
+                            <i data-lucide="list" class="w-5 h-5"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Moments Grid -->
+        <div id="moments-grid" class="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6">
+          <!-- Loading State -->
+          <div class="col-span-full flex justify-center py-20">
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-white dark:bg-black text-gray-600 dark:text-gray-400 border-t border-gray-200 dark:border-gray-800 py-8 relative z-10">
+        <div class="max-w-7xl mx-auto px-4 flex justify-center items-center">
+            <p class="text-xs tracking-widest uppercase opacity-50 hover:opacity-100 transition-opacity cursor-default">
+                &copy; 2025 Thoi <span class="mx-2 text-blue-500">|</span> Designed with <span class="text-red-500 animate-pulse">❤️</span>
+            </p>
+        </div>
+    </footer>
+
+    <!-- Back to Top Button -->
+    <button id="back-to-top" class="fixed bottom-8 right-8 p-3 rounded-full bg-blue-600 text-white shadow-lg transition-all duration-300 opacity-0 translate-y-10 hover:bg-blue-700 hover:scale-110 z-50 focus:outline-none ring-2 ring-blue-500 ring-offset-2 dark:ring-offset-slate-950" aria-label="Back to top">
+        <i data-lucide="arrow-up" class="w-6 h-6"></i>
+    </button>
+
+    <!-- Lightbox Overlay -->
+    <div id="lightbox" class="fixed inset-0 z-[100] bg-white/95 dark:bg-black/95 backdrop-blur-xl hidden opacity-0 transition-opacity duration-300">
+        <div class="absolute top-6 right-6 flex items-center space-x-4 z-20">
+            <button id="lightbox-share" class="p-2 text-gray-700 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 dark:text-white/70 dark:hover:text-white dark:bg-white/10 dark:hover:bg-white/20 rounded-full transition-all" title="分享链接">
+                <i data-lucide="share-2" class="w-6 h-6"></i>
+            </button>
+            <button id="lightbox-close" class="p-2 text-gray-700 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 dark:text-white/70 dark:hover:text-white dark:bg-white/10 dark:hover:bg-white/20 rounded-full transition-all">
+                <i data-lucide="x" class="w-8 h-8"></i>
+            </button>
+        </div>
+        
+        <div class="h-full w-full flex flex-col md:flex-row">
+            <!-- Image Container -->
+            <div class="flex-1 h-1/2 md:h-full relative flex items-center justify-center p-4 group bg-gray-50 dark:bg-transparent transition-colors">
+                <img id="lightbox-img" src="" alt="Full size" class="max-h-full max-w-full object-contain rounded-lg shadow-2xl">
+                
+                <!-- Navigation Arrows -->
+                <button id="lightbox-prev" class="absolute left-4 p-3 rounded-full bg-white/80 hover:bg-white text-gray-800 dark:bg-black/30 dark:hover:bg-black/50 dark:text-white backdrop-blur-sm transition-all opacity-0 group-hover:opacity-100 -translate-x-4 group-hover:translate-x-0 shadow-lg">
+                    <i data-lucide="chevron-left" class="w-8 h-8"></i>
+                </button>
+                <button id="lightbox-next" class="absolute right-4 p-3 rounded-full bg-white/80 hover:bg-white text-gray-800 dark:bg-black/30 dark:hover:bg-black/50 dark:text-white backdrop-blur-sm transition-all opacity-0 group-hover:opacity-100 translate-x-4 group-hover:translate-x-0 shadow-lg">
+                    <i data-lucide="chevron-right" class="w-8 h-8"></i>
+                </button>
+            </div>
+            
+            <!-- Details Panel -->
+            <div class="w-full md:w-96 bg-white/90 dark:bg-gray-900/80 md:border-l border-gray-200 dark:border-white/10 p-8 flex flex-col justify-center overflow-y-auto backdrop-blur-md transition-colors">
+                <div class="space-y-6">
+                    <div>
+                        <div class="flex items-center text-blue-600 dark:text-blue-400 mb-2 text-sm font-medium">
+                            <i data-lucide="calendar" class="w-4 h-4 mr-2"></i>
+                            <span id="lightbox-date"></span>
+                        </div>
+                        <h2 id="lightbox-content" class="text-xl md:text-2xl font-serif text-gray-900 dark:text-white leading-relaxed"></h2>
+                    </div>
+                    
+                    <div id="lightbox-location-container" class="flex items-center text-gray-500 dark:text-gray-400 text-sm hover:text-blue-600 dark:hover:text-blue-400 transition-colors cursor-pointer group">
+                        <i data-lucide="map-pin" class="w-4 h-4 mr-2 text-red-500 dark:text-red-400 group-hover:scale-110 transition-transform"></i>
+                        <span id="lightbox-location" class="border-b border-dashed border-gray-300 dark:border-gray-600 group-hover:border-blue-500 dark:group-hover:border-blue-400"></span>
+                    </div>
+
+                    <!-- Tags Container -->
+                    <div id="lightbox-tags" class="flex flex-wrap gap-2"></div>
+
+                    <!-- EXIF Data Display -->
+                    <div id="lightbox-exif" class="bg-gray-50 dark:bg-black/40 rounded-xl p-4 border border-gray-200 dark:border-white/5 space-y-3 hidden transition-colors">
+                        <div class="flex items-center text-xs text-gray-500 dark:text-gray-500 uppercase tracking-wider font-bold mb-2">
+                            <i data-lucide="camera" class="w-3 h-3 mr-1.5"></i>
+                            Shot Info
+                        </div>
+                        <div class="grid grid-cols-2 gap-y-3 gap-x-2 text-sm">
+                            <div class="text-gray-500 dark:text-gray-400">Camera</div>
+                            <div class="text-gray-900 dark:text-white font-mono text-right" id="exif-camera">--</div>
+                            
+                            <div class="text-gray-500 dark:text-gray-400">Lens</div>
+                            <div class="text-gray-900 dark:text-white font-mono text-right" id="exif-lens">--</div>
+                            
+                            <div class="text-gray-500 dark:text-gray-400">ISO</div>
+                            <div class="text-gray-900 dark:text-white font-mono text-right" id="exif-iso">--</div>
+                            
+                            <div class="text-gray-500 dark:text-gray-400">Aperture</div>
+                            <div class="text-gray-900 dark:text-white font-mono text-right" id="exif-aperture">--</div>
+                            
+                            <div class="text-gray-500 dark:text-gray-400">Shutter</div>
+                            <div class="text-gray-900 dark:text-white font-mono text-right" id="exif-shutter">--</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Core Scripts -->
+    <script src="js/main.js"></script>
+    <script src="js/moments.js"></script>
+    <script src="js/click-effect.js"></script>
+    <script src="https://unpkg.com/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
+    <script src="js/context-menu.js"></script>
+    <script>
+        // Initialize Lenis for smooth scrolling
+        const lenis = new Lenis({
+            duration: 1.5,
+            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+            direction: 'vertical',
+            gestureDirection: 'vertical',
+            smooth: true,
+            mouseMultiplier: 1,
+            smoothTouch: true,
+            touchMultiplier: 2,
+        });
+
+        function raf(time) {
+            lenis.raf(time);
+            requestAnimationFrame(raf);
+        }
+
+        requestAnimationFrame(raf);
+        
+        // Make lenis global for context menu usage
+        window.lenis = lenis;
+    </script>
+    <script src="js/back-to-top.js"></script>
+</body>
+</html>

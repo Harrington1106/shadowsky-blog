@@ -1,0 +1,45 @@
+name: Process Issue Ops
+on:
+  issues:
+    types: [opened, edited]
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  process-issue:
+    if: contains(github.event.issue.labels.*.name, 'add-category') || contains(github.event.issue.labels.*.name, 'add-bookmark')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Parse Issue and Update Data
+        env:
+          ISSUE_BODY: ${{ github.event.issue.body }}
+          ISSUE_LABELS: ${{ toJson(github.event.issue.labels) }}
+        run: node scripts/process_issue.js
+
+      - name: Commit and Push
+        run: |
+          git config --global user.name "GitHub Action"
+          git config --global user.email "action@github.com"
+          git add public/data/categories.json public/data/bookmarks.json
+          # Check if there are changes
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Auto-update from Issue #${{ github.event.issue.number }}"
+            git push
+          fi
+          
+      - name: Close Issue
+        uses: peter-evans/close-issue@v3
+        with:
+          comment: "Successfully processed and updated! The changes should be live shortly."
