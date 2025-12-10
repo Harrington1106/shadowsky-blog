@@ -11,32 +11,65 @@ if (!fs.existsSync(OUTPUT_DIR)) {
     fs.mkdirSync(OUTPUT_DIR, { recursive: true });
 }
 
-function fetchIssues(labels) {
+function fetchIssues(labels, retryCount = 3) {
     return new Promise((resolve, reject) => {
-        const options = {
-            hostname: 'api.github.com',
-            path: `/repos/${OWNER}/${REPO}/issues?labels=${labels}&state=open&per_page=100`,
-            headers: {
-                'User-Agent': 'Node.js Script',
-                'Accept': 'application/vnd.github.v3+json'
-            }
-        };
+        const attempt = (retriesLeft) => {
+            const options = {
+                hostname: 'api.github.com',
+                path: `/repos/${OWNER}/${REPO}/issues?labels=${labels}&state=open&per_page=100`,
+                headers: {
+                    'User-Agent': 'ShadowSky-Blog-Sync-Script',
+                    'Accept': 'application/vnd.github.v3+json'
+                },
+                timeout: 10000 // 10s timeout
+            };
 
-        https.get(options, (res) => {
-            let data = '';
-            res.on('data', (chunk) => data += chunk);
-            res.on('end', () => {
-                if (res.statusCode === 200) {
-                    try {
-                        resolve(JSON.parse(data));
-                    } catch (e) {
-                        reject(e);
+            const req = https.get(options, (res) => {
+                let data = '';
+                res.on('data', (chunk) => data += chunk);
+                res.on('end', () => {
+                    if (res.statusCode === 200) {
+                        try {
+                            resolve(JSON.parse(data));
+                        } catch (e) {
+                            reject(e);
+                        }
+                    } else if (res.statusCode === 301 || res.statusCode === 302) {
+                        // Handle redirects if necessary (GitHub API usually doesn't for this, but good practice)
+                        if (res.headers.location) {
+                            console.log(`Redirecting to ${res.headers.location}...`);
+                            // Simple recursion for redirect not implemented fully here for simplicity, 
+                            // as GitHub API v3 uses fixed endpoints usually.
+                            // But if we hit rate limit (403), we should stop.
+                            reject(new Error(`GitHub API Redirected: ${res.statusCode}`));
+                        }
+                    } else {
+                        reject(new Error(`GitHub API Error: ${res.statusCode} ${res.statusMessage}`));
                     }
+                });
+            });
+
+            req.on('error', (err) => {
+                if (retriesLeft > 0) {
+                    console.warn(`Request failed (${err.code}), retrying... (${retriesLeft} attempts left)`);
+                    setTimeout(() => attempt(retriesLeft - 1), 2000);
                 } else {
-                    reject(new Error(`GitHub API Error: ${res.statusCode} ${res.statusMessage}`));
+                    reject(err);
                 }
             });
-        }).on('error', reject);
+            
+            req.on('timeout', () => {
+                req.destroy();
+                if (retriesLeft > 0) {
+                    console.warn(`Request timed out, retrying... (${retriesLeft} attempts left)`);
+                    setTimeout(() => attempt(retriesLeft - 1), 2000);
+                } else {
+                    reject(new Error('Request timed out'));
+                }
+            });
+        };
+
+        attempt(retryCount);
     });
 }
 
