@@ -1,0 +1,54 @@
+{
+  "my_favorites": {
+    "name": "我的收藏",
+    "group": "收藏"
+  },
+  "ai_tools": {
+    "name": "AI与工具类",
+    "group": "工具"
+  },
+  "education": {
+    "name": "学习与教育",
+    "group": "学习"
+  },
+  "resources": {
+    "name": "资源下载与搜索",
+    "group": "资源"
+  },
+  "life_tools": {
+    "name": "生活实用工具",
+    "group": "生活"
+  },
+  "entertainment": {
+    "name": "娱乐与兴趣",
+    "group": "娱乐"
+  },
+  "literature_reading": {
+    "name": "文学与阅读",
+    "group": "阅读"
+  },
+  "dev_tech": {
+    "name": "开发与技术",
+    "group": "技术"
+  },
+  "blogs_tutorials": {
+    "name": "博客与教程",
+    "group": "学习"
+  },
+  "system_resources": {
+    "name": "系统与破解资源",
+    "group": "资源"
+  },
+  "video_editing": {
+    "name": "视频剪辑",
+    "group": "媒体"
+  },
+  "others": {
+    "name": "其他/无法归类",
+    "group": "其他"
+  },
+  "r18": {
+    "name": "R18",
+    "group": "Default"
+  }
+}

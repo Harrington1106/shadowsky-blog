@@ -1,0 +1,29 @@
+name: Add Category
+description: Create a new category for the bookmarks page
+title: "[Category]: "
+labels: ["add-category"]
+body:
+  - type: input
+    id: id
+    attributes:
+      label: Category ID
+      description: Unique identifier (e.g., 'gaming', 'ai_tools'). Lowercase, no spaces.
+      placeholder: gaming
+    validations:
+      required: true
+  - type: input
+    id: name
+    attributes:
+      label: Display Name
+      description: The name shown on the website (e.g., 'Game Development').
+      placeholder: 游戏开发
+    validations:
+      required: true
+  - type: input
+    id: group
+    attributes:
+      label: Group Name
+      description: Optional grouping (e.g., 'Entertainment'). Defaults to 'Default'.
+      placeholder: 娱乐
+    validations:
+      required: false
