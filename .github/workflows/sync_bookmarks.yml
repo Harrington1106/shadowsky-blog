@@ -14,8 +14,8 @@ jobs:
 
       - name: Download Data from blog-bookmark
         run: |
-          curl -o public/data/bookmarks.json https://raw.githubusercontent.com/Harrington1106/blog-bookmark/master/public/data/bookmarks.json
-          curl -o public/data/categories.json https://raw.githubusercontent.com/Harrington1106/blog-bookmark/master/public/data/categories.json
+          curl -o public/data/bookmarks.json https://raw.githubusercontent.com/Harrington1106/blog-bookmark/main/public/data/bookmarks.json
+          curl -o public/data/categories.json https://raw.githubusercontent.com/Harrington1106/blog-bookmark/main/public/data/categories.json
 
       - name: Check for changes
         id: git-check
