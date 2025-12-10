@@ -140,6 +140,32 @@ async function __initBookmarks() {
     // Use Yandex with size=120 parameter for High Resolution
     const faviconUrl = hostname ? `https://favicon.yandex.net/favicon/${hostname}?size=120` : '';
 
+    // Metadata Row (Stars/Language)
+    let metaHtml = '';
+    if (item.stars !== undefined || item.language) {
+      metaHtml = `<div class="flex items-center gap-3 mb-2 text-xs text-slate-500 dark:text-slate-400">`;
+      
+      if (item.language) {
+        // Simple color mapping based on language could be added here, using blue for generic now
+        metaHtml += `
+          <div class="flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-slate-400 dark:bg-slate-500"></span>
+            <span>${item.language}</span>
+          </div>`;
+      }
+      
+      if (item.stars !== undefined) {
+        const starCount = item.stars >= 1000 ? (item.stars / 1000).toFixed(1) + 'k' : item.stars;
+        metaHtml += `
+          <div class="flex items-center gap-1">
+            <i data-lucide="star" class="w-3 h-3 text-amber-400 fill-amber-400"></i>
+            <span>${starCount}</span>
+          </div>`;
+      }
+      
+      metaHtml += `</div>`;
+    }
+
     return (
       `<div class="card-wrapper h-full" ${issueAttr}>` +
       `<a href="${item.url}" target="_blank" rel="noopener" class="group relative flex flex-col h-full bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-200 dark:border-slate-800 hover:-translate-y-1">` +
@@ -153,6 +179,7 @@ async function __initBookmarks() {
       `<i data-lucide="external-link" class="w-4 h-4 text-slate-400 group-hover:text-blue-500 transition-colors ml-2 shrink-0"></i>` +
       `</div>` +
       `<h3 class="text-lg font-bold mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors break-words line-clamp-2">${item.title}</h3>` +
+      metaHtml +
       `<p class="text-slate-500 dark:text-slate-400 text-sm line-clamp-2 mt-auto">${desc}</p>` +
       `</a>` +
       `</div>`
