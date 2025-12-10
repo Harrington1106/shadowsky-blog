@@ -1,210 +1,365 @@
-<!DOCTYPE html>
-<html lang="zh-CN" class="dark">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
-    <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
-    <title>404 - 页面未找到 | 夏日科技探索</title>
-    <link rel="icon" type="image/png" href="public/img/favicon256.png">
-    
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.loli.net">
-    <link rel="preconnect" href="https://gstatic.loli.net" crossorigin>
-    <link href="https://fonts.loli.net/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
-    
-    <!-- Tailwind CSS -->
-    <link href="css/style.css" rel="stylesheet">
-    
-    <!-- Lucide Icons -->
-    <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
-    
-    <style>
-        :root {
-            /* Default Blob Colors */
-            --blob-color-1: rgba(168, 85, 247, 0.4); /* Purple 400 */
-            --blob-color-2: rgba(253, 224, 71, 0.4); /* Yellow 300 */
-            --blob-color-3: rgba(244, 114, 182, 0.4); /* Pink 400 */
-            --blob-color-4: rgba(34, 211, 238, 0.4); /* Cyan 400 */
-        }
-        .dark {
-            --blob-color-1: rgba(147, 51, 234, 0.3); /* Purple 600 */
-            --blob-color-2: rgba(37, 99, 235, 0.3); /* Blue 600 */
-            --blob-color-3: rgba(79, 70, 229, 0.3); /* Indigo 600 */
-            --blob-color-4: rgba(13, 148, 136, 0.3); /* Teal 600 */
-        }
-
-        body {
-            font-family: 'Inter', 'Noto Sans SC', sans-serif;
-            overflow-x: hidden;
-            min-height: 100vh;
-        }
-        
-        /* Blob Animation for Ambient Light */
-        @keyframes blob {
-            0% { transform: translate(0px, 0px) scale(1); }
-            33% { transform: translate(30px, -50px) scale(1.1); }
-            66% { transform: translate(-20px, 20px) scale(0.9); }
-            100% { transform: translate(0px, 0px) scale(1); }
-        }
-        .animate-blob {
-            animation: blob 7s infinite;
-        }
-        .animation-delay-2000 {
-            animation-delay: 2s;
-        }
-        .animation-delay-4000 {
-            animation-delay: 4s;
-        }
-    </style>
-</head>
-<body class="bg-white dark:bg-black text-gray-900 dark:text-gray-100 font-sans transition-colors duration-500 flex flex-col min-h-screen">
-
-    <!-- Navbar -->
-    <nav id="navbar" class="fixed w-full z-50 top-0 transition-all duration-300">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16">
-                <div class="flex items-center">
-                    <a href="index.html" class="flex items-center group">
-                        <div class="relative">
-                            <div class="absolute -inset-1 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full blur opacity-25 group-hover:opacity-50 transition duration-200"></div>
-                            <img src="public/img/favicon256.png" alt="Logo" class="relative h-8 w-8 mr-2 dark:hidden">
-                            <img src="public/img/black256.png" alt="Logo" class="relative h-8 w-8 mr-2 hidden dark:block">
-                        </div>
-                        <span id="nav-title" class="font-bold text-xl tracking-tight transition-colors duration-300">
-                            夏日科技探索
-                        </span>
-                    </a>
-                </div>
-                
-                <div class="hidden lg:flex items-center space-x-1">
-                    <a href="index.html" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-600 hover:text-blue-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-white dark:hover:bg-white/10" title="首页">
-                        <i data-lucide="home" class="w-5 h-5"></i>
-                    </a>
-                    <a href="blog.html" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-600 hover:text-blue-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-white dark:hover:bg-white/10" title="星空笔记">
-                        <i data-lucide="sparkles" class="w-5 h-5"></i>
-                    </a>
-                    <a href="moments.html" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-600 hover:text-blue-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-white dark:hover:bg-white/10" title="随手拍">
-                        <i data-lucide="camera" class="w-5 h-5"></i>
-                    </a>
-                    <a href="bookmarks.html" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-600 hover:text-blue-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-white dark:hover:bg-white/10" title="收藏">
-                        <i data-lucide="heart" class="w-5 h-5"></i>
-                    </a>
-                    <a href="rss.html" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-600 hover:text-blue-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-white dark:hover:bg-white/10" title="订阅">
-                        <i data-lucide="radio" class="w-5 h-5"></i>
-                    </a>
-                    <a href="video.html" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-600 hover:text-blue-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-white dark:hover:bg-white/10" title="视频">
-                        <i data-lucide="clapperboard" class="w-5 h-5"></i>
-                    </a>
-                    <a href="about.html" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-600 hover:text-blue-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-white dark:hover:bg-white/10" title="关于">
-                        <i data-lucide="cat" class="w-5 h-5"></i>
-                    </a>
-                    
-                    <!-- Theme Toggle -->
-                    <button id="theme-toggle" class="ml-4 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors focus:outline-none ring-2 ring-transparent focus:ring-blue-500" aria-label="Toggle Theme">
-                        <i id="theme-toggle-icon" data-lucide="moon" class="w-5 h-5 text-gray-600 dark:text-gray-300"></i>
-                    </button>
-                </div>
-
-                <div class="lg:hidden flex items-center">
-                    <!-- Theme Toggle Mobile -->
-                    <button onclick="toggleTheme()" class="mr-4 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors" aria-label="Toggle Theme">
-                        <i data-lucide="moon" class="w-5 h-5 text-blue-600 dark:hidden"></i>
-                        <i data-lucide="sun" class="w-5 h-5 text-yellow-400 hidden dark:block"></i>
-                    </button>
-                    
-                    <button id="mobile-menu-btn" class="p-2 rounded-md transition-colors" aria-label="Toggle Menu">
-                        <i data-lucide="menu" class="w-6 h-6"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Mobile menu -->
-        <div id="mobile-menu" class="lg:hidden absolute top-full left-0 w-full bg-white/95 dark:bg-black/95 backdrop-blur-xl border-t border-gray-100 dark:border-gray-800 shadow-2xl transition-all duration-300 ease-in-out transform opacity-0 -translate-y-4 pointer-events-none">
-            <div class="px-4 pt-4 pb-6 space-y-2">
-                <a href="index.html" class="flex items-center px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 text-gray-600 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-white/10">
-                    <i data-lucide="home" class="w-5 h-5 mr-3"></i>
-                    首页
-                </a>
-                <a href="blog.html" class="flex items-center px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 text-gray-600 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-white/10">
-                    <i data-lucide="sparkles" class="w-5 h-5 mr-3"></i>
-                    星空笔记
-                </a>
-                <a href="moments.html" class="flex items-center px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 text-gray-600 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-white/10">
-                    <i data-lucide="camera" class="w-5 h-5 mr-3"></i>
-                    随手拍
-                </a>
-                <a href="bookmarks.html" class="flex items-center px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 text-gray-600 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-white/10">
-                    <i data-lucide="heart" class="w-5 h-5 mr-3"></i>
-                    收藏
-                </a>
-                <a href="rss.html" class="flex items-center px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 text-gray-600 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-white/10">
-                    <i data-lucide="radio" class="w-5 h-5 mr-3"></i>
-                    订阅
-                </a>
-                <a href="video.html" class="flex items-center px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 text-gray-600 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-white/10">
-                    <i data-lucide="clapperboard" class="w-5 h-5 mr-3"></i>
-                    视频
-                </a>
-                <a href="about.html" class="flex items-center px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 text-gray-600 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-white/10">
-                    <i data-lucide="cat" class="w-5 h-5 mr-3"></i>
-                    关于
-                </a>
-            </div>
-        </div>
-    </nav>
-
-    <!-- 404 Content -->
-    <div class="relative flex-grow w-full flex items-center justify-center overflow-hidden transition-colors duration-500">
-        <!-- Background Blobs -->
-        <div class="absolute inset-0 z-0">
-            <div class="absolute inset-0 overflow-hidden pointer-events-none">
-                <div class="absolute top-[20%] left-[20%] w-[400px] h-[400px] rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-[80px] opacity-70 animate-blob bg-[var(--blob-color-1)]"></div>
-                <div class="absolute top-[20%] right-[20%] w-[400px] h-[400px] rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-[80px] opacity-70 animate-blob animation-delay-2000 bg-[var(--blob-color-2)]"></div>
-                <div class="absolute bottom-[20%] left-[30%] w-[400px] h-[400px] rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-[80px] opacity-70 animate-blob animation-delay-4000 bg-[var(--blob-color-3)]"></div>
-            </div>
-            <div class="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-white/90 dark:to-black/90 pointer-events-none transition-colors duration-500 z-10"></div>
-        </div>
-
-        <div class="relative z-20 text-center px-4">
-            <div class="mb-8">
-                <h1 class="text-9xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 drop-shadow-2xl">
-                    404
-                </h1>
-            </div>
-            <h2 class="text-3xl md:text-4xl font-bold text-gray-800 dark:text-white mb-6">
-                页面未找到
-            </h2>
-            <p class="text-lg md:text-xl text-gray-600 dark:text-gray-300 mb-10 max-w-lg mx-auto leading-relaxed">
-                抱歉，您访问的页面可能已被移除、重命名或暂时不可用。
-                <br>
-                就像一颗在宇宙中迷失的星星...
-            </p>
-            <a href="index.html" class="inline-flex items-center px-8 py-3 text-lg font-medium text-white bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1">
-                <i data-lucide="arrow-left" class="w-5 h-5 mr-2"></i>
-                返回首页
-            </a>
-        </div>
-        
-        <!-- Absolute Footer -->
-        <div class="absolute bottom-4 w-full text-center z-20 pointer-events-none">
-            <p class="text-[10px] sm:text-xs tracking-widest uppercase text-gray-400 dark:text-gray-500 opacity-60">
-                &copy; 2025 Thoi <span class="mx-2 text-blue-500">|</span> Designed with <span class="text-red-500 animate-pulse">❤️</span>
-            </p>
-        </div>
-    </div>
-
-    <!-- Global Scripts -->
-    <script src="js/main.js"></script>
-    <script src="js/click-effect.js"></script>
-    
     <script>
         // Initialize Icons
-        // Ensure Lucide icons are rendered if main.js doesn't catch them or for immediate feedback
         if (window.lucide) {
             lucide.createIcons();
         }
+
+        // --- Circle the Cat Game Logic ---
+        (function() {
+            const canvas = document.getElementById('cat-game');
+            if (!canvas) return;
+
+            const ctx = canvas.getContext('2d');
+            const resetButton = document.getElementById('reset-game');
+            const switchRoleButton = document.getElementById('switch-role');
+            const roleText = document.getElementById('role-text');
+            const instructionText = document.getElementById('game-instruction');
+            const messageEl = document.getElementById('game-message');
+            const messageText = messageEl.querySelector('span');
+
+            const GRID_SIZE = 11;
+            const RADIUS = 14;
+            const GAP = 5;
+            let dots = [];
+            let catPos = { x: 5, y: 5 };
+            let gameState = 'playing'; // playing, win, lose
+            let playerRole = 'catcher'; // 'catcher' | 'cat'
+            let isAiTurn = false;
+
+            // Initialize Game
+            function initGame() {
+                dots = [];
+                catPos = { x: Math.floor(GRID_SIZE / 2), y: Math.floor(GRID_SIZE / 2) };
+                gameState = 'playing';
+                isAiTurn = false;
+                hideMessage();
+
+                // Create grid
+                for (let y = 0; y < GRID_SIZE; y++) {
+                    let row = [];
+                    for (let x = 0; x < GRID_SIZE; x++) {
+                        // Random blocks (10-15%)
+                        const isBlocked = (Math.random() < 0.12) && (x !== catPos.x || y !== catPos.y);
+                        row.push({ x, y, blocked: isBlocked });
+                    }
+                    dots.push(row);
+                }
+                
+                updateUI();
+                resize();
+                requestAnimationFrame(draw);
+            }
+
+            function updateUI() {
+                if (playerRole === 'catcher') {
+                    instructionText.textContent = "点击背景围住小猫，别让它跑掉！";
+                    roleText.textContent = "切换: 扮演小猫";
+                    switchRoleButton.className = switchRoleButton.className.replace('text-pink-600', 'text-purple-600').replace('bg-pink-50', 'bg-purple-50');
+                } else {
+                    instructionText.textContent = "点击相邻格子移动小猫，逃离抓捕！";
+                    roleText.textContent = "切换: 扮演抓捕者";
+                    switchRoleButton.className = switchRoleButton.className.replace('text-purple-600', 'text-pink-600').replace('bg-purple-50', 'bg-pink-50');
+                }
+                // Re-render icons if needed (Lucide handles this automatically usually, but we might need to trigger it if we changed innerHTML)
+            }
+
+            function switchRole() {
+                playerRole = playerRole === 'catcher' ? 'cat' : 'catcher';
+                initGame();
+            }
+
+            function resize() {
+                const container = canvas.parentElement;
+                canvas.width = container.clientWidth;
+                canvas.height = container.clientHeight;
+                
+                const contentWidth = GRID_SIZE * (RADIUS * 2 + GAP) + RADIUS;
+                const scale = canvas.width / (contentWidth + 40);
+                
+                ctx.setTransform(scale, 0, 0, scale, 20, 20);
+            }
+
+            function draw() {
+                ctx.save();
+                ctx.setTransform(1, 0, 0, 1, 0, 0);
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.restore();
+
+                const isDark = document.documentElement.classList.contains('dark');
+                const dotColor = isDark ? '#374151' : '#e5e7eb';
+                const blockedColor = isDark ? '#9ca3af' : '#6b7280';
+                const catColor = playerRole === 'cat' ? '#ec4899' : '#ef4444'; // Pink if player is cat, Red otherwise
+
+                // Draw Dots
+                for (let y = 0; y < GRID_SIZE; y++) {
+                    for (let x = 0; x < GRID_SIZE; x++) {
+                        const dot = dots[y][x];
+                        const px = getPixelPos(x, y);
+                        
+                        ctx.beginPath();
+                        ctx.arc(px.x, px.y, RADIUS, 0, Math.PI * 2);
+                        ctx.fillStyle = dot.blocked ? blockedColor : dotColor;
+                        ctx.fill();
+                        ctx.closePath();
+                    }
+                }
+
+                // Highlight valid moves for Player Cat
+                if (playerRole === 'cat' && gameState === 'playing' && !isAiTurn) {
+                    const neighbors = getNeighbors(catPos.x, catPos.y);
+                    for (let n of neighbors) {
+                        if (!dots[n.y][n.x].blocked) {
+                            const px = getPixelPos(n.x, n.y);
+                            ctx.beginPath();
+                            ctx.arc(px.x, px.y, RADIUS, 0, Math.PI * 2);
+                            ctx.fillStyle = 'rgba(236, 72, 153, 0.4)'; // Pink Highlight
+                            ctx.fill();
+                        }
+                    }
+                }
+
+                // Draw Cat
+                const catPx = getPixelPos(catPos.x, catPos.y);
+                ctx.beginPath();
+                ctx.arc(catPx.x, catPx.y, RADIUS * 0.8, 0, Math.PI * 2);
+                ctx.fillStyle = catColor;
+                ctx.fill();
+                
+                // Draw Cat Face
+                ctx.fillStyle = 'white';
+                ctx.beginPath(); ctx.arc(catPx.x - 4, catPx.y - 2, 2.5, 0, Math.PI * 2); ctx.fill();
+                ctx.beginPath(); ctx.arc(catPx.x + 4, catPx.y - 2, 2.5, 0, Math.PI * 2); ctx.fill();
+                ctx.beginPath(); ctx.arc(catPx.x, catPx.y + 2, 1.5, 0, Math.PI * 2); ctx.fill();
+            }
+
+            function getPixelPos(x, y) {
+                const offsetX = (y % 2) * (RADIUS + GAP / 2);
+                const px = x * (RADIUS * 2 + GAP) + offsetX;
+                const py = y * (RADIUS * 2 + GAP) * 0.866;
+                return { x: px, y: py };
+            }
+
+            function getGridPos(clickX, clickY) {
+                const contentWidth = GRID_SIZE * (RADIUS * 2 + GAP) + RADIUS;
+                const scale = canvas.width / (contentWidth + 40);
+                
+                const relativeX = (clickX - 20) / scale;
+                const relativeY = (clickY - 20) / scale;
+
+                let minDist = Infinity;
+                let closest = null;
+
+                for (let y = 0; y < GRID_SIZE; y++) {
+                    for (let x = 0; x < GRID_SIZE; x++) {
+                        const px = getPixelPos(x, y);
+                        const dist = Math.sqrt((px.x - relativeX) ** 2 + (px.y - relativeY) ** 2);
+                        if (dist < RADIUS + 2 && dist < minDist) {
+                            minDist = dist;
+                            closest = { x, y };
+                        }
+                    }
+                }
+                return closest;
+            }
+
+            function getNeighbors(x, y) {
+                const neighbors = [];
+                const isOdd = y % 2 !== 0;
+                const directions = isOdd ? 
+                    [[0, -1], [1, -1], [-1, 0], [1, 0], [0, 1], [1, 1]] :
+                    [[-1, -1], [0, -1], [-1, 0], [1, 0], [-1, 1], [0, 1]];
+
+                for (let dir of directions) {
+                    const nx = x + dir[0];
+                    const ny = y + dir[1];
+                    if (nx >= 0 && nx < GRID_SIZE && ny >= 0 && ny < GRID_SIZE) {
+                        neighbors.push({ x: nx, y: ny });
+                    }
+                }
+                return neighbors;
+            }
+
+            function findShortestPath(start) {
+                const queue = [{ x: start.x, y: start.y, path: [] }];
+                const visited = new Set();
+                visited.add(`${start.x},${start.y}`);
+
+                while (queue.length > 0) {
+                    const { x, y, path } = queue.shift();
+
+                    if (x === 0 || x === GRID_SIZE - 1 || y === 0 || y === GRID_SIZE - 1) {
+                        return path;
+                    }
+
+                    const neighbors = getNeighbors(x, y);
+                    for (let n of neighbors) {
+                        if (!dots[n.y][n.x].blocked && !visited.has(`${n.x},${n.y}`)) {
+                            visited.add(`${n.x},${n.y}`);
+                            queue.push({ x: n.x, y: n.y, path: [...path, { x: n.x, y: n.y }] });
+                        }
+                    }
+                }
+                return null;
+            }
+
+            // --- AI Logic ---
+
+            function aiMoveCat() {
+                const path = findShortestPath(catPos);
+                
+                if (path && path.length > 0) {
+                    catPos = path[0];
+                    if (isEdge(catPos)) {
+                        endGame('cat_win');
+                    }
+                } else {
+                    // No path to edge, move randomly to prolong
+                    const neighbors = getNeighbors(catPos.x, catPos.y);
+                    const available = neighbors.filter(n => !dots[n.y][n.x].blocked);
+                    
+                    if (available.length === 0) {
+                        endGame('catcher_win');
+                    } else {
+                        const randomMove = available[Math.floor(Math.random() * available.length)];
+                        catPos = randomMove;
+                    }
+                }
+                draw();
+                isAiTurn = false;
+            }
+
+            function aiPlaceBlock() {
+                const path = findShortestPath(catPos);
+                let blockTarget = null;
+
+                if (path && path.length > 0) {
+                    // Smart Block: Block the immediate next step
+                    // This is simple but effective
+                    blockTarget = path[0];
+                } else {
+                    // Cat is trapped, just fill random available spots to finish it
+                    // Or try to block neighbors of cat
+                    const neighbors = getNeighbors(catPos.x, catPos.y);
+                    const available = neighbors.filter(n => !dots[n.y][n.x].blocked);
+                    if (available.length > 0) {
+                        blockTarget = available[Math.floor(Math.random() * available.length)];
+                    } else {
+                        // All blocked, wait for win check
+                    }
+                }
+
+                if (blockTarget && !dots[blockTarget.y][blockTarget.x].blocked) {
+                    dots[blockTarget.y][blockTarget.x].blocked = true;
+                    // Check if cat is now completely trapped (no moves)
+                    const neighbors = getNeighbors(catPos.x, catPos.y);
+                    const available = neighbors.filter(n => !dots[n.y][n.x].blocked);
+                    if (available.length === 0) {
+                        endGame('catcher_win');
+                    }
+                }
+                draw();
+                isAiTurn = false;
+            }
+
+            function isEdge(pos) {
+                return pos.x === 0 || pos.x === GRID_SIZE - 1 || pos.y === 0 || pos.y === GRID_SIZE - 1;
+            }
+
+            function endGame(result) {
+                gameState = result === 'cat_win' ? 'lose' : 'win'; // Default perspective (Catcher)
+                
+                if (playerRole === 'catcher') {
+                    if (result === 'cat_win') {
+                        showMessage('小猫跑掉了！', 'bg-red-500');
+                        gameState = 'lose';
+                    } else {
+                        showMessage('你抓住了小猫！', 'bg-green-500');
+                        gameState = 'win';
+                    }
+                } else {
+                    // Player is Cat
+                    if (result === 'cat_win') {
+                        showMessage('你逃脱了！', 'bg-green-500');
+                        gameState = 'win';
+                    } else {
+                        showMessage('你被抓住了！', 'bg-red-500');
+                        gameState = 'lose';
+                    }
+                }
+            }
+
+            function showMessage(text, colorClass) {
+                messageText.textContent = text;
+                // Reset classes
+                messageText.className = `text-white font-bold text-xl px-6 py-3 rounded-full shadow-lg transform transition-transform duration-300 ${colorClass}`;
+                messageEl.classList.remove('opacity-0', 'pointer-events-none');
+                messageEl.querySelector('span').classList.remove('scale-0');
+                messageEl.querySelector('span').classList.add('scale-100');
+            }
+
+            function hideMessage() {
+                messageEl.classList.add('opacity-0', 'pointer-events-none');
+                messageEl.querySelector('span').classList.add('scale-0');
+                messageEl.querySelector('span').classList.remove('scale-100');
+            }
+
+            // Input Handling
+            canvas.addEventListener('click', (e) => {
+                if (gameState !== 'playing' || isAiTurn) return;
+
+                const rect = canvas.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+
+                const gridPos = getGridPos(x, y);
+                if (!gridPos) return;
+
+                if (playerRole === 'catcher') {
+                    const dot = dots[gridPos.y][gridPos.x];
+                    if (!dot.blocked && (gridPos.x !== catPos.x || gridPos.y !== catPos.y)) {
+                        dot.blocked = true;
+                        draw();
+                        
+                        // Check if blocking caused instant win (rare but possible)
+                        const neighbors = getNeighbors(catPos.x, catPos.y);
+                        const available = neighbors.filter(n => !dots[n.y][n.x].blocked);
+                        if (available.length === 0) {
+                            endGame('catcher_win');
+                        } else {
+                            isAiTurn = true;
+                            setTimeout(aiMoveCat, 200);
+                        }
+                    }
+                } else {
+                    // Player is Cat
+                    // Check if clicked tile is neighbor and not blocked
+                    const neighbors = getNeighbors(catPos.x, catPos.y);
+                    const isNeighbor = neighbors.some(n => n.x === gridPos.x && n.y === gridPos.y);
+                    const dot = dots[gridPos.y][gridPos.x];
+
+                    if (isNeighbor && !dot.blocked) {
+                        catPos = gridPos;
+                        draw();
+
+                        if (isEdge(catPos)) {
+                            endGame('cat_win');
+                        } else {
+                            isAiTurn = true;
+                            setTimeout(aiPlaceBlock, 200);
+                        }
+                    }
+                }
+            });
+
+            resetButton.addEventListener('click', initGame);
+            switchRoleButton.addEventListener('click', switchRole);
+            
+            window.addEventListener('resize', () => {
+                resize();
+                draw();
+            });
+
+            // Start
+            initGame();
+        })();
     </script>
-</body>
-</html>

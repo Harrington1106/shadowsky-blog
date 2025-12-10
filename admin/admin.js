@@ -7,6 +7,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     await fetchCategories();
     fetchBookmarks();
     lucide.createIcons();
+
+    // Keyboard Shortcut for Save
+    document.addEventListener('keydown', (e) => {
+        if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+            e.preventDefault();
+            saveBookmarks();
+        }
+    });
 });
 
 async function fetchCategories() {

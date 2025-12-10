@@ -164,6 +164,12 @@
         </div>
     </div>
 
+    <!-- Floating Save Button -->
+    <button onclick="saveBookmarks()" class="fixed bottom-8 right-8 bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-full shadow-lg transition-all hover:scale-110 z-40 flex items-center justify-center group" title="保存更改 (Ctrl+S)">
+        <i data-lucide="save" class="w-6 h-6"></i>
+        <span class="absolute right-full mr-4 bg-gray-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">保存更改</span>
+    </button>
+
     <!-- Toast Notification -->
     <div id="toast" class="fixed bottom-4 right-4 bg-slate-900 text-white px-6 py-3 rounded-lg shadow-lg transform translate-y-20 opacity-0 transition-all duration-300 z-50">
         Saved successfully

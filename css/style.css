@@ -1580,10 +1580,6 @@ body {
   bottom: -20%;
 }
 
-.bottom-\[20\%\] {
-  bottom: 20%;
-}
-
 .left-0 {
   left: 0px;
 }
@@ -1628,14 +1624,6 @@ body {
   left: -10%;
 }
 
-.left-\[20\%\] {
-  left: 20%;
-}
-
-.left-\[30\%\] {
-  left: 30%;
-}
-
 .left-full {
   left: 100%;
 }
@@ -1676,10 +1664,6 @@ body {
   right: -10%;
 }
 
-.right-\[20\%\] {
-  right: 20%;
-}
-
 .top-0 {
   top: 0px;
 }
@@ -1710,10 +1694,6 @@ body {
 
 .top-\[-10\%\] {
   top: -10%;
-}
-
-.top-\[20\%\] {
-  top: 20%;
 }
 
 .top-full {
@@ -2118,10 +2098,6 @@ body {
   height: 24rem;
 }
 
-.h-\[400px\] {
-  height: 400px;
-}
-
 .h-\[500px\] {
   height: 500px;
 }
@@ -2276,10 +2252,6 @@ body {
 
 .w-96 {
   width: 24rem;
-}
-
-.w-\[400px\] {
-  width: 400px;
 }
 
 .w-\[500px\] {
@@ -2442,6 +2414,12 @@ body {
 
 .-skew-x-12 {
   --tw-skew-x: -12deg;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+
+.scale-0 {
+  --tw-scale-x: 0;
+  --tw-scale-y: 0;
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
 
@@ -3146,6 +3124,11 @@ body {
   background-color: rgb(244 114 182 / 0.2);
 }
 
+.bg-pink-50 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(253 242 248 / var(--tw-bg-opacity, 1));
+}
+
 .bg-pink-500 {
   --tw-bg-opacity: 1;
   background-color: rgb(236 72 153 / var(--tw-bg-opacity, 1));
@@ -3779,11 +3762,6 @@ body {
 
 .text-6xl {
   font-size: 3.75rem;
-  line-height: 1;
-}
-
-.text-9xl {
-  font-size: 8rem;
   line-height: 1;
 }
 
@@ -5059,16 +5037,6 @@ body {
 
 .hover\:bg-white\/20:hover {
   background-color: rgb(255 255 255 / 0.2);
-}
-
-.hover\:from-blue-700:hover {
-  --tw-gradient-from: #1d4ed8 var(--tw-gradient-from-position);
-  --tw-gradient-to: rgb(29 78 216 / 0) var(--tw-gradient-to-position);
-  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
-}
-
-.hover\:to-indigo-700:hover {
-  --tw-gradient-to: #4338ca var(--tw-gradient-to-position);
 }
 
 .hover\:text-blue-500:hover {
@@ -6400,11 +6368,6 @@ body {
   .md\:text-2xl {
     font-size: 1.5rem;
     line-height: 2rem;
-  }
-
-  .md\:text-4xl {
-    font-size: 2.25rem;
-    line-height: 2.5rem;
   }
 
   .md\:text-5xl {
