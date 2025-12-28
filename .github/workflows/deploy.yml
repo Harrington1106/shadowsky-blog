@@ -9,6 +9,9 @@ jobs:
       image: shangzheny/rth-host-helper:latest
 
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
       - name: Deploy to Retinbox Web Hosting
         uses: rthsoftware/host-auto-deploy@master
         env:

@@ -1,5 +1,19 @@
 // Tracker Configuration
-const API_BASE = 'http://47.118.28.27'; // Aliyun Backend
+// Use existing API_CONFIG if available, otherwise fallback to dynamic determination
+const TRACKER_ENDPOINT = (function() {
+    if (typeof API_CONFIG !== 'undefined' && API_CONFIG.baseUrl) {
+        return API_CONFIG.baseUrl + '/visit.php';
+    }
+    
+    // Fallback logic similar to api.js
+    const hostname = window.location.hostname;
+    if (hostname === 'shadowquake.top' || hostname === 'www.shadowquake.top') {
+        return '/api/visit.php';
+    }
+    
+    // Default to relative path for safety
+    return '/api/visit.php';
+})();
 
 (function() {
     // Prevent double loading
@@ -7,7 +21,7 @@ const API_BASE = 'http://47.118.28.27'; // Aliyun Backend
     window.__shadowsky_tracker_loaded = true;
 
     // Configuration
-    const ENDPOINT = API_BASE + '/api/visit.php';
+    const ENDPOINT = TRACKER_ENDPOINT;
 
     function track() {
         // Prepare data

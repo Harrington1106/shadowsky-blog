@@ -14,9 +14,17 @@ roles:
     frontend_framework: Vanilla JS + Tailwind CSS (Minimalist Design)
     backend_framework: Hybrid (Node.js Admin + PHP API)
     database: JSON Flat Files
-    deployment_tool: Unified PowerShell Script (Build + RTH + Aliyun)
-    last_deployment: 2025-12-28 14:30 (PHP Legacy Fix)
+    deployment_tool: GitHub Actions + Unified PowerShell Script
+    last_deployment: 2025-12-28 (CI/CD Fix)
+    server_status:
+      host: 47.118.28.27
+      uptime: "20 days"
+      last_check: 2025-12-28 19:48
+      latency: "48ms"
     recent_changes:
+      - Fixed GitHub Actions deployment failure by adding checkout step
+      - Updated DEVELOPMENT_MANUAL.md with Deployment & Visitor Count troubleshooting
+      - Fixed Mixed Content error in api.js and tracker.js (Dynamic Base URL)
       - Implemented strict PHP 5.2/5.3 compatibility layer (Removed http_response_code, __DIR__, JSON constants)
       - Added api/version.php for server environment diagnostics
       - Enabled temporary error reporting in visit.php/stats.php for debugging 500 errors
