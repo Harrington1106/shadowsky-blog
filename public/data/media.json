@@ -1,0 +1,375 @@
+{
+  "anime": [
+    {
+      "id": "301601",
+      "title": "里世界郊游",
+      "cover": "https://lain.bgm.tv/pic/cover/l/e6/f6/301601_G0X56.jpg",
+      "progress": 0,
+      "total": 12,
+      "status": "plan",
+      "tag": ""
+    },
+    {
+      "id": "282372",
+      "title": "安达与岛村",
+      "cover": "https://lain.bgm.tv/pic/cover/l/0f/a4/282372_pqp0S.jpg",
+      "progress": 12,
+      "total": 12,
+      "status": "completed",
+      "tag": ""
+    }
+  ],
+  "manga": [
+    {
+      "id": "332993",
+      "title": "插足百合的男人不如去死！？",
+      "cover": "https://lain.bgm.tv/pic/cover/l/85/96/332993_Qa61p.jpg",
+      "progress": 85,
+      "total": 153,
+      "status": "reading",
+      "tag": ""
+    },
+    {
+      "id": "560385",
+      "title": "废柴狗狗女友",
+      "cover": "https://lain.bgm.tv/pic/cover/l/38/c2/560385_cJ6S6.jpg",
+      "progress": 0,
+      "total": "?",
+      "status": "reading",
+      "tag": ""
+    },
+    {
+      "id": "601962",
+      "title": "龙人保镖与大小姐",
+      "cover": "https://lain.bgm.tv/pic/cover/l/21/16/601962_pBE40.jpg",
+      "progress": 0,
+      "total": "?",
+      "status": "reading",
+      "tag": ""
+    },
+    {
+      "id": "198384",
+      "title": "百合是我的工作！",
+      "cover": "https://lain.bgm.tv/pic/cover/l/e3/79/198384_253SZ.jpg",
+      "progress": 72,
+      "total": "?",
+      "status": "reading",
+      "tag": ""
+    },
+    {
+      "id": "475315",
+      "title": "DOUBLE HELIX BLOSSOM",
+      "cover": "https://lain.bgm.tv/pic/cover/l/af/68/475315_SGj9W.jpg",
+      "progress": 1,
+      "total": "?",
+      "status": "reading",
+      "tag": ""
+    },
+    {
+      "id": "455603",
+      "title": "魔法少女201",
+      "cover": "https://lain.bgm.tv/pic/cover/l/7a/a3/455603_ByRBy.jpg",
+      "progress": 43,
+      "total": "?",
+      "status": "reading",
+      "tag": ""
+    },
+    {
+      "id": "571483",
+      "title": "在飘摇的恋情消散之际",
+      "cover": "https://lain.bgm.tv/pic/cover/l/c0/dc/571483_7jjRH.jpg",
+      "progress": 3,
+      "total": "?",
+      "status": "reading",
+      "tag": ""
+    },
+    {
+      "id": "440080",
+      "title": "一周一次买下同班同学的那些事",
+      "cover": "https://lain.bgm.tv/pic/cover/l/c6/6f/440080_9Zzd9.jpg",
+      "progress": 12,
+      "total": "?",
+      "status": "reading",
+      "tag": ""
+    },
+    {
+      "id": "533647",
+      "title": "无法在真学姐的面前保持帅气！",
+      "cover": "https://lain.bgm.tv/pic/cover/l/7e/59/533647_4p4pP.jpg",
+      "progress": 6,
+      "total": "?",
+      "status": "reading",
+      "tag": ""
+    },
+    {
+      "id": "492781",
+      "title": "百合情结",
+      "cover": "https://lain.bgm.tv/pic/cover/l/00/d0/492781_QhCv7.jpg",
+      "progress": 12,
+      "total": "?",
+      "status": "reading",
+      "tag": ""
+    },
+    {
+      "id": "492125",
+      "title": "杏色朦胧",
+      "cover": "https://lain.bgm.tv/pic/cover/l/96/39/492125_Jjb6o.jpg",
+      "progress": 11,
+      "total": "?",
+      "status": "reading",
+      "tag": ""
+    },
+    {
+      "id": "604132",
+      "title": "百合双王子",
+      "cover": "https://lain.bgm.tv/pic/cover/l/91/9e/604132_Un1Ai.jpg",
+      "progress": 7,
+      "total": "?",
+      "status": "reading",
+      "tag": ""
+    },
+    {
+      "id": "561973",
+      "title": "向笨蛋告白",
+      "cover": "https://lain.bgm.tv/pic/cover/l/1f/fb/561973_yz3dN.jpg",
+      "progress": 7,
+      "total": "?",
+      "status": "reading",
+      "tag": ""
+    },
+    {
+      "id": "559223",
+      "title": "月不会数羊",
+      "cover": "https://lain.bgm.tv/pic/cover/l/a0/af/559223_AeGej.jpg",
+      "progress": 14,
+      "total": "?",
+      "status": "reading",
+      "tag": ""
+    },
+    {
+      "id": "408902",
+      "title": "比恋情更蔚蓝",
+      "cover": "https://lain.bgm.tv/pic/cover/l/6a/e8/408902_mGvKN.jpg",
+      "progress": 31,
+      "total": "?",
+      "status": "reading",
+      "tag": ""
+    },
+    {
+      "id": "545838",
+      "title": "校内恋爱",
+      "cover": "https://lain.bgm.tv/pic/cover/l/05/23/545838_f3W9x.jpg",
+      "progress": 10,
+      "total": "?",
+      "status": "reading",
+      "tag": ""
+    },
+    {
+      "id": "484281",
+      "title": "恋上恋爱的恋人关系",
+      "cover": "https://lain.bgm.tv/pic/cover/l/02/07/484281_pJwPw.jpg",
+      "progress": 15,
+      "total": 16,
+      "status": "reading",
+      "tag": ""
+    },
+    {
+      "id": "593977",
+      "title": "关于女儿带了女朋友回来这档事",
+      "cover": "https://lain.bgm.tv/pic/cover/l/44/18/593977_7y4Gw.jpg",
+      "progress": 7,
+      "total": "?",
+      "status": "reading",
+      "tag": ""
+    },
+    {
+      "id": "329306",
+      "title": "坏女孩",
+      "cover": "https://lain.bgm.tv/pic/cover/l/0e/07/329306_dzk9D.jpg",
+      "progress": 58,
+      "total": "?",
+      "status": "reading",
+      "tag": ""
+    },
+    {
+      "id": "516528",
+      "title": "发小的裙底随喵叫毕露",
+      "cover": "https://lain.bgm.tv/pic/cover/l/ed/a7/516528_rAVIz.jpg",
+      "progress": 12,
+      "total": "?",
+      "status": "reading",
+      "tag": ""
+    },
+    {
+      "id": "337165",
+      "title": "百合三角",
+      "cover": "https://lain.bgm.tv/pic/cover/l/da/6c/337165_TutYx.jpg",
+      "progress": 265,
+      "total": "?",
+      "status": "reading",
+      "tag": ""
+    },
+    {
+      "id": "473544",
+      "title": "天使的青梅变成辣妹了，却让我很心动",
+      "cover": "https://lain.bgm.tv/pic/cover/l/25/00/473544_C8b6m.jpg",
+      "progress": 70,
+      "total": "?",
+      "status": "reading",
+      "tag": ""
+    },
+    {
+      "id": "301236",
+      "title": "黄昏游记",
+      "cover": "https://lain.bgm.tv/pic/cover/l/ab/5d/301236_uP47L.jpg",
+      "progress": 13,
+      "total": "?",
+      "status": "reading",
+      "tag": ""
+    },
+    {
+      "id": "341136",
+      "title": "想要宠爱铠塚小姐",
+      "cover": "https://lain.bgm.tv/pic/cover/l/08/10/341136_fCv1c.jpg",
+      "progress": 9,
+      "total": 33,
+      "status": "reading",
+      "tag": ""
+    },
+    {
+      "id": "598399",
+      "title": "全都是你的错，所以请负起责任哦",
+      "cover": "https://lain.bgm.tv/pic/cover/l/3e/ed/598399_58NvU.jpg",
+      "progress": 2,
+      "total": "?",
+      "status": "reading",
+      "tag": ""
+    },
+    {
+      "id": "613594",
+      "title": "说好的“到了30岁还单身就一起生活“对吧？",
+      "cover": "https://lain.bgm.tv/pic/cover/l/f4/f3/613594_EE621.jpg",
+      "progress": 1,
+      "total": "?",
+      "status": "reading",
+      "tag": ""
+    },
+    {
+      "id": "489055",
+      "title": "伪恋真爱",
+      "cover": "https://lain.bgm.tv/pic/cover/l/8c/5b/489055_0v8V4.jpg",
+      "progress": 17,
+      "total": "?",
+      "status": "reading",
+      "tag": ""
+    },
+    {
+      "id": "394679",
+      "title": "极限OL想要服侍反派千金大小姐",
+      "cover": "https://lain.bgm.tv/pic/cover/l/e3/fe/394679_6BS3M.jpg",
+      "progress": 33,
+      "total": "?",
+      "status": "reading",
+      "tag": ""
+    },
+    {
+      "id": "614350",
+      "title": "隔壁的雪女总是化掉",
+      "cover": "https://lain.bgm.tv/pic/cover/l/dc/d0/614350_8grOg.jpg",
+      "progress": 1,
+      "total": 3,
+      "status": "reading",
+      "tag": ""
+    },
+    {
+      "id": "528686",
+      "title": "命运的山田田田田田田田田田田",
+      "cover": "https://lain.bgm.tv/pic/cover/l/59/f5/528686_99xGG.jpg",
+      "progress": 11,
+      "total": "?",
+      "status": "reading",
+      "tag": ""
+    },
+    {
+      "id": "563119",
+      "title": "共鸣天音",
+      "cover": "https://lain.bgm.tv/pic/cover/l/18/b8/563119_27Dqc.jpg",
+      "progress": 7,
+      "total": "?",
+      "status": "reading",
+      "tag": ""
+    },
+    {
+      "id": "506959",
+      "title": "兔子如是说",
+      "cover": "https://lain.bgm.tv/pic/cover/l/50/86/506959_zU5OI.jpg",
+      "progress": 14,
+      "total": "?",
+      "status": "reading",
+      "tag": ""
+    },
+    {
+      "id": "501633",
+      "title": "渴求有你闪耀的夜晚",
+      "cover": "https://lain.bgm.tv/pic/cover/l/9c/d0/501633_xKx53.jpg",
+      "progress": 26,
+      "total": "?",
+      "status": "reading",
+      "tag": ""
+    },
+    {
+      "id": "390237",
+      "title": "我看得见你唷！爱泽同学",
+      "cover": "https://lain.bgm.tv/pic/cover/l/7f/d4/390237_25LPy.jpg",
+      "progress": 25,
+      "total": "?",
+      "status": "reading",
+      "tag": ""
+    },
+    {
+      "id": "270436",
+      "title": "她的沈清",
+      "cover": "https://lain.bgm.tv/pic/cover/l/cf/a6/270436_6g2M0.jpg",
+      "progress": 28,
+      "total": 81,
+      "status": "reading",
+      "tag": ""
+    },
+    {
+      "id": "410492",
+      "title": "在意的人不是他",
+      "cover": "https://lain.bgm.tv/pic/cover/l/65/97/410492_kSSgS.jpg",
+      "progress": 175,
+      "total": "?",
+      "status": "reading",
+      "tag": ""
+    },
+    {
+      "id": "574949",
+      "title": "倾慕笨花",
+      "cover": "https://lain.bgm.tv/pic/cover/l/ee/5c/574949_7ww72.jpg",
+      "progress": 0,
+      "total": "?",
+      "status": "plan",
+      "tag": ""
+    },
+    {
+      "id": "81467",
+      "title": "安达与岛村",
+      "cover": "https://lain.bgm.tv/pic/cover/l/b2/48/81467_7WnB2.jpg",
+      "progress": 0,
+      "total": "?",
+      "status": "plan",
+      "tag": ""
+    },
+    {
+      "id": "408194",
+      "title": "性别不明的小小杀手太可爱了。",
+      "cover": "https://lain.bgm.tv/pic/cover/l/fa/d9/408194_6PUH1.jpg",
+      "progress": 36,
+      "total": 36,
+      "status": "completed",
+      "tag": ""
+    }
+  ]
+}

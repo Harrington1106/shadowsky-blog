@@ -1,2 +1,6 @@
 node_modules
 .env
+
+# Visit data - should not be deployed (stored on server)
+data/visits.json
+data/visit_logs.jsonl

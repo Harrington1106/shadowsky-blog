@@ -1,0 +1,115 @@
+last_update: 2025-12-28 14:30
+version: 2.3.8
+project_name: ShadowQuake
+domain: shadowquake.top
+
+status: active
+current_phase: maintenance_and_bugfix
+
+roles:
+  ARCH:
+    current_focus: Backend Stability & Legacy Compatibility
+    pending_decisions: []
+  DEV:
+    frontend_framework: Vanilla JS + Tailwind CSS (Minimalist Design)
+    backend_framework: Hybrid (Node.js Admin + PHP API)
+    database: JSON Flat Files
+    deployment_tool: Unified PowerShell Script (Build + RTH + Aliyun)
+    last_deployment: 2025-12-28 14:30 (PHP Legacy Fix)
+    recent_changes:
+      - Implemented strict PHP 5.2/5.3 compatibility layer (Removed http_response_code, __DIR__, JSON constants)
+      - Added api/version.php for server environment diagnostics
+      - Enabled temporary error reporting in visit.php/stats.php for debugging 500 errors
+      - Fixed PHP 500 Error: Rewrote db_helper.php, stats.php, cors.php to be PHP 5.x compatible (array() instead of [])
+      - Added ?v=20251228-2 to script tags in index.html to force cache refresh
+      - Verified js/tracker.js uses /api/visit.php (Same Origin)
+      - Fixed PHP Syntax: Rewrote api/visit.php to be PHP 5.x compatible (safe syntax)
+      - Added explicit file_exists check for db_helper.php
+      - Fixed Deployment Script: Added 'api' folder to whitelist (prepare_deploy.js)
+      - Disabled custom cursor (User Request: Ugly/Inconsistent)
+      - Fixed CORS preflight (OPTIONS 204) and allowed origins in api/cors.php
+      - Optimized Bookmarks page detection logic in js/bookmarks.js
+      - Fixed CRITICAL: PHP Source Code Leak on HTTPS (Nginx Config Mismatch)
+      - Resolved Backend 404 errors by switching PHP-FPM to TCP 127.0.0.1:9000
+      - Created scripts/connect_ssh.ps1 for standardized server access
+      - Fixed RSS 404 error by pointing API requests to api.shadowquake.top
+      - Resolved RTH deployment timeout by disabling keep-alive in wrapper
+      - Fixed CORS issue on /api/visit by trimming whitespace in environment variables
+      - Automatically deployed changes after fixing encoding and injecting tracker
+      - Fixed widespread Chinese character corruption caused by PowerShell encoding issues
+      - Restored acg.html from backup and fixed encoding
+      - Switched from PowerShell to Node.js for safe file injection
+      - Implemented /api/visit for external page tracking
+      - Created js/tracker.js for frontend analytics
+      - Injected tracker script into all public HTML pages
+      - Moved videos.json to standard public/data location
+      - Updated admin.js to use new Express routes for Bangumi
+  QA:
+    status: VERIFIED
+    last_audit: 2025-12-26
+    critical_issues: []
+
+modules:
+  admin_panel:
+    status: stable
+    features:
+      - Bookmark Management (CRUD + Batch Test/Delete + Auto-ID Migration)
+      - Snapshot Management
+      - Media Management (Bangumi Sync, Bilibili Proxy)
+      - Feeds Management (RSS)
+      - Categories Management
+      - Settings Management
+      - Notice Management
+      - Visitor Stats (Real-time tracking via /api/visit)
+    security:
+      - Admin Token Authentication
+      - Rate Limiting (API)
+      - Input Validation (Frontend)
+
+  focus_mode:
+    status: stable
+    version: 2.0
+    features:
+      - Pomodoro Timer (Start/Pause/Reset)
+      - Weather Widget (Open-Meteo + 30m Cache)
+      - Context Menu Integration (Homepage Only)
+      - Blob Animation Customization (Day/Night Palettes)
+      - Smooth Transitions (CSS3)
+      - Day/Night Mode Sync (Auto-Adapt)
+  
+  api:
+    status: secured
+    ssl_method: Let's Encrypt (DNS-01 Validation)
+    endpoints:
+      - /api/bookmarks (GET, POST, PUT, DELETE) - Full CRUD Support
+      - /api/bookmarks/check (POST) - Supports batch processing
+      - /api/bookmarks/batch-delete (POST)
+      - /api/categories (GET, POST)
+      - /api/snapshots (GET, POST, DELETE)
+      - /api/media (GET, POST)
+      - /api/videos (GET, POST)
+      - /api/feeds (GET, POST)
+      - /api/settings (GET, POST)
+      - /api/notice (GET, POST)
+      - /api/sync_bangumi (GET)
+      - /api/bgm_search (GET) - Bangumi Search Proxy
+      - /api/bgm_subject (GET) - Bangumi Subject Details
+      - /api/metadata (GET)
+      - /api/stats (GET)
+      - /api/visit (POST) - External Page Tracking
+    authentication: Header 'x-admin-token'
+
+infrastructure:
+  deployment:
+    method: Unified Script (scripts/deploy.ps1)
+    status: operational
+    last_success: 2025-12-26 14:15
+  nginx:
+    configuration: Split-Server Block (API Independent)
+    ssl_status:
+      api.shadowquake.top: Secured (Let's Encrypt)
+      shadowquake.top: Pending (Self-Signed)
+
+integration:
+  frontend_backend_contract:
+    format: JSON

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Admin Interface</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .test-result { padding: 10px; margin: 10px 0; border-radius: 5px; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        button { padding: 10px 20px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+    </style>
+</head>
+<body>
+    <h1>Admin Interface Test</h1>
+    <p>This page tests if the admin interface functions are working correctly.</p>
+    
+    <div id="test-results"></div>
+    
+    <h2>Test Buttons</h2>
+    <button onclick="testDashboardSwitchTab()">Test Dashboard.switchTab</button>
+    <button onclick="testToggleSidebar()">Test toggleSidebar</button>
+    <button onclick="testBookmarksManager()">Test BookmarksManager</button>
+    
+    <h2>Simulated Admin Elements</h2>
+    <div id="sidebar" style="background: #f8f9fa; padding: 10px; border: 1px solid #dee2e6; margin: 10px 0;">
+        Sidebar (for testing toggleSidebar)
+    </div>
+    <div id="sidebar-overlay" class="hidden" style="background: rgba(0,0,0,0.5); padding: 10px;">
+        Overlay (hidden by default)
+    </div>
+    
+    <div id="view-bookmarks" class="view-section" style="background: #e9ecef; padding: 10px; margin: 10px 0;">
+        Bookmarks View
+    </div>
+    <div id="view-snapshots" class="view-section hidden" style="background: #e9ecef; padding: 10px; margin: 10px 0;">
+        Snapshots View
+    </div>
+    
+    <script src="../../admin/admin.js"></script>
+    <script>
+        function addTestResult(message, isSuccess) {
+            const div = document.createElement('div');
+            div.className = `test-result ${isSuccess ? 'success' : 'error'}`;
+            div.textContent = (isSuccess ? '✓ ' : '✗ ') + message;
+            document.getElementById('test-results').appendChild(div);
+        }
+        
+        function testDashboardSwitchTab() {
+            try {
+                if (typeof Dashboard !== 'undefined' && typeof Dashboard.switchTab === 'function') {
+                    // Try to call switchTab
+                    Dashboard.switchTab('snapshots');
+                    addTestResult('Dashboard.switchTab() called successfully', true);
+                } else {
+                    addTestResult('Dashboard object or switchTab method not found', false);
+                }
+            } catch (e) {
+                addTestResult('Error calling Dashboard.switchTab: ' + e.message, false);
+            }
+        }
+        
+        function testToggleSidebar() {
+            try {
+                if (typeof toggleSidebar === 'function') {
+                    toggleSidebar();
+                    addTestResult('toggleSidebar() called successfully', true);
+                } else {
+                    addTestResult('toggleSidebar function not found', false);
+                }
+            } catch (e) {
+                addTestResult('Error calling toggleSidebar: ' + e.message, false);
+            }
+        }
+        
+        function testBookmarksManager() {
+            try {
+                if (typeof BookmarksManager !== 'undefined' && typeof BookmarksManager.fetch === 'function') {
+                    addTestResult('BookmarksManager object and fetch method found', true);
+                } else {
+                    addTestResult('BookmarksManager object or fetch method not found', false);
+                }
+            } catch (e) {
+                addTestResult('Error testing BookmarksManager: ' + e.message, false);
+            }
+        }
+        
+        // Run initial tests
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                addTestResult('Page loaded, running initial tests...', true);
+                
+                // Test if objects exist
+                if (typeof Dashboard !== 'undefined') {
+                    addTestResult('Dashboard object exists', true);
+                } else {
+                    addTestResult('Dashboard object NOT found', false);
+                }
+                
+                if (typeof toggleSidebar !== 'undefined') {
+                    addTestResult('toggleSidebar function exists', true);
+                } else {
+                    addTestResult('toggleSidebar function NOT found', false);
+                }
+                
+                if (typeof BookmarksManager !== 'undefined') {
+                    addTestResult('BookmarksManager object exists', true);
+                } else {
+                    addTestResult('BookmarksManager object NOT found', false);
+                }
+            }, 500);
+        });
+    </script>
+</body>
+</html>

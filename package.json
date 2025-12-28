@@ -5,16 +5,28 @@
   "scripts": {
     "update-posts": "node scripts/update_github_trending.js && node scripts/standardize_posts.js",
     "admin": "node admin/server.js",
-    "css:build": "tailwindcss -i ./src/input.css -o ./css/style.css",
-    "deploy": "powershell -c \"$f=New-TemporaryFile; iwr https://host.retiehe.com/cli -OutFile $f; node $f --site shadowquake.top --outdir .; rm $f -Force\""
+    "admin:open": "powershell -ExecutionPolicy Bypass -Command \"$port = if($env:PORT){$env:PORT}else{3000}; Start-Process \"http://localhost:$port/admin\"\" ; node admin/server.js",
+    "css:build": "tailwindcss -i ./src/input.css -o ./css/style.css --minify",
+    "css:watch": "tailwindcss -i ./src/input.css -o ./css/style.css --watch",
+    "build": "npm run css:build",
+    "deploy": "powershell -ExecutionPolicy Bypass -File scripts/deploy.ps1",
+    "deploy:rth": "powershell -ExecutionPolicy Bypass -File scripts/deploy.ps1 -SkipAliyun",
+    "deploy:aliyun": "powershell -ExecutionPolicy Bypass -File scripts/deploy.ps1 -SkipRTH",
+    "new-post": "node scripts/create_post.js",
+    "test": "vitest run",
+    "test:network": "node tests/local/check_network.js",
+    "test:all": "node tests/full/site_health_check.js"
   },
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.19",
     "@types/node": "^24.10.1",
     "autoprefixer": "^10.4.22",
+    "fast-check": "^4.4.0",
+    "jsdom": "^27.3.0",
     "postcss": "^8.5.6",
     "tailwindcss": "^3.4.1",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.15"
   },
   "dependencies": {
     "axios": "^1.13.2",
@@ -23,6 +35,7 @@
     "date-fns": "^4.1.0",
     "express": "^5.2.1",
     "marked": "^17.0.1",
+    "node-fetch": "^3.3.2",
     "tailwind-merge": "^3.4.0"
   }
 }

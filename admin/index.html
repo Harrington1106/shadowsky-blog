@@ -3,178 +3,620 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>收藏夹管理 - Admin</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>ShadowQuake Admin Dashboard</title>
+    <!-- Use compiled Tailwind CSS instead of CDN for production -->
+    <link href="../css/style.css" rel="stylesheet">
+    <link rel="icon" href="../public/img/favicon32.png">
     <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        .glass {
-            background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(10px);
-        }
-        .dark .glass {
-            background: rgba(15, 23, 42, 0.9);
-        }
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 6px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background-color: #cbd5e1;
-            border-radius: 20px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-            background-color: #94a3b8;
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.9); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
+        .dark .glass { background: rgba(15, 23, 42, 0.9); }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
-<body class="bg-slate-100 text-slate-900 min-h-screen">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div class="flex justify-between items-center mb-8">
-            <h1 class="text-3xl font-bold text-slate-800">收藏夹管理</h1>
-            <div class="space-x-4">
-                <a href="/" target="_blank" class="text-blue-600 hover:underline flex items-center inline-block">
-                    <i data-lucide="external-link" class="w-4 h-4 mr-1"></i> 预览站点
-                </a>
-                <button onclick="saveBookmarks()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow-sm transition-colors flex items-center inline-block">
-                    <i data-lucide="save" class="w-4 h-4 mr-2"></i> 保存更改
-                </button>
-            </div>
-        </div>
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 min-h-screen flex overflow-hidden transition-colors duration-300">
 
-        <!-- Bulk Action Bar -->
-        <div id="bulk-actions" class="hidden fixed bottom-8 left-1/2 transform -translate-x-1/2 bg-white dark:bg-slate-800 px-6 py-3 rounded-xl shadow-2xl border border-slate-200 dark:border-slate-700 z-40 flex items-center gap-4 animate-bounce-in">
-            <span class="text-sm font-medium text-slate-600 dark:text-slate-300">
-                已选择 <span id="selected-count" class="text-blue-600 font-bold">0</span> 项
-            </span>
-            <div class="h-4 w-px bg-slate-300 dark:bg-slate-600"></div>
-            <select id="bulk-category" class="text-sm border-slate-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
-                <option value="">移动到分类...</option>
-                <option value="astronomy">天文观测</option>
-                <option value="nature">自然生态</option>
-                <option value="news">科技资讯</option>
-                <option value="ai">AI与创意</option>
-                <option value="dev">开发编程</option>
-                <option value="design">设计灵感</option>
-                <option value="learning">终身学习</option>
-                <option value="tools">实用工具</option>
-                <option value="entertainment">娱乐兴趣</option>
-                <option value="others">其他收藏</option>
-            </select>
-            <button onclick="bulkMove()" class="p-2 text-slate-600 hover:text-blue-600 hover:bg-slate-100 rounded-lg transition-colors" title="移动">
-                <i data-lucide="folder-input" class="w-5 h-5"></i>
+    <!-- Sidebar Overlay (Mobile) -->
+    <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 z-40 lg:hidden hidden" onclick="toggleSidebar()"></div>
+
+    <!-- Mobile Header -->
+    <div class="lg:hidden bg-white border-b border-slate-200 px-4 py-3 flex items-center justify-between sticky top-0 z-30">
+        <div class="flex items-center gap-3">
+            <button onclick="toggleSidebar()" 
+                    class="p-2 -ml-2 text-slate-600 hover:bg-slate-100 rounded-lg"
+                    aria-label="打开导航菜单"
+                    aria-expanded="false"
+                    aria-controls="sidebar">
+                <i data-lucide="menu" class="w-6 h-6"></i>
             </button>
-            <button onclick="bulkDelete()" class="p-2 text-slate-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="删除">
-                <i data-lucide="trash-2" class="w-5 h-5"></i>
-            </button>
-            <button onclick="clearSelection()" class="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors" title="取消选择">
+            <span class="font-bold text-slate-800">ShadowQuake Admin</span>
+        </div>
+    </div>
+
+    <div class="flex min-h-screen bg-slate-50 font-sans">
+    <!-- Sidebar -->
+    <aside id="sidebar" 
+           class="fixed inset-y-0 left-0 w-64 bg-white border-r border-slate-200 z-50 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 flex flex-col"
+           role="navigation"
+           aria-label="主导航菜单">
+        <div class="p-6 border-b border-slate-100 flex items-center gap-3">
+            <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold shadow-lg shadow-blue-500/30">
+                <i data-lucide="shield" class="w-5 h-5"></i>
+            </div>
+            <span class="text-lg font-bold text-slate-800 tracking-tight">ShadowQuake</span>
+            <button class="lg:hidden ml-auto text-slate-400 hover:text-slate-600" 
+                    onclick="toggleSidebar()"
+                    aria-label="关闭导航菜单">
                 <i data-lucide="x" class="w-5 h-5"></i>
             </button>
         </div>
+        
+        <nav class="flex-1 overflow-y-auto p-4 space-y-1" role="navigation" aria-label="主要功能导航">
+            <div class="px-4 py-2 text-xs font-semibold text-slate-400 uppercase tracking-wider" role="heading" aria-level="2">Content</div>
+            <div role="tablist" aria-label="内容管理" class="space-y-1">
+                <button onclick="Dashboard.switchTab('bookmarks')" 
+                        id="nav-bookmarks" 
+                        class="nav-item w-full flex items-center gap-3 px-4 py-2.5 text-slate-600 rounded-lg hover:bg-slate-50 hover:text-blue-600 transition-all group"
+                        role="tab"
+                        aria-selected="false"
+                        aria-controls="view-bookmarks"
+                        tabindex="0">
+                    <i data-lucide="bookmark" class="w-5 h-5 group-hover:scale-110 transition-transform" aria-hidden="true"></i>
+                    <span class="font-medium">收藏夹</span>
+                </button>
+                <button onclick="Dashboard.switchTab('snapshots')" 
+                        id="nav-snapshots" 
+                        class="nav-item w-full flex items-center gap-3 px-4 py-2.5 text-slate-600 rounded-lg hover:bg-slate-50 hover:text-blue-600 transition-all group"
+                        role="tab"
+                        aria-selected="false"
+                        aria-controls="view-snapshots"
+                        tabindex="-1">
+                    <i data-lucide="camera" class="w-5 h-5 group-hover:scale-110 transition-transform" aria-hidden="true"></i>
+                    <span class="font-medium">随手拍</span>
+                </button>
+                <button onclick="Dashboard.switchTab('media')" 
+                        id="nav-media" 
+                        class="nav-item w-full flex items-center gap-3 px-4 py-2.5 text-slate-600 rounded-lg hover:bg-slate-50 hover:text-blue-600 transition-all group"
+                        role="tab"
+                        aria-selected="false"
+                        aria-controls="view-media"
+                        tabindex="-1">
+                    <i data-lucide="tv" class="w-5 h-5 group-hover:scale-110 transition-transform" aria-hidden="true"></i>
+                    <span class="font-medium">追番/漫画</span>
+                </button>
+                <button onclick="Dashboard.switchTab('feeds')" 
+                        id="nav-feeds" 
+                        class="nav-item w-full flex items-center gap-3 px-4 py-2.5 text-slate-600 rounded-lg hover:bg-slate-50 hover:text-blue-600 transition-all group"
+                        role="tab"
+                        aria-selected="false"
+                        aria-controls="view-feeds"
+                        tabindex="-1">
+                    <i data-lucide="rss" class="w-5 h-5 group-hover:scale-110 transition-transform" aria-hidden="true"></i>
+                    <span class="font-medium">订阅源</span>
+                </button>
+                <button onclick="Dashboard.switchTab('videos')" 
+                        id="nav-videos" 
+                        class="nav-item w-full flex items-center gap-3 px-4 py-2.5 text-slate-600 rounded-lg hover:bg-slate-50 hover:text-blue-600 transition-all group"
+                        role="tab"
+                        aria-selected="false"
+                        aria-controls="view-videos"
+                        tabindex="-1">
+                    <i data-lucide="youtube" class="w-5 h-5 group-hover:scale-110 transition-transform" aria-hidden="true"></i>
+                    <span class="font-medium">视频推荐</span>
+                </button>
+            </div>
+            
+            <div class="px-4 py-2 mt-6 text-xs font-semibold text-slate-400 uppercase tracking-wider" role="heading" aria-level="2">System</div>
+            <div role="tablist" aria-label="系统管理" class="space-y-1">
+                <button onclick="Dashboard.switchTab('stats')" 
+                        id="nav-stats" 
+                        class="nav-item w-full flex items-center gap-3 px-4 py-2.5 text-slate-600 rounded-lg hover:bg-slate-50 hover:text-blue-600 transition-all group"
+                        role="tab"
+                        aria-selected="false"
+                        aria-controls="view-stats"
+                        tabindex="-1">
+                    <i data-lucide="bar-chart-2" class="w-5 h-5 group-hover:scale-110 transition-transform" aria-hidden="true"></i>
+                    <span class="font-medium">数据统计</span>
+                </button>
+                <button onclick="Dashboard.switchTab('settings')" 
+                        id="nav-settings" 
+                        class="nav-item w-full flex items-center gap-3 px-4 py-2.5 text-slate-600 rounded-lg hover:bg-slate-50 hover:text-blue-600 transition-all group"
+                        role="tab"
+                        aria-selected="false"
+                        aria-controls="view-settings"
+                        tabindex="-1">
+                    <i data-lucide="settings" class="w-5 h-5 group-hover:scale-110 transition-transform" aria-hidden="true"></i>
+                    <span class="font-medium">系统设置</span>
+                </button>
+            </div>
+        </nav>
 
-        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
-            <!-- Sidebar / Add Form -->
-            <div class="lg:col-span-1 space-y-6">
-                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 sticky top-8">
-                    <h2 class="text-xl font-bold mb-4 flex items-center">
-                        <i data-lucide="plus-circle" class="w-5 h-5 mr-2"></i> 添加/编辑
-                    </h2>
-                    <form id="bookmark-form" onsubmit="handleFormSubmit(event)">
-                        <input type="hidden" id="edit-index" value="-1">
-                        
-                        <div class="mb-4">
-                            <label class="block text-sm font-medium text-slate-700 mb-1">标题</label>
-                            <input type="text" id="title" required class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all">
+        <div class="p-4 border-t border-slate-100">
+            <a href="/" target="_blank" class="flex items-center gap-3 px-4 py-2.5 text-slate-500 hover:text-slate-800 transition-colors rounded-lg hover:bg-slate-50">
+                <i data-lucide="external-link" class="w-4 h-4"></i>
+                <span class="text-sm font-medium">访问前台</span>
+            </a>
+        </div>
+    </aside>
+
+    <!-- Mobile Header -->
+    <div class="md:hidden fixed top-0 w-full bg-white/80 backdrop-blur border-b border-slate-200 z-30 px-4 py-3 flex justify-between items-center">
+        <div class="flex items-center gap-2">
+            <div class="p-1.5 bg-blue-50 rounded-md text-blue-600">
+                <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
+            </div>
+            <span class="font-bold text-slate-800">Admin</span>
+        </div>
+        <button onclick="document.querySelector('aside').classList.toggle('hidden'); document.querySelector('aside').classList.toggle('flex')" class="p-2 text-slate-600 hover:bg-slate-100 rounded-lg" title="Toggle Menu" aria-label="Toggle Menu">
+            <i data-lucide="menu" class="w-6 h-6"></i>
+        </button>
+    </div>
+
+    <!-- Main Content -->
+    <main class="flex-1 lg:ml-64 p-4 lg:p-8 overflow-y-auto h-screen w-full">
+        <!-- Toast Container -->
+        <div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col gap-3 pointer-events-none transition-all duration-300"></div>
+
+        <!-- Header -->
+        <header class="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4 mt-12 lg:mt-0">
+            <div>
+                <h1 class="text-2xl lg:text-3xl font-bold text-slate-800 tracking-tight" id="page-title">概览</h1>
+                <p class="text-slate-500 mt-1">欢迎回来，Admin</p>
+            </div>
+            <div class="flex items-center gap-3">
+                <a href="/" target="_blank" class="px-4 py-2 bg-white border border-slate-200 text-slate-600 rounded-lg hover:bg-slate-50 hover:text-blue-600 transition-all text-sm font-medium flex items-center gap-2 shadow-sm">
+                    <i data-lucide="external-link" class="w-4 h-4"></i>
+                    查看站点
+                </a>
+                <div class="flex items-center gap-2 mr-4">
+                    <span id="auth-status-badge" class="px-2 py-1 text-xs font-bold rounded-full bg-slate-100 text-slate-500 flex items-center gap-1 transition-all">
+                        <i data-lucide="shield-off" class="w-3 h-3"></i>
+                        未验证
+                    </span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <input id="admin-token-input" type="password" placeholder="管理员令牌" class="bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none w-44" />
+                    <button id="admin-token-save" class="px-3 py-2 bg-slate-900 text-white rounded-lg hover:bg-slate-800 text-sm">登录</button>
+                    <button id="admin-token-clear" class="px-3 py-2 bg-slate-100 text-slate-600 rounded-lg hover:bg-slate-200 text-sm">退出</button>
+                </div>
+            </div>
+        </header>
+
+            <!-- Views -->
+            
+            <!-- BOOKMARKS VIEW -->
+            <section id="view-bookmarks" class="view-section space-y-6">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Add Form -->
+                    <div class="lg:col-span-1">
+                        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 sticky top-8">
+                            <h3 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+                                <i data-lucide="plus-circle" class="w-5 h-5 text-blue-600"></i>
+                                添加收藏
+                            </h3>
+                            <form id="add-bookmark-form" class="space-y-4">
+                                <input type="hidden" id="bm-id">
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">链接 URL</label>
+                                    <div class="flex gap-2">
+                                        <input type="url" id="bm-url" required class="flex-1 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all" placeholder="https://...">
+                                        <button type="button" onclick="BookmarksManager.autoFetchTitle()" class="px-3 py-2 bg-slate-100 text-slate-600 rounded-lg hover:bg-slate-200 transition-colors" title="自动获取标题">
+                                            <i data-lucide="wand-2" class="w-4 h-4"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">标题 Title</label>
+                                    <input type="text" id="bm-title" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all" placeholder="网站标题">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">描述 Description</label>
+                                    <textarea id="bm-desc" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all resize-none" rows="3" placeholder="网站描述..."></textarea>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">分类 Category</label>
+                                    <div class="grid grid-cols-2 gap-2">
+                                        <!-- Primary Category -->
+                                        <select id="bm-category-select" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all" aria-label="Primary Category">
+                                            <option value="">选择一级分类...</option>
+                                        </select>
+                                        
+                                        <!-- Secondary Category -->
+                                        <select id="bm-subcategory-select" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed" aria-label="Secondary Category">
+                                            <option value="">选择二级分类...</option>
+                                        </select>
+                                    </div>
+                                    <input type="hidden" id="bm-category">
+                                    <input type="hidden" id="bm-subcategory">
+                                </div>
+                                <div class="hidden">
+                                    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">标签 Tags (可选)</label>
+                                    <input type="text" id="bm-tags" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all" placeholder="例如: tool, ai, dev">
+                                </div>
+                                <div class="flex gap-2 mt-2">
+                                    <button type="submit" id="bm-submit" class="flex-1 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 shadow-lg shadow-blue-500/20 transition-all font-medium flex items-center justify-center gap-2">
+                                        <i data-lucide="plus" class="w-4 h-4"></i>
+                                        <span>添加收藏</span>
+                                    </button>
+                                    <button type="button" id="bm-cancel" onclick="BookmarksManager.cancelEdit()" class="hidden px-4 py-2.5 bg-slate-100 text-slate-600 rounded-lg hover:bg-slate-200 transition-all font-medium">
+                                        取消
+                                    </button>
+                                </div>
+                            </form>
                         </div>
+                    </div>
 
-                        <div class="mb-4">
-                            <label class="block text-sm font-medium text-slate-700 mb-1">URL</label>
-                            <input type="url" id="url" required class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all">
-                        </div>
+                    <!-- List -->
+                    <div class="lg:col-span-2">
+                        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                            <div class="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+                                <h3 class="font-semibold text-slate-700">收藏列表</h3>
+                                <div class="flex gap-2">
+                                    <input type="text" placeholder="搜索..." oninput="BookmarksManager.filter(this.value)" class="bg-white border border-slate-200 rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-blue-500/20 outline-none w-48">
+                                    <button onclick="BookmarksManager.fetch()" class="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="刷新">
+                                        <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+                                    </button>
+                                    <button onclick="BookmarksManager.checkAccessibility()" id="btn-check-access" class="p-1.5 text-slate-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors" title="一键测试访问性">
+                                        <i data-lucide="activity" class="w-4 h-4"></i>
+                                    </button>
+                                    <button onclick="BookmarksManager.deleteInvalid()" id="btn-delete-invalid" class="p-1.5 text-slate-300 rounded-lg transition-colors cursor-not-allowed" disabled title="删除无效书签 (需先测试)">
+                                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Progress Bar -->
+                            <div id="check-progress-container" class="hidden bg-slate-50 px-4 py-2 border-b border-slate-100 transition-all">
+                                <div class="flex justify-between text-xs text-slate-500 mb-1">
+                                    <span id="check-progress-text">检测中...</span>
+                                    <span id="check-progress-percent">0%</span>
+                                </div>
+                                <div class="w-full bg-slate-200 rounded-full h-1.5 overflow-hidden">
+                                    <div id="check-progress-bar" class="bg-blue-500 h-1.5 rounded-full transition-all duration-300" style="width: 0%"></div>
+                                </div>
+                            </div>
 
-                        <div class="mb-4">
-                            <label class="block text-sm font-medium text-slate-700 mb-1">描述</label>
-                            <textarea id="desc" rows="3" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"></textarea>
-                        </div>
-
-                        <div class="mb-4">
-                            <label class="block text-sm font-medium text-slate-700 mb-1">分类</label>
-                            <div class="flex gap-2">
-                                <select id="category" class="flex-1 px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all">
-                                    <!-- Options will be populated by JS -->
-                                </select>
-                                <button type="button" onclick="showNewCategoryModal()" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 rounded-lg text-slate-600 transition-colors" title="新建分类">
-                                    <i data-lucide="plus" class="w-5 h-5"></i>
-                                </button>
+                            <div id="bookmarks-list" class="divide-y divide-slate-100 max-h-[800px] overflow-y-auto">
+                                <!-- Loaded by JS -->
                             </div>
                         </div>
+                    </div>
+                </div>
+            </section>
 
-                        <div class="flex space-x-2">
-                            <button type="submit" class="flex-1 bg-slate-900 hover:bg-slate-800 text-white py-2 rounded-lg transition-colors">
-                                <span id="submit-btn-text">添加</span>
-                            </button>
-                            <button type="button" onclick="resetForm()" class="px-3 py-2 border border-slate-300 rounded-lg hover:bg-slate-50 text-slate-600">
-                                重置
-                            </button>
+            <!-- SNAPSHOTS VIEW -->
+            <section id="view-snapshots" class="view-section space-y-6 hidden">
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+                    <form id="add-snapshot-form" class="space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">图片来源 Image Source</label>
+                                    <div class="space-y-3">
+                                        <input type="text" id="snap-url" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-green-500/20 focus:border-green-500 outline-none transition-all" placeholder="图片链接 / Markdown">
+                                        <div class="relative">
+                                            <div class="absolute inset-0 flex items-center">
+                                                <div class="w-full border-t border-slate-200"></div>
+                                            </div>
+                                            <div class="relative flex justify-center text-xs uppercase">
+                                                <span class="bg-white px-2 text-slate-400">OR UPLOAD</span>
+                                            </div>
+                                        </div>
+                                        <input type="file" id="snap-file" accept="image/*" class="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100 cursor-pointer" aria-label="Upload Image">
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">位置 & 标签</label>
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <input type="text" id="snap-location" class="bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none" placeholder="位置">
+                                        <input type="text" id="snap-tags" class="bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none" placeholder="标签">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex flex-col h-full">
+                                <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">内容 Content</label>
+                                <textarea id="snap-content" class="flex-1 w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-green-500/20 focus:border-green-500 outline-none resize-none transition-all" placeholder="记录这一刻..."></textarea>
+                                <div class="mt-4 flex justify-end">
+                                    <button type="submit" class="px-6 py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 shadow-lg shadow-green-500/20 transition-all font-medium flex items-center gap-2">
+                                        <i data-lucide="send" class="w-4 h-4"></i>
+                                        发布动态
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </form>
                 </div>
 
-                <!-- Sidebar Category TOC -->
-                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 sticky top-[30rem]">
-                    <h2 class="text-xl font-bold mb-4 flex items-center">
-                        <i data-lucide="list" class="w-5 h-5 mr-2"></i> 快速导航
-                    </h2>
-                    <p class="text-xs text-slate-500 mb-4">拖动右侧卡片到下方分类以快速归类</p>
-                    <div id="category-toc" class="space-y-1 max-h-[40vh] overflow-y-auto pr-2 custom-scrollbar">
-                        <!-- TOC Items will be populated by JS -->
+                <div id="snapshots-preview" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    <!-- Loaded by JS -->
+                </div>
+            </section>
+
+            <!-- MEDIA VIEW -->
+            <section id="view-media" class="view-section space-y-6 hidden">
+                <div class="flex items-center justify-between">
+                    <div class="flex p-1 bg-slate-100 rounded-lg">
+                        <button onclick="MediaManager.switchType('anime')" id="tab-anime" class="px-4 py-1.5 bg-white text-slate-800 shadow-sm rounded-md text-sm font-medium transition-all">
+                            追番 (Anime)
+                        </button>
+                        <button onclick="MediaManager.switchType('manga')" id="tab-manga" class="px-4 py-1.5 text-slate-500 hover:text-slate-700 rounded-md text-sm font-medium transition-all">
+                            漫画 (Manga)
+                        </button>
                     </div>
                 </div>
-            </div>
 
-            <!-- List -->
-            <div class="lg:col-span-3 space-y-8" id="bookmarks-list">
-            </div>
-        </div>
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+                    <div class="space-y-4">
+                        <div class="flex gap-2">
+                            <input type="search" id="bgm-search-input" placeholder="搜索 Bangumi 标题" class="flex-1 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-500">
+                            <button type="button" id="bgm-search-btn" class="px-4 py-2 bg-slate-900 text-white rounded-lg hover:bg-slate-800 text-sm">搜索</button>
+                        </div>
+                        <div id="bgm-selected" class="text-sm text-slate-500">未选择条目</div>
+                        <div id="bgm-search-results" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"></div>
+                        <div class="space-y-4">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="space-y-1.5">
+                                    <label class="text-sm font-medium text-slate-600" for="setting-bangumi-username">Bangumi 用户名</label>
+                                    <input type="text" id="setting-bangumi-username" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-pink-500/20 focus:border-pink-500 transition-all">
+                                </div>
+                                <div class="space-y-1.5">
+                                    <label class="text-sm font-medium text-slate-600" for="setting-bangumi-token">Bangumi Token</label>
+                                    <input type="password" id="setting-bangumi-token" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-pink-500/20 focus:border-pink-500 transition-all">
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <button type="button" onclick="saveBangumiSettings()" class="px-4 py-2 bg-slate-900 text-white rounded-lg hover:bg-slate-800 transition-colors text-sm font-medium">保存设置</button>
+                                <button type="button" onclick="syncBangumi()" class="px-4 py-2 bg-pink-50 text-pink-600 border border-pink-200 rounded-lg hover:bg-pink-100 transition-colors text-sm font-medium flex items-center gap-2">
+                                    <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+                                    立即同步 Bangumi 数据
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="media-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                    <!-- Loaded by JS -->
+                </div>
+            </section>
+            
+            <!-- FEEDS VIEW -->
+            <section id="view-feeds" class="view-section space-y-6 hidden">
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+                     <form id="add-feed-form" class="space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                             <div class="space-y-1">
+                                <label class="text-xs font-semibold text-slate-500 uppercase">RSS 链接</label>
+                                <input type="url" id="feed-url" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-500" placeholder="https://..." required>
+                            </div>
+                            <div class="space-y-1">
+                                <label class="text-xs font-semibold text-slate-500 uppercase">标题</label>
+                                <input type="text" id="feed-title" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-500" placeholder="Feed Title" required>
+                            </div>
+                            <div class="space-y-1">
+                                <label class="text-xs font-semibold text-slate-500 uppercase">ID</label>
+                                <input type="text" id="feed-id" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-500" placeholder="Unique ID" required>
+                            </div>
+                             <div class="space-y-1 md:col-span-3">
+                                <label class="text-xs font-semibold text-slate-500 uppercase">图标 URL</label>
+                                <div class="flex gap-2">
+                                     <input type="url" id="feed-icon" class="flex-1 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-500" placeholder="Icon URL">
+                                     <button type="button" onclick="autoFillFeedIcon()" class="px-3 py-2 bg-slate-100 text-slate-600 rounded-lg hover:bg-slate-200 transition-colors" title="自动获取图标">
+                                        <i data-lucide="wand-2" class="w-4 h-4"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex justify-end">
+                            <button type="submit" class="px-6 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors text-sm font-medium">
+                                添加订阅
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <div id="feeds-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <!-- Loaded by JS -->
+                </div>
+            </section>
+
+            <!-- VIDEOS VIEW -->
+            <section id="view-videos" class="view-section space-y-6 hidden">
+                 <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+                     <form id="add-video-form" class="space-y-4">
+                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="space-y-1">
+                                <label class="text-xs font-semibold text-slate-500 uppercase">Bilibili BV号</label>
+                                <div class="flex gap-2">
+                                    <input type="text" id="video-bvid" class="flex-1 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-500" placeholder="BV..." required>
+                                    <button type="button" onclick="fetchBilibiliInfo()" class="px-3 py-2 bg-slate-100 text-slate-600 rounded-lg hover:bg-slate-200 transition-colors" title="尝试获取信息">
+                                        <i data-lucide="download-cloud" class="w-4 h-4"></i>
+                                    </button>
+                                </div>
+                            </div>
+                             <div class="space-y-1">
+                                <label class="text-xs font-semibold text-slate-500 uppercase">推荐语</label>
+                                <input type="text" id="video-desc" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-500" placeholder="这视频真不错...">
+                            </div>
+                         </div>
+                         
+                         <!-- Expanded Fields (Manual Entry) -->
+                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 pt-4 border-t border-slate-100">
+                             <div class="space-y-1">
+                               <label class="text-xs font-semibold text-slate-500 uppercase">标题</label>
+                               <input type="text" id="video-title" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-500" required aria-label="Video Title">
+                           </div>
+                            <div class="space-y-1">
+                                <label class="text-xs font-semibold text-slate-500 uppercase">分类</label>
+                                <input type="text" id="video-category" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-500" placeholder="动画/游戏...">
+                            </div>
+                            <div class="space-y-1">
+                                <label class="text-xs font-semibold text-slate-500 uppercase">时长</label>
+                                <input type="text" id="video-duration" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-500" placeholder="mm:ss">
+                            </div>
+                            <div class="space-y-1">
+                              <label class="text-xs font-semibold text-slate-500 uppercase">封面 URL</label>
+                              <input type="url" id="video-cover" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-500" aria-label="Video Cover URL">
+                           </div>
+                            <div class="space-y-1">
+                                <label class="text-xs font-semibold text-slate-500 uppercase">Bangumi 关联</label>
+                                <div class="flex gap-2">
+                                    <input type="text" id="video-bgm-id" class="flex-1 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-500" placeholder="Subject ID">
+                                    <button type="button" onclick="VideosManager.fetchBangumiSubject(document.getElementById('video-bgm-id').value)" class="px-3 py-2 bg-slate-100 text-slate-600 rounded-lg hover:bg-slate-200 transition-colors" title="获取 Bangumi 资料">
+                                        <i data-lucide="search" class="w-4 h-4"></i>
+                                    </button>
+                                </div>
+                            </div>
+                         </div>
+
+                        <div class="flex justify-end pt-2">
+                            <button type="submit" class="px-6 py-2 bg-pink-500 text-white rounded-lg hover:bg-pink-600 transition-colors text-sm font-medium">
+                                添加视频
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <div id="videos-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <!-- Loaded by JS -->
+                </div>
+            </section>
+
+            <!-- STATS VIEW -->
+            <section id="view-stats" class="view-section space-y-6 hidden">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                        <div class="text-slate-500 text-sm font-medium mb-2">总访问量</div>
+                        <div class="text-3xl font-bold text-slate-800" id="stat-total-visits">-</div>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                        <div class="text-slate-500 text-sm font-medium mb-2">今日访问</div>
+                        <div class="text-3xl font-bold text-blue-600" id="stat-today-visits">-</div>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                        <div class="text-slate-500 text-sm font-medium mb-2">热门页面</div>
+                        <div class="text-xl font-bold text-slate-800 truncate" id="stat-top-page">-</div>
+                    </div>
+                </div>
+                
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <h3 class="text-lg font-bold text-slate-800 mb-6">访问趋势 (近7天)</h3>
+                    <div class="h-64">
+                        <canvas id="visitsChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                    <div class="p-6 border-b border-slate-100">
+                        <h3 class="text-lg font-bold text-slate-800">访问日志</h3>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm text-left">
+                            <thead class="bg-slate-50 text-slate-500 font-medium">
+                                <tr>
+                                    <th class="px-6 py-3">时间</th>
+                                    <th class="px-6 py-3">页面</th>
+                                    <th class="px-6 py-3">IP</th>
+                                    <th class="px-6 py-3">设备</th>
+                                </tr>
+                            </thead>
+                            <tbody id="visits-log-body" class="divide-y divide-slate-100">
+                                <!-- Loaded by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="view-settings" class="view-section space-y-6 hidden">
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                    <div class="p-6 border-b border-slate-100">
+                        <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                            <i data-lucide="settings-2" class="w-5 h-5 text-blue-600"></i>
+                            系统设置
+                        </h3>
+                    </div>
+                    
+                    <form id="settings-form" class="p-6 space-y-8">
+                            <h4 class="text-sm font-bold text-slate-700 uppercase tracking-wide border-l-4 border-slate-800 pl-3">系统安全</h4>
+                            <div class="space-y-1.5">
+                                <label class="text-sm font-medium text-slate-600">管理令牌 (Admin Token)</label>
+                                <input type="password" id="setting-admin-token" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-slate-500/20 focus:border-slate-500 transition-all" placeholder="Enter ADMIN_TOKEN from .env">
+                                <p class="text-xs text-slate-400">用于 Node.js 后端鉴权 (对应 .env 中的 ADMIN_TOKEN)</p>
+                            </div>
+
+                        
+
+                        <!-- Site Notice Management -->
+                        <div class="space-y-4 border-t border-slate-100 pt-6">
+                            <h4 class="text-sm font-bold text-slate-700 uppercase tracking-wide border-l-4 border-blue-500 pl-3">站点公告</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="space-y-1.5">
+                                    <label class="text-sm font-medium text-slate-600">公告内容</label>
+                                    <textarea id="notice-content" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all" rows="4" placeholder="请输入公告内容"></textarea>
+                                </div>
+                                <div class="space-y-1.5">
+                                    <label class="text-sm font-medium text-slate-600">显示与样式</label>
+                                    <div class="flex items-center gap-3">
+                                        <label class="flex items-center gap-2 text-sm text-slate-600"><input type="checkbox" id="notice-show"> 显示公告</label>
+                                        <select id="notice-style" class="bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-500" aria-label="Notice Style">
+                                            <option value="info">提示</option>
+                                            <option value="success">成功</option>
+                                            <option value="warning">警告</option>
+                                            <option value="error">错误</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex justify-end">
+                                <button type="button" id="notice-save" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium">保存公告</button>
+                            </div>
+                        </div>
+                        
+                        <div class="border-t border-slate-100 pt-6 flex justify-end">
+                            <button type="submit" class="px-8 py-2.5 bg-slate-900 text-white rounded-lg hover:bg-slate-800 shadow-lg shadow-slate-500/20 transition-all font-medium flex items-center gap-2">
+                                <i data-lucide="save" class="w-4 h-4"></i>
+                                保存设置
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <!-- Admin Footer -->
+            
+    <footer class="py-8 text-center text-sm text-gray-500 dark:text-gray-400 transition-colors duration-500">
+        <p>&copy; <span id="year"></span> ShadowQuake. All rights reserved.</p>
+        <p class="mt-2 text-xs opacity-50">
+            <span id="visit-count" class="hidden">Visits: <span id="busuanzi_value_site_pv" class="font-mono">Loading...</span></span>
+        </p>
+    </footer>
+
+
+        </main>
     </div>
 
-    <!-- New Category Modal -->
-    <div id="new-category-modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center backdrop-blur-sm opacity-0 transition-opacity duration-300">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 transform scale-95 transition-transform duration-300" id="new-category-modal-content">
-            <h3 class="text-xl font-bold text-slate-900 mb-4">新建分类</h3>
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-sm font-medium text-slate-700 mb-1">分类ID (英文)</label>
-                    <input type="text" id="new-cat-id" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" placeholder="e.g. gaming">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-slate-700 mb-1">显示名称</label>
-                    <input type="text" id="new-cat-name" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" placeholder="e.g. 游戏娱乐">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-slate-700 mb-1">分组名称 (可选)</label>
-                    <input type="text" id="new-cat-group" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" placeholder="e.g. 兴趣爱好">
-                </div>
-                <div class="flex justify-end gap-2 mt-6">
-                    <button onclick="closeNewCategoryModal()" class="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors">取消</button>
-                    <button onclick="createNewCategory()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">创建</button>
-                </div>
-            </div>
-        </div>
-    </div>
+    <!-- Standardized Footer -->
+    <script>
+        // Check for saved theme preference
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
 
-    <!-- Floating Save Button -->
-    <button onclick="saveBookmarks()" class="fixed bottom-8 right-8 bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-full shadow-lg transition-all hover:scale-110 z-40 flex items-center justify-center group" title="保存更改 (Ctrl+S)">
-        <i data-lucide="save" class="w-6 h-6"></i>
-        <span class="absolute right-full mr-4 bg-gray-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">保存更改</span>
-    </button>
-
-    <!-- Toast Notification -->
-    <div id="toast" class="fixed bottom-4 right-4 bg-slate-900 text-white px-6 py-3 rounded-lg shadow-lg transform translate-y-20 opacity-0 transition-all duration-300 z-50">
-        Saved successfully
-    </div>
-
+        function toggleTheme() {
+            if (document.documentElement.classList.contains('dark')) {
+                document.documentElement.classList.remove('dark');
+                localStorage.theme = 'light';
+            } else {
+                document.documentElement.classList.add('dark');
+                localStorage.theme = 'dark';
+            }
+        }
+    </script>
     <script src="admin.js"></script>
 </body>
 </html>

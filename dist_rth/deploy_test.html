@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>部署安全自检 - ShadowSky</title>
+    <!-- Tailwind CSS -->
+    <link href="css/style.css" rel="stylesheet">
+    <link rel="icon" href="public/img/favicon32.png">
+    <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300 min-h-screen flex flex-col">
+
+    <!-- Navbar -->
+    <nav class="fixed w-full z-50 top-0 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-800 transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <a href="index.html" class="flex items-center group">
+                        <div class="relative w-8 h-8 mr-2 rounded-lg overflow-hidden bg-gradient-to-br from-blue-500 to-purple-600 p-[1px]">
+                            <div class="w-full h-full bg-white dark:bg-gray-900 rounded-lg flex items-center justify-center">
+                                <span class="font-bold text-transparent bg-clip-text bg-gradient-to-br from-blue-500 to-purple-600">S</span>
+                            </div>
+                        </div>
+                        <span class="font-bold text-xl tracking-tight text-gray-900 dark:text-white">
+                            ShadowSky <span class="text-xs font-normal text-gray-500 ml-2 bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded-full">Diagnostics</span>
+                        </span>
+                    </a>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="index.html" class="text-sm font-medium text-gray-600 hover:text-blue-600 dark:text-gray-300 dark:hover:text-white transition-colors">
+                        返回首页
+                    </a>
+                    <button onclick="toggleTheme()" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                        <i data-lucide="moon" class="w-5 h-5 text-gray-600 dark:text-gray-300"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-grow pt-24 pb-12 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-3xl mx-auto space-y-8">
+            
+            <div class="text-center mb-10">
+                <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">🛡️ 部署安全自检</h1>
+                <p class="text-gray-500 dark:text-gray-400">验证私有服务器的 CORS 策略与鉴权机制</p>
+            </div>
+
+            <!-- Configuration Card -->
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 transition-all duration-300 hover:shadow-md">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                    <i data-lucide="settings" class="w-5 h-5 mr-2 text-blue-500"></i>
+                    配置参数
+                </h3>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Target API URL</label>
+                        <input type="text" id="apiUrl" value="/api/test_cors_auth.php" class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all dark:text-white" placeholder="e.g., http://localhost/api/test_cors_auth.php">
+                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">相对路径适用于同域测试。使用绝对路径测试跨域 (CORS)。</p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Admin Token</label>
+                        <input type="text" id="token" class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all dark:text-white" placeholder="输入服务器设置的 ADMIN_TOKEN">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Test Cases -->
+            <div class="space-y-6">
+                <!-- CORS Test -->
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <h4 class="text-base font-semibold text-gray-900 dark:text-white flex items-center">
+                                <i data-lucide="globe" class="w-4 h-4 mr-2 text-green-500"></i>
+                                Test 1: CORS Blocking Simulation
+                            </h4>
+                            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">模拟跨域请求。如果服务器配置了严格的 `CORS_ALLOWED_ORIGINS`，此请求应根据来源被允许或拒绝。</p>
+                        </div>
+                        <button onclick="runTest('cors')" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors flex items-center">
+                            <i data-lucide="play" class="w-4 h-4 mr-1"></i> 运行测试
+                        </button>
+                    </div>
+                    <div id="res-cors" class="bg-gray-900 rounded-lg p-4 font-mono text-xs text-gray-300 overflow-x-auto min-h-[60px] border border-gray-800">
+                        <span class="text-gray-500">等待测试...</span>
+                    </div>
+                </div>
+
+                <!-- Auth Test -->
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <h4 class="text-base font-semibold text-gray-900 dark:text-white flex items-center">
+                                <i data-lucide="lock" class="w-4 h-4 mr-2 text-orange-500"></i>
+                                Test 2: Authentication Check
+                            </h4>
+                            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">发送带 Token 的请求。需要先通过 CORS 检查。</p>
+                        </div>
+                        <button onclick="runTest('auth')" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors flex items-center">
+                            <i data-lucide="play" class="w-4 h-4 mr-1"></i> 运行测试
+                        </button>
+                    </div>
+                    <div id="res-auth" class="bg-gray-900 rounded-lg p-4 font-mono text-xs text-gray-300 overflow-x-auto min-h-[60px] border border-gray-800">
+                        <span class="text-gray-500">等待测试...</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Help Note -->
+            <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-xl p-4">
+                <h5 class="text-sm font-bold text-blue-800 dark:text-blue-300 mb-2 flex items-center">
+                    <i data-lucide="info" class="w-4 h-4 mr-2"></i> 结果解读指南
+                </h5>
+                <ul class="text-sm text-blue-700 dark:text-blue-400 space-y-1 list-disc list-inside">
+                    <li><strong>Network Error:</strong> 通常意味着 CORS 拦截了请求（如果是为了安全，这是好事！）或者服务器离线。</li>
+                    <li><strong>401 Unauthorized:</strong> CORS通过，但 Token 无效或缺失。</li>
+                    <li><strong>200 OK:</strong> 请求完全成功，鉴权通过。</li>
+                </ul>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="py-8 text-center z-20 transition-all duration-500 relative mt-auto">
+        <p class="text-[10px] sm:text-xs tracking-widest uppercase text-gray-400 dark:text-gray-500 opacity-60">
+            &copy; <span id="year"></span> ShadowQuake <span class="mx-2 text-blue-500">|</span> Designed with <span class="text-red-500 animate-pulse">❤️</span>
+        </p>
+    </footer>
+
+    <script>
+        // Init Lucide icons
+        lucide.createIcons();
+
+        // Theme Toggle Logic
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+
+        function toggleTheme() {
+            if (document.documentElement.classList.contains('dark')) {
+                document.documentElement.classList.remove('dark');
+                localStorage.theme = 'light';
+            } else {
+                document.documentElement.classList.add('dark');
+                localStorage.theme = 'dark';
+            }
+        }
+
+        document.getElementById('year').textContent = new Date().getFullYear();
+
+        // Test Logic
+        async function runTest(type) {
+            const apiUrl = document.getElementById('apiUrl').value;
+            const token = document.getElementById('token').value;
+            const resBox = document.getElementById(type === 'cors' ? 'res-cors' : 'res-auth');
+            
+            resBox.innerHTML = '<span class="animate-pulse text-blue-400">正在发送请求...</span>';
+            
+            const headers = {
+                'Content-Type': 'application/json'
+            };
+
+            if (type === 'auth') {
+                if (!token) {
+                    alert('请先输入 Admin Token');
+                    resBox.innerHTML = '<span class="text-yellow-500">测试中止: 未提供 Token</span>';
+                    return;
+                }
+                headers['x-admin-token'] = token;
+            }
+
+            try {
+                // We use POST to trigger Preflight (OPTIONS) check which is stricter for CORS
+                const response = await fetch(apiUrl, {
+                    method: 'POST', 
+                    headers: headers,
+                    body: JSON.stringify({ test: 'ping' })
+                });
+
+                const text = await response.text();
+                let data;
+                try { data = JSON.parse(text); } catch(e) {}
+
+                let statusHtml = '';
+                if (response.ok) {
+                    statusHtml = `<span class="text-green-500 font-bold block mb-2">✅ HTTP ${response.status} OK</span>`;
+                } else {
+                    statusHtml = `<span class="text-red-500 font-bold block mb-2">⚠️ HTTP ${response.status} ${response.statusText}</span>`;
+                }
+
+                resBox.innerHTML = statusHtml + `<pre class="text-gray-300 whitespace-pre-wrap">${data ? JSON.stringify(data, null, 2) : text}</pre>`;
+
+            } catch (err) {
+                console.error(err);
+                resBox.innerHTML = `<span class="text-red-500 font-bold block mb-2">🛑 Network Error</span>
+                    <div class="text-gray-400">
+                    浏览器拦截了此请求。<br>
+                    可能原因:<br>
+                    1. CORS 策略阻止 (预期内的安全拦截)<br>
+                    2. 服务器离线<br>
+                    3. URL 无效
+                    </div>`;
+            }
+        }
+
+        // Visit Count
+        fetch('/api/visit.php?page=deploy_test')
+            .then(response => response.json())
+            .then(data => {
+                const countElement = document.getElementById('visit-count');
+                if (countElement && data.success) {
+                    countElement.textContent = data.count + ' Views';
+                } else if (countElement) {
+                    countElement.textContent = 'N/A';
+                }
+            })
+            .catch(err => {
+                console.error('Error fetching visit count:', err);
+                const countElement = document.getElementById('visit-count');
+                if (countElement) countElement.textContent = 'N/A';
+            });
+    </script>
+</body>
+</html>

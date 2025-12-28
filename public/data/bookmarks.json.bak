@@ -1,0 +1,1432 @@
+[
+  {
+    "title": "Hacksplaining",
+    "url": "https://hacksplaining.com/lessons",
+    "category": "dev_tech",
+    "secondaryCategory": "others",
+    "id": "d8ce28e1-b1b4-4cc5-aaca-390c8b92c280",
+    "tags": [],
+    "description": "一个专门为Web 开发人员设计的交互式安全训练平台。它通过生动的图形、动画和在浏览器中模拟真实的黑客攻击，教导开发者识别并防御常见的安全漏洞。"
+  },
+  {
+    "title": "青柠起始页",
+    "url": "https://www.limestart.cn/",
+    "category": "life_tools",
+    "secondaryCategory": "others",
+    "description": "青柠起始页由毛若昕和杨尚臻开发，是一个简洁、美观、实用的浏览器起始页。青柠起始页以最简洁的界面容纳了多引擎搜索、自定义网站捷径、便笺等实用功能；您可依据喜好对青柠起始页进行高度自定义，让您的网上冲浪体验更加舒心。",
+    "id": "d6e3b319-8de3-41ba-a3b3-b54882e88f04",
+    "tags": []
+  },
+  {
+    "title": "SkidHomework",
+    "url": "https://skid.996every.day/",
+    "category": "education",
+    "secondaryCategory": "others",
+    "description": "一个 AI 驱动的自动化作业/学习助手",
+    "id": "b5636d48-22ce-44ad-87fa-e2162b9f8105",
+    "tags": []
+  },
+  {
+    "title": "天天短剧库",
+    "url": "https://www.kdocs.cn/l/cqRbhqazOZHP?R=L1MvMQ%3D%3D",
+    "category": "entertainment",
+    "secondaryCategory": "others",
+    "id": "3c0ee07f-ab94-4326-ab9f-b6b4d4d0bcb1",
+    "tags": [],
+    "description": "短剧搜索"
+  },
+  {
+    "title": "魔搭社区",
+    "url": "https://www.modelscope.cn/",
+    "category": "dev_tech",
+    "secondaryCategory": "others",
+    "description": "ModelScope——汇聚各领域先进的机器学习模型，提供模型探索体验、推理、训练、部署和应用的一站式服务。在这里，共建模型开源社区，发现、学习、定制和分享心仪的模型。",
+    "id": "873b0382-1535-4320-bf70-143d0dcf30bb",
+    "tags": []
+  },
+  {
+    "title": "Claude Code 免费使用魔搭社区的任意模型",
+    "url": "https://www.taoweng.site/posts/claude-code-%E5%85%8D%E8%B4%B9%E4%BD%BF%E7%94%A8%E9%AD%94%E6%90%AD%E7%A4%BE%E5%8C%BA%E7%9A%84%E4%BB%BB%E6%84%8F%E6%A8%A1%E5%9E%8B",
+    "category": "blogs_tutorials",
+    "secondaryCategory": "others",
+    "description": "一个前端工程师的博客",
+    "id": "7140982a-c3ba-465c-8121-4d909400fe55",
+    "tags": []
+  },
+  {
+    "title": "BMPI",
+    "url": "https://www.bmpi.dev/",
+    "category": "blogs_tutorials",
+    "secondaryCategory": "others",
+    "description": "终身学习（认知杠杆）* 全栈技术（时间杠杆）* 投资理财（财务杠杆） => 被动收入（人生杠杆）",
+    "id": "f24491f8-ae32-4183-8a17-2bc6fd229b12",
+    "tags": []
+  },
+  {
+    "title": "数字移民 – 肉体和精神，总要有一个是自由的。",
+    "url": "https://blog.shuziyimin.org/",
+    "category": "blogs_tutorials",
+    "secondaryCategory": "others",
+    "id": "2d425813-4647-45d4-bd54-25264a0579da",
+    "tags": [],
+    "description": ""
+  },
+  {
+    "title": "行书指南 | 软件资源分享",
+    "url": "https://xszn.org/",
+    "category": "my_favorites",
+    "secondaryCategory": "others",
+    "description": "自由及开放源代码软件列表，推荐高质量免费与开源软件，降低你寻找软件的时间成本。",
+    "id": "dd0b521b-83fc-4cbc-a69e-6524064738fa"
+  },
+  {
+    "title": "Huan's Blog",
+    "url": "https://blog.huan99.com/",
+    "category": "blogs_tutorials",
+    "secondaryCategory": "others",
+    "description": "面向长期 坚持输出",
+    "id": "c8fae1cf-3f0b-4b7e-8481-747d4f61a3ef",
+    "tags": []
+  },
+  {
+    "title": "Yesicon - 精选全球高品质、开源、免费的矢量图标库",
+    "url": "https://yesicon.app/",
+    "category": "ai_tools",
+    "secondaryCategory": "others",
+    "description": "220 icon sets with 280k+ icons, search across icon sets in multiple languages, rich filtering by type and style, quick customization of icon colors, sizes and code styles, one-click copy and download for developers and designers",
+    "id": "e965eed6-2b5e-410a-9522-b62ebf5e1cb3"
+  },
+  {
+    "title": "DeepSeek",
+    "url": "https://chat.deepseek.com/",
+    "category": "ai_tools",
+    "secondaryCategory": "others",
+    "description": "Chat with DeepSeek AI – your intelligent assistant for coding, content creation, file reading, and more. Upload documents, engage in long-context conversations, and get expert help in AI, natural language processing, and beyond. | 深度求索（DeepSeek）助力编程代码开发、创意写作、文件处理等任务，支持文件上传及长文本对话，随时为您提供高效的AI支持。",
+    "id": "5cf79275-f616-4629-8e07-5e2559f4fa8f"
+  },
+  {
+    "title": "Bard",
+    "url": "https://bard.google.com/chat/c7ceaf2392e9308f",
+    "category": "ai_tools",
+    "secondaryCategory": "others",
+    "id": "7b5632b7-dbb4-4957-a8bb-63b2d241e58c"
+  },
+  {
+    "title": "DeepSeek 模型兼容性检测",
+    "url": "https://tools.thinkinai.xyz/",
+    "category": "ai_tools",
+    "secondaryCategory": "others",
+    "id": "a6ba4b8c-9499-4e8a-8152-772a4ec61098"
+  },
+  {
+    "title": "Create Effective Visuals with AI | MyLens",
+    "url": "https://mylens.ai/",
+    "category": "ai_tools",
+    "secondaryCategory": "others",
+    "description": "Create dynamic visualizations with AI from any kind of sources: PDF, Word, PowerPoint, Spreadsheet, Image, YouTube, Link, and text. Get started free.",
+    "id": "87501c32-0f02-4014-9db8-4cbe9a070c21"
+  },
+  {
+    "title": "柯基捷径库 - 苹果iOS快捷指令中心",
+    "url": "https://www.kejicut.com/",
+    "category": "ai_tools",
+    "secondaryCategory": "others",
+    "description": "柯基捷径库（www.kejicut.com）专注分享苹果iOS快捷指令与教程,提供高质量iOS捷径,快捷指令原名workflow又名捷径,苹果生态iPhone/iPad/Mac中的一款效率软件。",
+    "id": "24eadc07-8813-4f7d-a61a-bddea323898d"
+  },
+  {
+    "title": "MingCute Icon _ Carefully Designed Icon Library",
+    "url": "https://www.mingcute.com/animation",
+    "category": "ai_tools",
+    "secondaryCategory": "others",
+    "description": "MingCute Icon is a set of simple and exquisite open-source icon library. Whether you're a designer or a developer, it's perfect for use in web and mobile.",
+    "id": "d243c2e9-f5f5-41ad-8228-1a4a240f22f5"
+  },
+  {
+    "title": "美国地址生成，美国人虚构信息生成-世界各国虚拟身份信息、地址、信用卡生成",
+    "url": "https://www.haoweichi.com/",
+    "category": "ai_tools",
+    "secondaryCategory": "others",
+    "description": "随机生成虚构美国身份，包括姓名，地址，电话，职称，信用卡，身高，体重等信息，获取美国人信息，获取美国人地址",
+    "id": "3e140c93-6160-4975-9e82-6682c02e7aed"
+  },
+  {
+    "title": "LiteLoaderQQNT",
+    "url": "https://liteloaderqqnt.github.io/",
+    "category": "ai_tools",
+    "secondaryCategory": "others",
+    "description": "QQNT 插件加载器",
+    "id": "c0ec4841-a4fc-41a4-84eb-cd44fcc66a9e"
+  },
+  {
+    "title": "文件快递柜 - FileCodeBox",
+    "url": "https://share.lanol.cn/#/",
+    "category": "ai_tools",
+    "secondaryCategory": "others",
+    "description": "开箱即用的文件快传系统",
+    "id": "343b8d85-9877-40cc-b8d3-147f21bc38a6"
+  },
+  {
+    "title": "秘塔AI搜索",
+    "url": "https://metaso.cn/",
+    "category": "ai_tools",
+    "secondaryCategory": "others",
+    "description": "秘塔AI搜索，没有广告，直达结果",
+    "id": "6235d674-6588-44d9-a46b-3660d52bffc4"
+  },
+  {
+    "title": "Poe - 快捷实用的AI聊天",
+    "url": "https://poe.com/login",
+    "category": "ai_tools",
+    "secondaryCategory": "others",
+    "id": "25b0689e-fbe7-4bfc-9788-2920653b5cfb"
+  },
+  {
+    "title": "thh789/chatgpt-downgrade: ChatGPT降智解决方案 | 指纹浏览器 + 美国静态住宅 IP 轻松破解 GPT 降智 | ChatGPT 降智恢复方法 | 最有效的 ChatGPT 账号降智恢复策略",
+    "url": "https://github.com/thh789/chatgpt-downgrade?tab=readme-ov-file",
+    "category": "ai_tools",
+    "secondaryCategory": "others",
+    "description": "ChatGPT降智解决方案 | 指纹浏览器 + 美国静态住宅 IP 轻松破解 GPT 降智 | ChatGPT 降智恢复方法 | 最有效的 ChatGPT 账号降智恢复策略 - thh789/chatgpt-downgrade",
+    "id": "c889795c-5ebe-4c3c-ab71-8fafc5c54eae"
+  },
+  {
+    "title": "Datawhale-学用 AI,从此开始",
+    "url": "https://linklearner.com/home",
+    "category": "ai_tools",
+    "secondaryCategory": "others",
+    "id": "698ebba8-f960-464a-92a6-8a3c5263d6c8"
+  },
+  {
+    "title": "图欧学习资源导航 - 终身学习者的导航站",
+    "url": "https://tuostudy.upnb.top/",
+    "category": "ai_tools",
+    "secondaryCategory": "others",
+    "id": "225d1313-30b4-4abe-b40a-41e87bc68325"
+  },
+  {
+    "title": "Great Image and File Content Search Freeware on Windows 2025",
+    "url": "https://anytxt.net/",
+    "category": "ai_tools",
+    "secondaryCategory": "others",
+    "id": "e7e9f572-fa3f-41f4-be29-ff6ef853c3fb"
+  },
+  {
+    "title": "万人迷吧-优质AI工具导航站",
+    "url": "https://www.wanrenmi8.com/cn/index.html",
+    "category": "ai_tools",
+    "secondaryCategory": "others",
+    "description": "万人迷吧 - 优质AI工具导航站,wanrenmi8.com",
+    "id": "26cd9fa1-b4cb-4f04-858b-85181b0318bf"
+  },
+  {
+    "title": "MiniMax Agent - Your AI Supercompanion, Think Faster, Achieve More",
+    "url": "https://agent.minimax.io/",
+    "category": "ai_tools",
+    "secondaryCategory": "others",
+    "description": "MiniMax Agent 是基于顶尖多模态大语言模型打造的智能AI伙伴，为你带来全方位的智能体验：精准搜索解答、一目了然的图像识别、沉浸式语音对话、专业创意写作、文档闪速解析，还有独家悬浮球功能让复杂任务变得轻而易举。支持MCP多智能体协作，让AI团队为你高效解决复杂问题。10倍速获取信息，10倍速解决问题，无论你是学生、职场人士、自由工作者还是创作者，Agent都能随叫随到，一触即用。AI写作、搜题、办公、翻译、编程、创作、文档总结，甚至是日常聊天、语言学习、面试准备，Agent都能胜任，成为你的全能智慧助手。",
+    "id": "9ce7e638-761b-4378-8065-2d9175a6635d"
+  },
+  {
+    "title": "高效问答 | 在问",
+    "url": "https://www.zaiwenai.com/",
+    "category": "ai_tools",
+    "secondaryCategory": "others",
+    "description": "在问社区是一个以科技普及为使命的免费开源社区，致力于为广大用户提供世界知识和专业服务。在问社区集成了众多优秀的大语言模型，用户可以轻松地获取和使用这些模型实现自然语言处理、智能问答、文本创作等多种功能。此外，我们还支持AI作画、文档分析、在线检索和思维导图等功能，帮助用户更高效地获取和处理信息。在问社区秉持开放、共享的精神，欢迎广大用户加入我们，共同探索科技的魅力。",
+    "id": "88c4e262-2949-4c6a-b510-1b7f04d198e9"
+  },
+  {
+    "title": "Chrome插件下载站 - 免费下载Chrome扩展程序",
+    "url": "https://crxdl.com/",
+    "category": "ai_tools",
+    "secondaryCategory": "others",
+    "description": "免费下载Chrome插件扩展程序，支持Manifest V2和V3版本，提供丰富的插件分类和搜索功能",
+    "id": "abace4d1-a526-4de6-9284-76fc589a4987"
+  },
+  {
+    "title": "ChatGPT 指令大全｜ExplainThis",
+    "url": "https://www.explainthis.io/zh-hans/chatgpt",
+    "category": "ai_tools",
+    "secondaryCategory": "others",
+    "description": "本站提供数百个精炼过的指令语句 (提示词)，让你充分发挥 ChatGPT 的强大功能",
+    "id": "470ac954-256f-46e5-8e54-9db5cc57e9d5"
+  },
+  {
+    "title": "Free2gpt导航",
+    "url": "https://nav.free2gpt.com/",
+    "category": "ai_tools",
+    "secondaryCategory": "others",
+    "id": "76e60071-7b92-40ad-a11e-dc6652e0824b"
+  },
+  {
+    "title": "Introduction | byoungd",
+    "url": "https://byoungd.gitbook.io/english-level-up-tips",
+    "category": "education",
+    "secondaryCategory": "others",
+    "id": "cd06acc0-2e82-493c-9186-d424b453eb32"
+  },
+  {
+    "title": "GIS数据 | 麻辣GIS",
+    "url": "https://malagis.com/category/gis-resource/",
+    "category": "education",
+    "secondaryCategory": "others",
+    "id": "4d3c84ea-141b-4a93-90d6-5e8b54b4dd8e"
+  },
+  {
+    "title": "Linear Algebra Done Right",
+    "url": "https://linear.axler.net/",
+    "category": "education",
+    "secondaryCategory": "others",
+    "id": "865b9286-6b5e-457e-a332-d9f5a286b16c"
+  },
+  {
+    "title": "大学生数学竞赛网站",
+    "url": "http://www.cmathc.cn/",
+    "category": "education",
+    "secondaryCategory": "others",
+    "description": "��ѧ����ѧ������վ,������Դ,�����Ծ�,��������",
+    "id": "5a0c7aa3-2746-489d-96ce-5980b22c26ac"
+  },
+  {
+    "title": "PubScholar公益学术平台",
+    "url": "https://pubscholar.cn/",
+    "category": "education",
+    "secondaryCategory": "others",
+    "description": "PubScholar公益学术平台是中国科学院作为国家战略科技力量的主力军，履行学术资源保障“国家队”职责，为满足全国科技界和全社会科技创新的学术资源基础保障需求，建设的提供公益性学术资源的检索发现、内容获取和交流共享等服务的平台。平台在尊重知识产权和国际通行规范的前提下，发挥中国科学院自身拥有丰富且高质量学术资源的优势，带动国内外的学术资源机构积极合作，最大限度地开放优质学术资源。目前，平台整合集成了中国科学院的科技成果资源、科技出版资源和学术交流资源；OA环境下允许集成服务的学术资源；以及通过协议授权或其它合作共建模式获得授权许可的学术资源。",
+    "id": "c7a48ed5-8d26-4499-85de-eec519084471"
+  },
+  {
+    "title": "Qwerty Learner 官网 — 为键盘工作者设计的单词与肌肉记忆锻炼软件",
+    "url": "https://qwerty.kaiyi.cool/mobile",
+    "category": "education",
+    "secondaryCategory": "others",
+    "description": "Qwerty Learner 官方网站 - 专为键盘工作者设计的免费英语学习软件，结合打字练习与单词记忆，支持音标发音、默写模式、多样词库，高效提升英语水平和打字技能。",
+    "id": "6b2e8676-9411-4874-9d73-02119ead48dd"
+  },
+  {
+    "title": "| CogModal Group",
+    "url": "https://mmlab-iie.github.io/course/",
+    "category": "education",
+    "secondaryCategory": "others",
+    "id": "86ed93c6-aca2-4831-aefb-6d12e2f49c61"
+  },
+  {
+    "title": "Home | JustLaws - 法律文库",
+    "url": "https://www.justlaws.cn/",
+    "category": "education",
+    "secondaryCategory": "others",
+    "description": "法律和法律都是相互依存的",
+    "id": "6c00171d-8951-4d82-8c0e-ce9512dd7f83"
+  },
+  {
+    "title": "大学物理 - 浙江大学课程攻略共享计划",
+    "url": "https://qsctech.github.io/zju-icicles/%E5%A4%A7%E5%AD%A6%E7%89%A9%E7%90%86/",
+    "category": "education",
+    "secondaryCategory": "others",
+    "id": "643a63f2-d472-4b53-b5f3-db55cf204538"
+  },
+  {
+    "title": "B站网课资源推荐 - GitMind",
+    "url": "https://gitmind.cn/app/docs/mpa0m9v0",
+    "category": "education",
+    "secondaryCategory": "others",
+    "description": "新一代免费思维导图协作软件，各平台数据实时同步，让你的思想更有价值。",
+    "id": "04d116cf-a32b-471d-b764-a9d29f9cb359"
+  },
+  {
+    "title": "中文性教育资源网",
+    "url": "https://res.knowsex.org/",
+    "category": "education",
+    "secondaryCategory": "others",
+    "description": "索引有素材、资料、网站、社群四种分类的性教育资源网站，由性教育组织 KnowSex.net 维护。",
+    "id": "7063e0d9-a6e9-4936-8c00-089d1a9b18b7"
+  },
+  {
+    "title": "柠檬试题库",
+    "url": "https://questionlib.net/",
+    "category": "education",
+    "secondaryCategory": "others",
+    "description": "柠檬试题库收录了计算机等级考试、公务员、驾照考试题目，在线搜索查看答案，查看解析，讨论试题，互动点赞，为考生打造的学习考试辅助社区",
+    "id": "045feb89-8c84-4c18-90b9-63a31dc9283d"
+  },
+  {
+    "title": "Bon French: 小而美的法语辅助学习工具",
+    "url": "https://bon-french.com/?ref=https://t.me/fakeye",
+    "category": "education",
+    "secondaryCategory": "others",
+    "description": "un petit outil d'apprentissage du français.",
+    "id": "d592e015-caee-4d5f-9446-f49790eebcf8"
+  },
+  {
+    "title": "Z-Library – 世界上最大的電子圖書館。自由訪問知識和文化。",
+    "url": "https://tw.z-library.sk/",
+    "category": "education",
+    "secondaryCategory": "others",
+    "id": "a1051ad4-eb5e-4ff9-81a9-2bf9bdb10f7e"
+  },
+  {
+    "title": "Saber",
+    "url": "https://saber.adil.hanney.org/",
+    "category": "education",
+    "secondaryCategory": "others",
+    "description": "The notes app built for handwriting",
+    "id": "62e1eb8e-faea-4f14-9fca-04f4fb62c428"
+  },
+  {
+    "title": "潇然系统",
+    "url": "https://sys.xrgzs.top/",
+    "category": "resources",
+    "secondaryCategory": "others",
+    "id": "e6124bf8-49dd-4083-9584-b8ad16cba950"
+  },
+  {
+    "title": "SearchSearchGo",
+    "url": "https://ssgo.app/?query=%E6%98%8E%E6%98%9F%E5%A4%A7%E4%BE%A6%E6%8E%A2&page=1",
+    "category": "resources",
+    "secondaryCategory": "others",
+    "description": "一款极简体验、优雅、现代化、资源丰富、免费、无需登录的新一代阿里云盘搜索引擎，来体验找寻资源的快乐吧~",
+    "id": "053ea30e-e7a7-49d1-b466-bacfc571f9be"
+  },
+  {
+    "title": "Pintree",
+    "url": "https://pintree.geekshare.org/",
+    "category": "resources",
+    "secondaryCategory": "others",
+    "description": "Pintree is a powerful tool that helps you manage and export your browser bookmarks, converting them into an aesthetically pleasing website that is easy to share and access.",
+    "id": "b12764f0-eb9a-452b-91af-114b4893b10a"
+  },
+  {
+    "title": "我的小站-阿里云盘资源共享站",
+    "url": "https://pan666.net/",
+    "category": "resources",
+    "secondaryCategory": "others",
+    "description": "Panwiki - （原我的小站论坛）",
+    "id": "bc25ccf8-153b-4f21-ab84-bdf62114252e"
+  },
+  {
+    "title": "小兔搜搜 - 新一代工具资源应用",
+    "url": "https://xiaotusoso.com/",
+    "category": "resources",
+    "secondaryCategory": "others",
+    "description": "小兔搜搜是新一代工具资源应用，聚合网盘资源搜索 + 免费在线工具。一次搜索，快速发现优质网盘资源；即开即用的图片处理、音视频处理、PDF 处理、电子书阅读、文本处理、数据计算、加密安全、单位换算等工具，无需下载安装。还提供热榜聚合、知识库与垂直导航（AI、产品运营、设计师、程序员、法律），助你高效学习与工作。",
+    "id": "58951a1e-a6c0-447b-9695-b10cee347162"
+  },
+  {
+    "title": "网盘搜索-找网盘资源就上盘搜pro-聚合网盘搜索引擎",
+    "url": "https://panso.pro/",
+    "category": "resources",
+    "secondaryCategory": "others",
+    "description": "盘搜Pro是一个专业的网盘资源搜索引擎，旨在为用户提供一个免费、高效的网盘资源搜索平台。用户可以通过盘搜快速找到存储在各大网盘上的资源，包括但不限于阿里云盘、百度网盘、夸克网盘、迅雷网盘、UC网盘、蓝奏云盘和115网盘等，盘搜Pro以其强大的搜索能力和简洁的用户界面，成为了寻找网盘资源的有力工具。",
+    "id": "b76c3e27-6b13-49a0-a5b8-ef1a6b3d556b"
+  },
+  {
+    "title": "下歌吧 - 全网音乐 高品质MP3 无损flac 在线免费下载 免费播放",
+    "url": "https://xiageba.com/",
+    "category": "resources",
+    "secondaryCategory": "others",
+    "description": "下歌吧 - 在线音乐搜索，可以在线免费下载全网MP3付费歌曲、流行音乐、经典老歌等。曲库完整，更新迅速，试听流畅，支持高品质|无损音质",
+    "id": "aafbfc46-caca-4071-844a-da5ddd5010eb"
+  },
+  {
+    "title": "Your connected workspace for wiki, docs & projects | Notion",
+    "url": "https://xianmian.notion.site/1920a4560f8e80f5a358cca83c8267e7",
+    "category": "resources",
+    "secondaryCategory": "others",
+    "description": "A tool that connects everyday work into one space. It gives you and your teams AI tools—search, writing, note-taking—inside an all-in-one, flexible workspace.",
+    "id": "2ef58dfb-09bf-4cf8-b1bc-208b5f7a3210"
+  },
+  {
+    "title": "阅读频道资源合集 · 语雀",
+    "url": "https://www.yuque.com/legado/pd",
+    "category": "resources",
+    "secondaryCategory": "others",
+    "description": "由阅读管理员哈嘿嘿收集的，为频道成员提供使用的资源，可...",
+    "id": "026bb824-49c6-4514-9b53-63045f8ef114"
+  },
+  {
+    "title": "临时邮箱 - 临时谷歌邮箱 - 免费Gmail",
+    "url": "https://www.linshiyouxiang.net/",
+    "category": "life_tools",
+    "secondaryCategory": "others",
+    "id": "f595eddc-20ae-48ad-a7c6-56d2a743c8fc"
+  },
+  {
+    "title": "古人云机场-古人云官网-古人云-古人云发布页",
+    "url": "https://ac.gurenyun.org/",
+    "category": "life_tools",
+    "secondaryCategory": "others",
+    "id": "74d9e869-7795-4767-a257-f90d66aedb85"
+  },
+  {
+    "title": "仪表盘 - ☁️清风云",
+    "url": "https://qfyun.org/#/stage/dashboard",
+    "category": "life_tools",
+    "secondaryCategory": "others",
+    "id": "b8d77120-9e43-4705-aeac-373188b72861"
+  },
+  {
+    "title": "签证列表 - 全球签证要求",
+    "url": "https://visalist.io/cn",
+    "category": "life_tools",
+    "secondaryCategory": "others",
+    "id": "eb2b874c-8b99-458a-837f-a4581a7ac0dd"
+  },
+  {
+    "title": "有用经验",
+    "url": "https://yyjingyan.com/",
+    "category": "life_tools",
+    "secondaryCategory": "others",
+    "id": "ddb339ba-0280-42be-bbdb-a423229f0f7c"
+  },
+  {
+    "title": "996忍者！ | 996忍者！",
+    "url": "https://996.ninja/",
+    "category": "life_tools",
+    "secondaryCategory": "others",
+    "description": "996Ninja - 专为职场人打造的摸鱼避难所。提供最实用的摸鱼技巧、职场生存指南、办公效率工具以及缓解压力的摸鱼表情包和游戏。拒绝无效内卷，守护你的身心健康。",
+    "id": "a810f60b-6318-4cd8-8c75-db4aea09958c"
+  },
+  {
+    "title": "leonlucc/awesome-alternative: 收录全网口碑平替好物清单，性价比突出、质量不输大牌。目前有成人服饰、儿童服饰、居家用品等系列。坚持更新，欢迎关注",
+    "url": "https://github.com/leonlucc/awesome-alternative",
+    "category": "life_tools",
+    "secondaryCategory": "others",
+    "id": "97ce32e8-4e44-4945-be68-f44b412e7457"
+  },
+  {
+    "title": "又要重装系统站 - 精品系统包分享",
+    "url": "https://yyczxt.com/",
+    "category": "life_tools",
+    "secondaryCategory": "others",
+    "description": "又要重装系统站，专业系统下载站，提供各种修改版，精简版，优化版Windows系统包，Windows10，Windows11，PE等系统版本下载",
+    "id": "621d11dc-e99d-4ff1-9ab8-1bed63cf4101"
+  },
+  {
+    "title": "Telegraph",
+    "url": "https://telegra.ph/",
+    "category": "life_tools",
+    "secondaryCategory": "others",
+    "id": "3dd20b59-0afc-4c30-b4eb-e6ee72f057c4"
+  },
+  {
+    "title": "小电视空降助手 - 精准跳过恰饭广告",
+    "url": "https://www.bsbsb.top/",
+    "category": "life_tools",
+    "secondaryCategory": "others",
+    "description": "小电视空降助手，帮你精准跳过视频中的恰饭广告。",
+    "id": "f3bd5177-9860-4db3-b463-9c1a475e4234"
+  },
+  {
+    "title": "DeepL Translate: The world's most accurate translator",
+    "url": "https://www.deepl.com/en/translator",
+    "category": "life_tools",
+    "secondaryCategory": "others",
+    "description": "DeepL Translate: The world's most accurate translator",
+    "id": "099f85af-2024-467b-9cba-604f76801ba6"
+  },
+  {
+    "title": "翻墙后可以看什么？我做了一个数字移民导航站，已收集 200+ 网站 – 数字移民",
+    "url": "https://web.archive.org/web/20240303113609/https://blog.shuziyimin.org/1321",
+    "category": "life_tools",
+    "secondaryCategory": "others",
+    "id": "baf9c26c-5d67-48e3-a052-1d7b780813e5"
+  },
+  {
+    "title": "有关每个国家/地区组织的电力，插头，插座和适配器的信息",
+    "url": "https://whatplug.info/zh/",
+    "category": "life_tools",
+    "secondaryCategory": "others",
+    "description": "您需要的所有关于电力，插头，适配器，按国家安排的插座的信息，非常适合组织旅行。",
+    "id": "a1dd5c98-f2cc-4a0a-ae40-e507e6f7054c"
+  },
+  {
+    "title": "跨平台的开源输入法Rime定制指南，打造强大的个性化输入法 - 雨月空间站",
+    "url": "https://www.mintimate.cn/2023/03/18/rimeQuickInit/",
+    "category": "life_tools",
+    "secondaryCategory": "others",
+    "description": "Rime/小狼毫/鼠须管是强大的开源输入法。但是，如何快速地在Linux、macOS以及Windwos上快速配置它呢？让我们一起来看看。",
+    "id": "d6efdf8b-e8ab-4490-9858-930431cc185d"
+  },
+  {
+    "title": "Fake Information Generator - Fakeinfo.net",
+    "url": "https://fakeinfo.net/",
+    "category": "life_tools",
+    "secondaryCategory": "others",
+    "description": "Generate fake information about all popular social media platforms like Facebook, WhatsApp, Instagram, etc. You can also use personal details generator.",
+    "id": "1ddf1b12-eb71-4b1e-b9de-bbac52c0cf78"
+  },
+  {
+    "title": "速知吧 - 实时热榜聚合平台 | 今日热点一网打尽",
+    "url": "https://suzhi.fun/#/",
+    "category": "life_tools",
+    "secondaryCategory": "others",
+    "description": "速知吧是一个实时热榜聚合平台，汇聚微博、知乎、百度、今日头条、抖音等各大平台热门话题和热点新闻，让您快速了解当下热点，掌握最新资讯动态。",
+    "id": "00d56719-38e8-4b96-b9ad-66ed75e2c95e"
+  },
+  {
+    "title": "Luxirty Search",
+    "url": "https://search.luxirty.com/",
+    "category": "life_tools",
+    "secondaryCategory": "others",
+    "description": "Luxirty Search 为专业人士优化，去除内容农场，无广告，简洁，快。",
+    "id": "10b1b1ca-9461-4c90-bdc4-eb83ed04ef9e"
+  },
+  {
+    "title": "米坛社区 BandBBS",
+    "url": "https://www.bandbbs.cn/",
+    "category": "life_tools",
+    "secondaryCategory": "others",
+    "description": "米坛社区是大型中文智能穿戴资源交流社区，在这里你可以找到小米手环自定义表盘，小米手环资源包，华米手表以及华为手环手表荣耀手环手表等智能穿戴设备的丰富教程和资源，希望您与我们一起，探索不一样，发现属于你的腕上世界！",
+    "id": "80e68e2e-8259-4e7f-9274-158e680b567c"
+  },
+  {
+    "title": "TuneFree",
+    "url": "https://sayqz.lanpv.com/s/tunefree",
+    "category": "life_tools",
+    "secondaryCategory": "others",
+    "id": "61dcd197-b020-4adc-a988-f7c922947058"
+  },
+  {
+    "title": "隐私搜索引擎 - LosePrivacy隐私查询器",
+    "url": "https://loseprivacy.click/?lp=MzA3NDY=",
+    "category": "life_tools",
+    "secondaryCategory": "others",
+    "id": "c234755e-bf0c-4e3f-9481-ca4509168d22"
+  },
+  {
+    "title": "Nomads.com - Best Places to Live for Digital Nomads (formerly Nomad List)",
+    "url": "https://nomadlist.com/",
+    "category": "life_tools",
+    "secondaryCategory": "others",
+    "description": "Learn how to become a digital nomad and find the best places to live and work remotely as a location independent remote worker. Explore places based on cost of living, internet speed, weather and other metrics. For startups that work remotely and remote workers.",
+    "id": "c3312f6a-cf62-4bdf-8693-113ff77ad534"
+  },
+  {
+    "title": "1688神店-NGA特供版",
+    "url": "https://docs.qq.com/sheet/DSEVEeHRXTkRpeERh?tab=BB08J2",
+    "category": "life_tools",
+    "secondaryCategory": "others",
+    "description": "腾讯文档-在线表格",
+    "id": "245323ab-b92b-4d4c-8cd0-69cc99d768bc"
+  },
+  {
+    "title": "气象卫星和雷达图 | Zoom Earth",
+    "url": "https://zoom.earth/maps/satellite/",
+    "category": "life_tools",
+    "secondaryCategory": "others",
+    "description": "Near real-time global weather satellite images. Updated every 10 minutes across the US.",
+    "id": "91f2554e-6b72-4368-b175-d2ddcecbaec2"
+  },
+  {
+    "title": "星际放映厅-专业级流媒体合租平台",
+    "url": "https://naifeistation.com/?invite=216",
+    "category": "life_tools",
+    "secondaryCategory": "others",
+    "description": "本站提供Netflix, Max, Disney+, Spotify, YouTube Premium等海外流媒体账号的合租服务，并已实现自动化交付。",
+    "id": "e037cf3d-7e94-4c8f-bf65-e321b566b45d"
+  },
+  {
+    "title": "Surfboard Manual",
+    "url": "https://getsurfboard.com/",
+    "category": "life_tools",
+    "secondaryCategory": "others",
+    "description": "Documentation of Surfboard for Android",
+    "id": "28e82213-5bda-414f-8177-3464017116cb"
+  },
+  {
+    "title": "SMS-Activate是在线接受短信的虚拟号码服务",
+    "url": "https://sms-activate.org/cn",
+    "category": "life_tools",
+    "secondaryCategory": "others",
+    "id": "5562be1a-bdca-4c38-85fb-d06827330b80"
+  },
+  {
+    "title": "在线简历生成工具",
+    "url": "https://dnd-resume.com/",
+    "category": "life_tools",
+    "secondaryCategory": "others",
+    "description": "使用在线简历生成工具快速创建并导出PDF简历 | Create and export professional PDF resumes instantly with our online resume builder",
+    "id": "f1a77042-576f-4d48-b6a3-8015394f8e69"
+  },
+  {
+    "title": "免费、安全的在线PDF工具 | QuicklyPDF",
+    "url": "https://quicklypdf.com/zh",
+    "category": "life_tools",
+    "secondaryCategory": "others",
+    "id": "462ac8e1-ebcb-4baf-9df2-facf87e059b1"
+  },
+  {
+    "title": "阅后即焚 - 阅后即焚网站应用，查看一次即可自动删除消息，https://yhjf.cc",
+    "url": "https://yhjf.cc/",
+    "category": "life_tools",
+    "secondaryCategory": "others",
+    "description": "阅后即焚网页应用，浏览一次后即自动删除,阅后即焚app,snapechat,Burn After Reading",
+    "id": "8b174b50-c273-42fd-87f7-eb4d72e167ff"
+  },
+  {
+    "title": "免费 Slogan 设计制作器 - 企业 Slogan 设计生成器",
+    "url": "https://www.shopify.com/zh/tools/slogan-maker",
+    "category": "life_tools",
+    "secondaryCategory": "others",
+    "description": "使用 Slogan 设计生成器工具，获得令人眼前一亮的 Slogan。您可以借助 Slogan 设计制作器，生成与您业务相关的 Slogan，进而通过出色的品牌共鸣来获得更多受众。这款标语设计生成器工具将能够帮助您想出最佳创意，更好地推广您的业务。",
+    "id": "ff99116d-bbf7-4a29-990d-1958660e85c1"
+  },
+  {
+    "title": "超级PDF|简单强大的PDF在线处理工具",
+    "url": "https://xpdf.cn/",
+    "category": "life_tools",
+    "secondaryCategory": "others",
+    "description": "超级PDF免费为您提供简单强大的PDF在线处理工具，文件3小时自动删除",
+    "id": "eaad5b97-dde7-42ad-b939-13bab683118c"
+  },
+  {
+    "title": "《默沙东诊疗手册大众版》",
+    "url": "https://www.msdmanuals.cn/home",
+    "category": "life_tools",
+    "secondaryCategory": "others",
+    "description": "现在可免费在线查阅——默沙东诊疗手册大众版（在美国和加拿大称为默沙东手册）是家庭医学参考书的标准——自 1899 年至今。",
+    "id": "7151fcf5-b896-491f-8ec4-cee0b05ebcbd"
+  },
+  {
+    "title": "MSD诊疗手册专业版",
+    "url": "https://www.msdmanuals.cn/professional",
+    "category": "life_tools",
+    "secondaryCategory": "others",
+    "description": "现在可免费在线查阅——默沙东诊疗手册专业版（在美国和加拿大称为默沙东手册）是医生和学生医学参考书的全球标准——自 1899 年至今。",
+    "id": "3cdc1c1d-f8a4-4f84-be68-282785cba3b0"
+  },
+  {
+    "title": "计算器套件 - GeoGebra",
+    "url": "https://www.geogebra.org/calculator",
+    "category": "life_tools",
+    "secondaryCategory": "others",
+    "description": "Interactive, free online calculator from GeoGebra: graph functions, plot data, drag sliders, create triangles, circles and much more!",
+    "id": "223c2a01-5d0e-4056-b9ad-97a3472f4ff5"
+  },
+  {
+    "title": "Reactive Resume - A free and open-source resume builder",
+    "url": "https://rxresu.me/",
+    "category": "life_tools",
+    "secondaryCategory": "others",
+    "description": "A free and open-source resume builder that simplifies the process of creating, updating, and sharing your resume.",
+    "id": "d37d03c4-29f6-4b9b-b042-e8fd838a78a3"
+  },
+  {
+    "title": "Redirecting...",
+    "url": "https://www.ckcloud.xyz/#/dashboard",
+    "category": "life_tools",
+    "secondaryCategory": "others",
+    "id": "2b1a3130-a8e5-4277-8705-7a36c02bedaf"
+  },
+  {
+    "title": "针对所有物品的修理手册 - iFixit",
+    "url": "https://zh.ifixit.com/Guide",
+    "category": "life_tools",
+    "secondaryCategory": "others",
+    "id": "3bdd83fb-069f-4a11-a1f4-edfb16942145"
+  },
+  {
+    "title": "领带结法 - 在这个世界上第一个网站关于领带结法 - 法国。",
+    "url": "https://www.tieknot.com/dalingdai.html",
+    "category": "life_tools",
+    "secondaryCategory": "others",
+    "id": "85819975-c846-49f0-8bc1-27a86a9f3686"
+  },
+  {
+    "title": "東京電視台",
+    "url": "https://mov3.co/tvtokyo.html",
+    "category": "life_tools",
+    "secondaryCategory": "others",
+    "id": "df4707e8-8c41-4a53-8ece-0abf8fadf8c3"
+  },
+  {
+    "title": "全球光污染地图 | 实时查询光害等级 - 天文通",
+    "url": "https://www.darkmap.cn/",
+    "category": "life_tools",
+    "secondaryCategory": "others",
+    "description": "专业级光污染地图，实时显示波特尔暗空分类等级，中国暗夜环境等级，提供SQM精确数值。天文爱好者必备工具，快速定位最佳观星地点，支持中国地区光害查询，助力星空摄影规划。",
+    "id": "8d2ed6c5-492e-43c3-b034-0abc226146e5"
+  },
+  {
+    "title": "南昌地铁线路图 - Metro Line Hub",
+    "url": "https://www.metrolinehub.com/zh/china/nanchang",
+    "category": "life_tools",
+    "secondaryCategory": "others",
+    "description": "运营里程128公里，2024年东延至航空城。鹭鹭行APP集成VR车站导航",
+    "id": "3a06c4d6-3366-4ecb-8b6b-3a638eef9ffc"
+  },
+  {
+    "title": "Job Worth Calculator",
+    "url": "https://worth-calculator.vercel.app/",
+    "category": "life_tools",
+    "secondaryCategory": "others",
+    "id": "d959b7f8-e775-4250-bae8-58ac9ff09d67"
+  },
+  {
+    "title": "《城市租房生存指南》",
+    "url": "https://zufang.ababtools.com/",
+    "category": "life_tools",
+    "secondaryCategory": "others",
+    "description": "找到一个称心如意的窝，咱们得先学会找房子的门道",
+    "id": "4be684d5-01fc-41da-af7c-e7dbde300c52"
+  },
+  {
+    "title": "由日本公司运营的免费照片素材 - Photock官网",
+    "url": "https://photock.asia/",
+    "category": "life_tools",
+    "secondaryCategory": "others",
+    "description": "由日本运营的免费照片素材网站，提供可商用、高达8,000像素的高分辨率图片，无需标注出处、无需会员注册、可自由加工。",
+    "id": "2923efb3-dad3-4218-b4ba-4a16f89a79ef"
+  },
+  {
+    "title": "FolderPort - Fast & Secure Folder Sharing | FolderPort",
+    "url": "https://folderport.com/share/PM89rpqeAj",
+    "category": "life_tools",
+    "secondaryCategory": "others",
+    "description": "Select a folder to share and generate a sharing link for easy access",
+    "id": "6c90c17b-4454-41f1-bace-e8ba2c1141fd"
+  },
+  {
+    "title": "医保政策导航",
+    "url": "https://yibao.233h.com/",
+    "category": "life_tools",
+    "secondaryCategory": "others",
+    "description": "全国医疗保险政策链接导航，便捷查询各地医保政策",
+    "id": "fae28586-967a-4730-9826-260d83fcb924"
+  },
+  {
+    "title": "装个机 - 专业电脑重装系统指南教程 | 一键重装系统 | Win10/Win11系统安装",
+    "url": "https://zhuangit.ababtools.com/",
+    "category": "life_tools",
+    "secondaryCategory": "others",
+    "description": "装个机 - 专业电脑重装系统指南教程网站，提供Windows/Mac重装系统教程、一键重装系统工具、U盘启动盘制作方法、PE工具、系统激活工具，助您轻松完成电脑系统安装",
+    "id": "74c0143b-ae3b-4ff1-b168-3290d26c6450"
+  },
+  {
+    "title": "Immersive Translate",
+    "url": "https://app.immersivetranslate.com/babel-doc/",
+    "category": "life_tools",
+    "secondaryCategory": "others",
+    "id": "f7e53033-1bfb-4c7f-a7d1-b22da158b2e9"
+  },
+  {
+    "title": "Ratefuse 搜索并对比多平台影视评分",
+    "url": "https://ratefuse.cn/",
+    "category": "life_tools",
+    "secondaryCategory": "others",
+    "id": "b8f81ab8-c3cf-49a5-8c48-94af60ae0562"
+  },
+  {
+    "title": "欢迎使用 | 潮汐收藏",
+    "url": "https://help.tidemark.cc/",
+    "category": "life_tools",
+    "secondaryCategory": "others",
+    "description": "收藏你的收藏",
+    "id": "fc9e50fa-6bf9-4a2a-8395-8cfe64db1a3e"
+  },
+  {
+    "title": "青柠起始页",
+    "url": "https://limestart.cn/",
+    "category": "life_tools",
+    "secondaryCategory": "others",
+    "description": "青柠起始页由毛若昕和杨尚臻开发，是一个简洁、美观、实用的浏览器起始页。青柠起始页以最简洁的界面容纳了多引擎搜索、自定义网站捷径、便笺等实用功能；您可依据喜好对青柠起始页进行高度自定义，让您的网上冲浪体验更加舒心。",
+    "id": "2a7738c7-901b-4faf-8f3a-abf88e43245e"
+  },
+  {
+    "title": "TimeGrid 时间方格 | 重新思考你的每一天",
+    "url": "https://timegrid.visualized.fun/",
+    "category": "life_tools",
+    "secondaryCategory": "others",
+    "description": "将每天分成100个10分钟的时间方格，帮助你更好地规划和利用时间",
+    "id": "25ce0171-7cf5-41ff-b85a-8d1335e94ae6"
+  },
+  {
+    "title": "中央气象台台风网",
+    "url": "https://typhoon.nmc.cn/web.html",
+    "category": "life_tools",
+    "secondaryCategory": "others",
+    "description": "台风路径实时发布系统是由中央气象台权威发布台风信息系统,系统可及时准确地提供最新最全的台风实时信息、预报路径,同时整合卫星云图、气象雷达、降雨等内容",
+    "id": "585bb767-2ada-4a82-9602-a18baf0900ab"
+  },
+  {
+    "title": "影视飓风",
+    "url": "https://www.ysjf.com/index",
+    "category": "entertainment",
+    "secondaryCategory": "others",
+    "id": "c0e8c9dd-21d8-4af4-b46b-fb7438b15282"
+  },
+  {
+    "title": "https://www.kdocs.cn/l/cqRbhqazOZHP?R=L1MvMQ==",
+    "url": "https://www.kdocs.cn/l/cqRbhqazOZHP?R=L1MvMQ==",
+    "category": "entertainment",
+    "secondaryCategory": "others",
+    "id": "cc96706f-0580-4944-8dca-c417ec625dd3"
+  },
+  {
+    "title": "猫看www.maokan.cc - 在线白噪音网站，体验宁静与专注",
+    "url": "https://www.maokan.cc/#",
+    "category": "entertainment",
+    "secondaryCategory": "others",
+    "id": "4e381330-8041-48e0-99d8-fb807bec0d01"
+  },
+  {
+    "title": "AICU - 我会一直看着你",
+    "url": "https://www.aicu.cc/",
+    "category": "entertainment",
+    "secondaryCategory": "others",
+    "description": "查询你在哔哩哔哩中发布的评论/弹幕",
+    "id": "fd1db4ab-caa2-4c50-8575-bfd61904932d"
+  },
+  {
+    "title": "深言达意 – 找词找句",
+    "url": "https://www.shenyandayi.com/",
+    "category": "entertainment",
+    "secondaryCategory": "others",
+    "id": "9137575a-e8b5-4f01-874a-9360297367d1"
+  },
+  {
+    "title": "呆呆模拟人生 - 模拟人生4全DLC整合版",
+    "url": "https://sims.daidai520.cn/",
+    "category": "entertainment",
+    "secondaryCategory": "others",
+    "id": "c29cf358-d49e-4943-a13a-f8289e9077b3"
+  },
+  {
+    "title": "oldswf - 无需安装flash即可在线游玩的小游戏站",
+    "url": "https://oldswf.com/",
+    "category": "entertainment",
+    "secondaryCategory": "others",
+    "id": "46c60fac-b64e-48c6-8b7d-9e896ed18b1e"
+  },
+  {
+    "title": "Mikutap",
+    "url": "https://aidn.jp/mikutap/",
+    "category": "entertainment",
+    "secondaryCategory": "others",
+    "id": "8ff0d0c7-620f-4d80-8cd1-27076fd9c2fd"
+  },
+  {
+    "title": "https://yesnotarot.org/zh",
+    "url": "https://yesnotarot.org/zh",
+    "category": "entertainment",
+    "secondaryCategory": "others",
+    "id": "693ec64f-2b94-483b-8457-6a4a81deae00"
+  },
+  {
+    "title": "xox48",
+    "url": "https://xox48.top/v2024/#/vote?continueFlag=4660e32acb58f7ecaf99c70b85d59ec1",
+    "category": "entertainment",
+    "secondaryCategory": "others",
+    "id": "6f4ad430-74bd-4e66-bb78-5b3f6dc308ba"
+  },
+  {
+    "title": "历史人物网 - 历史人物_历史人物简介_历史人物故事_中国历史故事",
+    "url": "https://www.lishirenwu.com/",
+    "category": "entertainment",
+    "secondaryCategory": "others",
+    "id": "031ae550-dd42-43f4-ae65-8fd1a2570402"
+  },
+  {
+    "title": "老画报网-老连环画 漫画欣赏与交流",
+    "url": "http://www.laohuabao.com/index.html",
+    "category": "entertainment",
+    "secondaryCategory": "others",
+    "id": "5d80e0d5-88fa-49eb-97ae-79813d80f27f"
+  },
+  {
+    "title": "参与竞价",
+    "url": "https://membershop.48.cn/pai/Item/28",
+    "category": "entertainment",
+    "secondaryCategory": "others",
+    "id": "f71495f7-8e15-427c-9858-9223ffad575f"
+  },
+  {
+    "title": "Learn Morse Code | perry.qa",
+    "url": "https://www.perry.qa/morse",
+    "category": "entertainment",
+    "secondaryCategory": "others",
+    "id": "55d40a20-3aca-4472-b930-cd98044f0051"
+  },
+  {
+    "title": "圈小猫",
+    "url": "https://6dduu6.github.io/%E5%9C%88%E5%B0%8F%E7%8C%AB.html",
+    "category": "entertainment",
+    "secondaryCategory": "others",
+    "id": "dff70001-6d34-4b0c-b235-9504475aa175"
+  },
+  {
+    "title": "Koodo Reader",
+    "url": "https://koodo.960960.xyz/zh",
+    "category": "entertainment",
+    "secondaryCategory": "others",
+    "id": "45d0de9c-feff-4a47-8a95-b0b0a81c03ba"
+  },
+  {
+    "title": "扫雷游戏 - 经典小游戏网页版",
+    "url": "https://minesweeperplay.online/",
+    "category": "entertainment",
+    "secondaryCategory": "others",
+    "id": "026a1534-1cdc-40e7-a39a-0299b3215405"
+  },
+  {
+    "title": "桌游合集",
+    "url": "https://game.hullqin.cn/",
+    "category": "entertainment",
+    "secondaryCategory": "others",
+    "id": "27cb8a8b-82d4-4de8-81e4-a09740cb0dc6"
+  },
+  {
+    "title": "动画巡礼 - anitabi - 圣地巡礼 - 聖地巡礼 - せいちじゅんれい - 神奇海螺试验场",
+    "url": "https://anitabi.cn/",
+    "category": "entertainment",
+    "secondaryCategory": "others",
+    "id": "c317a783-3d9c-4bd5-8dbe-1aebe0cc9541"
+  },
+  {
+    "title": "SearchEmoji - 支持 30 个语言的 Emoji 搜索引擎。🔍一词搜索，🖱️一键复制！",
+    "url": "https://searchemoji.app/zh-hans",
+    "category": "entertainment",
+    "secondaryCategory": "others",
+    "id": "df493f2b-52d9-466d-bc99-ec5a8ac8ea38"
+  },
+  {
+    "title": "海の見える駅 〜徒歩0分の景勝地〜",
+    "url": "https://seaside-station.com/",
+    "category": "entertainment",
+    "secondaryCategory": "others",
+    "id": "1f9e9489-ef80-4e63-b66a-80f88b53c858"
+  },
+  {
+    "title": "Little Fox 动画故事",
+    "url": "https://www.littlefox.com/cn/readers",
+    "category": "entertainment",
+    "secondaryCategory": "others",
+    "id": "382f50c4-6df9-45c1-9a61-b9a4f4d68bd7"
+  },
+  {
+    "title": "Prompt-Brush — Delcan & Co.",
+    "url": "https://www.delcan.co/promptbrush",
+    "category": "entertainment",
+    "secondaryCategory": "others",
+    "id": "13932713-ee4f-42e0-9edc-aecbac794e2b"
+  },
+  {
+    "title": "皮皮喵",
+    "url": "https://vip.lanzoux.com/b932237",
+    "category": "entertainment",
+    "secondaryCategory": "others",
+    "id": "05f7a8a5-1177-4004-89b0-374efcead11c"
+  },
+  {
+    "title": "Image to Music v2 - a Hugging Face Space by fffiloni",
+    "url": "https://huggingface.co/spaces/fffiloni/image-to-music-v2",
+    "category": "entertainment",
+    "secondaryCategory": "others",
+    "id": "b7478a26-85c7-47f1-9248-eedc783769cd"
+  },
+  {
+    "title": "福音战士標題生成器 - Evangelion Title Card Generator - 神奇海螺实验室",
+    "url": "https://lab.magiconch.com/eva-title/",
+    "category": "entertainment",
+    "secondaryCategory": "others",
+    "id": "4f451626-9bd1-4d83-b29c-feef896064eb"
+  },
+  {
+    "title": "Riffusion",
+    "url": "https://www.riffusion.com/",
+    "category": "entertainment",
+    "secondaryCategory": "others",
+    "id": "f15b210d-f6d7-4429-b48e-2761ac9f4a55"
+  },
+  {
+    "title": "Write.as",
+    "url": "https://write.as/jk4q0ytf1t3zk",
+    "category": "entertainment",
+    "secondaryCategory": "others",
+    "id": "706f72db-73a2-427c-aa68-78657bc662b1"
+  },
+  {
+    "title": "Life Grid - Visualize Your Time",
+    "url": "https://karthicobla.github.io/LifeTimeVisualizer/",
+    "category": "entertainment",
+    "secondaryCategory": "others",
+    "id": "33142f6d-5ffa-4b7c-b2b0-549327b54d77"
+  },
+  {
+    "title": "中国观景指数",
+    "url": "https://viewpre.com/",
+    "category": "entertainment",
+    "secondaryCategory": "others",
+    "id": "c046924f-fb8a-454e-bec6-f77d370727c4"
+  },
+  {
+    "title": "DJI 大疆创新 - 官方网站",
+    "url": "https://www.dji.com/cn/mobile",
+    "category": "entertainment",
+    "secondaryCategory": "others",
+    "id": "e18517cb-5a11-4d47-ac41-d51c4edc38fe"
+  },
+  {
+    "title": "樱坂46第四期出道特设网站",
+    "url": "https://sakurazaka46.com/s/s46/page/4th_generation?ima=0000",
+    "category": "entertainment",
+    "secondaryCategory": "others",
+    "id": "70e5e31e-0c57-4529-a497-bde27dcb0663"
+  },
+  {
+    "title": "Fold 'N Fly » Paper Airplane Folding Instructions",
+    "url": "https://www.foldnfly.com/#/1-1-1-1-1-1-1-1-2-1",
+    "category": "entertainment",
+    "secondaryCategory": "others",
+    "id": "76b4e0be-a3a6-463c-99aa-1c1f5b6a0919"
+  },
+  {
+    "title": "AIVILIZATION",
+    "url": "https://game.aivilization.cn/",
+    "category": "entertainment",
+    "secondaryCategory": "others",
+    "id": "8f18758f-f1f1-444f-bd17-1fbf64f54259"
+  },
+  {
+    "title": "中国民间故事网　民间传说故事 神话传说故事 爱情故事 传奇故事 校园故事",
+    "url": "https://www.6mj.com/",
+    "category": "literature_reading",
+    "secondaryCategory": "others",
+    "id": "73cc4ee3-6836-44d5-84f7-426c7d85f11a"
+  },
+  {
+    "title": "一周一次买下同班同学的那些事【Web版】在线阅读_哔哩轻小说",
+    "url": "https://www.bilinovel.com/novel/3605.html",
+    "category": "literature_reading",
+    "secondaryCategory": "others",
+    "id": "a2278beb-5740-4d38-8f89-f5336b3d5641"
+  },
+  {
+    "title": "时光图书馆--经典珍藏系列，十年相伴！",
+    "url": "https://atimebook.com/",
+    "category": "literature_reading",
+    "secondaryCategory": "others",
+    "id": "573854b3-8dd8-4e35-9fc1-d5771ead788f"
+  },
+  {
+    "title": "源仓库",
+    "url": "https://www.yckceo.com/",
+    "category": "literature_reading",
+    "secondaryCategory": "others",
+    "id": "d2ef1faa-55b7-41ad-98f6-cc28aeb22511"
+  },
+  {
+    "title": "每天為你讀一首詩: 〈蓮花空行身染愛〉（Liân-hue Khong-hīng sin jiám ài）　◎珂拉琪",
+    "url": "https://cendalirit.blogspot.com/2021/09/20210928.html?m=1",
+    "category": "literature_reading",
+    "secondaryCategory": "others",
+    "id": "55d758f9-0e34-42e3-ab9c-453bce64577b"
+  },
+  {
+    "title": "书库-识典古籍",
+    "url": "https://www.shidianguji.com/library?leftTreeId=0",
+    "category": "literature_reading",
+    "secondaryCategory": "others",
+    "id": "a9aafecb-299a-4017-a487-c38548c596fe"
+  },
+  {
+    "title": "仪表板 | 3MinTop - 利用人工智能培养你的阅读习惯",
+    "url": "https://3min.top/app/dashboard",
+    "category": "literature_reading",
+    "secondaryCategory": "others",
+    "id": "f374f2bc-3b86-4220-9c38-da3d2c39e34f"
+  },
+  {
+    "title": "明月书阁 - 明月照大江发布页",
+    "url": "https://skybook.pages.dev/",
+    "category": "literature_reading",
+    "secondaryCategory": "others",
+    "id": "e377ef9e-123e-48a4-9e13-0a60259d4fac"
+  },
+  {
+    "title": "恋Yu制作人正文篇（x 我将出手成就王军的大女主梦 — Write.as",
+    "url": "https://write.as/lpsv7q11hqsk7",
+    "category": "literature_reading",
+    "secondaryCategory": "others",
+    "id": "dc292e31-feeb-458e-be3d-a52ed6e0c92f"
+  },
+  {
+    "title": "源仓库最新地址发布页",
+    "url": "https://yckceo.vip/",
+    "category": "literature_reading",
+    "secondaryCategory": "others",
+    "id": "3444cbbe-ecc5-4c8c-8ac6-8fd00ea1a199"
+  },
+  {
+    "title": "唐库学习，专辑，电子书创作社区，世界名著在线阅读，在线朗读，影子跟读",
+    "url": "http://www.tanglib.com/",
+    "category": "literature_reading",
+    "secondaryCategory": "others",
+    "id": "d15b1e63-5e97-48c1-90b2-1d0e29c28bd1"
+  },
+  {
+    "title": "根据人眼成像原理，人类所看到的物体应该是倒立的，那么，我们所见到的世界是不是上下颠倒的呢？ - 知乎日报 – Telegraph",
+    "url": "https://telegra.ph/%E6%A0%B9%E6%8D%AE%E4%BA%BA%E7%9C%BC%E6%88%90%E5%83%8F%E5%8E%9F%E7%90%86%E4%BA%BA%E7%B1%BB%E6%89%80%E7%9C%8B%E5%88%B0%E7%9A%84%E7%89%A9%E4%BD%93%E5%BA%94%E8%AF%A5%E6%98%AF%E5%80%92%E7%AB%8B%E7%9A%84%E9%82%A3%E4%B9%88%E6%88%91%E4%BB%AC%E6%89%80%E8%A7%81%E5%88%B0%E7%9A%84%E4%B8%96%E7%95%8C%E6%98%AF%E4%B8%8D%E6%98%AF%E4%B8%8A%E4%B8%8B%E9%A2%A0%E5%80%92%E7%9A%84%E5%91%A2---%E7%9F%A5%E4%B9%8E%E6%97%A5%E6%8A%A5-04-12",
+    "category": "literature_reading",
+    "secondaryCategory": "others",
+    "id": "194252fc-cec5-4a03-a368-349182708817"
+  },
+  {
+    "title": "“就和你恋爱那会儿天上星星多”",
+    "url": "https://mp.weixin.qq.com/s?__biz=Mzk0Nzc2NTY0OA==&mid=2247535360&idx=1&sn=88a7efa2070c80df689438fee818db2c&source=41#wechat_redirect",
+    "category": "literature_reading",
+    "secondaryCategory": "others",
+    "id": "7a79ba8b-8598-455e-b547-7af812cc2803"
+  },
+  {
+    "title": "Milk_123云盘免登录下载不限速",
+    "url": "https://www.123pan.com/s/CgQ9-T55YA.html",
+    "category": "dev_tech",
+    "secondaryCategory": "others",
+    "id": "4c187f6f-3afe-4dcb-98a7-7e0273fff36e"
+  },
+  {
+    "title": "吾爱破解 - 52pojie.cn",
+    "url": "https://www.52pojie.cn/",
+    "category": "dev_tech",
+    "secondaryCategory": "others",
+    "id": "756df435-85a3-45b7-b32c-1a3ea659cdfd"
+  },
+  {
+    "title": "Onlook – The Open-Source Figma for React",
+    "url": "https://onlook.dev/",
+    "category": "dev_tech",
+    "secondaryCategory": "others",
+    "id": "51e72d9a-9ea8-4d5d-a0c1-1e338d9ea633"
+  },
+  {
+    "title": "1c7/chinese-independent-developer: 👩🏿‍💻👨🏾‍💻👩🏼‍💻👨🏽‍💻👩🏻‍💻中国独立开发者项目列表 -- 分享大家都在做什么",
+    "url": "https://github.com/1c7/chinese-independent-developer",
+    "category": "dev_tech",
+    "secondaryCategory": "others",
+    "id": "e9b822f0-4903-4e1d-8ae8-fdf261c9eee8"
+  },
+  {
+    "title": "Scamalytics",
+    "url": "https://scamalytics.com/",
+    "category": "dev_tech",
+    "secondaryCategory": "others",
+    "id": "a9982d94-fad3-4914-8e50-8b9ce180f069"
+  },
+  {
+    "title": "Sun-Panel",
+    "url": "https://tvhelper.cpolar.top/",
+    "category": "dev_tech",
+    "secondaryCategory": "others",
+    "id": "12c80df3-671d-483c-b64a-ce73359d5c9e"
+  },
+  {
+    "title": "晨钟网络科技 - 致力于开发小众实用软件",
+    "url": "https://www.jamcz.com/",
+    "category": "dev_tech",
+    "secondaryCategory": "others",
+    "id": "89b1b11d-8a2a-4823-b8da-f8fa83419acf"
+  },
+  {
+    "title": "Sheet",
+    "url": "https://xiaomishequ.feishu.cn/sheets/shtcnsRTbwSvpUsaei6B04ogI6Z?sheet=bRyHnR",
+    "category": "dev_tech",
+    "secondaryCategory": "others",
+    "id": "64885c82-6598-4e6b-b1a5-3e580521200f"
+  },
+  {
+    "title": "Magisk安装教程 - Magisk中文网",
+    "url": "https://magiskcn.com/",
+    "category": "dev_tech",
+    "secondaryCategory": "others",
+    "id": "4759fe85-9faa-4530-8a33-534cf6f3f6ef"
+  },
+  {
+    "title": "前言 | Go语言圣经",
+    "url": "https://docs.hacknode.org/gopl-zh/index.html",
+    "category": "dev_tech",
+    "secondaryCategory": "others",
+    "id": "9e6b8639-611d-4047-8d06-378d6c984df0"
+  },
+  {
+    "title": "主页 | 萤火虫资源站",
+    "url": "https://www.yhcres.top/",
+    "category": "dev_tech",
+    "secondaryCategory": "others",
+    "id": "dbcc8832-ee18-472d-b191-6f26b8f3263c"
+  },
+  {
+    "title": "语言基础简介 - OI Wiki",
+    "url": "https://oi-wiki.org/lang/",
+    "category": "dev_tech",
+    "secondaryCategory": "others",
+    "id": "b4dd8ee3-a8cb-46a8-ac46-b8c31a0763c0"
+  },
+  {
+    "title": "欢迎 - Linux 101",
+    "url": "https://101.lug.ustc.edu.cn/",
+    "category": "dev_tech",
+    "secondaryCategory": "others",
+    "id": "b217c431-d8d5-44c0-80d8-1c0fa5577e71"
+  },
+  {
+    "title": "Choose an open source license | Choose a License",
+    "url": "https://choosealicense.com/",
+    "category": "dev_tech",
+    "secondaryCategory": "others",
+    "id": "e8795ab4-f832-4a8c-a647-7ae6efd6bebf"
+  },
+  {
+    "title": "Lapce - Lightning-fast and Powerful Code Editor",
+    "url": "https://lap.dev/lapce/",
+    "category": "dev_tech",
+    "secondaryCategory": "others",
+    "id": "f8bf2758-0aa2-4388-90f1-f32548ff3299"
+  },
+  {
+    "title": "读有所记",
+    "url": "https://quail.ink/rambling",
+    "category": "blogs_tutorials",
+    "secondaryCategory": "others",
+    "id": "e3102674-2ef0-4a02-81cc-6284caf2c261"
+  },
+  {
+    "title": "Biofy - 个性化主页|聚合社交信息|作品展示|数字名片",
+    "url": "https://biofy.cn/wangjiegulu",
+    "category": "blogs_tutorials",
+    "secondaryCategory": "others",
+    "id": "fb9d5cfc-6874-473b-a733-d14091ca83cc"
+  },
+  {
+    "title": "easyhexo - easy hexo, computer, it, science, solution, online casino",
+    "url": "https://easyhexo.com/4-High-order-hexo-gamer/4-2-theme-develop/#%E9%A1%B5%E9%9D%A2%E7%BC%96%E5%86%99",
+    "category": "blogs_tutorials",
+    "secondaryCategory": "others",
+    "id": "69fa1cb4-815a-4397-95bd-34c0ea68b522"
+  },
+  {
+    "title": "Butterfly 文檔(一) 快速開始 | Butterfly",
+    "url": "https://butterfly.js.org/posts/21cfbf15/#%E5%AE%89%E8%A3%9D",
+    "category": "blogs_tutorials",
+    "secondaryCategory": "others",
+    "id": "a479680e-abe7-417e-a09f-5a609d58ea55"
+  },
+  {
+    "title": "「个人主页」",
+    "url": "https://www.heinu.cc/",
+    "category": "blogs_tutorials",
+    "secondaryCategory": "others",
+    "id": "cec767ef-132b-4d60-bff2-b02347163e76"
+  },
+  {
+    "title": "残页的小博客",
+    "url": "https://blog.canyie.top/",
+    "category": "blogs_tutorials",
+    "secondaryCategory": "others",
+    "id": "89c65207-9969-4ef7-aa76-22ba9635ff59"
+  },
+  {
+    "title": "Liusanming's Blog",
+    "url": "https://lsm.icu/",
+    "category": "blogs_tutorials",
+    "secondaryCategory": "others",
+    "id": "d24638b3-3d8b-4f70-8fb8-2260bcef15ab"
+  },
+  {
+    "title": "哔哔广场 :: 木木木木木",
+    "url": "https://immmmm.com/bbs/",
+    "category": "blogs_tutorials",
+    "secondaryCategory": "others",
+    "id": "f68795c9-72fb-48ba-80cc-d6bc7bd3d1cd"
+  },
+  {
+    "title": "个人数据安全不完全指南 - This Cute World",
+    "url": "https://thiscute.world/posts/an-incomplete-guide-to-data-security/",
+    "category": "blogs_tutorials",
+    "secondaryCategory": "others",
+    "id": "093143b0-2a0d-4a5b-a9a3-9dabbbe2a978"
+  },
+  {
+    "title": "超火的迷你小路由 Cudy TR3000 刷机OpenWrt折腾记录 – 猫点饭",
+    "url": "https://mao.fan/article/216",
+    "category": "blogs_tutorials",
+    "secondaryCategory": "others",
+    "id": "d26de6d5-721b-41e1-af2d-8f9384e8429b"
+  },
+  {
+    "title": "独立博客 AI精选",
+    "url": "https://www.axis-t.com/",
+    "category": "blogs_tutorials",
+    "secondaryCategory": "others",
+    "id": "b1344bd6-01d5-4632-b5af-50d0b80d93f5"
+  },
+  {
+    "title": "Anthony Fu",
+    "url": "https://antfu.me/",
+    "category": "blogs_tutorials",
+    "secondaryCategory": "others",
+    "id": "ac34837c-e514-4cfe-98d5-4befcb914857"
+  },
+  {
+    "title": "hexo+github博客域名配置 | IOAOl的记lu",
+    "url": "https://ioaol.github.io/hexo-github%E5%8D%9A%E5%AE%A2%E5%9F%9F%E5%90%8D%E9%85%8D%E7%BD%AE.html",
+    "category": "blogs_tutorials",
+    "secondaryCategory": "others",
+    "id": "a79f04eb-2ede-412f-8800-7086842fbf9b"
+  },
+  {
+    "title": "一键激活windows系统和office软件,Office软件安装,KMS激活",
+    "url": "https://kms.cx/",
+    "category": "system_resources",
+    "secondaryCategory": "others",
+    "id": "f86c96a0-e973-44ff-abb2-ee3a4a3b5e5a"
+  },
+  {
+    "title": "喵闪字库-提供中文字体的在线预览和免费下载",
+    "url": "https://www.miao3.cn/",
+    "category": "video_editing",
+    "secondaryCategory": "others",
+    "id": "9c7acbcb-a6c6-405d-953a-f2dc6be1a8af"
+  },
+  {
+    "title": "在线字幕翻译",
+    "url": "https://srttran.leavesc.com/",
+    "category": "video_editing",
+    "secondaryCategory": "others",
+    "id": "a0f76301-d52e-466e-aa9d-01cba86b1878"
+  },
+  {
+    "title": "释放字体自由 - ZeoSeven Fonts",
+    "url": "https://fonts.zeoseven.com/",
+    "category": "video_editing",
+    "secondaryCategory": "others",
+    "id": "6a2454fe-e22c-4924-b036-c9a91227bab5"
+  },
+  {
+    "title": "Maple Mono: Open source monospace font",
+    "url": "https://font.subf.dev/zh-cn/",
+    "category": "video_editing",
+    "secondaryCategory": "others",
+    "id": "79d0291e-43af-4477-ba82-3b502685a9bf"
+  },
+  {
+    "title": "日常版块",
+    "url": "https://www.nodeseek.com/categories/daily",
+    "category": "others",
+    "secondaryCategory": "others",
+    "id": "71c5ad00-8369-4941-aa61-a5c52ffc2d3a"
+  },
+  {
+    "title": "中国庭审公开网",
+    "url": "https://tingshen.court.gov.cn/",
+    "category": "others",
+    "secondaryCategory": "others",
+    "id": "069dd1da-8211-4759-bc43-245db07d4b31"
+  },
+  {
+    "title": "中国•国家地名信息库",
+    "url": "https://dmfw.mca.gov.cn/index.html",
+    "category": "others",
+    "secondaryCategory": "others",
+    "id": "38eafdaf-462e-4e54-91ae-3fa35004435b"
+  }
+]

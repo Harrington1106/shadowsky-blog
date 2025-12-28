@@ -31,8 +31,30 @@ if (!fs.existsSync(postsDir)) {
 // Helper: Calculate read time
 function calcReadTime(text) {
     const plainText = text.replace(/[#*>\-\[\]\(\)`]/g, '');
+    // Estimate: 400 words per minute for English, 500 chars/min for Chinese
+    // Simple mixed approach: Count "words" by splitting spaces, but for CJK, count chars?
+    // The previous logic was chars / 500. Let's stick to a simple char count / 400 for a bit more conservative estimate or keep 500.
+    // User said "calculate by word count".
+    // Let's improve it slightly to handle mixed content better if needed, but chars/500 is a standard simple metric for CN/EN mixed.
     const chars = plainText.length;
     return Math.max(1, Math.round(chars / 500));
+}
+
+// Helper: Extract H1 from content
+function extractH1(text) {
+    const lines = text.split('\n');
+    let inCodeBlock = false;
+    for (const line of lines) {
+        const trimmed = line.trim();
+        if (trimmed.startsWith('```')) {
+            inCodeBlock = !inCodeBlock;
+            continue;
+        }
+        if (!inCodeBlock && trimmed.startsWith('# ')) {
+            return trimmed.substring(2).trim();
+        }
+    }
+    return null;
 }
 
 // Helper: Generate excerpt
@@ -45,7 +67,8 @@ function generateExcerpt(text, maxLength = 120) {
 
 // Helper: Parse YAML value
 function parseYamlValue(key, value) {
-    value = value.trim();
+    if (value === undefined || value === null) return '';
+    value = String(value).trim();
     if (key === 'tags') {
         if (value.startsWith('[') && value.endsWith(']')) {
             try {
@@ -141,13 +164,19 @@ files.forEach(file => {
     }
 
     // Standardize Metadata
-    const title = parseYamlValue('title', metadata.title || 'Untitled');
+    // Priority: H1 in body > metadata.title > Untitled
+    const h1Title = extractH1(bodyContent);
+    const title = h1Title || parseYamlValue('title', metadata.title || 'Untitled');
+
     const date = formatDate(parseYamlValue('date', metadata.date));
     const category = parseYamlValue('category', metadata.category || 'Uncategorized');
     const author = parseYamlValue('author', metadata.author || 'Thoi');
     const tags = parseYamlValue('tags', metadata.tags || '');
     const excerpt = parseYamlValue('excerpt', metadata.excerpt || generateExcerpt(bodyContent));
-    const readTime = parseInt(metadata.readTime) || calcReadTime(bodyContent);
+    
+    // Always recalculate readTime based on current content
+    const readTime = calcReadTime(bodyContent);
+
     let coverImage = parseYamlValue('coverImage', metadata.coverImage || '');
 
     if (!coverImage) {

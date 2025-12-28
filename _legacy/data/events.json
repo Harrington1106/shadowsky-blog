@@ -1,6 +1,0 @@
-[
-  { "type": "meteor_shower", "name": "象限仪座流星雨", "peak": "2026-01-04", "zhr": 110 },
-  { "type": "eclipse", "name": "日偏食", "date": "2025-04-08", "visibility": "北美部分地区" },
-  { "type": "conjunction", "name": "金星合昴星团", "date": "2025-09-12" },
-  { "type": "opposition", "name": "火星冲日", "date": "2025-01-16" }
-]

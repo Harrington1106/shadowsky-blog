@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Tool | ShadowQuake</title>
+    <link rel="icon" type="image/png" href="public/img/favicon256.png">
+    
+    <!-- Tailwind CSS -->
+    <link href="css/style.css" rel="stylesheet">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.loli.net">
+    <link rel="preconnect" href="https://gstatic.loli.net" crossorigin>
+    <link href="https://fonts.loli.net/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Lucide Icons -->
+    <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Inter', 'Noto Sans SC', sans-serif;
+        }
+        pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-black text-gray-900 dark:text-gray-100 font-sans transition-colors duration-500 flex flex-col min-h-screen">
+
+    <!-- Navbar -->
+    <nav id="navbar" class="fixed w-full z-50 top-0 transition-all duration-300 bg-white/80 dark:bg-black/80 backdrop-blur-md border-b border-gray-100 dark:border-gray-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <a href="index.html" class="flex items-center group">
+                        <div class="relative">
+                            <div class="absolute -inset-1 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full blur opacity-25 group-hover:opacity-50 transition duration-200"></div>
+                            <img src="public/img/favicon256.png" alt="Logo" class="relative h-8 w-8 mr-2 dark:hidden">
+                            <img src="public/img/black256.png" alt="Logo" class="relative h-8 w-8 mr-2 hidden dark:block">
+                        </div>
+                        <span class="font-bold text-xl tracking-tight transition-colors duration-300">
+                            夏日科技探索
+                        </span>
+                    </a>
+                </div>
+                
+                <div class="hidden lg:flex items-center space-x-1">
+                    <a href="index.html" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-600 hover:text-blue-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-white dark:hover:bg-white/10">首页</a>
+                    <a href="blog.html" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-600 hover:text-blue-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-white dark:hover:bg-white/10">星空笔记</a>
+                    <a href="moments.html" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-600 hover:text-blue-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-white dark:hover:bg-white/10">随手拍</a>
+                    <a href="bookmarks.html" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-600 hover:text-blue-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-white dark:hover:bg-white/10">收藏</a>
+                    <a href="about.html" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-600 hover:text-blue-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-white dark:hover:bg-white/10">关于</a>
+                    
+                    <button id="theme-toggle" class="ml-4 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                        <i data-lucide="moon" class="w-5 h-5 text-gray-600 dark:text-gray-300"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-grow max-w-4xl mx-auto w-full px-4 pt-24 pb-12">
+        <div class="mb-8 flex items-center space-x-3">
+            <i data-lucide="terminal" class="w-8 h-8 text-blue-600"></i>
+            <h1 class="text-3xl font-bold text-gray-900 dark:text-white">System Debug Tool</h1>
+        </div>
+
+        <div class="space-y-6">
+            <!-- Environment Card -->
+            <div class="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 p-6">
+                <div class="flex items-center mb-4">
+                    <i data-lucide="monitor" class="w-5 h-5 text-purple-500 mr-2"></i>
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Environment Info</h3>
+                </div>
+                <div id="env-info" class="text-sm text-gray-600 dark:text-gray-300 font-mono bg-gray-50 dark:bg-black/50 p-4 rounded-lg border border-gray-100 dark:border-gray-800">
+                    Loading...
+                </div>
+            </div>
+
+            <!-- Test 1 Card -->
+            <div class="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center">
+                        <i data-lucide="activity" class="w-5 h-5 text-green-500 mr-2"></i>
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">API Health Check</h3>
+                    </div>
+                    <span class="text-xs font-mono px-2 py-1 rounded bg-gray-100 dark:bg-gray-800 text-gray-500">GET /api/visit.php</span>
+                </div>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">Tests connectivity to the PHP backend API and validates response headers.</p>
+                
+                <button onclick="testVisitApi()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors flex items-center">
+                    <i data-lucide="play" class="w-4 h-4 mr-2"></i>
+                    Run Diagnostic
+                </button>
+                <div id="visit-result" class="mt-4 text-sm font-mono empty:hidden"></div>
+            </div>
+
+            <!-- Test 2 Card -->
+            <div class="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center">
+                        <i data-lucide="file-json" class="w-5 h-5 text-yellow-500 mr-2"></i>
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Data Integrity Check</h3>
+                    </div>
+                    <span class="text-xs font-mono px-2 py-1 rounded bg-gray-100 dark:bg-gray-800 text-gray-500">posts.json</span>
+                </div>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">Verifies accessibility and JSON validity of the blog posts database.</p>
+                
+                <button onclick="testPostsJson()" class="px-4 py-2 bg-gray-800 hover:bg-gray-900 dark:bg-gray-700 dark:hover:bg-gray-600 text-white text-sm font-medium rounded-lg transition-colors flex items-center">
+                    <i data-lucide="play" class="w-4 h-4 mr-2"></i>
+                    Verify Data
+                </button>
+                <div id="posts-result" class="mt-4 text-sm font-mono empty:hidden"></div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Standardized Footer -->
+    
+    <footer class="py-8 text-center text-sm text-gray-500 dark:text-gray-400 transition-colors duration-500">
+        <p>&copy; <span id="year"></span> ShadowQuake. All rights reserved.</p>
+        <p class="mt-2 text-xs opacity-50">
+            <span id="visit-count" class="hidden">Visits: <span id="busuanzi_value_site_pv" class="font-mono">Loading...</span></span>
+        </p>
+    </footer>
+
+
+    <!-- Scripts -->
+    <script src="js/main.js"></script>
+    <script>
+        // Initialize Icons
+        lucide.createIcons();
+        
+        // Dynamic Year
+        document.getElementById('year').textContent = new Date().getFullYear();
+
+        // Debug Logic
+        document.getElementById('env-info').innerHTML = `
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                <div><span class="text-gray-400">User Agent:</span> <br>${navigator.userAgent}</div>
+                <div><span class="text-gray-400">Platform:</span> ${navigator.platform}</div>
+                <div><span class="text-gray-400">Origin:</span> ${window.location.origin}</div>
+                <div><span class="text-gray-400">Protocol:</span> ${window.location.protocol}</div>
+            </div>
+        `;
+
+        async function testVisitApi() {
+            const resultDiv = document.getElementById('visit-result');
+            resultDiv.innerHTML = '<div class="animate-pulse text-blue-500">Running diagnostic...</div>';
+            resultDiv.classList.remove('hidden');
+            
+            try {
+                const response = await fetch('/api/visit.php?page=debug_test', {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+                
+                const text = await response.text();
+                let statusClass = response.ok ? 'text-green-500' : 'text-red-500';
+                let bgClass = response.ok ? 'bg-green-50 dark:bg-green-900/20' : 'bg-red-50 dark:bg-red-900/20';
+                
+                resultDiv.innerHTML = `
+                    <div class="${bgClass} rounded-lg p-4 space-y-2">
+                        <p class="${statusClass} font-bold flex items-center"><i data-lucide="${response.ok ? 'check-circle' : 'alert-circle'}" class="w-4 h-4 mr-2"></i> Status: ${response.status} ${response.statusText}</p>
+                        <div class="text-xs text-gray-500 mt-2">Response Headers:</div>
+                        <pre class="text-xs bg-white dark:bg-black/50 p-2 rounded border border-gray-100 dark:border-gray-800 overflow-x-auto">${JSON.stringify(Object.fromEntries(response.headers), null, 2)}</pre>
+                        <div class="text-xs text-gray-500 mt-2">Response Body:</div>
+                        <pre class="text-xs bg-white dark:bg-black/50 p-2 rounded border border-gray-100 dark:border-gray-800 overflow-x-auto">${text.substring(0, 500)}${text.length > 500 ? '...' : ''}</pre>
+                    </div>
+                `;
+                lucide.createIcons();
+            } catch (e) {
+                resultDiv.innerHTML = `<div class="bg-red-50 dark:bg-red-900/20 p-4 rounded-lg text-red-500 flex items-center"><i data-lucide="x-circle" class="w-5 h-5 mr-2"></i> Fetch Error: ${e.message}</div>`;
+                lucide.createIcons();
+            }
+        }
+
+        async function testPostsJson() {
+            const resultDiv = document.getElementById('posts-result');
+            resultDiv.innerHTML = '<div class="animate-pulse text-blue-500">Verifying integrity...</div>';
+            resultDiv.classList.remove('hidden');
+            
+            try {
+                const response = await fetch('public/posts/posts.json');
+                
+                const text = await response.text();
+                let statusClass = response.ok ? 'text-green-500' : 'text-red-500';
+                let bgClass = response.ok ? 'bg-green-50 dark:bg-green-900/20' : 'bg-red-50 dark:bg-red-900/20';
+                
+                // Try parsing JSON to check validity
+                let jsonStatus = "Invalid JSON";
+                try {
+                    JSON.parse(text);
+                    jsonStatus = "Valid JSON";
+                } catch(e) {
+                    jsonStatus = "Invalid JSON: " + e.message;
+                }
+                
+                resultDiv.innerHTML = `
+                    <div class="${bgClass} rounded-lg p-4 space-y-2">
+                        <div class="flex items-center justify-between">
+                            <p class="${statusClass} font-bold flex items-center"><i data-lucide="${response.ok ? 'check-circle' : 'alert-circle'}" class="w-4 h-4 mr-2"></i> HTTP ${response.status}</p>
+                            <span class="text-xs px-2 py-1 rounded-full ${jsonStatus.includes('Valid') ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">${jsonStatus}</span>
+                        </div>
+                        <div class="text-xs text-gray-500 mt-2">Response Headers:</div>
+                        <pre class="text-xs bg-white dark:bg-black/50 p-2 rounded border border-gray-100 dark:border-gray-800 overflow-x-auto">${JSON.stringify(Object.fromEntries(response.headers), null, 2)}</pre>
+                        <div class="text-xs text-gray-500 mt-2">Preview (First 500 chars):</div>
+                        <pre class="text-xs bg-white dark:bg-black/50 p-2 rounded border border-gray-100 dark:border-gray-800 overflow-x-auto">${text.substring(0, 500)}...</pre>
+                    </div>
+                `;
+                lucide.createIcons();
+            } catch (e) {
+                resultDiv.innerHTML = `<div class="bg-red-50 dark:bg-red-900/20 p-4 rounded-lg text-red-500 flex items-center"><i data-lucide="x-circle" class="w-5 h-5 mr-2"></i> Fetch Error: ${e.message}</div>`;
+                lucide.createIcons();
+            }
+        }
+    </script>
+</body>
+</html>

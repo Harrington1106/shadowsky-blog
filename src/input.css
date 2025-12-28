@@ -8,6 +8,28 @@
     overflow-x: hidden;
     min-height: 100vh;
   }
+  
+  /* Custom Scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background-color: #cbd5e1;
+    border-radius: 4px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: #94a3b8;
+  }
+  .dark ::-webkit-scrollbar-thumb {
+    background-color: #334155;
+  }
+  .dark ::-webkit-scrollbar-thumb:hover {
+    background-color: #475569;
+  }
 }
 
 @layer components {
@@ -95,4 +117,41 @@
   --blob-color-2: rgba(37, 99, 235, 0.3); /* Blue 600 */
   --blob-color-3: rgba(79, 70, 229, 0.3); /* Indigo 600 */
   --blob-color-4: rgba(13, 148, 136, 0.3); /* Teal 600 */
+}
+
+/* Admin Panel Specific Styles */
+@layer components {
+  /* Admin glass effect */
+  .glass {
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(10px);
+  }
+  .dark .glass {
+    background: rgba(15, 23, 42, 0.9);
+  }
+  
+  /* Hide scrollbar utility */
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  /* Admin navigation item */
+  .nav-item {
+    @apply w-full flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all;
+  }
+  .nav-item:hover {
+    @apply bg-slate-50 text-blue-600;
+  }
+  .nav-item.active {
+    @apply bg-blue-50 text-blue-600 font-medium;
+  }
+  
+  /* Admin view section */
+  .view-section {
+    @apply space-y-6;
+  }
 }
