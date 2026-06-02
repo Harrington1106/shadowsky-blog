@@ -74,37 +74,142 @@ function generateId() {
 function filterBookmarks(bookmarks, filters = {}) {
     if (!Array.isArray(bookmarks)) return [];
     if (!filters || Object.keys(filters).length === 0) return bookmarks;
-    
+
+    // If there's search query, we'll score and sort results
+    if (filters.search && filters.search.trim()) {
+        const scoredBookmarks = bookmarks.map(bookmark => {
+            let score = 0;
+
+            // Check if bookmark passes other filters first
+            if (filters.tags && filters.tags.length > 0) {
+                const bookmarkTags = bookmark.tags || [];
+                const hasAllTags = filters.tags.every(tag =>
+                    bookmarkTags.some(bt => bt.toLowerCase() === tag.toLowerCase())
+                );
+                if (!hasAllTags) return { bookmark, score: -1 };
+            }
+
+            // Filter by date range
+            if (filters.dateRange && Array.isArray(filters.dateRange) && filters.dateRange.length === 2) {
+                const [startDate, endDate] = filters.dateRange;
+                const bookmarkDate = new Date(bookmark.createdAt);
+
+                if (startDate && bookmarkDate < new Date(startDate)) return { bookmark, score: -1 };
+                if (endDate && bookmarkDate > new Date(endDate)) return { bookmark, score: -1 };
+            }
+
+            const searchLower = filters.search.toLowerCase().trim();
+            const title = (bookmark.title || '').toLowerCase();
+            const description = (bookmark.description || '').toLowerCase();
+            const url = (bookmark.url || '').toLowerCase();
+            const tags = (bookmark.tags || []).map(t => t.toLowerCase());
+
+            // Title matching (highest priority)
+            if (title.includes(searchLower)) {
+                score += 10;
+                // Exact match at beginning gets bonus
+                if (title.startsWith(searchLower)) score += 5;
+                // Exact match gets bonus
+                if (title === searchLower) score += 20;
+            }
+
+            // Tag matching (high priority)
+            const tagMatches = tags.filter(tag => tag.includes(searchLower));
+            if (tagMatches.length > 0) {
+                score += 7;
+                // Exact tag match gets bonus
+                if (tags.includes(searchLower)) score += 5;
+            }
+
+            // Description matching (medium priority)
+            if (description.includes(searchLower)) {
+                score += 5;
+            }
+
+            // URL matching (lower priority)
+            if (url.includes(searchLower)) {
+                score += 2;
+                // Domain name match gets bonus
+                const domain = getDomainFromUrl(bookmark.url);
+                if (domain && domain.toLowerCase().includes(searchLower)) {
+                    score += 3;
+                }
+            }
+
+            // Partial/fuzzy matching for longer queries
+            if (searchLower.length > 2) {
+                // Check for partial matches in title (for Chinese/Japanese characters)
+                for (let i = 0; i < title.length - searchLower.length + 1; i++) {
+                    if (title.substring(i, i + searchLower.length) === searchLower) {
+                        score += 4;
+                        break;
+                    }
+                }
+
+                // Check word boundaries
+                const words = searchLower.split(/\s+/).filter(w => w.length > 1);
+                if (words.length > 1) {
+                    words.forEach(word => {
+                        if (word.length >= 2) {
+                            if (title.includes(word)) score += 2;
+                            if (description.includes(word)) score += 1;
+                            if (tags.some(tag => tag.includes(word))) score += 3;
+                        }
+                    });
+                }
+            }
+
+            // Boost score for bookmarks with tags if searching without #
+            if (!searchLower.startsWith('#') && tags.length > 0) {
+                score += 1;
+            }
+
+            return { bookmark, score };
+        });
+
+        // Filter out items with negative score (failed other filters)
+        const validResults = scoredBookmarks.filter(item => item.score >= 0);
+
+        // Sort by score descending, then by title
+        validResults.sort((a, b) => {
+            if (b.score !== a.score) return b.score - a.score;
+            return (a.bookmark.title || '').localeCompare(b.bookmark.title || '');
+        });
+
+        return validResults.map(item => item.bookmark);
+    }
+
+    // No search query, just filter
     return bookmarks.filter(bookmark => {
         // Filter by tags (AND logic - must have all specified tags)
         if (filters.tags && filters.tags.length > 0) {
             const bookmarkTags = bookmark.tags || [];
-            const hasAllTags = filters.tags.every(tag => 
+            const hasAllTags = filters.tags.every(tag =>
                 bookmarkTags.some(bt => bt.toLowerCase() === tag.toLowerCase())
             );
             if (!hasAllTags) return false;
         }
-        
+
         // Filter by date range
         if (filters.dateRange && Array.isArray(filters.dateRange) && filters.dateRange.length === 2) {
             const [startDate, endDate] = filters.dateRange;
             const bookmarkDate = new Date(bookmark.createdAt);
-            
+
             if (startDate && bookmarkDate < new Date(startDate)) return false;
             if (endDate && bookmarkDate > new Date(endDate)) return false;
         }
-        
-        // Filter by search text
+
+        // No search text to filter by
         if (filters.search && filters.search.trim()) {
             const searchLower = filters.search.toLowerCase();
             const titleMatch = (bookmark.title || '').toLowerCase().includes(searchLower);
             const urlMatch = (bookmark.url || '').toLowerCase().includes(searchLower);
             const descMatch = (bookmark.description || '').toLowerCase().includes(searchLower);
             const tagMatch = (bookmark.tags || []).some(t => t.toLowerCase().includes(searchLower));
-            
+
             if (!titleMatch && !urlMatch && !descMatch && !tagMatch) return false;
         }
-        
+
         return true;
     });
 }
@@ -754,5 +859,22 @@ function getDomain(url) {
         return new URL(url).hostname;
     } catch (e) {
         return 'example.com';
+    }
+}
+
+/**
+ * Extract domain from URL (no try-catch, simpler version)
+ * @param {string} url - The URL
+ * @returns {string} - Domain name or empty string
+ */
+function getDomainFromUrl(url) {
+    if (!url) return '';
+    try {
+        const domain = new URL(url).hostname;
+        return domain.replace(/^www\./i, ''); // Remove www. prefix
+    } catch (e) {
+        // Try to extract domain manually for malformed URLs
+        const match = url.match(/^(?:https?:\/\/)?(?:[^@\n]+@)?(?:www\.)?([^:\/\n?]+)/i);
+        return match ? match[1] : '';
     }
 }
