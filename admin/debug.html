@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Debug</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .status { padding: 10px; margin: 10px 0; border-radius: 5px; }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        button { padding: 10px 20px; margin: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>Admin Dashboard Debug</h1>
+    <div id="status-container"></div>
+    
+    <h2>Manual Tests</h2>
+    <button onclick="testDashboard()">Test Dashboard Object</button>
+    <button onclick="testToggleSidebar()">Test toggleSidebar Function</button>
+    <button onclick="testBookmarksManager()">Test BookmarksManager</button>
+    <button onclick="clearCache()">Clear Browser Cache & Reload</button>
+    
+    <h2>Console Output</h2>
+    <div id="console-output" style="background: #f8f9fa; padding: 10px; border: 1px solid #dee2e6; font-family: monospace; white-space: pre-wrap; max-height: 300px; overflow-y: auto;"></div>
+
+    <script>
+        const statusContainer = document.getElementById('status-container');
+        const consoleOutput = document.getElementById('console-output');
+        
+        function addStatus(message, type = 'info') {
+            const div = document.createElement('div');
+            div.className = `status ${type}`;
+            div.textContent = message;
+            statusContainer.appendChild(div);
+        }
+        
+        function logToConsole(message) {
+            consoleOutput.textContent += new Date().toLocaleTimeString() + ': ' + message + '\n';
+            consoleOutput.scrollTop = consoleOutput.scrollHeight;
+        }
+        
+        // Override console methods to capture output
+        const originalLog = console.log;
+        const originalError = console.error;
+        const originalWarn = console.warn;
+        
+        console.log = function(...args) {
+            logToConsole('LOG: ' + args.join(' '));
+            originalLog.apply(console, args);
+        };
+        
+        console.error = function(...args) {
+            logToConsole('ERROR: ' + args.join(' '));
+            originalError.apply(console, args);
+        };
+        
+        console.warn = function(...args) {
+            logToConsole('WARN: ' + args.join(' '));
+            originalWarn.apply(console, args);
+        };
+        
+        // Check initial state
+        document.addEventListener('DOMContentLoaded', function() {
+            logToConsole('DOM Content Loaded');
+            checkInitialState();
+        });
+        
+        function checkInitialState() {
+            // Check if admin.js is loaded
+            const scripts = Array.from(document.scripts);
+            const adminScript = scripts.find(s => s.src.includes('admin.js'));
+            
+            if (adminScript) {
+                addStatus('✓ admin.js script tag found', 'success');
+                logToConsole('admin.js script found: ' + adminScript.src);
+            } else {
+                addStatus('✗ admin.js script tag not found', 'error');
+                logToConsole('admin.js script NOT found');
+            }
+            
+            // Check if Dashboard object exists
+            if (typeof window.Dashboard !== 'undefined') {
+                addStatus('✓ Dashboard object is defined', 'success');
+                logToConsole('Dashboard object exists');
+            } else {
+                addStatus('✗ Dashboard object is NOT defined', 'error');
+                logToConsole('Dashboard object is undefined');
+            }
+            
+            // Check if toggleSidebar function exists
+            if (typeof window.toggleSidebar !== 'undefined') {
+                addStatus('✓ toggleSidebar function is defined', 'success');
+                logToConsole('toggleSidebar function exists');
+            } else {
+                addStatus('✗ toggleSidebar function is NOT defined', 'error');
+                logToConsole('toggleSidebar function is undefined');
+            }
+            
+            // Check if BookmarksManager exists
+            if (typeof window.BookmarksManager !== 'undefined') {
+                addStatus('✓ BookmarksManager object is defined', 'success');
+                logToConsole('BookmarksManager object exists');
+            } else {
+                addStatus('✗ BookmarksManager object is NOT defined', 'error');
+                logToConsole('BookmarksManager object is undefined');
+            }
+        }
+        
+        function testDashboard() {
+            try {
+                if (typeof Dashboard !== 'undefined') {
+                    if (typeof Dashboard.switchTab === 'function') {
+                        addStatus('✓ Dashboard.switchTab is a function', 'success');
+                        logToConsole('Dashboard.switchTab test passed');
+                    } else {
+                        addStatus('✗ Dashboard.switchTab is not a function', 'error');
+                        logToConsole('Dashboard.switchTab is not a function: ' + typeof Dashboard.switchTab);
+                    }
+                } else {
+                    addStatus('✗ Dashboard object not found', 'error');
+                    logToConsole('Dashboard object not found');
+                }
+            } catch (e) {
+                addStatus('✗ Error testing Dashboard: ' + e.message, 'error');
+                logToConsole('Dashboard test error: ' + e.message);
+            }
+        }
+        
+        function testToggleSidebar() {
+            try {
+                if (typeof toggleSidebar !== 'undefined') {
+                    addStatus('✓ toggleSidebar function exists', 'success');
+                    logToConsole('toggleSidebar function test passed');
+                } else {
+                    addStatus('✗ toggleSidebar function not found', 'error');
+                    logToConsole('toggleSidebar function not found');
+                }
+            } catch (e) {
+                addStatus('✗ Error testing toggleSidebar: ' + e.message, 'error');
+                logToConsole('toggleSidebar test error: ' + e.message);
+            }
+        }
+        
+        function testBookmarksManager() {
+            try {
+                if (typeof BookmarksManager !== 'undefined') {
+                    if (typeof BookmarksManager.fetch === 'function') {
+                        addStatus('✓ BookmarksManager.fetch is a function', 'success');
+                        logToConsole('BookmarksManager.fetch test passed');
+                    } else {
+                        addStatus('✗ BookmarksManager.fetch is not a function', 'error');
+                        logToConsole('BookmarksManager.fetch is not a function');
+                    }
+                } else {
+                    addStatus('✗ BookmarksManager object not found', 'error');
+                    logToConsole('BookmarksManager object not found');
+                }
+            } catch (e) {
+                addStatus('✗ Error testing BookmarksManager: ' + e.message, 'error');
+                logToConsole('BookmarksManager test error: ' + e.message);
+            }
+        }
+        
+        function clearCache() {
+            if ('caches' in window) {
+                caches.keys().then(function(names) {
+                    names.forEach(function(name) {
+                        caches.delete(name);
+                    });
+                });
+            }
+            
+            // Force reload with cache bypass
+            window.location.reload(true);
+        }
+        
+        // Load admin.js for testing
+        const script = document.createElement('script');
+        script.src = './admin.js';
+        script.onload = function() {
+            logToConsole('admin.js loaded successfully');
+            setTimeout(checkInitialState, 100); // Re-check after script loads
+        };
+        script.onerror = function() {
+            logToConsole('ERROR: Failed to load admin.js');
+            addStatus('✗ Failed to load admin.js', 'error');
+        };
+        document.head.appendChild(script);
+    </script>
+</body>
+</html>

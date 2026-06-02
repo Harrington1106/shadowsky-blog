@@ -1,0 +1,207 @@
+{
+  "main": {
+    "id": "9b8865dc4caffe51",
+    "type": "split",
+    "children": [
+      {
+        "id": "e908bc6cbeb6a3a2",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "ea8a8ccd05f90cb5",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "2025-12-07-blog-workflow.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "2025-12-07-blog-workflow"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "269e799437d26a55",
+    "type": "split",
+    "children": [
+      {
+        "id": "e8c50a87531f2b8a",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "b6f5ee3d9baa0fab",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "文件列表"
+            }
+          },
+          {
+            "id": "7a764a9086714082",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "搜索"
+            }
+          },
+          {
+            "id": "e09b4f703c83a701",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "书签"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "7df0bbf3c96b179b",
+    "type": "split",
+    "children": [
+      {
+        "id": "73e677a685bdb304",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "cd7064342b8a8c87",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "2025-12-07-blog-workflow.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "2025-12-07-blog-workflow 的反向链接列表"
+            }
+          },
+          {
+            "id": "6188cc90715036e4",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "2025-12-07-blog-workflow.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "2025-12-07-blog-workflow 的出链列表"
+            }
+          },
+          {
+            "id": "3cd00ee825ff79b8",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "标签"
+            }
+          },
+          {
+            "id": "5fbdf8d52fb95ba6",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "添加笔记属性"
+            }
+          },
+          {
+            "id": "8fcbcdd084cad9cf",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "2025-12-07-blog-workflow.md",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "2025-12-07-blog-workflow 的大纲"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:打开快速切换": false,
+      "graph:查看关系图谱": false,
+      "canvas:新建白板": false,
+      "daily-notes:打开/创建今天的日记": false,
+      "templates:插入模板": false,
+      "command-palette:打开命令面板": false,
+      "bases:创建新数据库": false,
+      "templater-obsidian:Templater": false
+    }
+  },
+  "active": "cd7064342b8a8c87",
+  "lastOpenFiles": [
+    "github-trending.md",
+    "2025-12-09-blog-images-and-picgo.md",
+    "2025-12-09-obsidian-guide.md",
+    "2025-12-09-test.md",
+    "2025-12-09-my new life.md",
+    "templates/New Post.md",
+    "2025-12-09-随便吧.md",
+    "templates/templater-post.md",
+    "templates/post-template.md",
+    "templates",
+    "2025-12-07-blog-workflow.md",
+    "2025-12-08-alibaba-cloud-us-ip.md",
+    "2025-12-08-bt-panel-guide.md",
+    "未命名.base",
+    "未命名.canvas",
+    "2025-12-09-bilibili-embedding-guide.md",
+    "2025-12-08-server-usage-guide.md",
+    "2025-11-21-auto-template-publish.md"
+  ]
+}

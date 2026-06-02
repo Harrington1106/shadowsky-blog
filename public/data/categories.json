@@ -1,0 +1,127 @@
+{
+  "ai_tools": {
+    "name": "AI与工具类",
+    "order": 1,
+    "children": [
+      { "id": "chat_ai", "name": "对话模型" },
+      { "id": "draw_ai", "name": "绘画生成" },
+      { "id": "audio_video_ai", "name": "音视频AI" },
+      { "id": "dev_ai", "name": "编程辅助" },
+      { "id": "efficiency_tools", "name": "效率工具" }
+    ]
+  },
+  "dev_tech": {
+    "name": "开发与技术",
+    "order": 2,
+    "children": [
+      { "id": "frontend", "name": "前端开发" },
+      { "id": "backend", "name": "后端架构" },
+      { "id": "devops", "name": "运维部署" },
+      { "id": "database", "name": "数据库" },
+      { "id": "ui_ux", "name": "UI/UX设计" },
+      { "id": "android_modding", "name": "安卓玩机 / 刷机" },
+      { "id": "dev_docs", "name": "实用文档" }
+    ]
+  },
+  "resources": {
+    "name": "资源下载与搜索",
+    "order": 3,
+    "children": [
+      { "id": "software", "name": "软件资源" },
+      { "id": "media_assets", "name": "媒体素材" },
+      { "id": "ebooks", "name": "电子书" },
+      { "id": "search_engines", "name": "搜索引擎" }
+    ]
+  },
+  "life_tools": {
+    "name": "生活实用工具",
+    "order": 4,
+    "children": [
+      { "id": "daily_use", "name": "日常常用" },
+      { "id": "file_convert", "name": "格式转换" },
+      { "id": "image_process", "name": "图片处理" }
+    ]
+  },
+  "entertainment": {
+    "name": "娱乐与兴趣",
+    "order": 5,
+    "children": [
+      { "id": "games", "name": "游戏相关" },
+      { "id": "music", "name": "音乐听歌" },
+      { "id": "videos", "name": "影视视频" }
+    ]
+  },
+  "literature_reading": {
+    "name": "文学与阅读",
+    "order": 6,
+    "children": [
+      { "id": "novels", "name": "小说阅读" },
+      { "id": "news", "name": "新闻资讯" },
+      { "id": "comics", "name": "漫画动漫" }
+    ]
+  },
+  "education": {
+    "name": "学习与教育",
+    "order": 7,
+    "children": [
+      { "id": "languages", "name": "语言学习" },
+      { "id": "courses", "name": "在线课程" },
+      { "id": "exams", "name": "考试考证" }
+    ]
+  },
+  "blogs_tutorials": {
+    "name": "博客与教程",
+    "order": 8,
+    "children": [
+      { "id": "tech_blogs", "name": "技术博客" },
+      { "id": "tutorials", "name": "入门教程" }
+    ]
+  },
+  "system_resources": {
+    "name": "系统与破解资源",
+    "order": 9,
+    "children": [
+      { "id": "windows", "name": "Windows" },
+      { "id": "mac", "name": "macOS" },
+      { "id": "android", "name": "Android" }
+    ]
+  },
+  "video_editing": {
+    "name": "视频剪辑",
+    "order": 10,
+    "children": [
+      { "id": "assets", "name": "剪辑素材" },
+      { "id": "tutorials_edit", "name": "剪辑教程" }
+    ]
+  },
+  "personal": {
+    "name": "个人兴趣",
+    "order": 11,
+    "children": [
+      { "id": "utaite", "name": "唱见/音乐" }
+    ]
+  },
+  "r18": {
+    "name": "R18",
+    "order": 99,
+    "children": [
+      { "id": "videos_r18", "name": "视频" },
+      { "id": "pics_r18", "name": "图片" },
+      { "id": "comics_r18", "name": "漫画" }
+    ]
+  },
+  "others": {
+    "name": "其他/无法归类",
+    "order": 100,
+    "children": [
+      { "id": "uncategorized", "name": "未分类" }
+    ]
+  },
+  "my_favorites": {
+    "name": "我的收藏",
+    "order": 0,
+    "children": [
+      { "id": "top", "name": "置顶常用" }
+    ]
+  }
+}
