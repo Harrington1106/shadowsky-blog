@@ -6,3 +6,5 @@ Thumbs.db
 .env
 *.bak
 admin/ecosystem.config.js
+public/data/*.json
+data/
