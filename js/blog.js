@@ -530,7 +530,7 @@ function renderTagsView(container) {
         </div>
         <div id="tag-results" class="min-h-[200px]">
             <div class="flex flex-col items-center justify-center py-12 text-gray-400 dark:text-gray-600">
-                <i data-lucide="mouse-pointer-click" class="w-12 h-12 mb-3 opacity-50"></i>
+                <i data-lucide="mouse-pointer-2" class="w-12 h-12 mb-3 opacity-50"></i>
                 <p class="text-sm font-medium">点击上方标签探索相关内容</p>
             </div>
         </div>
