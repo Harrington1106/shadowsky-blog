@@ -9,7 +9,7 @@
     <!-- Use compiled Tailwind CSS instead of CDN for production -->
     <link href="../css/style.css" rel="stylesheet">
     <link rel="icon" type="image/png" href="../public/img/favicon256.png">
-    <script src="../js/lucide-local.js"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
@@ -88,7 +88,7 @@
                         aria-selected="false"
                         aria-controls="view-media"
                         tabindex="-1">
-                    <i data-lucide="tv" class="w-5 h-5 group-hover:scale-110 transition-transform" aria-hidden="true"></i>
+                    <i data-lucide="film" class="w-5 h-5 group-hover:scale-110 transition-transform" aria-hidden="true"></i>
                     <span class="font-medium">追番/漫画</span>
                 </button>
                 <button onclick="Dashboard.switchTab('feeds')" 
@@ -675,5 +675,6 @@
         }
     </script>
     <script src="admin.js"></script>
+    <script>lucide.createIcons();</script>
 </body>
 </html>
