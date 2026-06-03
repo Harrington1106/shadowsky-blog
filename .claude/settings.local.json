@@ -1,0 +1,25 @@
+{
+  "env": {
+    "ANTHROPIC_BASE_URL": "https://api-inference.modelscope.cn",
+    "ANTHROPIC_AUTH_TOKEN": "ms-62e53c00-0c3b-4d04-9032-58f4335c5f13",
+    "ANTHROPIC_MODEL": "moonshotai/Kimi-K2.5",
+    "ANTHROPIC_SMALL_FAST_MODEL": "moonshotai/Kimi-K2.5"
+  },
+  "alwaysThinkingEnabled": false,
+  "theme": "dark-daltonized",
+  "permissions": {
+    "allow": [
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git push *)",
+      "Bash(git diff *)",
+      "Bash(git status *)",
+      "Bash(git log *)",
+      "Read",
+      "Edit",
+      "Write",
+      "WebSearch",
+      "WebFetch"
+    ]
+  }
+}
