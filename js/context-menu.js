@@ -198,7 +198,7 @@
                     const bvid = el.dataset.bvid;
                     const title = el.dataset.title;
                     const items = [
-                        { label: '播放视频', icon: 'play-circle', action: () => window.videoLoader?.playVideo(parseInt(videoId)) }
+                        { label: '播放视频', icon: 'circle-play', action: () => window.videoLoader?.playVideo(parseInt(videoId)) }
                     ];
                     if (bvid && bvid !== 'undefined') {
                         items.push(
@@ -235,7 +235,7 @@
                     const el = target.closest('.anime-item');
                     const title = el.dataset.title;
                     return [
-                         { label: '标记为已看', icon: 'check-circle', action: () => alert(`已更新 "${title}" 观看进度`) },
+                         { label: '标记为已看', icon: 'circle-check', action: () => alert(`已更新 "${title}" 观看进度`) },
                          { label: '搜索该番剧', icon: 'search', action: () => window.open(`https://bgm.tv/subject_search/${encodeURIComponent(title)}`, '_blank') }
                     ];
                 }
@@ -259,7 +259,7 @@
                              const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(link)}`;
                              window.open(url, '_blank');
                         }},
-                        { label: '返回文章列表', icon: 'arrow-left', action: () => window.location.href = 'blog.html' }
+                        { label: '返回文章列表', icon: 'chevron-left', action: () => window.location.href = 'blog.html' }
                     );
                     return items;
                 }
@@ -289,7 +289,7 @@
                 // RSS Page
                 check: () => window.location.pathname.includes('rss.html'),
                 getItems: () => [
-                    { label: '刷新订阅', icon: 'refresh-cw', action: () => document.getElementById('refresh-feeds-btn')?.click() },
+                    { label: '刷新订阅', icon: 'rotate-cw', action: () => document.getElementById('refresh-feeds-btn')?.click() },
                     { label: 'AI 设置', icon: 'settings', action: () => document.getElementById('settings-btn')?.click() }
                 ]
             }
@@ -299,8 +299,8 @@
         // We use a function because some items might change (like theme icon)
         // But for efficiency we can just update the DOM elements in showMenu
         const staticItems = [
-            { label: '返回', icon: 'arrow-left', action: () => window.history.back(), shortcut: 'Alt+←' },
-            { label: '前进', icon: 'arrow-right', action: () => window.history.forward(), shortcut: 'Alt+→' },
+            { label: '返回', icon: 'chevron-left', action: () => window.history.back(), shortcut: 'Alt+←' },
+            { label: '前进', icon: 'chevron-right', action: () => window.history.forward(), shortcut: 'Alt+→' },
             { label: '刷新', icon: 'rotate-cw', action: () => window.location.reload(), shortcut: 'F5' },
             { type: 'divider' },
             { label: '复制', icon: 'copy', action: () => {
@@ -308,9 +308,9 @@
                 if(s) navigator.clipboard.writeText(s);
             }, id: 'ctx-copy' }, // Hidden by default if no selection
             { type: 'divider' },
-            { label: '切换主题', icon: 'moon', action: () => window.toggleTheme && window.toggleTheme(), id: 'ctx-theme' },
-            { label: '回到顶部', icon: 'arrow-up-to-line', action: handleBackToTop },
-            { label: '首页', icon: 'home', action: () => window.location.href = 'index.html' }
+            { label: '切换主题', icon: 'sun-moon', action: () => window.toggleTheme && window.toggleTheme(), id: 'ctx-theme' },
+            { label: '回到顶部', icon: 'chevron-up', action: handleBackToTop },
+            { label: '首页', icon: 'house', action: () => window.location.href = 'index.html' }
         ];
 
         // Ensure body exists before appending
@@ -404,7 +404,7 @@
                              newIcon.setAttribute('data-lucide', 'sun');
                              text.textContent = '切换亮色';
                          } else {
-                             newIcon.setAttribute('data-lucide', 'moon');
+                             newIcon.setAttribute('data-lucide', 'sun-moon');
                              text.textContent = '切换暗色';
                          }
                          

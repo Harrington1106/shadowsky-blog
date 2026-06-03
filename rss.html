@@ -18,7 +18,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.8/purify.min.js"></script>
     
     <!-- Lucide Icons -->
-    <script src="js/lucide-local.js"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
     
     <style>
         body {
@@ -55,25 +55,25 @@
                 
                 <div class="hidden lg:flex items-center space-x-1">
                     <a href="index.html" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-600 hover:text-blue-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-white dark:hover:bg-white/10" title="首页">
-                        <i data-lucide="home" class="w-5 h-5"></i>
+                        <i data-lucide="house" class="w-5 h-5"></i>
                     </a>
                     <a href="blog.html" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-600 hover:text-blue-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-white dark:hover:bg-white/10" title="星空笔记">
-                        <i data-lucide="sparkles" class="w-5 h-5"></i>
+                        <i data-lucide="file-text" class="w-5 h-5"></i>
                     </a>
                     <a href="moments.html" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-600 hover:text-blue-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-white dark:hover:bg-white/10" title="随手拍">
                         <i data-lucide="camera" class="w-5 h-5"></i>
                     </a>
                     <a href="bookmarks.html" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-600 hover:text-blue-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-white dark:hover:bg-white/10" title="收藏">
-                        <i data-lucide="heart" class="w-5 h-5"></i>
+                        <i data-lucide="bookmark" class="w-5 h-5"></i>
                     </a>
                     <a href="rss.html" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-blue-600 bg-blue-50/80 dark:bg-blue-900/30 dark:text-blue-400" title="订阅">
-                        <i data-lucide="radio" class="w-5 h-5"></i>
+                        <i data-lucide="rss" class="w-5 h-5"></i>
                     </a>
                     <a href="acg.html" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-600 hover:text-blue-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-white dark:hover:bg-white/10" title="视频">
-                        <i data-lucide="clapperboard" class="w-5 h-5"></i>
+                        <i data-lucide="film" class="w-5 h-5"></i>
                     </a>
                     <a href="about.html" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-600 hover:text-blue-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-white dark:hover:bg-white/10" title="关于">
-                        <i data-lucide="cat" class="w-5 h-5"></i>
+                        <i data-lucide="user-circle" class="w-5 h-5"></i>
                     </a>
                     
                     <!-- Theme Toggle -->
@@ -100,11 +100,11 @@
         <div id="mobile-menu" class="lg:hidden absolute top-full left-0 w-full bg-white/95 dark:bg-black/95 backdrop-blur-xl border-t border-gray-100 dark:border-gray-800 shadow-2xl transition-all duration-300 ease-in-out transform opacity-0 -translate-y-4 pointer-events-none">
             <div class="px-4 pt-4 pb-6 space-y-2">
                 <a href="index.html" class="flex items-center px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 text-gray-600 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-white/10 hover:shadow-sm hover:translate-x-1">
-                    <i data-lucide="home" class="w-5 h-5 mr-3"></i>
+                    <i data-lucide="house" class="w-5 h-5 mr-3"></i>
                     首页
                 </a>
                 <a href="blog.html" class="flex items-center px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 text-gray-600 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-white/10 hover:shadow-sm hover:translate-x-1">
-                    <i data-lucide="sparkles" class="w-5 h-5 mr-3"></i>
+                    <i data-lucide="file-text" class="w-5 h-5 mr-3"></i>
                     星空笔记
                 </a>
                 <a href="moments.html" class="flex items-center px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 text-gray-600 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-white/10 hover:shadow-sm hover:translate-x-1">
@@ -112,19 +112,19 @@
                     随手拍
                 </a>
                 <a href="bookmarks.html" class="flex items-center px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 text-gray-600 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-white/10 hover:shadow-sm hover:translate-x-1">
-                    <i data-lucide="heart" class="w-5 h-5 mr-3"></i>
+                    <i data-lucide="bookmark" class="w-5 h-5 mr-3"></i>
                     收藏
                 </a>
                 <a href="rss.html" class="flex items-center px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 text-blue-600 bg-blue-50 dark:bg-blue-900/20 dark:text-blue-400 shadow-sm">
-                    <i data-lucide="radio" class="w-5 h-5 mr-3"></i>
+                    <i data-lucide="rss" class="w-5 h-5 mr-3"></i>
                     订阅
                 </a>
                 <a href="acg.html" class="flex items-center px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 text-gray-600 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-white/10 hover:shadow-sm hover:translate-x-1">
-                    <i data-lucide="clapperboard" class="w-5 h-5 mr-3"></i>
+                    <i data-lucide="film" class="w-5 h-5 mr-3"></i>
                     视频
                 </a>
                 <a href="about.html" class="flex items-center px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 text-gray-600 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-white/10 hover:shadow-sm hover:translate-x-1">
-                    <i data-lucide="cat" class="w-5 h-5 mr-3"></i>
+                    <i data-lucide="user-circle" class="w-5 h-5 mr-3"></i>
                     关于
                 </a>
             </div>
@@ -174,7 +174,7 @@
                 <div class="flex justify-between items-center">
                     <h1 id="feed-title" class="font-bold text-lg text-slate-800 dark:text-white truncate pr-4">全部文章</h1>
                     <button id="refresh-feeds-btn" class="p-2 rounded-xl text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all duration-200 active:scale-95">
-                        <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+                        <i data-lucide="rotate-cw" class="w-4 h-4"></i>
                     </button>
                 </div>
             </div>
