@@ -251,21 +251,15 @@ function renderGridView(container) {
                  <i data-lucide="file-text" class="w-16 h-16 text-white/70 drop-shadow-lg transform transition-transform duration-500 group-hover:scale-110"></i>
                </div>`;
 
-        const tagsHtml = (post.tags || []).slice(0, 3).map(tag =>
-            `<span class="px-2.5 py-1 bg-white/10 backdrop-blur-sm text-white text-xs font-medium rounded-full border border-white/20">${tag}</span>`
-        ).join('');
 
         const html = `
             <article class="group relative bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-gray-800 overflow-hidden card-hover hover:shadow-2xl hover:shadow-blue-500/10 dark:hover:shadow-blue-900/20 flex flex-col h-full animate-fade-in-up" style="animation-delay: ${delay}ms">
                 <a href="post.html?file=${post.file}" class="block flex-1 flex flex-col h-full">
                     ${coverHtml}
                     <div class="p-6 flex flex-col flex-1">
-                        <div class="flex items-center justify-between mb-4">
+                        <div class="mb-4">
                             <span class="px-3 py-1 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-xs font-semibold rounded-full">
                                 ${post.category || '笔记'}
-                            </span>
-                            <span class="text-xs text-gray-400 font-mono flex items-center gap-1">
-                                <i data-lucide="calendar" class="w-3 h-3"></i> ${dateStr}
                             </span>
                         </div>
 
@@ -278,7 +272,10 @@ function renderGridView(container) {
                         </p>
 
                         <div class="mt-auto pt-4 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between">
-                            <div class="flex gap-2 flex-wrap">${tagsHtml}</div>
+                            <div class="flex items-center gap-4 text-xs text-gray-400 dark:text-gray-500">
+                                <span class="flex items-center gap-1"><i data-lucide="calendar-days" class="w-3.5 h-3.5"></i> ${dateStr}</span>
+                                <span class="flex items-center gap-1"><i data-lucide="tag" class="w-3.5 h-3.5"></i> ${(post.tags || []).length}</span>
+                            </div>
                             <div class="w-8 h-8 rounded-full bg-gray-50 dark:bg-gray-800 flex items-center justify-center text-gray-400 group-hover:bg-blue-600 group-hover:text-white transition-all duration-300">
                                 <i data-lucide="arrow-right" class="w-4 h-4 transition-transform group-hover:translate-x-0.5"></i>
                             </div>
