@@ -244,29 +244,22 @@
         <!-- Content -->
         <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center w-full pt-24 pb-12">
             <!-- Title -->
-            <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white tracking-tight mb-4 animate-fade-in">
+            <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 tracking-tight mb-4 animate-fade-in">
                 星空笔记
             </h1>
 
             <!-- Subtitle -->
-            <p class="max-w-2xl mx-auto text-base sm:text-lg text-gray-600 dark:text-gray-400 leading-relaxed animate-fade-in" style="animation-delay: 0.1s">
+            <p class="max-w-2xl mx-auto text-lg sm:text-xl text-gray-500 dark:text-gray-400 leading-relaxed animate-fade-in" style="animation-delay: 0.1s">
                 记录技术、天文与生活的点点滴滴
             </p>
 
             <!-- Stats -->
-            <div class="flex flex-wrap justify-center gap-6 mt-8 animate-fade-in" style="animation-delay: 0.2s">
-                <div class="text-center px-4">
-                    <div class="text-xl font-semibold text-gray-900 dark:text-white" id="post-count">...</div>
-                    <div class="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider mt-1">篇文章</div>
-                </div>
-                <div class="text-center px-4">
-                    <div class="text-xl font-semibold text-gray-900 dark:text-white" id="tag-count">...</div>
-                    <div class="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider mt-1">个标签</div>
-                </div>
-                <div class="text-center px-4">
-                    <div class="text-xl font-semibold text-gray-900 dark:text-white" id="category-count">...</div>
-                    <div class="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider mt-1">个分类</div>
-                </div>
+            <div class="flex items-center justify-center space-x-2 text-sm text-gray-500 dark:text-gray-400 font-mono mt-4 animate-fade-in" style="animation-delay: 0.2s">
+                <span id="post-count">...</span><span> 篇文章</span>
+                <span class="w-1 h-1 bg-gray-300 dark:bg-gray-600 rounded-full"></span>
+                <span id="tag-count">...</span><span> 个标签</span>
+                <span class="w-1 h-1 bg-gray-300 dark:bg-gray-600 rounded-full"></span>
+                <span id="category-count">...</span><span> 个分类</span>
             </div>
         </div>
     </div>
