@@ -1,0 +1,57 @@
+# Trae 忽略规则 — 减少索引负担
+# 这些目录/文件不需要 AI 理解和搜索
+
+# Node.js
+node_modules/
+admin/node_modules/
+
+# 运行时数据 (大且频繁变化)
+public/data/
+
+# PHP KVDB 数据
+api/data/
+
+# 日志和缓存
+*.log
+*.cache
+.cache/
+
+# 编译产物
+css/
+*.min.js
+*.min.css
+dist/
+build/
+
+# 二进制/媒体
+*.jpg
+*.jpeg
+*.png
+*.gif
+*.svg
+*.ico
+*.mp4
+*.webm
+*.mp3
+*.woff
+*.woff2
+*.ttf
+*.eot
+
+# 包管理锁文件
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Python
+__pycache__/
+*.pyc
+venv/
+
+# 系统文件
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Git
+.git/
