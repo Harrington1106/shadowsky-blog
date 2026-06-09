@@ -13,9 +13,12 @@
     
     <!-- Tailwind CSS -->
     <link href="css/style.css" rel="stylesheet">
+    <!-- 公共动画（lenis/star/wave 等） -->
+    <link href="public/cat-cursor.css" rel="stylesheet">
+    <link href="css/common-animations.css" rel="stylesheet">
     
     <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <script src="js/vendor/lucide.min.js"></script>
     
     <style>
         body {
@@ -23,36 +26,6 @@
         }
         .serif {
             font-family: 'Noto Serif SC', serif;
-        }
-        html.lenis, html.lenis body {
-            height: auto;
-        }
-        .lenis.lenis-smooth {
-            scroll-behavior: auto !important;
-        }
-        .lenis.lenis-smooth [data-lenis-prevent] {
-            overscroll-behavior: contain;
-        }
-        .lenis.lenis-stopped {
-            overflow: hidden;
-        }
-        .lenis.lenis-scrolling iframe {
-            pointer-events: none;
-        }
-        
-        /* Starry Background */
-        .star {
-            position: absolute;
-            background: currentColor;
-            border-radius: 50%;
-            opacity: 0;
-            animation: twinkle var(--duration) ease-in-out infinite;
-            animation-delay: var(--delay);
-        }
-        @keyframes twinkle {
-            0% { opacity: 0; transform: scale(0.5); }
-            50% { opacity: var(--opacity); transform: scale(1); }
-            100% { opacity: 0; transform: scale(0.5); }
         }
     </style>
 </head>
@@ -264,26 +237,6 @@
                 </button>
                 <p id="wave-text" class="mt-4 text-sm text-gray-400 dark:text-gray-500 opacity-0 transition-opacity duration-500 transform translate-y-2 font-medium">Thanks for stopping by! ✨</p>
             </div>
-
-            <style>
-                @keyframes wave {
-                    0% { transform: rotate(0deg); }
-                    10% { transform: rotate(14deg); }
-                    20% { transform: rotate(-8deg); }
-                    30% { transform: rotate(14deg); }
-                    40% { transform: rotate(-4deg); }
-                    50% { transform: rotate(10deg); }
-                    60% { transform: rotate(0deg); }
-                    100% { transform: rotate(0deg); }
-                }
-                .animate-wave {
-                    animation-name: wave;
-                    animation-duration: 2.5s;
-                    animation-iteration-count: infinite;
-                    transform-origin: 70% 70%;
-                    display: inline-block;
-                }
-            </style>
 
             <!-- Closing -->
             <p class="text-center text-gray-500 dark:text-gray-400">

@@ -1,0 +1,7 @@
+/* HappyCadogt Cat Cursors - https://github.com/Tseshongfeeshur/cat-cursors */
+body, html {
+    cursor: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAk0lEQVR4nO3UMQ6EIBAFUKCQC1CtZyCWVJzF01PvCXZHMJmEKEYbBov/kokYi/kMqlIAAPd+ub4jA1BRrkO6a62JDQlhraWaeAhjDB2JhuAA3nsqxxFjFJ8C73ptPatq6RliOtx/OFjjaP6q84TmumEIYV+nlETfkdPuG9Poyzl3F2DMj4vlL0akzysmQBcFAACPbOeQ0uG8mcafAAAAAElFTkSuQmCC) 16 16, auto;
+}
+a, button, [role="button"], .cursor-pointer, input[type="submit"], select {
+    cursor: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAcklEQVR4nGNgGAWjYBSMAgLgPyNDIJD8MKCOYBXmBVG2A2P7/4GxFhX8Q3IFI6MEXe3+D4ScssJgNjMXG8wVAvRzACMkEh7N2f0C6HuGV9vP0s1uVIcwMZQPjM1AwMf66fWAWT4KRsEoGAWjYBSMgmEPAPSbFAxh49yBAAAAAElFTkSuQmCC) 16 16, pointer;
+}
