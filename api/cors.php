@@ -16,13 +16,16 @@ $allowed_origins = array(
     'http://localhost:5500'
 );
 
-// Also allow direct IP access if needed
+// 严格校验 Origin 白名单
 if (isset($_SERVER['HTTP_ORIGIN'])) {
     $origin = $_SERVER['HTTP_ORIGIN'];
-    // Allow any origin during debugging phase
-    header("Access-Control-Allow-Origin: " . $origin);
+    if (in_array($origin, $allowed_origins)) {
+        header("Access-Control-Allow-Origin: " . $origin);
+    } else {
+        header("Access-Control-Allow-Origin: https://shadowquake.top");
+    }
 } else {
-    header("Access-Control-Allow-Origin: *");
+    header("Access-Control-Allow-Origin: https://shadowquake.top");
 }
 
 // 2. Handle CORS Headers

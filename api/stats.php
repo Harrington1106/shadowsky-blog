@@ -123,13 +123,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 // GET: Retrieve stats
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-    // Basic Auth or Token Check for Admin Access
-    $headers = getallheaders();
+    // 使用统一的 Token 验证模块
+    require_once __DIR__ . '/auth.php';
     $isAdmin = false;
-    
-    // Very basic check - in production use proper auth middleware
-    if (isset($headers['x-admin-token']) || isset($_COOKIE['admin_token'])) {
-        $isAdmin = true; 
+    try {
+        require_admin_token();
+        $isAdmin = true;
+    } catch (\Throwable $e) {
+        // 验证失败时 isAdmin 保持 false，返回公开数据
     }
     
     // Load Stats

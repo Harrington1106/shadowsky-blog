@@ -118,7 +118,7 @@
                             <img src="public/img/favicon256.png" alt="Logo" class="relative h-8 w-8 mr-2 dark:hidden">
                             <img src="public/img/black256.png" alt="Logo" class="relative h-8 w-8 mr-2 hidden dark:block">
                         </div>
-                        <span id="nav-title" class="font-bold text-xl tracking-tight transition-colors duration-300">
+                        <span id="nav-title" class="font-bold text-xl tracking-tight transition-colors duration-300 text-gray-900 dark:text-white">
                             夏日科技探索
                         </span>
                     </a>
@@ -168,7 +168,7 @@
         </div>
 
         <!-- Mobile menu -->
-        <div id="mobile-menu" class="lg:hidden absolute top-full left-0 w-full bg-white/95 dark:bg-black/95 backdrop-blur-xl border-t border-gray-100 dark:border-gray-800 shadow-2xl transition-all duration-300 ease-in-out transform opacity-0 -translate-y-4 pointer-events-none">
+        <div id="mobile-menu" class="lg:hidden absolute top-full left-0 w-full bg-white/95 dark:bg-black/95 backdrop-blur-xl border-t border-gray-100 dark:border-gray-800 shadow-2xl transition-all duration-300 ease-in-out transform opacity-0 -translate-y-4 pointer-events-none flex flex-col items-center gap-1">
             <div class="px-4 pt-4 pb-6 space-y-2">
                 <a href="index.html" class="flex items-center px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 text-blue-600 bg-blue-50 dark:bg-blue-900/20 dark:text-blue-400 shadow-sm">
                     <i data-lucide="house" class="w-5 h-5 mr-3"></i>
@@ -207,7 +207,7 @@
         <!-- Dynamic Canvas Background -->
         <div class="absolute inset-0 z-0">
             <!-- Ambient Background Blobs -->
-            <div class="absolute inset-0 overflow-hidden pointer-events-none">
+            <div class="absolute inset-0 overflow-hidden pointer-events-none flex flex-col items-center gap-1">
                 <div class="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-[80px] opacity-100 animate-blob bg-[var(--blob-color-1)]"></div>
                 <div class="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-[80px] opacity-100 animate-blob animation-delay-2000 bg-[var(--blob-color-2)]"></div>
                 <div class="absolute -bottom-32 left-20 w-[600px] h-[600px] rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-[80px] opacity-100 animate-blob animation-delay-4000 bg-[var(--blob-color-3)]"></div>
@@ -273,8 +273,11 @@
         <div class="absolute bottom-4 w-full text-center z-20 pointer-events-none">
             <p class="text-[10px] sm:text-xs tracking-widest uppercase text-gray-400 dark:text-gray-500 opacity-60">
                 &copy; 2025 Thoi <span class="mx-2 text-blue-500">|</span> Designed with <span class="text-red-500 animate-pulse">❤️</span>
-                <span class="hidden sm:inline mx-2 text-gray-600 dark:text-gray-700">|</span>
-                <span id="visit-count" class="block sm:inline mt-1 sm:mt-0 opacity-0 transition-opacity duration-500">Loading...</span>
+                <span class="mx-2 text-gray-600 dark:text-gray-700 hidden sm:inline">|</span>
+                <span class="inline-flex items-center gap-1">
+                    <span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse align-middle"></span>
+                    <span id="visit-count" class="opacity-0 transition-opacity duration-500 font-mono">Loading...</span>
+                </span>
             </p>
         </div>
     </div>

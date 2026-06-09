@@ -5,9 +5,8 @@
  * @module api
  */
 
-// API Configuration
-// Use Aliyun Backend directly to avoid Retinbox WAF issues
-const API_BASE = 'http://47.118.28.27'; // TODO: Update to https://api.shadowquake.top if available
+// API Configuration - 生产环境使用相对路径，避免暴露服务器 IP
+const API_BASE = '';
 
 const API_CONFIG = {
     // Dynamic Base URL Strategy

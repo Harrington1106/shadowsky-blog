@@ -4,6 +4,28 @@ require_once 'cors.php';
 require_once 'auth.php';
 require_admin_token();
 
+// 速率限制：每 60 秒最多 10 次请求
+$rateLimitFile = __DIR__ . '/data/sync_bangumi_rate.json';
+$rateLimitWindow = 60;
+$rateLimitMax = 10;
+$now = time();
+$rateData = ['timestamps' => []];
+if (file_exists($rateLimitFile)) {
+    $rateData = json_decode(file_get_contents($rateLimitFile), true) ?: ['timestamps' => []];
+}
+$rateData['timestamps'] = array_filter($rateData['timestamps'], function($t) use ($now, $rateLimitWindow) {
+    return ($now - $t) < $rateLimitWindow;
+});
+if (count($rateData['timestamps']) >= $rateLimitMax) {
+    http_response_code(429);
+    echo json_encode(['error' => '请求过于频繁，请稍后再试']);
+    exit;
+}
+$rateData['timestamps'][] = $now;
+$dir = dirname($rateLimitFile);
+if (!is_dir($dir)) mkdir($dir, 0755, true);
+file_put_contents($rateLimitFile, json_encode($rateData));
+
 $settingsFile = __DIR__ . '/settings.json';
 $mediaFile = __DIR__ . '/../public/data/media.json';
 

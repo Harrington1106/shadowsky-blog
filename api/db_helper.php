@@ -73,6 +73,30 @@ class KVDB {
         }
         return $this->db->get($key);
     }
+
+    public function set($key, $value) {
+        if ($this->use_file) {
+            $data = array();
+            if (file_exists($this->file_path)) {
+                $content = file_get_contents($this->file_path);
+                if (substr($content, 0, 3) === "\xEF\xBB\xBF") {
+                    $content = substr($content, 3);
+                }
+                $data = json_decode($content, true);
+                if (!is_array($data)) $data = array();
+            }
+            $data[$key] = $value;
+            
+            $dir = dirname($this->file_path);
+            if (!file_exists($dir)) {
+                @mkdir($dir, 0777, true);
+            }
+            
+            file_put_contents($this->file_path, json_encode($data));
+            return;
+        }
+        $this->db->set($key, $value);
+    }
 }
 
 // ==========================================
@@ -92,7 +116,6 @@ if (!function_exists('initStatsFromLogs')) {
         $stats['total'] = count($logs);
         
         foreach ($logs as $log) {
-            // Daily Stats
             $time = isset($log['time']) ? $log['time'] : '';
             if ($time && strlen($time) >= 10) {
                 $day = substr($time, 0, 10);
@@ -100,40 +123,12 @@ if (!function_exists('initStatsFromLogs')) {
                 $stats['daily'][$day]++;
             }
             
-            // Page Stats
             $page = isset($log['page']) ? $log['page'] : 'unknown';
             if (!isset($stats['pages'][$page])) $stats['pages'][$page] = 0;
             $stats['pages'][$page]++;
         }
         
         return $stats;
-    }
-}
-
-    public function set($key, $value) {
-        if ($this->use_file) {
-            $data = array();
-            if (file_exists($this->file_path)) {
-                $content = file_get_contents($this->file_path);
-                if (substr($content, 0, 3) === "\xEF\xBB\xBF") {
-                    $content = substr($content, 3);
-                }
-                $data = json_decode($content, true);
-                if (!is_array($data)) $data = array();
-            }
-            $data[$key] = $value;
-            
-            $dir = dirname($this->file_path);
-            if (!file_exists($dir)) {
-                // Warning: recursive mkdir is PHP 5.0+, should be fine
-                @mkdir($dir, 0777, true);
-            }
-            
-            // Removed JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE for PHP < 5.4 compat
-            file_put_contents($this->file_path, json_encode($data));
-            return;
-        }
-        $this->db->set($key, $value);
     }
 }
 

@@ -6,20 +6,38 @@ if (!defined('CONFIG_LOADED')) {
     return;
 }
 
-// 数据库配置
-// 请在部署时修改为您的实际数据库信息
-// 建议：使用阿里云服务器作为数据库主机，因为它更稳定
+// 从 .env 文件读取配置（优先于硬编码默认值）
+function loadEnvConfig() {
+    $env_path = __DIR__ . '/../.env';
+    if (!file_exists($env_path)) return;
+    $lines = @file($env_path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+    if ($lines === false) return;
+    foreach ($lines as $line) {
+        $line = trim($line);
+        if ($line === '' || $line[0] === '#') continue;
+        $parts = explode('=', $line, 2);
+        if (count($parts) === 2) {
+            $key = trim($parts[0]);
+            $val = trim($parts[1]);
+            if (!empty($val) && !isset($_ENV[$key])) {
+                $_ENV[$key] = $val;
+                putenv("$key=$val");
+            }
+        }
+    }
+}
+loadEnvConfig();
 
-define('DB_HOST', 'localhost'); // 在服务器本地运行，使用 localhost 最稳定
-define('DB_PORT', '3306');
-define('DB_NAME', 'shadowsky_blog');
-define('DB_USER', 'shadowsky_blog');
-define('DB_PASS', 'hX8wzW4mYCpjFCB3');
+// 数据库配置 - 优先从环境变量读取，回退到默认值
+define('DB_HOST', getenv('DB_HOST') ?: 'localhost');
+define('DB_PORT', getenv('DB_PORT') ?: '3306');
+define('DB_NAME', getenv('DB_NAME') ?: 'shadowsky_blog');
+define('DB_USER', getenv('DB_USER') ?: 'shadowsky_blog');
+define('DB_PASS', getenv('DB_PASS') ?: '');
 
 function getDBConnection() {
-    // 检查配置是否已填写
-    if (DB_HOST === 'YOUR_DB_HOST_OR_IP') {
-        return null; // 未配置，返回 null 以便回退到文件模式
+    if (DB_HOST === 'YOUR_DB_HOST_OR_IP' || DB_PASS === '') {
+        return null;
     }
 
     try {
@@ -33,16 +51,15 @@ function getDBConnection() {
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
             PDO::ATTR_EMULATE_PREPARES => false,
-            PDO::ATTR_TIMEOUT => 5 // 5秒连接超时
+            PDO::ATTR_TIMEOUT => 5
         ];
         return new PDO($dsn, DB_USER, DB_PASS, $options);
     } catch (Throwable $e) {
-        // 连接失败 (可能是网络不通或密码错误)
         error_log("DB Connection Error: " . $e->getMessage());
         return null;
     }
 }
 
-// Bangumi Configuration
-define('BANGUMI_TOKEN', 'x7LMqEPLDaml222OUBVHJEZI9BHxfnUa4LuVzb6u'); // 填入你的 Bangumi Access Token
-define('BANGUMI_USERNAME', '563355'); // 填入你的 Bangumi 用户名
+// Bangumi 配置 - 优先从环境变量读取
+define('BANGUMI_TOKEN', getenv('BANGUMI_TOKEN') ?: '');
+define('BANGUMI_USERNAME', getenv('BANGUMI_USERNAME') ?: '');

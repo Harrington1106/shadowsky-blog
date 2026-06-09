@@ -16,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit(0);
 }
 
-$file = '../public/data/notice.json';
+$file = __DIR__ . '/../public/data/notice.json';
 
 // Default Notice Structure
 $default_notice = [

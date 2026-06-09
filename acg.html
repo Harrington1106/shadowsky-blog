@@ -97,7 +97,7 @@
     </div>
     
     <!-- Navbar -->
-    <nav id="navbar" class="fixed w-full z-50 top-0 transition-all duration-300">
+    <nav id="navbar" class="fixed w-full z-50 top-0 transition-all duration-300 bg-white/80 dark:bg-gray-950/80 backdrop-blur-md border-b border-gray-100 dark:border-gray-800">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16">
                 <div class="flex items-center">
@@ -107,7 +107,7 @@
                             <img src="public/img/favicon256.png" alt="Logo" class="relative h-8 w-8 mr-2 dark:hidden">
                             <img src="public/img/black256.png" alt="Logo" class="relative h-8 w-8 mr-2 hidden dark:block">
                         </div>
-                        <span id="nav-title" class="font-cute text-xl tracking-tight transition-colors duration-300">
+                        <span id="nav-title" class="font-cute text-xl tracking-tight transition-colors duration-300 text-gray-900 dark:text-white">
                             二次元空间
                         </span>
                     </a>
@@ -281,20 +281,6 @@
       </div>
     </div>
 
-    <!-- Footer -->
-    <footer class="bg-white/50 dark:bg-black/50 backdrop-blur-md text-gray-600 dark:text-gray-400 border-t border-gray-200/50 dark:border-gray-800/50 py-8 relative z-10 transition-colors duration-300">
-        <div class="max-w-7xl mx-auto px-4 flex justify-center items-center">
-            <p class="text-xs tracking-widest uppercase opacity-70 hover:opacity-100 transition-opacity cursor-default">
-                &copy; 2025 ShadowSky <span class="mx-2 text-pink-500">|</span> Designed with <span class="text-red-500 animate-pulse">❤️</span> for ACG
-            </p>
-        </div>
-    </footer>
-
-    <!-- Back to Top Button -->
-    <button id="back-to-top" class="fixed bottom-8 right-8 p-3 rounded-full bg-blue-600 text-white shadow-lg transition-all duration-300 opacity-0 translate-y-10 hover:bg-blue-700 hover:scale-110 z-50 focus:outline-none ring-2 ring-blue-500 ring-offset-2 dark:ring-offset-slate-950" aria-label="Back to top">
-        <i data-lucide="chevron-up" class="w-6 h-6"></i>
-    </button>
-
     <script src="js/context-menu.js"></script>
     <script src="js/video-loader.js"></script>
     <script src="js/media-data.js"></script>
@@ -306,14 +292,15 @@
         });
     </script>
     <!-- Footer -->
-    <footer class="bg-white/80 dark:bg-gray-950/80 backdrop-blur-md border-t border-gray-100 dark:border-gray-800 py-8 relative z-10 transition-colors duration-300 mt-12">
+    <footer class="bg-gray-50/80 dark:bg-black/80 backdrop-blur-md border-t border-gray-200 dark:border-gray-800 py-8 relative z-10 transition-colors duration-300 mt-12">
         <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-center items-center gap-4 text-center">
             <p class="text-xs tracking-widest uppercase text-gray-500 dark:text-gray-400 opacity-80 flex items-center">
                 &copy; 2025 Thoi <span class="mx-2 text-blue-500">|</span> Designed with <span class="text-red-500 animate-pulse mx-1">❤️</span>
             </p>
-            <span id="visit-count" class="opacity-0 transition-opacity duration-500 text-xs font-mono bg-gray-100 dark:bg-gray-900 px-2 py-1 rounded border border-gray-200 dark:border-gray-800 text-gray-600 dark:text-gray-300">
-                Loading...
-            </span>
+            <div class="inline-flex items-center gap-2 px-3 py-1 bg-gray-100 dark:bg-gray-800 rounded-full text-xs font-mono text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-700">
+                <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                <span id="visit-count">Loading...</span>
+            </div>
         </div>
     </footer>
 

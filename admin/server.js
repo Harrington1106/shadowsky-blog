@@ -12,11 +12,15 @@ const port = process.env.PORT ? Number(process.env.PORT) : 3000;
 const host = process.env.HOST || '127.0.0.1';
 
 function readEnvToken() {
+  return readEnvVar('ADMIN_TOKEN');
+}
+
+function readEnvVar(key) {
   const envPath = path.join(__dirname, '../.env');
   try {
     const txt = fs.readFileSync(envPath, 'utf8');
-    const line = txt.split(/\r?\n/).find(l => l.trim().startsWith('ADMIN_TOKEN='));
-    if (line) return line.split('=')[1].trim();
+    const line = txt.split(/\r?\n/).find(l => l.trim().startsWith(key + '='));
+    if (line) return line.split('=').slice(1).join('=').trim();
   } catch {}
   return '';
 }
@@ -38,6 +42,10 @@ if (!ADMIN_TOKEN) {
   console.log('[Admin] Generated ADMIN_TOKEN and wrote to .env');
 }
 const RSS_PROXY_ALLOWED_HOSTS = (process.env.RSS_PROXY_ALLOWED_HOSTS || '').split(',').map(s => s.trim()).filter(Boolean);
+const BANGUMI_API_BASE = (() => {
+  const envVal = process.env.BANGUMI_API_BASE || readEnvVar('BANGUMI_API_BASE');
+  return (envVal || 'https://api.bgm.tv').replace(/\/+$/, '');
+})();
 
 // CORS Middleware for Hybrid Deployment
 app.use((req, res, next) => {
@@ -103,7 +111,7 @@ app.get('/api/bangumi.php', async (req, res) => {
 
     const headers = { 'User-Agent': 'ShadowSky/Admin', 'Accept': 'application/json' };
     if (token) headers['Authorization'] = `Bearer ${token}`;
-    const base = 'https://api.bgm.tv/v0';
+    const base = `${BANGUMI_API_BASE}/v0`;
     const get = async (url) => {
       const r = await axios.get(url, { headers, timeout: 15000, validateStatus: () => true });
       if (r.status !== 200) return null;
@@ -116,7 +124,7 @@ app.get('/api/bangumi.php', async (req, res) => {
     const animeWish = await get(`${base}/users/${username}/collections?subject_type=2&type=1&limit=12`);
     const mangaReading = await get(`${base}/users/${username}/collections?subject_type=1&type=3&limit=12`);
     const mangaWish = await get(`${base}/users/${username}/collections?subject_type=1&type=1&limit=12`);
-    const calendar = await get(`https://api.bgm.tv/calendar`);
+    const calendar = await get(`${BANGUMI_API_BASE}/calendar`);
 
     const result = {
       updated_at: Math.floor(Date.now() / 1000),
@@ -153,7 +161,7 @@ app.get('/api/bangumi', async (req, res) => {
     
         const headers = { 'User-Agent': 'ShadowSky/Admin', 'Accept': 'application/json' };
         if (token) headers['Authorization'] = `Bearer ${token}`;
-        const base = 'https://api.bgm.tv/v0';
+        const base = `${BANGUMI_API_BASE}/v0`;
         const get = async (url) => {
           const r = await axios.get(url, { headers, timeout: 15000, validateStatus: () => true });
           if (r.status !== 200) return null;
@@ -166,7 +174,7 @@ app.get('/api/bangumi', async (req, res) => {
         const animeWish = await get(`${base}/users/${username}/collections?subject_type=2&type=1&limit=12`);
         const mangaReading = await get(`${base}/users/${username}/collections?subject_type=1&type=3&limit=12`);
         const mangaWish = await get(`${base}/users/${username}/collections?subject_type=1&type=1&limit=12`);
-        const calendar = await get(`https://api.bgm.tv/calendar`);
+        const calendar = await get(`${BANGUMI_API_BASE}/calendar`);
     
         const result = {
           updated_at: Math.floor(Date.now() / 1000),
@@ -210,7 +218,7 @@ app.get('/api/bgm_search', requireAdminToken, async (req, res) => {
         };
         if (token) headers['Authorization'] = `Bearer ${token}`;
 
-        const url = `https://api.bgm.tv/v0/search/subjects?keyword=${encodeURIComponent(q)}&type=${subjectType}&limit=12`;
+        const url = `${BANGUMI_API_BASE}/v0/search/subjects?keyword=${encodeURIComponent(q)}&type=${subjectType}&limit=12`;
         const response = await axios.get(url, { headers, timeout: 10000, validateStatus: () => true });
         
         res.status(response.status).json(response.data);
@@ -240,7 +248,7 @@ app.get('/api/bgm_subject', requireAdminToken, async (req, res) => {
         };
         if (token) headers['Authorization'] = `Bearer ${token}`;
 
-        const url = `https://api.bgm.tv/v0/subjects/${id}`;
+        const url = `${BANGUMI_API_BASE}/v0/subjects/${id}`;
         const response = await axios.get(url, { headers, timeout: 10000, validateStatus: () => true });
         
         res.status(response.status).json(response.data);
@@ -532,7 +540,7 @@ app.get('/api/sync_bangumi', requireAdminToken, rateLimit(60_000, 10), async (re
 
     // Helper Function
     const fetchBgm = async (path) => {
-        const url = `https://api.bgm.tv/v0${path}`;
+        const url = `${BANGUMI_API_BASE}/v0${path}`;
         const headers = {
             'User-Agent': 'ShadowSky/1.0 (Refreshed)',
             'Accept': 'application/json'
@@ -861,7 +869,7 @@ app.get('/api/bgm_subject', requireAdminToken, async (req, res) => {
                 token = settings.bangumi_token || '';
             } catch (e) {}
         }
-        const url = `https://api.bgm.tv/v0/subjects/${id}`;
+        const url = `${BANGUMI_API_BASE}/v0/subjects/${id}`;
         const headers = { 'User-Agent': 'ShadowSky/Admin', 'Accept': 'application/json' };
         if (token) headers['Authorization'] = `Bearer ${token}`;
         const resp = await fetch(url, { headers });
@@ -1265,13 +1273,13 @@ app.post('/api/bookmarks/check', requireAdminToken, rateLimit(60_000, 100), asyn
     }
 });
 
-// Debug token discovery
+// Debug token discovery - 仅限本地回环地址访问
 app.get('/api/debug/token', (req, res) => {
     let ip = req.ip || req.connection?.remoteAddress || '';
     if (typeof ip === 'string' && ip.startsWith('::ffff:')) {
         ip = ip.replace('::ffff:', '');
     }
-    if (!isPrivateIp(ip)) {
+    if (ip !== '127.0.0.1' && ip !== '::1' && ip !== 'localhost') {
         return res.status(403).json({ error: 'Forbidden' });
     }
     return res.json({ token: ADMIN_TOKEN });

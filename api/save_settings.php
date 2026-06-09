@@ -15,9 +15,9 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 $input = json_decode(file_get_contents('php://input'), true);
 
-if (!isset($input['bangumi_username'])) {
+if (!is_array($input)) {
     http_response_code(400);
-    echo json_encode(['error' => 'Missing bangumi_username']);
+    echo json_encode(['error' => 'Invalid JSON']);
     exit;
 }
 
