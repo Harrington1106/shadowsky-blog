@@ -154,6 +154,18 @@ describe('core public pages ui shell', () => {
     expect(edits).toContain('class="public-footer');
     expect(about).toContain('class="public-footer');
     expect(notFound).toContain('class="public-footer');
+    expect(acg).toContain('public-footer__inner');
+    expect(anime).toContain('public-footer__inner');
+    expect(manga).toContain('public-footer__inner');
+    expect(edits).toContain('public-footer__inner');
+    expect(notFound).toContain('public-footer__inner');
+    expect(acg).toContain('layout-safe-top');
+    expect(anime).toContain('layout-safe-top');
+    expect(manga).toContain('layout-safe-top');
+    expect(edits).toContain('layout-safe-top');
+    expect(notFound).toContain('layout-safe-top');
+    expect(about).toContain('layout-safe-top');
+    expect(about).toContain('layout-flow-section');
 
     expect(acg).toContain('data-ui-shell="acg-hub"');
     expect(anime).toContain('data-ui-toolbar="anime-filters"');
