@@ -114,6 +114,10 @@ shadowsky-blog/
 - 公共令牌：`css/style.css` 末尾新增“Liquid Glass UI System For Public Pages”区块，集中定义玻璃背景、边框、阴影、模糊、圆角和深浅主题变量，避免各页面重复维护透明度与模糊参数。
 - 公共组件：新增 `glass-panel`、`glass-card`、`glass-toolbar`、`glass-pill`、`glass-input` 等通用类，用于统一导航、移动菜单、筛选栏、卡片、输入框、弹层和页脚。
 - 公共壳层：核心公开页额外引入 `public-shell`、`public-shell--floating-nav`、`section-shell`、`utility-glass-bar`、`reading-surface` 等类，用于统一导航留白、工具条节奏、阅读面板和页脚容器。
+- 全站布局恢复层：`css/style.css` 追加 `layout-safe-top`、`layout-flow-section`、`layout-toolbar-wrap`、`layout-grid-stable`、`layout-overflow-guard` 等恢复类，统一顶部安全间距、分段节奏、工具条换行、栅格稳定性和溢出防护。
+- 公开页统一主容器与页脚：`index.html` 到 `404.html` 的公开页逐步收敛到 `public-shell`、`public-footer`、`public-footer__inner` 这套共享骨架，减少旧页脚与局部 `max-w-*` 容器分叉。
+- ACG 系列页布局收口：`acg.html`、`anime.html`、`manga.html`、`edits.html` 统一补齐 `layout-safe-top`、筛选工具条和视频栅格保护类，降低平板与手机断点下的换行挤压和横向溢出。
+- 复杂滚动页面布局保护：`rss.html`、`moments.html`、`post.html` 通过 `layout-overflow-guard`、工作台最小宽度控制和热力图横向滚动保护，减少 sticky/fixed/overflow 组合导致的遮挡与裁切。
 - 层级语义：Task 3.2 为六个核心页补充 `editorial-stack`、`insight-grid`、`sidebar-stack`、`workbench-pane` 与配套 `data-ui-*` 标记，用于表达首页概览、博客控制区、文章侧栏分组、瞬间洞察区、收藏搜索/分类关系和 RSS 三栏职责。
 - 页面接入：公开页通过 `body.public-page.liquid-glass-ui` 进入统一样式域，静态页面与动态渲染模块共享同一套视觉规则，降低局部内联样式分叉。
 - 状态文案：`js/main.js` 将访问量与加载占位统一为中文文案，避免页面继续依赖 `Loading...` 或英文访问量前缀。
