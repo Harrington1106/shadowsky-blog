@@ -420,6 +420,18 @@ body.public-page.liquid-glass-ui [data-ui-panel="rss-reader"] {
   min-width: 0;
 }
 
+body.public-page.liquid-glass-ui #anime-filters,
+body.public-page.liquid-glass-ui #manga-filters {
+  justify-content: flex-start;
+}
+
+@media (max-width: 767px) {
+  body.public-page.liquid-glass-ui #anime-filters button,
+  body.public-page.liquid-glass-ui #manga-filters button {
+    flex: 0 0 auto;
+  }
+}
+
 body.public-page.liquid-glass-ui footer {
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.52)) !important;
   border-top: 1px solid var(--glass-border-soft) !important;

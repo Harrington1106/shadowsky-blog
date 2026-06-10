@@ -169,6 +169,10 @@ describe('core public pages ui shell', () => {
     expect(anime).toContain('layout-safe-top');
     expect(manga).toContain('layout-safe-top');
     expect(edits).toContain('layout-safe-top');
+    expect(anime).toContain('layout-toolbar-wrap');
+    expect(manga).toContain('layout-toolbar-wrap');
+    expect(edits).toContain('layout-overflow-guard');
+    expect(edits).toContain('layout-grid-stable');
     expect(notFound).toContain('layout-safe-top');
     expect(about).toContain('layout-safe-top');
     expect(about).toContain('layout-flow-section');
