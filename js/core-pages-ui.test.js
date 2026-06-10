@@ -134,4 +134,27 @@ describe('core public pages ui shell', () => {
       expect(html.includes('Loading...')).toBe(false);
     }
   });
+
+  it('uses shared layout shells on all public pages that were upgraded', () => {
+    const acg = readProjectFile('acg.html');
+    const anime = readProjectFile('anime.html');
+    const manga = readProjectFile('manga.html');
+    const edits = readProjectFile('edits.html');
+    const about = readProjectFile('about.html');
+    const notFound = readProjectFile('404.html');
+
+    expect(acg).toContain('class="public-footer');
+    expect(anime).toContain('class="public-footer');
+    expect(manga).toContain('class="public-footer');
+    expect(edits).toContain('class="public-footer');
+    expect(about).toContain('class="public-footer');
+    expect(notFound).toContain('class="public-footer');
+
+    expect(acg).toContain('data-ui-shell="acg-hub"');
+    expect(anime).toContain('data-ui-toolbar="anime-filters"');
+    expect(manga).toContain('data-ui-toolbar="manga-filters"');
+    expect(edits).toContain('data-ui-toolbar="edits-categories"');
+    expect(about).toContain('data-ui-shell="about-story"');
+    expect(notFound).toContain('data-ui-shell="error-playground"');
+  });
 });
