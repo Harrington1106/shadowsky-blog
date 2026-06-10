@@ -481,6 +481,52 @@ body.public-page.liquid-glass-ui .media-item.glass-card:hover {
   box-shadow: var(--glass-shadow) !important;
 }
 
+/* Homepage hero refinement */
+body.public-page.liquid-glass-ui #navbar {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.82), rgba(255, 255, 255, 0.66));
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
+}
+
+.dark body.public-page.liquid-glass-ui #navbar {
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.76), rgba(15, 23, 42, 0.62));
+}
+
+body.public-page.liquid-glass-ui .homepage-hero-mark {
+  margin-inline: auto;
+}
+
+body.public-page.liquid-glass-ui .homepage-hero-glow {
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.28), rgba(168, 85, 247, 0.16), transparent 70%);
+  filter: blur(24px);
+  opacity: 0.72;
+}
+
+body.public-page.liquid-glass-ui .homepage-hero-title {
+  letter-spacing: -0.06em;
+  line-height: 0.94;
+  text-wrap: balance;
+}
+
+body.public-page.liquid-glass-ui .homepage-hero-accent {
+  background-image: linear-gradient(120deg, rgba(59, 130, 246, 0.92), rgba(99, 102, 241, 0.84), rgba(139, 92, 246, 0.74));
+}
+
+body.public-page.liquid-glass-ui .homepage-hero-subtitle {
+  color: rgba(71, 85, 105, 0.9);
+  letter-spacing: 0.02em;
+}
+
+.dark body.public-page.liquid-glass-ui .homepage-hero-subtitle {
+  color: rgba(203, 213, 225, 0.9);
+}
+
+body.public-page.liquid-glass-ui .public-footer {
+  background: transparent !important;
+  border-top: none !important;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
 @media (max-width: 1023px) {
   body.public-page.liquid-glass-ui #navbar {
     width: calc(100% - 0.75rem);
@@ -496,6 +542,14 @@ body.public-page.liquid-glass-ui .media-item.glass-card:hover {
   body.public-page.liquid-glass-ui .public-shell,
   body.public-page.liquid-glass-ui .public-footer__inner {
     width: min(100%, calc(100% - 1rem));
+  }
+
+  body.public-page.liquid-glass-ui .homepage-hero-title {
+    line-height: 0.98;
+  }
+
+  body.public-page.liquid-glass-ui .homepage-hero-subtitle {
+    max-width: 20rem;
   }
 }
 

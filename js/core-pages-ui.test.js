@@ -43,6 +43,11 @@ describe('core public pages ui shell', () => {
     expect(css).toContain('.layout-toolbar-wrap');
     expect(css).toContain('.layout-grid-stable');
     expect(css).toContain('.layout-overflow-guard');
+    expect(css).toContain('.homepage-hero-title');
+    expect(css).toContain('.homepage-hero-subtitle');
+    expect(css).toContain('.homepage-hero-mark');
+    expect(css).toContain('.homepage-hero-glow');
+    expect(css).toContain('.homepage-hero-accent');
     expect(css).toContain('@media (prefers-reduced-motion: reduce)');
   });
 
