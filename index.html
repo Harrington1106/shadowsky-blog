@@ -145,54 +145,25 @@
         </div>
 
         <!-- Content -->
-        <div class="public-shell public-shell--floating-nav layout-safe-top relative z-10 px-4 sm:px-6 lg:px-8 text-center w-full flex flex-col items-center justify-center pt-20 sm:pt-16 pb-16">
-            <div class="pointer-events-auto transform transition-all duration-500">
+        <div class="public-shell public-shell--floating-nav layout-safe-top relative z-10 px-4 sm:px-6 lg:px-8 text-center w-full flex flex-col items-center justify-center pt-20 sm:pt-16 pb-16" data-ui-shell="home-hero">
+            <div class="pointer-events-auto transform transition-all duration-500" data-ui-group="hero-identity">
                 <!-- 3D Tilt Avatar -->
-                <div class="mb-6 sm:mb-8 relative inline-block group tilt-card transition-transform duration-100 ease-out" style="transform-style: preserve-3d;">
-                    <div class="absolute -inset-4 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 rounded-full blur-xl opacity-50 dark:opacity-70 group-hover:opacity-100 transition duration-500 animate-pulse-slow"></div>
-                    <img src="public/img/avatar.jpg" alt="Avatar" class="relative w-32 h-32 sm:w-40 sm:h-40 rounded-full border-4 border-white dark:border-black object-cover shadow-2xl transform translate-z-10 transition-all duration-500">
-                    <div class="absolute bottom-2 right-2 w-6 h-6 sm:w-8 sm:h-8 bg-green-500 border-4 border-white dark:border-black rounded-full z-20 shadow-[0_0_15px_rgba(34,197,94,0.8)]" title="Online"></div>
+                <div class="homepage-hero-mark mb-6 sm:mb-8 relative inline-block group tilt-card transition-transform duration-100 ease-out" style="transform-style: preserve-3d;">
+                    <div class="absolute -inset-4 rounded-full homepage-hero-glow"></div>
+                    <img src="public/img/avatar.jpg" alt="Avatar" class="relative w-28 h-28 sm:w-32 sm:h-32 rounded-full border-4 border-white dark:border-black object-cover shadow-2xl transform translate-z-10 transition-all duration-500">
+                    <div class="absolute bottom-2 right-2 w-5 h-5 sm:w-6 sm:h-6 bg-green-500 border-4 border-white dark:border-black rounded-full z-20 shadow-[0_0_12px_rgba(34,197,94,0.45)]" title="Online"></div>
                 </div>
 
-                <h1 class="text-4xl sm:text-7xl md:text-8xl font-black tracking-tighter mb-4 sm:mb-6 drop-shadow-2xl">
-                    <span class="block mb-2 animate-fade-in-up text-gray-800 dark:text-white">探索未知</span>
-                    <span class="block text-transparent bg-clip-text bg-gradient-to-r from-cyan-500 via-blue-600 to-purple-600 animate-gradient-x bg-[length:200%_auto] glitch" data-text="记录美好">
+                <h1 class="homepage-hero-title text-4xl sm:text-6xl md:text-7xl font-black tracking-tight mb-4 sm:mb-5">
+                    <span class="block animate-fade-in-up text-slate-800 dark:text-white">探索未知</span>
+                    <span class="block text-transparent bg-clip-text homepage-hero-accent" data-text="记录美好">
                         记录美好
                     </span>
                 </h1>
                 
-                <p id="typing-text" class="mt-4 max-w-2xl mx-auto text-base sm:text-xl md:text-2xl text-gray-600 dark:text-gray-300 leading-relaxed font-medium min-h-[5rem] h-auto overflow-hidden tracking-wide px-4">
+                <p id="typing-text" class="homepage-hero-subtitle mt-4 max-w-xl mx-auto px-4 text-sm sm:text-lg md:text-xl leading-relaxed font-medium min-h-[3rem]" data-ui-copy="hero-subtitle">
                     <!-- Typing effect will populate this -->
                 </p>
-
-                <!-- About Me Tags - Enhanced Layout -->
-                <div class="mt-8 sm:mt-10 opacity-0 animate-fade-in-up-delay mb-8 sm:mb-12">
-                    <div class="flex flex-wrap gap-2 sm:gap-3 justify-center max-w-3xl mx-auto px-2">
-                        <!-- Tag Item -->
-                        <div class="glass-pill px-4 py-1.5 sm:px-6 sm:py-2 bg-transparent border border-gray-300 dark:border-gray-700 rounded-full cursor-default hover:border-blue-500 dark:hover:border-blue-400 transition-colors duration-300">
-                            <span class="text-gray-600 dark:text-gray-400 font-medium tracking-wider text-xs sm:text-sm">#00后</span>
-                        </div>
-                        
-                        <div class="glass-pill px-4 py-1.5 sm:px-6 sm:py-2 bg-transparent border border-gray-300 dark:border-gray-700 rounded-full cursor-default hover:border-purple-500 dark:hover:border-purple-400 transition-colors duration-300">
-                            <span class="text-gray-600 dark:text-gray-400 font-medium tracking-wider text-xs sm:text-sm">#UP主</span>
-                        </div>
-                        
-                        <div class="glass-pill px-4 py-1.5 sm:px-6 sm:py-2 bg-transparent border border-gray-300 dark:border-gray-700 rounded-full cursor-default hover:border-yellow-500 dark:hover:border-yellow-400 transition-colors duration-300">
-                            <span class="text-gray-600 dark:text-gray-400 font-medium tracking-wider text-xs sm:text-sm">#摄影</span>
-                        </div>
-
-                         <div class="glass-pill px-4 py-1.5 sm:px-6 sm:py-2 bg-transparent border border-gray-300 dark:border-gray-700 rounded-full cursor-default hover:border-blue-500 dark:hover:border-blue-400 transition-colors duration-300">
-                            <span class="text-gray-600 dark:text-gray-400 font-medium tracking-wider text-xs sm:text-sm">#天文</span>
-                        </div>
-                        
-                        <div class="glass-pill px-4 py-1.5 sm:px-6 sm:py-2 bg-transparent border border-gray-300 dark:border-gray-700 rounded-full cursor-default hover:border-green-500 dark:hover:border-green-400 transition-colors duration-300">
-                            <span class="text-gray-600 dark:text-gray-400 font-medium tracking-wider text-xs sm:text-sm">#极客</span>
-                        </div>
-                         <div class="glass-pill px-4 py-1.5 sm:px-6 sm:py-2 bg-transparent border border-gray-300 dark:border-gray-700 rounded-full cursor-default hover:border-red-500 dark:hover:border-red-400 transition-colors duration-300">
-                            <span class="text-gray-600 dark:text-gray-400 font-medium tracking-wider text-xs sm:text-sm">#探索者</span>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
         
@@ -208,57 +179,6 @@
             </p>
         </div>
     </div>
-
-    <section class="public-shell section-shell px-4 sm:px-6 lg:px-8 pb-20 editorial-stack" data-ui-section="home-gateway">
-        <!-- 首页摘要带：把身份、频道与内容入口分成清晰两层。 -->
-        <div class="glass-card p-6 sm:p-8" data-ui-panel="home-overview">
-            <div class="insight-grid">
-                <div data-ui-stat="home-signal">
-                    <p class="text-xs font-semibold uppercase tracking-[0.2em] text-blue-600 dark:text-blue-400">定位</p>
-                    <p class="mt-2 text-lg font-bold text-slate-900 dark:text-white">内容创作者与长期记录者</p>
-                </div>
-                <div data-ui-stat="home-signal">
-                    <p class="text-xs font-semibold uppercase tracking-[0.2em] text-blue-600 dark:text-blue-400">入口</p>
-                    <p class="mt-2 text-lg font-bold text-slate-900 dark:text-white">文章、瞬间、收藏、ACG 统一归档</p>
-                </div>
-                <div data-ui-stat="home-signal">
-                    <p class="text-xs font-semibold uppercase tracking-[0.2em] text-blue-600 dark:text-blue-400">阅读方式</p>
-                    <p class="mt-2 text-lg font-bold text-slate-900 dark:text-white">先概览，再进入具体频道继续探索</p>
-                </div>
-            </div>
-        </div>
-        <div class="text-center mb-8">
-            <span class="editorial-kicker">Content Gateway</span>
-            <h2 class="editorial-heading mx-auto mt-4 text-3xl sm:text-4xl font-bold text-slate-900 dark:text-white">
-                从这里进入我的内容宇宙
-            </h2>
-            <p class="mx-auto mt-3 max-w-2xl text-sm sm:text-base text-slate-500 dark:text-slate-400">
-                统一的公共壳层收纳文章、瞬间、收藏与 ACG 入口，减少首页与频道页之间的体验割裂。
-            </p>
-        </div>
-        <div class="glass-summary-grid md:grid-cols-2 xl:grid-cols-4">
-            <a class="glass-card p-6 text-left transition-transform duration-300 hover:-translate-y-1" data-ui-card="home-feature" href="blog.html">
-                <p class="text-xs font-semibold uppercase tracking-[0.2em] text-blue-600 dark:text-blue-400">Blog</p>
-                <h3 class="mt-3 text-xl font-bold text-slate-900 dark:text-white">最新文章</h3>
-                <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">进入编辑式内容入口，继续阅读技术、天文与生活笔记。</p>
-            </a>
-            <a class="glass-card p-6 text-left transition-transform duration-300 hover:-translate-y-1" data-ui-card="home-feature" href="moments.html">
-                <p class="text-xs font-semibold uppercase tracking-[0.2em] text-blue-600 dark:text-blue-400">Moments</p>
-                <h3 class="mt-3 text-xl font-bold text-slate-900 dark:text-white">生活瞬间</h3>
-                <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">以更清晰的画册入口浏览照片、时间线与热力图。</p>
-            </a>
-            <a class="glass-card p-6 text-left transition-transform duration-300 hover:-translate-y-1" data-ui-card="home-feature" href="bookmarks.html">
-                <p class="text-xs font-semibold uppercase tracking-[0.2em] text-blue-600 dark:text-blue-400">Bookmarks</p>
-                <h3 class="mt-3 text-xl font-bold text-slate-900 dark:text-white">收藏推荐</h3>
-                <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">按策展逻辑整理高频工具、知识入口与常用资源。</p>
-            </a>
-            <a class="glass-card p-6 text-left transition-transform duration-300 hover:-translate-y-1" data-ui-card="home-feature" href="acg.html">
-                <p class="text-xs font-semibold uppercase tracking-[0.2em] text-blue-600 dark:text-blue-400">ACG</p>
-                <h3 class="mt-3 text-xl font-bold text-slate-900 dark:text-white">ACG 入口</h3>
-                <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">在统一导航壳层中继续进入视频与兴趣频道。</p>
-            </a>
-        </div>
-    </section>
 
     <!-- Custom Cursor (Removed) -->
 
@@ -513,7 +433,7 @@
         }
 
         // 2. Typewriter Effect
-        const textToType = "当下这一刻是一个由趋近于零的概率事件无限积累后所呈现的非零实现。只要这一刻就好，这个念想的出现已经可以让我忽略所有。";
+        const textToType = "在安静的光影与记录之间，继续向未知缓慢靠近。";
         const typingElement = document.getElementById('typing-text');
         if (typingElement) {
             let typeIndex = 0;
