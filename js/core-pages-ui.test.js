@@ -46,15 +46,25 @@ describe('core public pages ui shell', () => {
     expect(css).toContain('@media (prefers-reduced-motion: reduce)');
   });
 
-  it('adds the homepage gateway section and feature cards', () => {
+  it('keeps the homepage as a single premium hero shell', () => {
     const html = readProjectFile('index.html');
 
-    expect(html).toContain('data-ui-section="home-gateway"');
-    expect(html).toContain('data-ui-card="home-feature"');
-    expect(html.match(/data-ui-card="home-feature"/g)?.length ?? 0).toBeGreaterThanOrEqual(4);
-    expect(html).toContain('data-ui-panel="home-overview"');
-    expect(html.match(/data-ui-stat="home-signal"/g)?.length ?? 0).toBeGreaterThanOrEqual(3);
-    expect(html).toContain('editorial-kicker');
+    expect(html).toContain('data-ui-shell="home-hero"');
+    expect(html).toContain('data-ui-group="hero-identity"');
+    expect(html).toContain('data-ui-copy="hero-subtitle"');
+    expect(html).toContain('class="public-footer');
+    expect(html).toContain('id="typing-text"');
+    expect(html).toContain('id="visit-count"');
+    expect(html).toContain('layout-safe-top');
+
+    expect(html.includes('data-ui-section="home-gateway"')).toBe(false);
+    expect(html.includes('data-ui-card="home-feature"')).toBe(false);
+    expect(html.includes('data-ui-panel="home-overview"')).toBe(false);
+    expect(html.includes('data-ui-stat="home-signal"')).toBe(false);
+    expect(html.includes('Content Gateway')).toBe(false);
+    expect(html.includes('从这里进入我的内容宇宙')).toBe(false);
+    expect(html.includes('#00后')).toBe(false);
+    expect(html.includes('#UP主')).toBe(false);
   });
 
   it('adds the blog discovery toolbar and summary section', () => {
