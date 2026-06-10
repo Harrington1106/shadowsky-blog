@@ -376,6 +376,32 @@ body.public-page.liquid-glass-ui .workbench-pane {
   min-width: 0;
 }
 
+/* Full site layout recovery layer for public pages. */
+body.public-page.liquid-glass-ui .layout-safe-top {
+  padding-top: clamp(5.5rem, 7vw, 6.75rem);
+}
+
+body.public-page.liquid-glass-ui .layout-flow-section {
+  margin-top: clamp(2rem, 4vw, 3.5rem);
+}
+
+body.public-page.liquid-glass-ui .layout-toolbar-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+body.public-page.liquid-glass-ui .layout-grid-stable {
+  display: grid;
+  gap: clamp(1rem, 2vw, 1.5rem);
+}
+
+body.public-page.liquid-glass-ui .layout-overflow-guard {
+  min-width: 0;
+  max-width: 100%;
+}
+
 body.public-page.liquid-glass-ui footer {
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.52)) !important;
   border-top: 1px solid var(--glass-border-soft) !important;
@@ -385,6 +411,15 @@ body.public-page.liquid-glass-ui footer {
 
 .dark body.public-page.liquid-glass-ui footer {
   background: linear-gradient(135deg, rgba(15, 23, 42, 0.78), rgba(15, 23, 42, 0.58)) !important;
+}
+
+body.public-page.liquid-glass-ui .public-footer {
+  margin-top: clamp(3rem, 5vw, 4rem);
+}
+
+body.public-page.liquid-glass-ui .public-footer__inner {
+  width: min(1280px, calc(100% - 1.5rem));
+  margin-inline: auto;
 }
 
 body.public-page.liquid-glass-ui #toc-overlay,
@@ -424,6 +459,13 @@ body.public-page.liquid-glass-ui .media-item.glass-card:hover {
 
   body.public-page.liquid-glass-ui #mobile-menu {
     width: 100%;
+  }
+}
+
+@media (max-width: 767px) {
+  body.public-page.liquid-glass-ui .public-shell,
+  body.public-page.liquid-glass-ui .public-footer__inner {
+    width: min(100%, calc(100% - 1rem));
   }
 }
 

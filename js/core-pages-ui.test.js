@@ -38,6 +38,11 @@ describe('core public pages ui shell', () => {
     expect(css).toContain('.insight-grid');
     expect(css).toContain('.sidebar-stack');
     expect(css).toContain('.workbench-pane');
+    expect(css).toContain('.layout-safe-top');
+    expect(css).toContain('.layout-flow-section');
+    expect(css).toContain('.layout-toolbar-wrap');
+    expect(css).toContain('.layout-grid-stable');
+    expect(css).toContain('.layout-overflow-guard');
     expect(css).toContain('@media (prefers-reduced-motion: reduce)');
   });
 
