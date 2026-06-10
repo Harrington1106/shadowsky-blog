@@ -25,6 +25,24 @@ document.addEventListener('DOMContentLoaded', () => {
     initMobileMenu();
 });
 
+const VISIT_COUNT_LOADING_TEXT = '加载中…';
+const VISIT_COUNT_EMPTY_TEXT = '访问 --';
+
+/**
+ * Keep visit counter copy consistent across all public pages.
+ * Rendering is based on the shared DOM hook instead of placeholder English text.
+ */
+function setVisitCountText(element, text, title = '') {
+    if (!element) return;
+    element.innerText = text;
+    element.classList.remove('opacity-0');
+    if (title) {
+        element.title = title;
+    } else {
+        element.removeAttribute('title');
+    }
+}
+
 /**
  * Initialize Mobile Menu Toggle
  */
@@ -185,32 +203,28 @@ function updateVisitCount() {
     
     // Use api.js if available
     if (window.api && window.api.fetchVisitCount) {
+        setVisitCountText(countElement, VISIT_COUNT_LOADING_TEXT);
+
         // Force show --- after 3 seconds if not loaded
         const timeoutId = setTimeout(() => {
-             if (countElement.innerText === 'Loading...') {
-                 countElement.innerText = 'VISITS: ---';
-                 countElement.classList.remove('opacity-0');
+             if (countElement.innerText === VISIT_COUNT_LOADING_TEXT) {
+                 setVisitCountText(countElement, VISIT_COUNT_EMPTY_TEXT);
              }
         }, 3000);
 
         window.api.fetchVisitCount(pageId)
             .then(data => {
                 clearTimeout(timeoutId);
-                countElement.innerText = `VISITS: ${data.count}`;
-                countElement.classList.remove('opacity-0');
-                if (data.total) {
-                    countElement.title = `Total Site Visits: ${data.total}`;
-                }
+                const title = data.total ? `全站访问：${data.total}` : '';
+                setVisitCountText(countElement, `访问 ${data.count}`, title);
             })
             .catch(err => {
                 clearTimeout(timeoutId);
                 console.error('[Main] Visit count failed:', err);
-                countElement.innerText = 'VISITS: ---';
-                countElement.classList.remove('opacity-0');
+                setVisitCountText(countElement, VISIT_COUNT_EMPTY_TEXT);
             });
     } else {
         console.error('[Main] api.js not loaded, cannot fetch visit count');
-        countElement.innerText = 'VISITS: ---';
-        countElement.classList.remove('opacity-0');
+        setVisitCountText(countElement, VISIT_COUNT_EMPTY_TEXT);
     }
 }

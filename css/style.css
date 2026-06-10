@@ -279,6 +279,103 @@ body.public-page.liquid-glass-ui #post-content {
   padding: clamp(1.5rem, 2vw, 2rem);
 }
 
+/* Shared editorial shell for core public pages. */
+body.public-page.liquid-glass-ui .public-shell {
+  width: min(1280px, calc(100% - 1.5rem));
+  margin-inline: auto;
+}
+
+body.public-page.liquid-glass-ui .public-shell--floating-nav {
+  padding-top: 5.75rem;
+}
+
+body.public-page.liquid-glass-ui .section-shell {
+  margin-top: clamp(2.5rem, 4vw, 4rem);
+}
+
+body.public-page.liquid-glass-ui .editorial-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.45rem 0.9rem;
+  border-radius: 999px;
+  border: 1px solid var(--glass-border-soft);
+  background: linear-gradient(135deg, var(--glass-bg-strong), var(--glass-bg));
+  box-shadow: var(--glass-shadow-soft);
+  color: var(--glass-muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+body.public-page.liquid-glass-ui .editorial-heading {
+  max-width: 44rem;
+  text-wrap: balance;
+}
+
+body.public-page.liquid-glass-ui .glass-summary-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+body.public-page.liquid-glass-ui .utility-glass-bar {
+  border: 1px solid var(--glass-border-soft);
+  background: linear-gradient(135deg, var(--glass-bg-strong), var(--glass-bg));
+  box-shadow: var(--glass-shadow-soft);
+  backdrop-filter: var(--glass-backdrop);
+  -webkit-backdrop-filter: var(--glass-backdrop);
+}
+
+body.public-page.liquid-glass-ui .reading-surface {
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(226, 232, 240, 0.78);
+  box-shadow: 0 28px 70px rgba(15, 23, 42, 0.08);
+}
+
+.dark body.public-page.liquid-glass-ui .reading-surface {
+  background: rgba(15, 23, 42, 0.86);
+  border-color: rgba(71, 85, 105, 0.75);
+  box-shadow: 0 30px 70px rgba(2, 8, 23, 0.34);
+}
+
+body.public-page.liquid-glass-ui .public-footer {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.52)) !important;
+  border-top: 1px solid var(--glass-border-soft) !important;
+  backdrop-filter: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+}
+
+.dark body.public-page.liquid-glass-ui .public-footer {
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.78), rgba(15, 23, 42, 0.58)) !important;
+}
+
+body.public-page.liquid-glass-ui .public-footer__inner {
+  width: min(1280px, calc(100% - 1.5rem));
+  margin-inline: auto;
+}
+
+/* Shared layout helpers for Task 3.2 information hierarchy polish. */
+body.public-page.liquid-glass-ui .editorial-stack {
+  display: grid;
+  gap: clamp(1rem, 2vw, 1.5rem);
+}
+
+body.public-page.liquid-glass-ui .insight-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+body.public-page.liquid-glass-ui .sidebar-stack {
+  display: grid;
+  gap: 1.5rem;
+}
+
+body.public-page.liquid-glass-ui .workbench-pane {
+  min-width: 0;
+}
+
 body.public-page.liquid-glass-ui footer {
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.52)) !important;
   border-top: 1px solid var(--glass-border-soft) !important;

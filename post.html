@@ -412,7 +412,7 @@
 
     <!-- Navbar -->
     <nav id="navbar" class="fixed w-full z-50 top-0 transition-all duration-300 bg-white/80 dark:bg-gray-950/80 backdrop-blur-md border-b border-gray-100 dark:border-gray-800">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="public-shell px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16">
                 <div class="flex items-center">
                     <a href="index.html" class="flex items-center group">
@@ -531,7 +531,7 @@
 
                 <!-- Title -->
                 <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold font-sans text-white mb-6 leading-tight tracking-tight drop-shadow-lg" id="post-title">
-                    Loading...
+                    加载中…
                 </h1>
 
                 <!-- Tags -->
@@ -541,13 +541,13 @@
             </div>
         </header>
 
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="public-shell public-shell--floating-nav px-4 sm:px-6 lg:px-8" data-ui-shell="post-reading">
             <div class="grid grid-cols-1 lg:grid-cols-4 gap-12">
                 <!-- Content Column -->
                 <div class="lg:col-span-3">
 
                     <!-- Content -->
-                    <div class="prose md:prose-lg dark:prose-invert max-w-none" id="post-content">
+                    <div class="reading-surface prose md:prose-lg dark:prose-invert max-w-none rounded-[32px]" id="post-content">
                         <div class="flex justify-center py-20">
                             <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
                         </div>
@@ -563,8 +563,8 @@
                 </div>
 
                 <!-- Sidebar (Desktop TOC) -->
-                <aside class="hidden lg:block lg:col-span-1">
-                    <div class="sticky top-24 space-y-8">
+                <aside class="hidden lg:block lg:col-span-1" data-ui-panel="post-sidebar">
+                    <div class="sticky top-24 sidebar-stack" data-ui-group="post-outline">
                         <!-- TOC Card -->
                         <div class="glass-card bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
                             <h3 class="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider mb-4 flex items-center">
@@ -576,7 +576,7 @@
                         </div>
 
                         <!-- Recommendations Card -->
-                        <div id="recommendations-container-desktop" class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 hidden">
+                        <div id="recommendations-container-desktop" class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 hidden" data-ui-group="post-related">
                             <h3 class="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider mb-4 flex items-center">
                                 <i data-lucide="file-text" class="w-4 h-4 mr-2 text-yellow-500"></i> 相关推荐
                             </h3>
@@ -631,14 +631,14 @@
     </article>
 
     <!-- Footer -->
-    <footer class="bg-white/80 dark:bg-gray-950/80 backdrop-blur-md border-t border-gray-100 dark:border-gray-800 py-8 relative z-10 transition-colors duration-300 mt-12">
-        <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-center items-center gap-4 text-center">
+    <footer class="public-footer bg-white/80 dark:bg-gray-950/80 backdrop-blur-md border-t border-gray-100 dark:border-gray-800 py-8 relative z-10 transition-colors duration-300 mt-12">
+        <div class="public-footer__inner px-4 flex flex-col md:flex-row justify-center items-center gap-4 text-center">
             <p class="text-xs tracking-widest uppercase text-gray-500 dark:text-gray-400 opacity-80 flex items-center">
                 &copy; 2025 Thoi <span class="mx-2 text-blue-500">|</span> Designed with <span class="text-red-500 animate-pulse mx-1">❤️</span>
             </p>
             <div class="inline-flex items-center gap-2 px-3 py-1 bg-gray-100 dark:bg-gray-800 rounded-full text-xs font-mono text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-700">
                 <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-                <span id="visit-count">Loading...</span>
+                <span id="visit-count">加载中…</span>
             </div>
         </div>
     </footer>

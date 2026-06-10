@@ -120,12 +120,13 @@
     </nav>
 
     <!-- Main Content -->
-    <main class="flex-grow flex flex-col items-center justify-center px-4 pt-24 pb-12 relative z-10">
+    <main class="public-shell public-shell--floating-nav flex-grow flex flex-col items-center justify-center px-4 pt-24 pb-12 relative z-10" data-ui-shell="error-playground">
+        <span class="editorial-kicker mb-4">Page Recovery</span>
         <h1 class="text-8xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 mb-2">404</h1>
-        <p class="text-xl text-gray-600 dark:text-gray-400 mb-8 font-serif italic">Oops! The page you're looking for has vanished into the void.</p>
+        <p class="text-xl text-gray-600 dark:text-gray-400 mb-8 font-serif italic">你要找的页面暂时迷失在星图之外，先玩一局小游戏再回到主航道。</p>
 
         <!-- Game Container -->
-        <div class="glass-card relative bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 max-w-lg w-full border border-gray-100 dark:border-gray-700">
+        <div class="glass-card relative bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 max-w-lg w-full border border-gray-100 dark:border-gray-700" data-ui-panel="error-game">
              <div class="flex justify-between items-center mb-4">
                  <span id="role-text" class="text-sm font-medium text-gray-500 dark:text-gray-400">切换: 扮演小猫</span>
                  <div class="flex space-x-2">
@@ -146,10 +147,12 @@
              </div>
         </div>
 
-        <a href="index.html" class="public-cta mt-8 px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-full font-medium transition-all shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50 flex items-center group">
-            <i data-lucide="arrow-left" class="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform"></i>
-            返回首页
-        </a>
+        <div class="section-shell" data-ui-panel="error-actions">
+            <a href="index.html" class="public-cta mt-8 px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-full font-medium transition-all shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50 flex items-center group">
+                <i data-lucide="arrow-left" class="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform"></i>
+                返回首页
+            </a>
+        </div>
     </main>
 
     <!-- Standardized Footer -->

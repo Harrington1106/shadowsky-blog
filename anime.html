@@ -130,19 +130,22 @@
 
     <!-- Main Content -->
     <div class="min-h-screen py-20 pt-24 transition-colors duration-300">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="public-shell public-shell--floating-nav max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" data-ui-shell="anime-library">
         
         <div class="flex items-center mb-8">
             <a href="acg.html" class="text-gray-500 hover:text-pink-500 transition-colors mr-4" title="返回视频页">
                 <i data-lucide="arrow-left" class="w-6 h-6"></i>
             </a>
-            <h1 class="text-3xl font-cute sm:text-4xl text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-violet-600 tracking-tighter">
-              我的追番
-            </h1>
+            <div>
+                <span class="editorial-kicker">Anime Library</span>
+                <h1 class="text-3xl font-cute sm:text-4xl text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-violet-600 tracking-tighter mt-3">
+                  我的追番
+                </h1>
+            </div>
         </div>
 
         <!-- Filters -->
-        <div id="anime-filters" class="flex flex-wrap gap-3 mb-8 animate-fade-in-up">
+        <div id="anime-filters" class="utility-glass-bar rounded-[24px] p-4 sm:p-5 flex flex-wrap gap-3 mb-8 animate-fade-in-up" data-ui-toolbar="anime-filters">
             <button data-filter="all" class="px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 bg-pink-500 text-white shadow-md scale-105">全部</button>
             <button data-filter="watching" class="px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700">更新中</button>
             <button data-filter="completed" class="px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700">已看完</button>
@@ -152,12 +155,14 @@
         </div>
 
         <!-- Bangumi Anime Collection -->
-        <div id="anime-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
-            <!-- Anime items will be loaded dynamically -->
-            <div class="col-span-full flex justify-center py-20">
-                <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-500"></div>
+        <section class="section-shell" data-ui-section="anime-library-grid">
+            <div id="anime-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
+                <!-- Anime items will be loaded dynamically -->
+                <div class="col-span-full flex justify-center py-20">
+                    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-500"></div>
+                </div>
             </div>
-        </div>
+        </section>
       </div>
     </div>
 
@@ -174,7 +179,7 @@
             </p>
             <div class="inline-flex items-center gap-2 px-3 py-1 bg-gray-100 dark:bg-gray-800 rounded-full text-xs font-mono text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-700">
                 <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-                <span id="visit-count">Loading...</span>
+                <span id="visit-count">加载中…</span>
             </div>
         </div>
     </footer>

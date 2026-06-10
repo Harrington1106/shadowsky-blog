@@ -128,14 +128,15 @@
     </nav>
 
     <!-- Main Content -->
-    <main class="max-w-3xl mx-auto px-6 pt-24 pb-24">
+    <main class="public-shell public-shell--floating-nav max-w-3xl mx-auto px-6 pt-24 pb-24" data-ui-shell="about-story">
 
         <!-- Profile Section with Elegant Card Design -->
-        <div class="relative mb-20 animate-fade-in-up">
+        <div class="section-shell relative mb-20 animate-fade-in-up" data-ui-section="about-intro">
             <!-- Background Decorative Elements -->
             <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full max-w-lg bg-gradient-to-b from-blue-50/50 to-transparent dark:from-blue-900/10 dark:to-transparent blur-3xl -z-10 rounded-full opacity-60"></div>
 
             <div class="text-center">
+                <span class="editorial-kicker">About This Site</span>
                 <div class="relative inline-block mb-8 group cursor-default">
                     <div class="absolute -inset-2 bg-gradient-to-tr from-blue-100 to-indigo-100 dark:from-blue-900/30 dark:to-indigo-900/30 rounded-full blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
                     <img src="public/img/avatar.jpg" alt="Avatar" class="relative w-32 h-32 rounded-full object-cover ring-4 ring-white dark:ring-gray-900 shadow-2xl mx-auto transition-all duration-700 ease-out">
@@ -179,7 +180,7 @@
             </div>
 
             <!-- Tech & Interests: Modern Grid Layout -->
-            <div class="not-prose grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 mb-16">
+            <div class="not-prose grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 mb-16" data-ui-panel="about-signals">
                 <!-- Left: Code -->
                 <div class="glass-card group p-6 rounded-2xl bg-gray-50 dark:bg-gray-900/50 hover:bg-blue-50/50 dark:hover:bg-blue-900/10 transition-colors duration-300 border border-transparent hover:border-blue-100 dark:hover:border-blue-900/30">
                     <div class="flex items-center mb-4">
@@ -230,11 +231,11 @@
                 <button id="wave-btn" class="group relative inline-flex items-center justify-center px-8 py-3 font-semibold text-white transition-all duration-300 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full hover:shadow-lg hover:shadow-blue-500/30 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 dark:focus:ring-offset-gray-900 overflow-hidden">
                     <span class="relative z-10 flex items-center">
                         <span class="mr-2 text-xl group-hover:animate-wave origin-bottom-right inline-block">👋</span>
-                        <span>Say Hi to Thoi</span>
+                        <span>向 Thoi 打个招呼</span>
                     </span>
                     <div class="absolute inset-0 bg-white/20 group-hover:translate-x-full transition-transform duration-700 -skew-x-12 origin-left"></div>
                 </button>
-                <p id="wave-text" class="mt-4 text-sm text-gray-400 dark:text-gray-500 opacity-0 transition-opacity duration-500 transform translate-y-2 font-medium">Thanks for stopping by! ✨</p>
+                <p id="wave-text" class="mt-4 text-sm text-gray-400 dark:text-gray-500 opacity-0 transition-opacity duration-500 transform translate-y-2 font-medium">谢谢你的来访！✨</p>
             </div>
 
             <!-- Closing -->
@@ -312,7 +313,7 @@
             </p>
             <div class="inline-flex items-center gap-2 px-3 py-1 bg-gray-100 dark:bg-gray-800 rounded-full text-xs font-mono text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-700">
                 <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-                <span id="visit-count">Loading...</span>
+                <span id="visit-count">加载中…</span>
             </div>
         </div>
     </footer>
@@ -394,7 +395,7 @@
                 waveText.style.opacity = '1';
                 waveText.style.transform = 'translateY(0)';
                 // Button feedback
-                waveBtn.innerHTML = '✨Received!';
+                waveBtn.innerHTML = '✨已收到';
                 waveBtn.disabled = true;
                 waveBtn.classList.remove('bg-gradient-to-r');
                 waveBtn.classList.add('bg-green-500', 'cursor-default');

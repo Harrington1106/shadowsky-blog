@@ -67,18 +67,18 @@ shadowsky-blog/
 
 | 页面 | 入口文件 | 主要脚本 | 主要职责 |
 |---|---|---|---|
-| 首页 | `index.html` | `js/main.js`、`js/tracker.js`、页内脚本 | 站点门户、主题与导航壳、访问记录 |
-| 博客列表 | `blog.html` | `js/blog.js` | 文章列表、搜索、分页、多视图切换 |
-| 文章详情 | `post.html` | `js/post-viewer.js` | Markdown 加载、目录、代码高亮、推荐阅读 |
-| 随手拍 | `moments.html` | `js/moments.js`、`js/activity_chart.js` | 时间线、图片流、热力图、标签过滤 |
-| 收藏页 | `bookmarks.html` | `js/bookmarks.js`、`js/bookmarks-admin.js` | 收藏渲染、搜索、分类、GitHub 同步管理 |
-| RSS | `rss.html` | `js/rss.js` | 订阅源管理、文章聚合、阅读区展示 |
-| ACG 首页 | `acg.html` | `js/media-data.js`、`js/video-loader.js` | 番剧、漫画、视频聚合展示 |
-| 番剧页 | `anime.html` | `js/media-data.js` | 动漫列表与状态过滤 |
-| 漫画页 | `manga.html` | `js/media-data.js` | 漫画列表与状态过滤 |
-| 剪辑页 | `edits.html` | `js/video-loader.js` | 视频分类浏览与弹窗播放 |
-| 关于页 | `about.html` | `js/main.js`、页内脚本 | 个人介绍、互动效果 |
-| 404 页 | `404.html` | 页内脚本 | 错误页与小游戏体验 |
+| 首页 | `index.html` | `js/main.js`、`js/tracker.js`、页内脚本 | 作者门户、频道入口摘要、主题与导航壳、访问记录 |
+| 博客列表 | `blog.html` | `js/blog.js` | 编辑式内容入口、搜索、分页、多视图切换 |
+| 文章详情 | `post.html` | `js/post-viewer.js` | 稳定阅读面板、目录侧栏、代码高亮、推荐阅读 |
+| 随手拍 | `moments.html` | `js/moments.js`、`js/activity_chart.js` | 画册式图片流、热力图、标签过滤与工具条 |
+| 收藏页 | `bookmarks.html` | `js/bookmarks.js`、`js/bookmarks-admin.js` | 策展型资源目录、搜索、分类导航与精选摘要 |
+| RSS | `rss.html` | `js/rss.js` | 三栏阅读工作台、订阅源管理、文章聚合与阅读区展示 |
+| ACG 首页 | `acg.html` | `js/media-data.js`、`js/video-loader.js` | ACG 聚合入口、统一 public-shell 壳层、视频聚焦区 |
+| 番剧页 | `anime.html` | `js/media-data.js` | 番剧目录页、统一筛选工具条、状态过滤与列表栅格 |
+| 漫画页 | `manga.html` | `js/media-data.js` | 漫画目录页、统一筛选工具条、状态过滤与列表栅格 |
+| 剪辑页 | `edits.html` | `js/video-loader.js` | 剪辑分类浏览、统一分类工具条与作品栅格 |
+| 关于页 | `about.html` | `js/main.js`、页内脚本 | 个人介绍页、故事壳层、互动反馈与信号卡片 |
+| 404 页 | `404.html` | 页内脚本 | 错误恢复页、小游戏面板与返回动作区 |
 
 ### 4.2 前端共享模块
 
@@ -113,7 +113,10 @@ shadowsky-blog/
 - 作用范围：本次统一样式仅覆盖公开前台页面，包括 `index.html`、`blog.html`、`post.html`、`moments.html`、`bookmarks.html`、`rss.html`、`acg.html`、`anime.html`、`manga.html`、`edits.html`、`about.html`、`404.html`，不包含 `admin/` 后台。
 - 公共令牌：`css/style.css` 末尾新增“Liquid Glass UI System For Public Pages”区块，集中定义玻璃背景、边框、阴影、模糊、圆角和深浅主题变量，避免各页面重复维护透明度与模糊参数。
 - 公共组件：新增 `glass-panel`、`glass-card`、`glass-toolbar`、`glass-pill`、`glass-input` 等通用类，用于统一导航、移动菜单、筛选栏、卡片、输入框、弹层和页脚。
+- 公共壳层：核心公开页额外引入 `public-shell`、`public-shell--floating-nav`、`section-shell`、`utility-glass-bar`、`reading-surface` 等类，用于统一导航留白、工具条节奏、阅读面板和页脚容器。
+- 层级语义：Task 3.2 为六个核心页补充 `editorial-stack`、`insight-grid`、`sidebar-stack`、`workbench-pane` 与配套 `data-ui-*` 标记，用于表达首页概览、博客控制区、文章侧栏分组、瞬间洞察区、收藏搜索/分类关系和 RSS 三栏职责。
 - 页面接入：公开页通过 `body.public-page.liquid-glass-ui` 进入统一样式域，静态页面与动态渲染模块共享同一套视觉规则，降低局部内联样式分叉。
+- 状态文案：`js/main.js` 将访问量与加载占位统一为中文文案，避免页面继续依赖 `Loading...` 或英文访问量前缀。
 - 动态内容适配：`js/blog.js`、`js/moments.js`、`js/bookmarks.js`、`js/media-data.js`、`js/video-loader.js` 在动态卡片或标签渲染时挂载公共玻璃类，保证博客卡片、瞬间卡片、收藏卡片、媒体卡片和视频卡片视觉一致。
 - 性能策略：高频出现的内容卡片以半透明背景和阴影为主，只有导航、抽屉、工具条、输入区和弹层启用 `backdrop-filter`，用于降低大面积模糊带来的滚动与绘制成本。
 

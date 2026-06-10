@@ -42,7 +42,7 @@
 
     <!-- Navbar -->
     <nav id="navbar" class="fixed w-full z-50 top-0 transition-all duration-300 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md border-b border-slate-200 dark:border-gray-800">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="public-shell px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16">
                 <div class="flex items-center">
                     <a href="index.html" class="flex items-center group">
@@ -137,7 +137,7 @@
 
     <!-- Main Content -->
     <div class="min-h-screen pt-24 pb-12 px-4 sm:px-6 lg:px-8">
-        <div id="bookmarks-container" class="max-w-7xl mx-auto animate-fade-in-up">
+        <div id="bookmarks-container" class="public-shell public-shell--floating-nav animate-fade-in-up">
             
             <div class="text-center mb-12 sm:mb-16">
                 <h1 class="text-3xl font-black tracking-tight sm:text-5xl mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400">
@@ -149,7 +149,7 @@
             </div>
 
             <!-- Search Section -->
-            <div class="max-w-2xl mx-auto mb-12 relative group z-30">
+            <div class="max-w-2xl mx-auto mb-12 relative group z-30" data-ui-toolbar="bookmarks-search">
                 <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                     <i data-lucide="search" class="w-5 h-5 text-slate-400 group-focus-within:text-blue-500 transition-colors"></i>
                 </div>
@@ -166,8 +166,30 @@
 
             <div id="gh-bookmarks-config" data-owner="Harrington1106" data-repo="blog-add" class="hidden"></div>
 
+            <section class="section-shell mb-12" data-ui-section="bookmarks-curated">
+                <div class="utility-glass-bar rounded-[28px] p-4 sm:p-6" data-ui-toolbar="bookmarks-discovery">
+                    <span class="editorial-kicker">Curated Directory</span>
+                    <h2 class="mt-3 text-2xl font-bold text-slate-900 dark:text-white">先从这些精选入口开始</h2>
+                    <p class="mt-2 max-w-2xl text-sm text-slate-500 dark:text-slate-400">在正式浏览分类之前，先展示高频工具、知识入口与最近新增资源。</p>
+                    <div class="glass-summary-grid lg:grid-cols-3 mt-4">
+                        <div class="glass-card p-4">
+                            <p class="text-xs uppercase tracking-[0.18em] text-blue-600 dark:text-blue-400">高频工具</p>
+                            <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">优先放常用效率工具与在线服务。</p>
+                        </div>
+                        <div class="glass-card p-4">
+                            <p class="text-xs uppercase tracking-[0.18em] text-blue-600 dark:text-blue-400">知识入口</p>
+                            <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">整理文档、搜索与学习型站点。</p>
+                        </div>
+                        <div class="glass-card p-4">
+                            <p class="text-xs uppercase tracking-[0.18em] text-blue-600 dark:text-blue-400">最近新增</p>
+                            <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">保留近期补充的资源，方便再次回看。</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             <!-- Category Navigation -->
-            <div class="glass-toolbar sticky top-16 z-40 mb-12 py-3 bg-slate-50/95 dark:bg-slate-950/95 backdrop-blur-md border-b sm:border border-slate-200 dark:border-gray-800 -mx-4 px-4 sm:mx-0 sm:rounded-2xl transition-all duration-300 shadow-sm">
+            <div class="glass-toolbar sticky top-16 z-40 mb-12 py-3 bg-slate-50/95 dark:bg-slate-950/95 backdrop-blur-md border-b sm:border border-slate-200 dark:border-gray-800 -mx-4 px-4 sm:mx-0 sm:rounded-2xl transition-all duration-300 shadow-sm" data-ui-panel="bookmarks-categories">
                 <div id="category-nav" class="flex overflow-x-auto pb-2 sm:pb-0 gap-2 sm:flex-wrap sm:justify-center no-scrollbar">
                     <!-- Dynamic categories injected by js/bookmarks.js -->
                 </div>
@@ -198,14 +220,14 @@
     </button>
 
     <!-- Footer -->
-    <footer class="bg-white dark:bg-slate-950 text-slate-400 border-t border-slate-200 dark:border-slate-900 py-8 relative z-10">
-        <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-center items-center gap-4">
+    <footer class="public-footer bg-white dark:bg-slate-950 text-slate-400 border-t border-slate-200 dark:border-slate-900 py-8 relative z-10">
+        <div class="public-footer__inner px-4 flex flex-col md:flex-row justify-center items-center gap-4">
             <p class="text-xs tracking-widest uppercase opacity-50 hover:opacity-100 transition-opacity cursor-default flex items-center">
                 &copy; 2025 Thoi <span class="mx-2 text-blue-500">|</span> Designed with <span class="text-red-500 animate-pulse mx-1">❤️</span>
             </p>
             <div class="inline-flex items-center gap-2 px-3 py-1 bg-gray-100 dark:bg-gray-800 rounded-full text-xs font-mono text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-700">
                 <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-                <span id="visit-count">Loading...</span>
+                <span id="visit-count">加载中…</span>
             </div>
         </div>
     </footer>

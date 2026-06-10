@@ -36,7 +36,7 @@
 
     <!-- Navbar -->
     <nav id="navbar" class="fixed w-full z-50 top-0 transition-all duration-300">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="public-shell px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16">
                 <div class="flex items-center">
                     <a href="index.html" class="flex items-center group">
@@ -145,7 +145,7 @@
         </div>
 
         <!-- Content -->
-        <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center w-full flex flex-col items-center justify-center pt-20 sm:pt-16 pb-16">
+        <div class="public-shell public-shell--floating-nav relative z-10 px-4 sm:px-6 lg:px-8 text-center w-full flex flex-col items-center justify-center pt-20 sm:pt-16 pb-16">
             <div class="pointer-events-auto transform transition-all duration-500">
                 <!-- 3D Tilt Avatar -->
                 <div class="mb-6 sm:mb-8 relative inline-block group tilt-card transition-transform duration-100 ease-out" style="transform-style: preserve-3d;">
@@ -197,17 +197,68 @@
         </div>
         
         <!-- Absolute Footer -->
-        <div class="absolute bottom-4 w-full text-center z-20 pointer-events-none">
+        <div class="public-footer absolute bottom-4 w-full text-center z-20 pointer-events-none">
             <p class="text-[10px] sm:text-xs tracking-widest uppercase text-gray-400 dark:text-gray-500 opacity-60">
                 &copy; 2025 Thoi <span class="mx-2 text-blue-500">|</span> Designed with <span class="text-red-500 animate-pulse">❤️</span>
                 <span class="mx-2 text-gray-600 dark:text-gray-700 hidden sm:inline">|</span>
                 <span class="inline-flex items-center gap-1">
                     <span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse align-middle"></span>
-                    <span id="visit-count" class="opacity-0 transition-opacity duration-500 font-mono">Loading...</span>
+                    <span id="visit-count" class="opacity-0 transition-opacity duration-500 font-mono">加载中…</span>
                 </span>
             </p>
         </div>
     </div>
+
+    <section class="public-shell section-shell px-4 sm:px-6 lg:px-8 pb-20 editorial-stack" data-ui-section="home-gateway">
+        <!-- 首页摘要带：把身份、频道与内容入口分成清晰两层。 -->
+        <div class="glass-card p-6 sm:p-8" data-ui-panel="home-overview">
+            <div class="insight-grid">
+                <div data-ui-stat="home-signal">
+                    <p class="text-xs font-semibold uppercase tracking-[0.2em] text-blue-600 dark:text-blue-400">定位</p>
+                    <p class="mt-2 text-lg font-bold text-slate-900 dark:text-white">内容创作者与长期记录者</p>
+                </div>
+                <div data-ui-stat="home-signal">
+                    <p class="text-xs font-semibold uppercase tracking-[0.2em] text-blue-600 dark:text-blue-400">入口</p>
+                    <p class="mt-2 text-lg font-bold text-slate-900 dark:text-white">文章、瞬间、收藏、ACG 统一归档</p>
+                </div>
+                <div data-ui-stat="home-signal">
+                    <p class="text-xs font-semibold uppercase tracking-[0.2em] text-blue-600 dark:text-blue-400">阅读方式</p>
+                    <p class="mt-2 text-lg font-bold text-slate-900 dark:text-white">先概览，再进入具体频道继续探索</p>
+                </div>
+            </div>
+        </div>
+        <div class="text-center mb-8">
+            <span class="editorial-kicker">Content Gateway</span>
+            <h2 class="editorial-heading mx-auto mt-4 text-3xl sm:text-4xl font-bold text-slate-900 dark:text-white">
+                从这里进入我的内容宇宙
+            </h2>
+            <p class="mx-auto mt-3 max-w-2xl text-sm sm:text-base text-slate-500 dark:text-slate-400">
+                统一的公共壳层收纳文章、瞬间、收藏与 ACG 入口，减少首页与频道页之间的体验割裂。
+            </p>
+        </div>
+        <div class="glass-summary-grid md:grid-cols-2 xl:grid-cols-4">
+            <a class="glass-card p-6 text-left transition-transform duration-300 hover:-translate-y-1" data-ui-card="home-feature" href="blog.html">
+                <p class="text-xs font-semibold uppercase tracking-[0.2em] text-blue-600 dark:text-blue-400">Blog</p>
+                <h3 class="mt-3 text-xl font-bold text-slate-900 dark:text-white">最新文章</h3>
+                <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">进入编辑式内容入口，继续阅读技术、天文与生活笔记。</p>
+            </a>
+            <a class="glass-card p-6 text-left transition-transform duration-300 hover:-translate-y-1" data-ui-card="home-feature" href="moments.html">
+                <p class="text-xs font-semibold uppercase tracking-[0.2em] text-blue-600 dark:text-blue-400">Moments</p>
+                <h3 class="mt-3 text-xl font-bold text-slate-900 dark:text-white">生活瞬间</h3>
+                <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">以更清晰的画册入口浏览照片、时间线与热力图。</p>
+            </a>
+            <a class="glass-card p-6 text-left transition-transform duration-300 hover:-translate-y-1" data-ui-card="home-feature" href="bookmarks.html">
+                <p class="text-xs font-semibold uppercase tracking-[0.2em] text-blue-600 dark:text-blue-400">Bookmarks</p>
+                <h3 class="mt-3 text-xl font-bold text-slate-900 dark:text-white">收藏推荐</h3>
+                <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">按策展逻辑整理高频工具、知识入口与常用资源。</p>
+            </a>
+            <a class="glass-card p-6 text-left transition-transform duration-300 hover:-translate-y-1" data-ui-card="home-feature" href="acg.html">
+                <p class="text-xs font-semibold uppercase tracking-[0.2em] text-blue-600 dark:text-blue-400">ACG</p>
+                <h3 class="mt-3 text-xl font-bold text-slate-900 dark:text-white">ACG 入口</h3>
+                <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">在统一导航壳层中继续进入视频与兴趣频道。</p>
+            </a>
+        </div>
+    </section>
 
     <!-- Custom Cursor (Removed) -->
 
