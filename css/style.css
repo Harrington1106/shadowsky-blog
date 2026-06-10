@@ -83,9 +83,11 @@ body.public-page.liquid-glass-ui #toc-toggle,
 body.public-page.liquid-glass-ui footer .inline-flex {
   position: relative;
   overflow: hidden;
-  background: linear-gradient(135deg, var(--glass-bg), var(--glass-bg-soft));
+  background: var(--glass-bg);
   border: 1px solid var(--glass-border-soft);
   box-shadow: var(--glass-shadow-soft);
+  backdrop-filter: var(--glass-backdrop);
+  -webkit-backdrop-filter: var(--glass-backdrop);
 }
 
 body.public-page.liquid-glass-ui .glass-panel::before,
