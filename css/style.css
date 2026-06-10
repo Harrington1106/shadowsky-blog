@@ -543,7 +543,15 @@ body.public-page.liquid-glass-ui .homepage-cover-content {
   padding-bottom: clamp(4.5rem, 8vh, 5.25rem);
 }
 
+body.public-page.liquid-glass-ui .homepage-cover-content > [data-ui-group="hero-identity"] {
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: clamp(0.75rem, 1.8vh, 1rem);
+}
+
 body.public-page.liquid-glass-ui .homepage-cover-footer {
+  bottom: clamp(0.75rem, 2vh, 1.25rem);
   padding-inline: 1rem;
 }
 

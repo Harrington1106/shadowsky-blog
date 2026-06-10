@@ -231,13 +231,14 @@ describe('core public pages ui shell', () => {
     }
   });
 
-  it('keeps the homepage free from self-descriptive tag chips and gateway copy', () => {
+  it('keeps the homepage background unified and free from gateway copy', () => {
     const html = readProjectFile('index.html');
+    const css = readProjectFile('css/style.css');
 
     expect(html.includes('Content Gateway')).toBe(false);
-    expect(html.includes('从这里进入我的内容宇宙')).toBe(false);
-    expect(html.includes('内容创作者与长期记录者')).toBe(false);
-    expect(html.includes('#摄影')).toBe(false);
-    expect(html.includes('#探索者')).toBe(false);
+    expect(html.includes('data-ui-section="home-gateway"')).toBe(false);
+    expect(css).toContain('.homepage-cover-stage');
+    expect(css).toContain('.homepage-cover-content');
+    expect(css).toContain('.homepage-cover-footer');
   });
 });
