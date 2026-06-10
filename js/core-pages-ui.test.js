@@ -143,6 +143,9 @@ describe('core public pages ui shell', () => {
   it('uses shared layout shells on all public pages that were upgraded', () => {
     const index = readProjectFile('index.html');
     const blog = readProjectFile('blog.html');
+    const moments = readProjectFile('moments.html');
+    const bookmarks = readProjectFile('bookmarks.html');
+    const rss = readProjectFile('rss.html');
     const post = readProjectFile('post.html');
     const acg = readProjectFile('acg.html');
     const anime = readProjectFile('anime.html');
@@ -178,6 +181,12 @@ describe('core public pages ui shell', () => {
     expect(notFound).toContain('data-ui-shell="error-playground"');
     expect(index).toContain('layout-safe-top');
     expect(blog).toContain('layout-toolbar-wrap');
+    expect(moments).toContain('layout-safe-top');
+    expect(moments).toContain('layout-overflow-guard');
+    expect(bookmarks).toContain('layout-safe-top');
+    expect(bookmarks).toContain('layout-flow-section');
+    expect(rss).toContain('layout-overflow-guard');
+    expect(rss).toContain('layout-safe-top');
     expect(post).toContain('layout-safe-top');
     expect(post).toContain('layout-overflow-guard');
   });

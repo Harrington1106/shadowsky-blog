@@ -410,6 +410,16 @@ body.public-page.liquid-glass-ui .layout-overflow-guard > * {
   min-width: 0;
 }
 
+body.public-page.liquid-glass-ui [data-ui-shell="rss-workbench"] {
+  width: min(1440px, calc(100% - 1rem));
+}
+
+body.public-page.liquid-glass-ui [data-ui-panel="rss-sources"],
+body.public-page.liquid-glass-ui [data-ui-panel="rss-inbox"],
+body.public-page.liquid-glass-ui [data-ui-panel="rss-reader"] {
+  min-width: 0;
+}
+
 body.public-page.liquid-glass-ui footer {
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.52)) !important;
   border-top: 1px solid var(--glass-border-soft) !important;
