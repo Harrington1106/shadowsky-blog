@@ -20,6 +20,13 @@ body.public-page.liquid-glass-ui {
   position: relative;
   isolation: isolate;
   color: var(--glass-text);
+  background-color: transparent !important;
+  background-image:
+    radial-gradient(circle at top left, rgba(96, 165, 250, 0.18), transparent 34%),
+    radial-gradient(circle at top right, rgba(167, 139, 250, 0.16), transparent 28%),
+    radial-gradient(circle at bottom center, rgba(34, 197, 94, 0.12), transparent 30%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.78), rgba(239, 246, 255, 0.62));
+  background-attachment: fixed;
 }
 
 .dark body.public-page.liquid-glass-ui {
@@ -34,27 +41,19 @@ body.public-page.liquid-glass-ui {
   --glass-accent: rgba(96, 165, 250, 0.18);
   --glass-text: #e5eefc;
   --glass-muted: #94a3b8;
-}
-
-body.public-page.liquid-glass-ui::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  background:
-    radial-gradient(circle at top left, rgba(96, 165, 250, 0.18), transparent 34%),
-    radial-gradient(circle at top right, rgba(167, 139, 250, 0.16), transparent 28%),
-    radial-gradient(circle at bottom center, rgba(34, 197, 94, 0.12), transparent 30%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.78), rgba(239, 246, 255, 0.62));
-}
-
-.dark body.public-page.liquid-glass-ui::before {
-  background:
+  background-image:
     radial-gradient(circle at top left, rgba(56, 189, 248, 0.14), transparent 34%),
     radial-gradient(circle at top right, rgba(139, 92, 246, 0.16), transparent 28%),
     radial-gradient(circle at bottom center, rgba(59, 130, 246, 0.12), transparent 30%),
     linear-gradient(180deg, rgba(2, 6, 23, 0.92), rgba(10, 15, 31, 0.8));
+}
+
+body.public-page.liquid-glass-ui::before {
+  /* gradient moved to body background-image */
+}
+
+.dark body.public-page.liquid-glass-ui::before {
+  /* gradient moved to body background-image */
 }
 
 body.public-page.liquid-glass-ui .glass-panel,
