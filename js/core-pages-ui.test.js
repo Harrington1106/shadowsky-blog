@@ -231,4 +231,14 @@ describe('core public pages ui shell', () => {
       expect(html.includes('Loading...')).toBe(false);
     }
   });
+
+  it('keeps the homepage free from self-descriptive tag chips and gateway copy', () => {
+    const html = readProjectFile('index.html');
+
+    expect(html.includes('Content Gateway')).toBe(false);
+    expect(html.includes('从这里进入我的内容宇宙')).toBe(false);
+    expect(html.includes('内容创作者与长期记录者')).toBe(false);
+    expect(html.includes('#摄影')).toBe(false);
+    expect(html.includes('#探索者')).toBe(false);
+  });
 });
