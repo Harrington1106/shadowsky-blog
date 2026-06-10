@@ -194,4 +194,26 @@ describe('core public pages ui shell', () => {
     expect(post).toContain('layout-safe-top');
     expect(post).toContain('layout-overflow-guard');
   });
+
+  it('keeps English loading placeholders out of all public pages', () => {
+    const pages = [
+      'index.html',
+      'blog.html',
+      'post.html',
+      'moments.html',
+      'bookmarks.html',
+      'rss.html',
+      'acg.html',
+      'anime.html',
+      'manga.html',
+      'edits.html',
+      'about.html',
+      '404.html'
+    ];
+
+    for (const page of pages) {
+      const html = readProjectFile(page);
+      expect(html.includes('Loading...')).toBe(false);
+    }
+  });
 });
