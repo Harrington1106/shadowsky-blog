@@ -48,28 +48,27 @@ describe('core public pages ui shell', () => {
     expect(css).toContain('.homepage-hero-mark');
     expect(css).toContain('.homepage-hero-glow');
     expect(css).toContain('.homepage-hero-accent');
+    expect(css).toContain('.homepage-cover-stage');
+    expect(css).toContain('.homepage-cover-content');
+    expect(css).toContain('.homepage-cover-footer');
     expect(css).toContain('@media (prefers-reduced-motion: reduce)');
   });
 
-  it('keeps the homepage as a single premium hero shell', () => {
+  it('keeps the homepage as a strict single-screen cover', () => {
     const html = readProjectFile('index.html');
 
+    expect(html).toContain('data-ui-shell="home-cover"');
     expect(html).toContain('data-ui-shell="home-hero"');
-    expect(html).toContain('data-ui-group="hero-identity"');
-    expect(html).toContain('data-ui-copy="hero-subtitle"');
+    expect(html).toContain('data-ui-region="home-stage"');
+    expect(html).toContain('data-ui-region="home-footer"');
+    expect(html).toContain('min-h-screen');
+    expect(html).toContain('overflow-hidden');
+    expect(html).toContain('homepage-cover-stage');
     expect(html).toContain('class="public-footer');
-    expect(html).toContain('id="typing-text"');
-    expect(html).toContain('id="visit-count"');
-    expect(html).toContain('layout-safe-top');
+    expect(html).toContain('w-20 h-20 sm:w-24 sm:h-24');
 
     expect(html.includes('data-ui-section="home-gateway"')).toBe(false);
-    expect(html.includes('data-ui-card="home-feature"')).toBe(false);
-    expect(html.includes('data-ui-panel="home-overview"')).toBe(false);
-    expect(html.includes('data-ui-stat="home-signal"')).toBe(false);
     expect(html.includes('Content Gateway')).toBe(false);
-    expect(html.includes('从这里进入我的内容宇宙')).toBe(false);
-    expect(html.includes('#00后')).toBe(false);
-    expect(html.includes('#UP主')).toBe(false);
   });
 
   it('adds the blog discovery toolbar and summary section', () => {

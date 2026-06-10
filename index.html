@@ -32,7 +32,7 @@
         }
     </style>
 </head>
-<body class="public-page liquid-glass-ui bg-white dark:bg-black text-gray-900 dark:text-gray-100 font-sans transition-colors duration-500">
+<body class="public-page liquid-glass-ui homepage-cover-page bg-white dark:bg-black text-gray-900 dark:text-gray-100 font-sans transition-colors duration-500">
 
     <!-- Navbar -->
     <nav id="navbar" class="fixed w-full z-50 top-0 transition-all duration-300">
@@ -130,9 +130,9 @@
     </nav>
 
     <!-- Hero Section -->
-    <div class="relative min-h-[100dvh] w-full flex items-center justify-center overflow-hidden transition-colors duration-500">
+    <main class="homepage-cover-stage relative min-h-screen h-[100dvh] w-full overflow-hidden transition-colors duration-500" data-ui-shell="home-cover">
         <!-- Dynamic Canvas Background -->
-        <div class="absolute inset-0 z-0">
+        <div class="absolute inset-0 z-0" data-ui-region="home-stage">
             <!-- Ambient Background Blobs -->
             <div class="absolute inset-0 overflow-hidden pointer-events-none flex flex-col items-center gap-1">
                 <div class="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-[80px] opacity-100 animate-blob bg-[var(--blob-color-1)]"></div>
@@ -145,12 +145,12 @@
         </div>
 
         <!-- Content -->
-        <div class="public-shell public-shell--floating-nav layout-safe-top relative z-10 px-4 sm:px-6 lg:px-8 text-center w-full flex flex-col items-center justify-center pt-20 sm:pt-16 pb-16" data-ui-shell="home-hero">
+        <div class="public-shell public-shell--floating-nav layout-safe-top homepage-cover-content relative z-10 px-4 sm:px-6 lg:px-8 text-center w-full flex flex-col items-center justify-center" data-ui-shell="home-hero">
             <div class="pointer-events-auto transform transition-all duration-500" data-ui-group="hero-identity">
                 <!-- 3D Tilt Avatar -->
                 <div class="homepage-hero-mark mb-6 sm:mb-8 relative inline-block group tilt-card transition-transform duration-100 ease-out" style="transform-style: preserve-3d;">
                     <div class="absolute -inset-4 rounded-full homepage-hero-glow"></div>
-                    <img src="public/img/avatar.jpg" alt="Avatar" class="relative w-28 h-28 sm:w-32 sm:h-32 rounded-full border-4 border-white dark:border-black object-cover shadow-2xl transform translate-z-10 transition-all duration-500">
+                    <img src="public/img/avatar.jpg" alt="Avatar" class="relative w-20 h-20 sm:w-24 sm:h-24 rounded-full border-4 border-white dark:border-black object-cover shadow-2xl transform translate-z-10 transition-all duration-500">
                     <div class="absolute bottom-2 right-2 w-5 h-5 sm:w-6 sm:h-6 bg-green-500 border-4 border-white dark:border-black rounded-full z-20 shadow-[0_0_12px_rgba(34,197,94,0.45)]" title="Online"></div>
                 </div>
 
@@ -168,7 +168,7 @@
         </div>
         
         <!-- Absolute Footer -->
-        <div class="public-footer absolute bottom-4 w-full text-center z-20 pointer-events-none">
+        <div class="public-footer homepage-cover-footer absolute inset-x-0 bottom-4 w-full text-center z-20 pointer-events-none" data-ui-region="home-footer">
             <p class="text-[10px] sm:text-xs tracking-widest uppercase text-gray-400 dark:text-gray-500 opacity-60">
                 &copy; 2025 Thoi <span class="mx-2 text-blue-500">|</span> Designed with <span class="text-red-500 animate-pulse">❤️</span>
                 <span class="mx-2 text-gray-600 dark:text-gray-700 hidden sm:inline">|</span>
@@ -178,7 +178,7 @@
                 </span>
             </p>
         </div>
-    </div>
+    </main>
 
     <!-- Custom Cursor (Removed) -->
 
