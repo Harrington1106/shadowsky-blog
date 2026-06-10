@@ -392,6 +392,10 @@ body.public-page.liquid-glass-ui .layout-toolbar-wrap {
   align-items: center;
 }
 
+body.public-page.liquid-glass-ui .layout-toolbar-wrap.justify-center {
+  justify-content: center;
+}
+
 body.public-page.liquid-glass-ui .layout-grid-stable {
   display: grid;
   gap: clamp(1rem, 2vw, 1.5rem);
@@ -400,6 +404,10 @@ body.public-page.liquid-glass-ui .layout-grid-stable {
 body.public-page.liquid-glass-ui .layout-overflow-guard {
   min-width: 0;
   max-width: 100%;
+}
+
+body.public-page.liquid-glass-ui .layout-overflow-guard > * {
+  min-width: 0;
 }
 
 body.public-page.liquid-glass-ui footer {
