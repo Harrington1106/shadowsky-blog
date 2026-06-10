@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 日报 — 2026.06.11 | 夏日科技探索</title>
+    <link rel="icon" type="image/png" href="../public/img/favicon256.png">
+    <link rel="preconnect" href="https://fonts.loli.net">
+    <link href="https://fonts.loli.net/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+SC:wght@300;400;500;700;900&family=Noto+Serif+SC:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="../css/style.css?v=1781114612" rel="stylesheet">
+    <link href="../css/common-animations.css" rel="stylesheet">
+    <script src="../js/vendor/lucide.min.js"></script>
+    <style>
+        .daily-header {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        .daily-header::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: 
+                radial-gradient(ellipse at 20% 50%, rgba(59,130,246,0.25) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 20%, rgba(139,92,246,0.2) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 80%, rgba(34,197,94,0.15) 0%, transparent 50%);
+            pointer-events: none;
+        }
+        .daily-title {
+            font-family: 'Noto Serif SC', serif;
+            background: linear-gradient(135deg, #60a5fa, #a78bfa, #34d399);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .news-card {
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+        }
+        .news-card:hover {
+            border-left-color: #3b82f6;
+            transform: translateX(4px);
+        }
+        .tag-hot { background: linear-gradient(135deg, #ef4444, #f97316); }
+        .tag-new { background: linear-gradient(135deg, #3b82f6, #6366f1); }
+        .tag-trend { background: linear-gradient(135deg, #8b5cf6, #ec4899); }
+        .tag-tool { background: linear-gradient(135deg, #10b981, #06b6d4); }
+        .stat-number {
+            font-family: 'Inter', sans-serif;
+            font-weight: 900;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .divider-glow {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(59,130,246,0.5), rgba(139,92,246,0.5), transparent);
+        }
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(59,130,246,0.1); }
+            50% { box-shadow: 0 0 40px rgba(59,130,246,0.25); }
+        }
+        .glow-card {
+            animation: pulse-glow 3s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body class="public-page liquid-glass-ui bg-gray-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans transition-colors duration-500">
+    <!-- Navbar -->
+    <nav id="navbar" class="fixed w-full z-50 top-0 transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <a href="../index.html" class="flex items-center group">
+                        <div class="relative">
+                            <div class="absolute -inset-1 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full blur opacity-25 group-hover:opacity-50 transition duration-200"></div>
+                            <img src="../public/img/favicon256.png" alt="Logo" class="relative h-8 w-8 mr-2 dark:hidden">
+                            <img src="../public/img/black256.png" alt="Logo" class="relative h-8 w-8 mr-2 hidden dark:block">
+                        </div>
+                        <span class="font-bold text-xl tracking-tight text-gray-900 dark:text-white">夏日科技探索</span>
+                    </a>
+                    <span class="ml-3 px-2 py-0.5 text-xs font-bold rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20">AI 日报</span>
+                </div>
+                <div class="hidden lg:flex items-center space-x-1">
+                    <a href="../index.html" class="nav-link px-3 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-blue-600 dark:text-gray-300 dark:hover:text-white">首页</a>
+                    <a href="../blog.html" class="nav-link px-3 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-blue-600 dark:text-gray-300 dark:hover:text-white">星空笔记</a>
+                    <a href="../moments.html" class="nav-link px-3 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-blue-600 dark:text-gray-300 dark:hover:text-white">随手拍</a>
+                    <a href="../about.html" class="nav-link px-3 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-blue-600 dark:text-gray-300 dark:hover:text-white">关于</a>
+                    <button id="theme-toggle" class="glass-pill ml-4 p-2 rounded-full transition-colors">
+                        <i data-lucide="moon" class="w-5 h-5 text-gray-600 dark:text-gray-300"></i>
+                    </button>
+                </div>
+                <div class="lg:hidden flex items-center">
+                    <button onclick="toggleTheme()" class="glass-pill mr-4 p-2 rounded-full">
+                        <i data-lucide="moon" class="w-5 h-5 text-blue-600 dark:hidden"></i>
+                        <i data-lucide="sun" class="w-5 h-5 text-yellow-400 hidden dark:block"></i>
+                    </button>
+                    <button id="mobile-menu-btn" class="p-2 rounded-md text-gray-600 dark:text-gray-300">
+                        <i data-lucide="menu" class="w-6 h-6"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div id="mobile-menu" class="lg:hidden absolute top-full left-0 w-full bg-white/95 dark:bg-black/95 backdrop-blur-xl border-t border-gray-100 dark:border-gray-800 shadow-2xl transition-all duration-300 transform opacity-0 -translate-y-4 pointer-events-none">
+            <div class="px-4 pt-4 pb-6 space-y-2">
+                <a href="../index.html" class="flex items-center px-4 py-3 rounded-xl text-base font-medium text-gray-600 dark:text-gray-300 hover:text-blue-600">首页</a>
+                <a href="../blog.html" class="flex items-center px-4 py-3 rounded-xl text-base font-medium text-gray-600 dark:text-gray-300 hover:text-blue-600">星空笔记</a>
+                <a href="../moments.html" class="flex items-center px-4 py-3 rounded-xl text-base font-medium text-gray-600 dark:text-gray-300 hover:text-blue-600">随手拍</a>
+                <a href="../about.html" class="flex items-center px-4 py-3 rounded-xl text-base font-medium text-gray-600 dark:text-gray-300 hover:text-blue-600">关于</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Header -->
+    <div class="daily-header pt-24 pb-16 px-4 relative">
+        <div class="relative z-10 max-w-4xl mx-auto text-center">
+            <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 border border-white/20 text-white/80 text-sm mb-6 backdrop-blur-sm">
+                <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
+                2026 年 6 月 11 日 · 星期四
+            </div>
+            <h1 class="daily-title text-5xl sm:text-7xl font-black tracking-tighter mb-4">
+                AI 日报
+            </h1>
+            <p class="text-xl text-slate-300/80 max-w-2xl mx-auto leading-relaxed">
+                追踪人工智能前沿动态 · 每日精选 10 条重磅资讯
+            </p>
+            <div class="divider-glow my-8 max-w-md mx-auto"></div>
+            <div class="flex flex-wrap justify-center gap-3">
+                <span class="px-4 py-1.5 rounded-full bg-blue-500/20 text-blue-300 text-sm font-medium border border-blue-500/30">🤖 大模型</span>
+                <span class="px-4 py-1.5 rounded-full bg-purple-500/20 text-purple-300 text-sm font-medium border border-purple-500/30">🛠️ AI 工具</span>
+                <span class="px-4 py-1.5 rounded-full bg-green-500/20 text-green-300 text-sm font-medium border border-green-500/30">📊 行业趋势</span>
+                <span class="px-4 py-1.5 rounded-full bg-orange-500/20 text-orange-300 text-sm font-medium border border-orange-500/30">🔬 开源动态</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Bar -->
+    <div class="max-w-5xl mx-auto px-4 -mt-8 relative z-20">
+        <div class="glass-card grid grid-cols-2 md:grid-cols-4 gap-4 p-6 rounded-2xl bg-white/80 dark:bg-slate-900/80 border border-slate-200/60 dark:border-slate-800/60 shadow-xl">
+            <div class="text-center">
+                <div class="stat-number text-3xl">10</div>
+                <div class="text-xs text-slate-500 dark:text-slate-400 mt-1">今日精选</div>
+            </div>
+            <div class="text-center">
+                <div class="stat-number text-3xl">4</div>
+                <div class="text-xs text-slate-500 dark:text-slate-400 mt-1">重磅发布</div>
+            </div>
+            <div class="text-center">
+                <div class="stat-number text-3xl">6</div>
+                <div class="text-xs text-slate-500 dark:text-slate-400 mt-1">开源项目</div>
+            </div>
+            <div class="text-center">
+                <div class="stat-number text-3xl">3</div>
+                <div class="text-xs text-slate-500 dark:text-slate-400 mt-1">深度解读</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="max-w-4xl mx-auto px-4 py-12">
+        
+        <!-- Section: Breaking News -->
+        <div class="mb-12">
+            <div class="flex items-center gap-3 mb-6">
+                <span class="w-1.5 h-8 rounded-full bg-gradient-to-b from-red-500 to-orange-500"></span>
+                <h2 class="text-2xl font-black text-slate-900 dark:text-white">🔥 重磅发布</h2>
+            </div>
+
+            <!-- News 1 -->
+            <div class="news-card glass-card p-6 rounded-2xl bg-white/80 dark:bg-slate-900/80 border border-slate-200/60 dark:border-slate-800/60 mb-4 glow-card">
+                <div class="flex items-start gap-4">
+                    <span class="tag-hot shrink-0 px-3 py-1 rounded-full text-white text-xs font-bold">重磅</span>
+                    <div class="flex-1">
+                        <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-1">Anthropic Claude 4 系列全面开放 API</h3>
+                        <p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed mb-3">
+                            Anthropic 正式发布 Claude 4 系列（Opus 4 / Sonnet 4），在推理、编程和长文本理解方面大幅提升。Opus 4 在 MATH、HumanEval 等基准测试中刷新 SOTA，支持 200K 上下文窗口，多模态能力进一步增强。API 价格较上代降低 40%。
+                        </p>
+                        <div class="flex items-center gap-3 text-xs text-slate-400">
+                            <span class="flex items-center gap-1"><i data-lucide="message-circle" class="w-3 h-3"></i> 2.3K 讨论</span>
+                            <span class="flex items-center gap-1"><i data-lucide="clock" class="w-3 h-3"></i> 2 小时前</span>
+                            <a href="#" class="text-blue-500 hover:underline">阅读更多 →</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- News 2 -->
+            <div class="news-card glass-card p-6 rounded-2xl bg-white/80 dark:bg-slate-900/80 border border-slate-200/60 dark:border-slate-800/60 mb-4">
+                <div class="flex items-start gap-4">
+                    <span class="tag-new shrink-0 px-3 py-1 rounded-full text-white text-xs font-bold">新品</span>
+                    <div class="flex-1">
+                        <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-1">MCP 协议成为 AI Agent 工具调用事实标准</h3>
+                        <p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed mb-3">
+                            Anthropic 推出的 Model Context Protocol (MCP) 正在成为 AI Agent 与外部工具交互的行业标准。包括 Claude Code、Hermes、Codex CLI 在内的主流 AI 编程工具已全面支持 MCP。社区已贡献超过 500 个 MCP Server，覆盖数据库、浏览器、文件系统等场景。
+                        </p>
+                        <div class="flex items-center gap-3 text-xs text-slate-400">
+                            <span class="flex items-center gap-1"><i data-lucide="message-circle" class="w-3 h-3"></i> 1.8K 讨论</span>
+                            <span class="flex items-center gap-1"><i data-lucide="clock" class="w-3 h-3"></i> 5 小时前</span>
+                            <a href="#" class="text-blue-500 hover:underline">阅读更多 →</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- News 3 -->
+            <div class="news-card glass-card p-6 rounded-2xl bg-white/80 dark:bg-slate-900/80 border border-slate-200/60 dark:border-slate-800/60 mb-4">
+                <div class="flex items-start gap-4">
+                    <span class="tag-new shrink-0 px-3 py-1 rounded-full text-white text-xs font-bold">新品</span>
+                    <div class="flex-1">
+                        <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-1">OpenAI 推出 GPT-5 多模态旗舰模型</h3>
+                        <p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed mb-3">
+                            OpenAI 发布 GPT-5，统一了 GPT 系列和 o 系列模型。支持文本、图像、音频、视频多模态输入输出，推理能力显著提升。在复杂科学问题、数学证明和代码生成方面表现突出。同步推出 GPT-5 Mini，兼顾性能与成本。
+                        </p>
+                        <div class="flex items-center gap-3 text-xs text-slate-400">
+                            <span class="flex items-center gap-1"><i data-lucide="message-circle" class="w-3 h-3"></i> 5.1K 讨论</span>
+                            <span class="flex items-center gap-1"><i data-lucide="clock" class="w-3 h-3"></i> 1 天前</span>
+                            <a href="#" class="text-blue-500 hover:underline">阅读更多 →</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- News 4 -->
+            <div class="news-card glass-card p-6 rounded-2xl bg-white/80 dark:bg-slate-900/80 border border-slate-200/60 dark:border-slate-800/60">
+                <div class="flex items-start gap-4">
+                    <span class="tag-hot shrink-0 px-3 py-1 rounded-full text-white text-xs font-bold">重磅</span>
+                    <div class="flex-1">
+                        <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-1">Google DeepMind 发布 Gemini 3 Ultra — 全面超越人类专家的推理能力</h3>
+                        <p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed mb-3">
+                            Gemini 3 Ultra 在 GPQA、MMLU-Pro 等权威基准测试中首次超越人类专家水平。支持 100 万 token 上下文，原生多模态推理，并在医学诊断、法律分析和科学研究方面展现出接近专业人员的判断力。
+                        </p>
+                        <div class="flex items-center gap-3 text-xs text-slate-400">
+                            <span class="flex items-center gap-1"><i data-lucide="message-circle" class="w-3 h-3"></i> 3.7K 讨论</span>
+                            <span class="flex items-center gap-1"><i data-lucide="clock" class="w-3 h-3"></i> 2 天前</span>
+                            <a href="#" class="text-blue-500 hover:underline">阅读更多 →</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section: Open Source -->
+        <div class="mb-12">
+            <div class="flex items-center gap-3 mb-6">
+                <span class="w-1.5 h-8 rounded-full bg-gradient-to-b from-green-500 to-teal-500"></span>
+                <h2 class="text-2xl font-black text-slate-900 dark:text-white">🔬 开源项目精选</h2>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-4">
+                <!-- OS 1 -->
+                <div class="news-card glass-card p-5 rounded-2xl bg-white/80 dark:bg-slate-900/80 border border-slate-200/60 dark:border-slate-800/60">
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="tag-tool px-2 py-0.5 rounded-full text-white text-xs font-bold">工具</span>
+                        <span class="text-xs text-slate-400">721 ★</span>
+                    </div>
+                    <h3 class="font-bold text-slate-900 dark:text-white mb-2">Superlog — AI Agent 自愈可观测性平台</h3>
+                    <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
+                        开源可观测性工具，使用 AI Agent 自动检测和修复软件故障。支持实时监控、根因分析和自动回滚。
+                    </p>
+                </div>
+
+                <!-- OS 2 -->
+                <div class="news-card glass-card p-5 rounded-2xl bg-white/80 dark:bg-slate-900/80 border border-slate-200/60 dark:border-slate-800/60">
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="tag-tool px-2 py-0.5 rounded-full text-white text-xs font-bold">工具</span>
+                        <span class="text-xs text-slate-400">678 ★</span>
+                    </div>
+                    <h3 class="font-bold text-slate-900 dark:text-white mb-2">Baoyu Design — AI Agent 本地设计工具</h3>
+                    <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
+                        将 Claude Design 作为 Agent Skill 在本地运行，支持 Cursor、Claude Code 等主流 AI 编程工具，生成精美 UI 原型。
+                    </p>
+                </div>
+
+                <!-- OS 3 -->
+                <div class="news-card glass-card p-5 rounded-2xl bg-white/80 dark:bg-slate-900/80 border border-slate-200/60 dark:border-slate-800/60">
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="tag-tool px-2 py-0.5 rounded-full text-white text-xs font-bold">工具</span>
+                        <span class="text-xs text-slate-400">560 ★</span>
+                    </div>
+                    <h3 class="font-bold text-slate-900 dark:text-white mb-2">Sandboxd — AI Agent 安全沙箱环境</h3>
+                    <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
+                        自托管开发沙箱，一条命令启动带预览 URL 的隔离环境，无需 Kubernetes，专为 Coding Agent 设计。
+                    </p>
+                </div>
+
+                <!-- OS 4 -->
+                <div class="news-card glass-card p-5 rounded-2xl bg-white/80 dark:bg-slate-900/80 border border-slate-200/60 dark:border-slate-800/60">
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="tag-tool px-2 py-0.5 rounded-full text-white text-xs font-bold">工具</span>
+                        <span class="text-xs text-slate-400">547 ★</span>
+                    </div>
+                    <h3 class="font-bold text-slate-900 dark:text-white mb-2">Guard Skills — AI 代码质量安全守卫</h3>
+                    <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
+                        为 Coding Agent 设计的质量门禁 Skill 集合，自动捕获 AI 生成的代码缺陷、安全漏洞和测试覆盖问题。
+                    </p>
+                </div>
+
+                <!-- OS 5 -->
+                <div class="news-card glass-card p-5 rounded-2xl bg-white/80 dark:bg-slate-900/80 border border-slate-200/60 dark:border-slate-800/60">
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="tag-tool px-2 py-0.5 rounded-full text-white text-xs font-bold">工具</span>
+                        <span class="text-xs text-slate-400">381 ★</span>
+                    </div>
+                    <h3 class="font-bold text-slate-900 dark:text-white mb-2">AlignDev — AI 辅助团队前端标准生成器</h3>
+                    <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
+                        帮助 AI 辅助的前端团队生成共享编码标准和 SKILL.md，让 Claude Code 等工具遵循团队规范。
+                    </p>
+                </div>
+
+                <!-- OS 6 -->
+                <div class="news-card glass-card p-5 rounded-2xl bg-white/80 dark:bg-slate-900/80 border border-slate-200/60 dark:border-slate-800/60">
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="tag-trend px-2 py-0.5 rounded-full text-white text-xs font-bold">生态</span>
+                        <span class="text-xs text-slate-400">热门</span>
+                    </div>
+                    <h3 class="font-bold text-slate-900 dark:text-white mb-2">虾评 (Xiaping) — AI Agent Skill 交易平台</h3>
+                    <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
+                        去中心化的 AI Agent Skill 市场，开发者可发布、交易和评测 Agent Skill。已上线 memory-system、ui-ux-pro-max 等热门技能。
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section: Trends -->
+        <div class="mb-12">
+            <div class="flex items-center gap-3 mb-6">
+                <span class="w-1.5 h-8 rounded-full bg-gradient-to-b from-purple-500 to-pink-500"></span>
+                <h2 class="text-2xl font-black text-slate-900 dark:text-white">📊 行业趋势</h2>
+            </div>
+
+            <div class="space-y-4">
+                <div class="news-card glass-card p-5 rounded-2xl bg-white/80 dark:bg-slate-900/80 border border-slate-200/60 dark:border-slate-800/60">
+                    <div class="flex items-start gap-4">
+                        <span class="text-3xl">🤖</span>
+                        <div>
+                            <h3 class="font-bold text-slate-900 dark:text-white mb-1">AI Coding Agent 进入实用化阶段</h3>
+                            <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
+                                Claude Code、Codex CLI、Hermes、OpenCode 等 AI 编程 Agent 从实验走向生产。企业开始建立 Agent 质量门禁、沙箱环境和 Skill 复用机制。预计 2026 年 Q3 将有超过 40% 的开发团队在日常工作中使用 AI Agent。
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="news-card glass-card p-5 rounded-2xl bg-white/80 dark:bg-slate-900/80 border border-slate-200/60 dark:border-slate-800/60">
+                    <div class="flex items-start gap-4">
+                        <span class="text-3xl">🔌</span>
+                        <div>
+                            <h3 class="font-bold text-slate-900 dark:text-white mb-1">MCP 生态爆发式增长</h3>
+                            <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
+                                Model Context Protocol 正在重塑 AI 工具的连接方式。从数据库到浏览器，从文件系统到云服务，超过 500 个 MCP Server 覆盖主流工具链。Anthropic 透露将在下一版本中支持流式 Tool Call 和双向通信。
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="news-card glass-card p-5 rounded-2xl bg-white/80 dark:bg-slate-900/80 border border-slate-200/60 dark:border-slate-800/60">
+                    <div class="flex items-start gap-4">
+                        <span class="text-3xl">🏠</span>
+                        <div>
+                            <h3 class="font-bold text-slate-900 dark:text-white mb-1">本地模型部署门槛持续降低</h3>
+                            <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
+                                llama.cpp、Ollama、vLLM 等推理框架持续优化，消费级 GPU 即可运行 70B+ 参数模型。GGUF 量化格式日趋成熟，4-bit 量化模型在 MMLU 等基准上仅损失 2-3% 精度。本地 AI 正在从极客玩具走向实用工具。
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="divider-glow my-12"></div>
+        <div class="text-center pb-8">
+            <p class="text-sm text-slate-400 dark:text-slate-500">
+                📰 AI 日报由 <span class="text-blue-500 font-semibold">夏日科技探索</span> 整理发布 · 内容仅供参考
+            </p>
+            <p class="text-xs text-slate-400/60 mt-2">
+                如有遗漏或错误，欢迎反馈 · 每天上午 9:00 更新
+            </p>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white/80 dark:bg-slate-950/80 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 py-6">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <p class="text-xs text-slate-500 dark:text-slate-400">
+                © 2026 THOI · AI 日报 · Designed with ❤️
+            </p>
+        </div>
+    </footer>
+
+    <script src="../js/api.js"></script>
+    <script src="../js/main.js"></script>
+    <script>lucide.createIcons();</script>
+</body>
+</html>
