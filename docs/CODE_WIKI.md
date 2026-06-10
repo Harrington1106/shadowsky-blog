@@ -108,6 +108,15 @@ shadowsky-blog/
 | `js/video.js` | 视频历史工具逻辑 | 维护独立的视频观看状态辅助能力 |
 | `js/heatmap.js` | `HeatmapChart` | 热力图渲染能力 |
 
+### 4.4 前台液态玻璃 UI 系统
+
+- 作用范围：本次统一样式仅覆盖公开前台页面，包括 `index.html`、`blog.html`、`post.html`、`moments.html`、`bookmarks.html`、`rss.html`、`acg.html`、`anime.html`、`manga.html`、`edits.html`、`about.html`、`404.html`，不包含 `admin/` 后台。
+- 公共令牌：`css/style.css` 末尾新增“Liquid Glass UI System For Public Pages”区块，集中定义玻璃背景、边框、阴影、模糊、圆角和深浅主题变量，避免各页面重复维护透明度与模糊参数。
+- 公共组件：新增 `glass-panel`、`glass-card`、`glass-toolbar`、`glass-pill`、`glass-input` 等通用类，用于统一导航、移动菜单、筛选栏、卡片、输入框、弹层和页脚。
+- 页面接入：公开页通过 `body.public-page.liquid-glass-ui` 进入统一样式域，静态页面与动态渲染模块共享同一套视觉规则，降低局部内联样式分叉。
+- 动态内容适配：`js/blog.js`、`js/moments.js`、`js/bookmarks.js`、`js/media-data.js`、`js/video-loader.js` 在动态卡片或标签渲染时挂载公共玻璃类，保证博客卡片、瞬间卡片、收藏卡片、媒体卡片和视频卡片视觉一致。
+- 性能策略：高频出现的内容卡片以半透明背景和阴影为主，只有导航、抽屉、工具条、输入区和弹层启用 `backdrop-filter`，用于降低大面积模糊带来的滚动与绘制成本。
+
 ## 5. 后端结构
 
 ### 5.1 PHP API 层
@@ -459,6 +468,12 @@ Git Push
 - 仓库中没有根级 `package.json`。
 - `admin/package.json` 未声明测试脚本和测试依赖。
 - 因此目前只能确认“存在测试文件”，不能把某条命令认定为正式测试入口。
+
+### 11.4 本次前台 UI 改造验证
+
+- 已执行静态校验，确认公开页已接入 `public-page liquid-glass-ui` 作用域，公共样式块与动态卡片类已写入目标文件。
+- 由于仓库缺少统一的前台测试脚本与根级测试入口，本次未运行自动化 UI 回归测试，验证方式以代码级一致性检查和结构化 grep 复核为主。
+- 本次改动未触碰 PHP 接口、Node 管理端和 `admin/` 前端，因此未引入新的后端 SQL 注入或后台 Token 校验变更面。
 
 ## 12. 架构观察与维护建议
 

@@ -5,16 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>404 - 页面未找到 | 夏日科技探索</title>
     <link rel="icon" type="image/png" href="public/img/favicon256.png">
-    
+
     <!-- Tailwind CSS -->
     <link href="css/style.css" rel="stylesheet">
-    <link href="public/cat-cursor.css" rel="stylesheet">
-    
+
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.loli.net">
     <link rel="preconnect" href="https://gstatic.loli.net" crossorigin>
     <link href="https://fonts.loli.net/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
-    
+
     <!-- Lucide Icons -->
     <script src="js/vendor/lucide.min.js"></script>
 
@@ -24,7 +23,7 @@
         }
     </style>
 </head>
-<body class="bg-gray-50 dark:bg-black text-gray-900 dark:text-gray-100 font-sans transition-colors duration-500 flex flex-col min-h-screen">
+<body class="public-page liquid-glass-ui bg-gray-50 dark:bg-black text-gray-900 dark:text-gray-100 font-sans transition-colors duration-500 flex flex-col min-h-screen">
 
     <!-- Navbar -->
     <nav id="navbar" class="fixed w-full z-50 top-0 transition-all duration-300 bg-white/80 dark:bg-black/80 backdrop-blur-md border-b border-gray-100 dark:border-gray-800">
@@ -37,23 +36,85 @@
                             <img src="public/img/favicon256.png" alt="Logo" class="relative h-8 w-8 mr-2 dark:hidden">
                             <img src="public/img/black256.png" alt="Logo" class="relative h-8 w-8 mr-2 hidden dark:block">
                         </div>
-                        <span class="font-bold text-xl tracking-tight transition-colors duration-300">
+                        <span id="nav-title" class="font-bold text-xl tracking-tight transition-colors duration-300 text-gray-900 dark:text-white">
                             夏日科技探索
                         </span>
                     </a>
                 </div>
-                
+
                 <div class="hidden lg:flex items-center space-x-1">
-                    <a href="index.html" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-600 hover:text-blue-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-white dark:hover:bg-white/10">首页</a>
-                    <a href="blog.html" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-600 hover:text-blue-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-white dark:hover:bg-white/10">星空笔记</a>
-                    <a href="moments.html" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-600 hover:text-blue-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-white dark:hover:bg-white/10">随手拍</a>
-                    <a href="bookmarks.html" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-600 hover:text-blue-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-white dark:hover:bg-white/10">收藏</a>
-                    <a href="about.html" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-600 hover:text-blue-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-white dark:hover:bg-white/10">关于</a>
-                    
-                    <button id="theme-toggle" class="ml-4 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
-                        <i data-lucide="moon" class="w-5 h-5 text-gray-600 dark:text-gray-300"></i>
+                    <a href="index.html" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-blue-600 bg-blue-50/80 dark:bg-blue-900/30 dark:text-blue-400" title="首页">
+                        <i data-lucide="house" class="w-5 h-5"></i>
+                    </a>
+                    <a href="blog.html" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-600 hover:text-blue-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-white dark:hover:bg-white/10" title="星空笔记">
+                        <i data-lucide="file-text" class="w-5 h-5"></i>
+                    </a>
+                    <a href="moments.html" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-600 hover:text-blue-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-white dark:hover:bg-white/10" title="随手拍">
+                        <i data-lucide="camera" class="w-5 h-5"></i>
+                    </a>
+                    <a href="bookmarks.html" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-600 hover:text-blue-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-white dark:hover:bg-white/10" title="收藏">
+                        <i data-lucide="bookmark" class="w-5 h-5"></i>
+                    </a>
+                    <a href="rss.html" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-600 hover:text-blue-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-white dark:hover:bg-white/10" title="订阅">
+                        <i data-lucide="rss" class="w-5 h-5"></i>
+                    </a>
+                    <a href="acg.html" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-600 hover:text-blue-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-white dark:hover:bg-white/10" title="视频">
+                        <i data-lucide="film" class="w-5 h-5"></i>
+                    </a>
+                    <a href="about.html" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-600 hover:text-blue-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-white dark:hover:bg-white/10" title="关于">
+                        <i data-lucide="user-circle" class="w-5 h-5"></i>
+                    </a>
+
+                    <button type="button" id="theme-toggle" class="ml-4 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors focus:outline-none ring-2 ring-transparent focus:ring-blue-500" aria-label="Toggle Theme">
+                        <i id="theme-toggle-icon" data-lucide="moon" class="w-5 h-5 text-gray-600 dark:text-gray-300"></i>
                     </button>
                 </div>
+
+                <div class="lg:hidden flex items-center">
+                    <button type="button" onclick="toggleTheme()" class="mr-4 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors" aria-label="Toggle Theme">
+                        <i data-lucide="moon" class="w-5 h-5 text-blue-600 dark:hidden"></i>
+                        <i data-lucide="sun" class="w-5 h-5 text-yellow-400 hidden dark:block"></i>
+                    </button>
+
+                    <!-- 复用 js/main.js 的统一移动菜单开关逻辑 -->
+                    <button type="button" id="mobile-menu-btn" class="p-2 rounded-md transition-colors text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800" aria-label="Toggle Menu">
+                        <i data-lucide="menu" class="w-6 h-6"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile menu -->
+        <div id="mobile-menu" class="lg:hidden absolute top-full left-0 w-full bg-white/95 dark:bg-black/95 backdrop-blur-xl border-t border-gray-100 dark:border-gray-800 shadow-2xl transition-all duration-300 ease-in-out transform opacity-0 -translate-y-4 pointer-events-none">
+            <div class="px-4 pt-4 pb-6 space-y-2">
+                <a href="index.html" class="flex items-center px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 text-blue-600 bg-blue-50 dark:bg-blue-900/20 dark:text-blue-400 shadow-sm">
+                    <i data-lucide="house" class="w-5 h-5 mr-3"></i>
+                    首页
+                </a>
+                <a href="blog.html" class="flex items-center px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 text-gray-600 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-white/10 hover:shadow-sm hover:translate-x-1">
+                    <i data-lucide="file-text" class="w-5 h-5 mr-3"></i>
+                    星空笔记
+                </a>
+                <a href="moments.html" class="flex items-center px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 text-gray-600 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-white/10 hover:shadow-sm hover:translate-x-1">
+                    <i data-lucide="camera" class="w-5 h-5 mr-3"></i>
+                    随手拍
+                </a>
+                <a href="bookmarks.html" class="flex items-center px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 text-gray-600 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-white/10 hover:shadow-sm hover:translate-x-1">
+                    <i data-lucide="bookmark" class="w-5 h-5 mr-3"></i>
+                    收藏
+                </a>
+                <a href="rss.html" class="flex items-center px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 text-gray-600 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-white/10 hover:shadow-sm hover:translate-x-1">
+                    <i data-lucide="rss" class="w-5 h-5 mr-3"></i>
+                    订阅
+                </a>
+                <a href="acg.html" class="flex items-center px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 text-gray-600 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-white/10 hover:shadow-sm hover:translate-x-1">
+                    <i data-lucide="film" class="w-5 h-5 mr-3"></i>
+                    视频
+                </a>
+                <a href="about.html" class="flex items-center px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 text-gray-600 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-white/10 hover:shadow-sm hover:translate-x-1">
+                    <i data-lucide="user-circle" class="w-5 h-5 mr-3"></i>
+                    关于
+                </a>
             </div>
         </div>
     </nav>
@@ -62,37 +123,37 @@
     <main class="flex-grow flex flex-col items-center justify-center px-4 pt-24 pb-12 relative z-10">
         <h1 class="text-8xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 mb-2">404</h1>
         <p class="text-xl text-gray-600 dark:text-gray-400 mb-8 font-serif italic">Oops! The page you're looking for has vanished into the void.</p>
-        
+
         <!-- Game Container -->
-        <div class="relative bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 max-w-lg w-full border border-gray-100 dark:border-gray-700">
+        <div class="glass-card relative bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 max-w-lg w-full border border-gray-100 dark:border-gray-700">
              <div class="flex justify-between items-center mb-4">
                  <span id="role-text" class="text-sm font-medium text-gray-500 dark:text-gray-400">切换: 扮演小猫</span>
                  <div class="flex space-x-2">
-                     <button id="switch-role" class="px-3 py-1 text-xs sm:text-sm rounded-full bg-purple-50 text-purple-600 font-medium transition-colors hover:bg-purple-100">Switch Role</button>
-                     <button id="reset-game" class="px-3 py-1 text-xs sm:text-sm rounded-full bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300 font-medium transition-colors hover:bg-gray-200 dark:hover:bg-gray-600">Reset</button>
+                     <button id="switch-role" class="glass-pill px-3 py-1 text-xs sm:text-sm rounded-full bg-purple-50 text-purple-600 font-medium transition-colors hover:bg-purple-100">切换角色</button>
+                     <button id="reset-game" class="glass-pill px-3 py-1 text-xs sm:text-sm rounded-full bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300 font-medium transition-colors hover:bg-gray-200 dark:hover:bg-gray-600">重新开始</button>
                  </div>
              </div>
-             
+
              <p id="game-instruction" class="text-center text-gray-700 dark:text-gray-300 font-medium mb-4 text-sm sm:text-base">点击背景围住小猫，别让它跑掉！</p>
-             
+
              <div class="relative aspect-square w-full bg-gray-50 dark:bg-gray-900 rounded-xl overflow-hidden cursor-pointer touch-none select-none">
                   <canvas id="cat-game" class="w-full h-full"></canvas>
-                  
+
                   <!-- Message Overlay -->
                   <div id="game-message" class="absolute inset-0 flex items-center justify-center pointer-events-none opacity-0 transition-opacity duration-300 z-10">
                       <span class="text-white font-bold text-xl px-6 py-3 rounded-full shadow-lg transform scale-0 transition-transform duration-300"></span>
                   </div>
              </div>
         </div>
-        
-        <a href="index.html" class="mt-8 px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-full font-medium transition-all shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50 flex items-center group">
+
+        <a href="index.html" class="public-cta mt-8 px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-full font-medium transition-all shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50 flex items-center group">
             <i data-lucide="arrow-left" class="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform"></i>
-            Return Home
+            返回首页
         </a>
     </main>
 
     <!-- Standardized Footer -->
-    
+
     <footer class="py-8 text-center z-20 transition-all duration-500 relative">
     <p class="text-[10px] sm:text-xs tracking-widest uppercase text-gray-400 dark:text-gray-500 opacity-60">
         &copy; <span id="year"></span> ShadowQuake <span class="mx-2 text-blue-500">|</span> Designed with <span class="text-red-500 animate-pulse">❤️</span>
@@ -106,7 +167,7 @@
     <script>
         // Initialize Icons
         lucide.createIcons();
-        
+
         // Dynamic Year
         document.getElementById('year').textContent = new Date().getFullYear();
 
@@ -150,7 +211,7 @@
                     }
                     dots.push(row);
                 }
-                
+
                 updateUI();
                 resize();
                 requestAnimationFrame(draw);
@@ -178,10 +239,10 @@
                 const container = canvas.parentElement;
                 canvas.width = container.clientWidth;
                 canvas.height = container.clientHeight;
-                
+
                 const contentWidth = GRID_SIZE * (RADIUS * 2 + GAP) + RADIUS;
                 const scale = canvas.width / (contentWidth + 40);
-                
+
                 ctx.setTransform(scale, 0, 0, scale, 20, 20);
             }
 
@@ -201,7 +262,7 @@
                     for (let x = 0; x < GRID_SIZE; x++) {
                         const dot = dots[y][x];
                         const px = getPixelPos(x, y);
-                        
+
                         ctx.beginPath();
                         ctx.arc(px.x, px.y, RADIUS, 0, Math.PI * 2);
                         ctx.fillStyle = dot.blocked ? blockedColor : dotColor;
@@ -230,7 +291,7 @@
                 ctx.arc(catPx.x, catPx.y, RADIUS * 0.8, 0, Math.PI * 2);
                 ctx.fillStyle = catColor;
                 ctx.fill();
-                
+
                 // Draw Cat Face
                 ctx.fillStyle = 'white';
                 ctx.beginPath(); ctx.arc(catPx.x - 4, catPx.y - 2, 2.5, 0, Math.PI * 2); ctx.fill();
@@ -248,7 +309,7 @@
             function getGridPos(clickX, clickY) {
                 const contentWidth = GRID_SIZE * (RADIUS * 2 + GAP) + RADIUS;
                 const scale = canvas.width / (contentWidth + 40);
-                
+
                 const relativeX = (clickX - 20) / scale;
                 const relativeY = (clickY - 20) / scale;
 
@@ -271,7 +332,7 @@
             function getNeighbors(x, y) {
                 const neighbors = [];
                 const isOdd = y % 2 !== 0;
-                const directions = isOdd ? 
+                const directions = isOdd ?
                     [[0, -1], [1, -1], [-1, 0], [1, 0], [0, 1], [1, 1]] :
                     [[-1, -1], [0, -1], [-1, 0], [1, 0], [-1, 1], [0, 1]];
 
@@ -312,7 +373,7 @@
 
             function aiMoveCat() {
                 const path = findShortestPath(catPos);
-                
+
                 if (path && path.length > 0) {
                     catPos = path[0];
                     if (isEdge(catPos)) {
@@ -322,7 +383,7 @@
                     // No path to edge, move randomly to prolong
                     const neighbors = getNeighbors(catPos.x, catPos.y);
                     const available = neighbors.filter(n => !dots[n.y][n.x].blocked);
-                    
+
                     if (available.length === 0) {
                         endGame('catcher_win');
                     } else {
@@ -373,7 +434,7 @@
 
             function endGame(result) {
                 gameState = result === 'cat_win' ? 'lose' : 'win'; // Default perspective (Catcher)
-                
+
                 if (playerRole === 'catcher') {
                     if (result === 'cat_win') {
                         showMessage('小猫跑掉了！', 'bg-red-500');
@@ -425,7 +486,7 @@
                     if (!dot.blocked && (gridPos.x !== catPos.x || gridPos.y !== catPos.y)) {
                         dot.blocked = true;
                         draw();
-                        
+
                         // Check if blocking caused instant win (rare but possible)
                         const neighbors = getNeighbors(catPos.x, catPos.y);
                         const available = neighbors.filter(n => !dots[n.y][n.x].blocked);
@@ -459,7 +520,7 @@
 
             resetButton.addEventListener('click', initGame);
             switchRoleButton.addEventListener('click', switchRole);
-            
+
             window.addEventListener('resize', () => {
                 resize();
                 draw();
@@ -469,6 +530,5 @@
             initGame();
         })();
     </script>
-    <script src="js/cat-cursor.js"></script>
 </body>
 </html>

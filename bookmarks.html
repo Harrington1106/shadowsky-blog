@@ -13,7 +13,6 @@
     
     <!-- Tailwind CSS -->
     <link href="css/style.css" rel="stylesheet">
-    <link href="public/cat-cursor.css" rel="stylesheet">
     
     <!-- Lucide Icons -->
     <script src="js/vendor/lucide.min.js"></script>
@@ -21,14 +20,6 @@
     <style>
         body {
             font-family: 'Inter', 'Noto Sans SC', sans-serif;
-        }
-        .glass-card {
-            background: rgba(255, 255, 255, 0.7);
-            -webkit-backdrop-filter: blur(10px);
-            backdrop-filter: blur(10px);
-        }
-        .dark .glass-card {
-            background: rgba(15, 23, 42, 0.6);
         }
         html.lenis, html.lenis body {
             height: auto;
@@ -47,7 +38,7 @@
         }
     </style>
 </head>
-<body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white font-sans transition-colors duration-300">
+<body class="public-page liquid-glass-ui bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white font-sans transition-colors duration-300">
 
     <!-- Navbar -->
     <nav id="navbar" class="fixed w-full z-50 top-0 transition-all duration-300 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md border-b border-slate-200 dark:border-gray-800">
@@ -176,7 +167,7 @@
             <div id="gh-bookmarks-config" data-owner="Harrington1106" data-repo="blog-add" class="hidden"></div>
 
             <!-- Category Navigation -->
-            <div class="sticky top-16 z-40 mb-12 py-3 bg-slate-50/95 dark:bg-slate-950/95 backdrop-blur-md border-b sm:border border-slate-200 dark:border-gray-800 -mx-4 px-4 sm:mx-0 sm:rounded-2xl transition-all duration-300 shadow-sm">
+            <div class="glass-toolbar sticky top-16 z-40 mb-12 py-3 bg-slate-50/95 dark:bg-slate-950/95 backdrop-blur-md border-b sm:border border-slate-200 dark:border-gray-800 -mx-4 px-4 sm:mx-0 sm:rounded-2xl transition-all duration-300 shadow-sm">
                 <div id="category-nav" class="flex overflow-x-auto pb-2 sm:pb-0 gap-2 sm:flex-wrap sm:justify-center no-scrollbar">
                     <!-- Dynamic categories injected by js/bookmarks.js -->
                 </div>
@@ -336,6 +327,5 @@
         }
     </script>
 <script src="js/tracker.js"></script>
-    <script src="js/cat-cursor.js"></script>
 </body>
 </html>

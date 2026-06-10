@@ -152,7 +152,7 @@ class VideoLoader {
         this.videos = options.videos || [...defaultVideos];
         this.currentCategory = options.initialCategory || 'all';
         this.options = options;
-        
+
         this.categoryMap = {
             'all': '全部',
             'amv': 'AMV/MAD',
@@ -195,9 +195,9 @@ class VideoLoader {
         // Better: make playVideo a method of the instance and use a global registry or event.
         // For simplicity, we'll keep using the global playVideo but we need to find the video in ALL lists.
         // Or we can attach the click handler directly in JS instead of HTML onclick attribute.
-        
+
         const cardId = `video-card-${this.containerId}-${video.id}`;
-        
+
         // Proxy Bilibili images to bypass 403
         const getProxyUrl = (url) => {
             if (url && (url.includes('hdslb.com') || url.includes('bilibili.com'))) {
@@ -206,31 +206,31 @@ class VideoLoader {
             return url;
         };
         const thumbnailUrl = getProxyUrl(video.thumbnail);
-        
+
         return `
-            <div class="group cursor-pointer video-item perspective-1000" 
+            <div class="group cursor-pointer video-item glass-card p-4 perspective-1000"
                  id="${cardId}"
-                 data-category="${video.category}" 
+                 data-category="${video.category}"
                  data-id="${video.id}"
                  data-title="${video.title}"
                  data-bvid="${video.bvid}"
                  data-loader-id="${this.containerId}">
                 <div class="relative aspect-video bg-gray-900 rounded-xl overflow-hidden mb-4 border border-gray-200 dark:border-gray-800 group-hover:border-pink-500 dark:group-hover:border-pink-500 transition-all duration-500 shadow-md group-hover:shadow-xl group-hover:shadow-pink-500/20 group-hover:-translate-y-1 transform">
-                    <img 
-                        src="${thumbnailUrl}" 
-                        alt="${video.title}" 
+                    <img
+                        src="${thumbnailUrl}"
+                        alt="${video.title}"
                         class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-90 group-hover:opacity-100"
                         loading="lazy"
                         referrerpolicy="no-referrer"
                         onerror="this.onerror=null; this.src='/img/default-book.jpg';"
                     >
                     <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity duration-300"></div>
-                    
+
                     <div class="absolute bottom-3 right-3 bg-black/70 backdrop-blur-sm text-white text-xs px-2 py-1 rounded-md flex items-center border border-white/10">
                         <i data-lucide="clock" class="w-3 h-3 mr-1"></i>
                         ${video.duration}
                     </div>
-                    
+
                     <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 scale-50 group-hover:scale-100">
                         <div class="w-14 h-14 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border border-white/40 shadow-lg">
                             <i data-lucide="play" class="w-6 h-6 text-white fill-current"></i>
@@ -258,7 +258,7 @@ class VideoLoader {
                 this.playVideo(id);
             });
         });
-        
+
         // Add animation class for SSR elements if they don't have it (optional, but good for consistency)
         // For SSR, they are already visible, so maybe skip animation or just ensure opacity is 1
         const cards = this.container.querySelectorAll('.video-item');
@@ -270,7 +270,7 @@ class VideoLoader {
 
     renderVideos() {
         if (!this.container) return;
-        
+
         if (this.videos.length === 0) {
             this.container.innerHTML = `
                 <div class="col-span-full text-center py-20">
@@ -286,18 +286,18 @@ class VideoLoader {
             if (window.lucide) window.lucide.createIcons();
             return;
         }
-        
-        const filteredVideos = this.currentCategory === 'all' 
-            ? this.videos 
+
+        const filteredVideos = this.currentCategory === 'all'
+            ? this.videos
             : this.videos.filter(v => v.category === this.currentCategory);
-            
+
         // Apply limit if specified in data attribute
-        const displayVideos = this.container.dataset.limit 
-            ? filteredVideos.slice(0, parseInt(this.container.dataset.limit)) 
+        const displayVideos = this.container.dataset.limit
+            ? filteredVideos.slice(0, parseInt(this.container.dataset.limit))
             : filteredVideos;
-            
+
         this.container.innerHTML = displayVideos.map(v => this.createVideoCard(v)).join('');
-        
+
         // Add event listeners for click
         this.container.querySelectorAll('.video-item').forEach(item => {
             item.addEventListener('click', () => {
@@ -305,12 +305,12 @@ class VideoLoader {
                 this.playVideo(id);
             });
         });
-        
+
         // Re-initialize icons for the new content
         if (window.lucide) {
             window.lucide.createIcons();
         }
-        
+
         // Add animation class
         const cards = this.container.querySelectorAll('.video-item');
         cards.forEach((card, index) => {
@@ -329,7 +329,7 @@ class VideoLoader {
 
         // Get unique categories
         const categories = ['all', ...new Set(this.videos.map(v => v.category))];
-        
+
         // Generate navigation items HTML
         this.filterContainer.innerHTML = categories.map(cat => {
             const displayName = this.categoryMap[cat] || cat.charAt(0).toUpperCase() + cat.slice(1);
@@ -349,11 +349,11 @@ class VideoLoader {
             btn.addEventListener('click', (e) => {
                 const target = e.target.closest('button');
                 const category = target.dataset.category;
-                
+
                 // Update UI
                 this.filterBtns.forEach(b => {
                     const span = b.querySelector('span');
-                    
+
                     if (b === target) {
                         b.className = 'filter-btn relative px-1 py-2 text-sm font-medium transition-colors duration-300 group whitespace-nowrap text-pink-600 dark:text-pink-400';
                         span.classList.remove('scale-x-0', 'group-hover:scale-x-100');
@@ -364,7 +364,7 @@ class VideoLoader {
                         span.classList.add('scale-x-0', 'group-hover:scale-x-100');
                     }
                 });
-                
+
                 this.currentCategory = category;
                 this.renderVideos();
             });
@@ -381,7 +381,7 @@ class VideoLoader {
                             <span class="mr-2 text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity">关闭</span>
                             <i data-lucide="x" class="w-8 h-8"></i>
                         </button>
-                        
+
                         <div id="video-player-container" class="aspect-video bg-black rounded-xl overflow-hidden shadow-2xl ring-1 ring-white/10 flex items-center justify-center relative">
                             <!-- Video content will be injected here -->
                             <div class="text-center p-8">
@@ -389,7 +389,7 @@ class VideoLoader {
                                 <p class="text-gray-400">Loading...</p>
                             </div>
                         </div>
-                        
+
                         <div class="mt-4">
                             <h3 id="modal-video-title" class="text-xl font-bold text-white mb-1"></h3>
                             <div class="flex items-center text-sm text-gray-400">
@@ -433,7 +433,7 @@ class VideoLoader {
         if (this.modal) {
             this.modalTitle.textContent = video.title;
             this.modalViews.textContent = `${video.views} 次播放`;
-            
+
             this.modal.classList.remove('hidden');
             // Trigger reflow
             void this.modal.offsetWidth;
@@ -441,18 +441,18 @@ class VideoLoader {
             this.modalContent.classList.remove('scale-95');
             this.modalContent.classList.add('scale-100');
             document.body.style.overflow = 'hidden'; // Prevent scrolling
-            
+
             // Inject Bilibili Player with cleaner parameters
             if (video.type === 'bilibili' && video.bvid) {
                 // Use the standard player for better quality as per the new guide
                 this.playerContainer.innerHTML = `
-                    <iframe 
-                        src="//player.bilibili.com/player.html?bvid=${video.bvid}&page=1&high_quality=1&autoplay=1&danmaku=0" 
-                        scrolling="no" 
-                        border="0" 
-                        frameborder="no" 
-                        framespacing="0" 
-                        allowfullscreen="true" 
+                    <iframe
+                        src="//player.bilibili.com/player.html?bvid=${video.bvid}&page=1&high_quality=1&autoplay=1&danmaku=0"
+                        scrolling="no"
+                        border="0"
+                        frameborder="no"
+                        framespacing="0"
+                        allowfullscreen="true"
                         sandbox="allow-top-navigation allow-same-origin allow-forms allow-scripts allow-popups allow-presentation allow-modals"
                         referrerpolicy="no-referrer"
                         class="w-full h-full absolute top-0 left-0"
@@ -471,7 +471,7 @@ class VideoLoader {
                 `;
                 if (window.lucide) window.lucide.createIcons();
             }
-            
+
             if (window.lucide) window.lucide.createIcons();
         }
     }
@@ -481,7 +481,7 @@ class VideoLoader {
             this.modal.classList.add('opacity-0');
             this.modalContent.classList.remove('scale-100');
             this.modalContent.classList.add('scale-95');
-            
+
             setTimeout(() => {
                 this.modal.classList.add('hidden');
                 document.body.style.overflow = '';
@@ -505,7 +505,7 @@ function initVideoLoader() {
             });
         }
     }
-    
+
     if (document.getElementById('favorite-video-grid')) {
         // Favorite video loader
         if (!window.favoriteVideoLoaderInstance) {
@@ -529,7 +529,7 @@ window.addEventListener('pageshow', (event) => {
     if (event.persisted) {
         // If restored from cache, ensure everything is active
         initVideoLoader();
-        
+
         if (window.videoLoaderInstance && window.videoLoaderInstance.modal) {
             window.videoLoaderInstance.closeVideo();
         }

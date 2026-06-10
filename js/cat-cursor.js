@@ -5,7 +5,7 @@
 (function() {
     'use strict';
     
-    const SIZE = 80; // cursor size in px
+    const SIZE = 48; // cursor size in px
     
     // Create cursor elements
     const defaultCursor = document.createElement('img');

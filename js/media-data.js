@@ -44,17 +44,17 @@ class MediaLoader {
         buttons.forEach(btn => {
             btn.addEventListener('click', () => {
                 const filterType = btn.dataset.filter;
-                
+
                 // Update UI
                 buttons.forEach(b => {
                     b.classList.remove('bg-pink-500', 'bg-orange-500', 'text-white', 'shadow-md', 'scale-105');
                     b.classList.add('bg-gray-100', 'text-gray-600', 'dark:bg-gray-800', 'dark:text-gray-400', 'hover:bg-gray-200', 'dark:hover:bg-gray-700');
                 });
-                
+
                 const activeColor = this.type === 'anime' ? 'bg-pink-500' : 'bg-orange-500';
                 btn.classList.remove('bg-gray-100', 'text-gray-600', 'dark:bg-gray-800', 'dark:text-gray-400', 'hover:bg-gray-200', 'dark:hover:bg-gray-700');
                 btn.classList.add(activeColor, 'text-white', 'shadow-md', 'scale-105');
-                
+
                 this.filter(filterType);
             });
         });
@@ -91,10 +91,10 @@ class MediaLoader {
 
     getProgressBar(item) {
         if (item.status === 'plan' || !item.total && !item.progress) return '';
-        
+
         const percentage = item.total ? (item.progress / item.total) * 100 : 50;
         const color = this.type === 'anime' ? 'bg-pink-500' : 'bg-orange-500';
-        
+
         return `
             <div class="w-full bg-gray-700 h-1.5 rounded-full overflow-hidden">
                 <div class="${color} h-full rounded-full" style="width: ${percentage}%"></div>
@@ -105,7 +105,7 @@ class MediaLoader {
     createCard(item) {
         const statusColor = this.getStatusColor(item.status);
         const statusText = this.getStatusText(item.status);
-        
+
         // Use provided tag or fallback to status text
         // STRICTLY handle undefined/null/empty strings
         let displayTag = item.tag;
@@ -113,13 +113,13 @@ class MediaLoader {
             displayTag = statusText;
         }
 
-        const progressInfo = this.type === 'anime' 
+        const progressInfo = this.type === 'anime'
             ? (item.status === 'plan' ? '加入片单' : (item.status === 'completed' ? `全 ${item.total} 话` : `看到第 ${item.progress} 话`))
             : (item.status === 'completed' ? '已读完' : `上次读到第 ${item.progress}`);
 
         const hoverShadow = this.type === 'anime' ? 'group-hover:shadow-pink-500/20' : 'group-hover:shadow-orange-500/20';
         const hoverText = this.type === 'anime' ? 'group-hover:text-pink-500' : 'group-hover:text-orange-500';
-        const bottomInfo = this.type === 'anime' 
+        const bottomInfo = this.type === 'anime'
             ? `<div class="flex justify-between text-[10px] text-gray-300 mt-1">
                  <span>EP.${String(item.progress).padStart(2, '0')}</span>
                  ${item.total ? `<span>EP.${item.total}</span>` : ''}
@@ -138,7 +138,7 @@ class MediaLoader {
                </div>`;
 
         return `
-            <div class="group relative media-item" data-title="${item.title}">
+            <div class="group relative media-item glass-card p-3 pb-4" data-title="${item.title}">
                 <div class="aspect-[2/3] rounded-xl overflow-hidden mb-3 relative shadow-lg ${hoverShadow} transition-all duration-300">
                     <img src="${item.cover}" alt="${item.title}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 ${this.type === 'manga' ? 'grayscale group-hover:grayscale-0' : ''}" loading="lazy" onerror="this.onerror=null;this.src='public/img/default-book.jpg';">
                     <div class="absolute top-2 right-2 ${statusColor} text-white text-xs font-bold px-2 py-1 rounded-md shadow-md z-10 max-w-[80%] truncate">${displayTag}</div>
@@ -170,7 +170,7 @@ class MediaLoader {
         }
 
         this.container.innerHTML = displayData.map(item => this.createCard(item)).join('');
-        
+
         // Add animation
         const cards = this.container.querySelectorAll('.media-item');
         cards.forEach((card, index) => {

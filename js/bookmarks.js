@@ -615,7 +615,7 @@ function renderPage(searchQuery = null) {
     
     // "All" button
     const allBtn = document.createElement('button');
-    allBtn.className = `px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-all ${activeCategory === 'all' && !searchQuery ? 'bg-blue-600 text-white shadow-md shadow-blue-500/30' : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'}`;
+    allBtn.className = `glass-pill px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-all ${activeCategory === 'all' && !searchQuery ? 'bg-blue-600 text-white shadow-md shadow-blue-500/30' : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'}`;
     allBtn.textContent = '全部';
     allBtn.onclick = () => {
         activeCategory = 'all';
@@ -634,7 +634,7 @@ function renderPage(searchQuery = null) {
     sortedCats.forEach(catKey => {
         const catName = allCategories[catKey] ? allCategories[catKey].name : catKey;
         const btn = document.createElement('button');
-        btn.className = `px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-all ${activeCategory === catKey && !searchQuery ? 'bg-blue-600 text-white shadow-md shadow-blue-500/30' : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'}`;
+        btn.className = `glass-pill px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-all ${activeCategory === catKey && !searchQuery ? 'bg-blue-600 text-white shadow-md shadow-blue-500/30' : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'}`;
         btn.textContent = catName;
         btn.onclick = () => {
             activeCategory = catKey;
@@ -656,7 +656,7 @@ function renderPage(searchQuery = null) {
         const indicator = document.createElement('div');
         indicator.className = 'flex justify-center mb-8 animate-fade-in-up';
         indicator.innerHTML = `
-            <div class="inline-flex items-center px-4 py-2 rounded-full bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-800 shadow-sm">
+            <div class="glass-pill inline-flex items-center px-4 py-2 rounded-full bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-800 shadow-sm">
                 <span class="mr-2 text-sm">当前标签: <span class="font-bold">#${activeTag}</span></span>
                 <button onclick="filterByTag('${activeTag}')" class="p-1 hover:bg-blue-100 dark:hover:bg-blue-800 rounded-full transition-colors" title="清除筛选">
                     <i data-lucide="x" class="w-4 h-4"></i>
@@ -813,7 +813,7 @@ function renderCard(bookmark) {
     const desc = bookmark.desc || bookmark.description;
     
     return `
-        <div class="break-inside-avoid mb-6 group relative flex flex-col bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl transition-all duration-300 hover:shadow-xl hover:-translate-y-1 overflow-hidden ${highlightClass}">
+        <div class="bookmark-card glass-card break-inside-avoid mb-6 group relative flex flex-col bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl transition-all duration-300 hover:shadow-xl hover:-translate-y-1 overflow-hidden ${highlightClass}">
             <div class="absolute inset-0 bg-gradient-to-br from-blue-50/50 to-indigo-50/50 dark:from-blue-900/10 dark:to-indigo-900/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
             
             <a href="${bookmark.url}" target="_blank" rel="noopener" class="flex-grow p-6 pb-2 flex flex-col z-10" title="${bookmark.title}">
@@ -822,7 +822,7 @@ function renderCard(bookmark) {
                         <img src="${favicon}" loading="lazy" alt="" class="w-full h-full object-contain" onerror="handleFaviconError(this, '${domain}')"/>
                     </div>
                     <div class="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 translate-x-2 group-hover:translate-x-0">
-                        <button onclick="copyBookmarkLink('${bookmark.url}', event)" class="p-2 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 bg-white/80 dark:bg-slate-800/80 rounded-lg backdrop-blur-sm transition-colors" title="复制链接">
+                        <button onclick="copyBookmarkLink('${bookmark.url}', event)" class="glass-pill p-2 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 bg-white/80 dark:bg-slate-800/80 rounded-lg backdrop-blur-sm transition-colors" title="复制链接">
                             <i data-lucide="copy" class="w-4 h-4"></i>
                         </button>
                         <div class="p-2 text-slate-400">

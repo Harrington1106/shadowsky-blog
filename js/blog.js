@@ -253,7 +253,7 @@ function renderGridView(container) {
 
 
         const html = `
-            <article class="group relative bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-gray-800 overflow-hidden card-hover hover:shadow-2xl hover:shadow-blue-500/10 dark:hover:shadow-blue-900/20 flex flex-col h-full animate-fade-in-up" style="animation-delay: ${delay}ms">
+            <article class="blog-post-card glass-card group relative bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-gray-800 overflow-hidden card-hover hover:shadow-2xl hover:shadow-blue-500/10 dark:hover:shadow-blue-900/20 flex flex-col h-full animate-fade-in-up" style="animation-delay: ${delay}ms">
                 <a href="post.html?file=${post.file}" class="block flex-1 flex flex-col h-full">
                     ${coverHtml}
                     <div class="p-6 flex flex-col flex-1">
@@ -334,7 +334,7 @@ function renderTimelineView(container) {
             html += `
                 <a href="post.html?file=${post.file}" class="group block relative pl-6 transition-all hover:pl-8 animate-fade-in" style="animation-delay: ${pIdx * 50}ms">
                     <div class="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-blue-500 to-purple-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                    <div class="bg-white dark:bg-slate-900 p-5 rounded-xl border border-gray-200 dark:border-gray-800 hover:border-blue-300 dark:hover:border-blue-700 shadow-sm hover:shadow-lg transition-all">
+                    <div class="glass-card bg-white dark:bg-slate-900 p-5 rounded-xl border border-gray-200 dark:border-gray-800 hover:border-blue-300 dark:hover:border-blue-700 shadow-sm hover:shadow-lg transition-all">
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
                                 <h5 class="font-bold text-gray-800 dark:text-gray-200 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors mb-2">${post.title}</h5>
@@ -378,7 +378,7 @@ function renderDirectoryView(container) {
     });
 
     let html = `
-        <div class="bg-white dark:bg-[#1e1e1e] rounded-2xl overflow-hidden border border-gray-200 dark:border-[#333] shadow-2xl animate-fade-in-up font-mono text-sm">
+        <div class="glass-panel bg-white dark:bg-[#1e1e1e] rounded-2xl overflow-hidden border border-gray-200 dark:border-[#333] shadow-2xl animate-fade-in-up font-mono text-sm">
             <!-- Header -->
             <div class="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-[#252526] dark:to-[#2d2d2d] px-4 py-3 flex items-center justify-between border-b border-gray-200 dark:border-[#333]">
                 <div class="flex gap-2">
@@ -469,7 +469,7 @@ function renderTagsView(container) {
 
     let html = `
         <div class="text-center mb-10 animate-fade-in">
-            <p class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 mb-4">
+            <p class="glass-pill inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 mb-4">
                 <i data-lucide="sparkles" class="w-3 h-3"></i>
                 标签知识图谱
             </p>

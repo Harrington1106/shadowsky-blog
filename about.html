@@ -5,21 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>关于我 - 夏日科技探索</title>
     <link rel="icon" type="image/png" href="public/img/favicon256.png">
-    
+
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.loli.net">
     <link rel="preconnect" href="https://gstatic.loli.net" crossorigin>
     <link href="https://fonts.loli.net/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Serif+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
-    
+
     <!-- Tailwind CSS -->
     <link href="css/style.css" rel="stylesheet">
     <!-- 公共动画（lenis/star/wave 等） -->
-    <link href="public/cat-cursor.css" rel="stylesheet">
     <link href="css/common-animations.css" rel="stylesheet">
-    
+
     <!-- Lucide Icons -->
     <script src="js/vendor/lucide.min.js"></script>
-    
+
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -29,7 +28,7 @@
         }
     </style>
 </head>
-<body class="bg-white dark:bg-gray-950 text-gray-800 dark:text-gray-200 transition-colors duration-500">
+<body class="public-page liquid-glass-ui bg-white dark:bg-gray-950 text-gray-800 dark:text-gray-200 transition-colors duration-500">
     <!-- Starry Background Container -->
     <div id="stars-container" class="fixed inset-0 pointer-events-none z-0 overflow-hidden text-blue-300/30 dark:text-white/30"></div>
 
@@ -49,7 +48,7 @@
                         </span>
                     </a>
                 </div>
-                
+
                 <div class="hidden lg:flex items-center space-x-1">
                     <a href="index.html" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-600 hover:text-blue-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-white dark:hover:bg-white/10" title="首页">
                         <i data-lucide="house" class="w-5 h-5"></i>
@@ -72,7 +71,7 @@
                     <a href="about.html" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-blue-600 bg-blue-50/80 dark:bg-blue-900/30 dark:text-blue-400" title="关于">
                         <i data-lucide="user-circle" class="w-5 h-5"></i>
                     </a>
-                    
+
                     <!-- Theme Toggle -->
                     <button id="theme-toggle" class="ml-4 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors focus:outline-none ring-2 ring-transparent focus:ring-blue-500" aria-label="Toggle Theme">
                         <i id="theme-toggle-icon" data-lucide="moon" class="w-5 h-5 text-gray-600 dark:text-gray-300"></i>
@@ -85,7 +84,7 @@
                         <i data-lucide="moon" class="w-5 h-5 text-blue-600 dark:hidden"></i>
                         <i data-lucide="sun" class="w-5 h-5 text-yellow-400 hidden dark:block"></i>
                     </button>
-                    
+
                     <button id="mobile-menu-btn" class="p-2 rounded-md transition-colors text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800" aria-label="Toggle Menu">
                         <i data-lucide="menu" class="w-6 h-6"></i>
                     </button>
@@ -130,21 +129,21 @@
 
     <!-- Main Content -->
     <main class="max-w-3xl mx-auto px-6 pt-24 pb-24">
-        
+
         <!-- Profile Section with Elegant Card Design -->
         <div class="relative mb-20 animate-fade-in-up">
             <!-- Background Decorative Elements -->
             <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full max-w-lg bg-gradient-to-b from-blue-50/50 to-transparent dark:from-blue-900/10 dark:to-transparent blur-3xl -z-10 rounded-full opacity-60"></div>
-            
+
             <div class="text-center">
                 <div class="relative inline-block mb-8 group cursor-default">
                     <div class="absolute -inset-2 bg-gradient-to-tr from-blue-100 to-indigo-100 dark:from-blue-900/30 dark:to-indigo-900/30 rounded-full blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
                     <img src="public/img/avatar.jpg" alt="Avatar" class="relative w-32 h-32 rounded-full object-cover ring-4 ring-white dark:ring-gray-900 shadow-2xl mx-auto transition-all duration-700 ease-out">
                     <div class="absolute bottom-1 right-1 w-4 h-4 bg-green-500 border-2 border-white dark:border-gray-900 rounded-full" title="Available"></div>
                 </div>
-                
+
                 <h1 class="text-4xl font-serif font-bold text-gray-900 dark:text-white mb-4 tracking-tight">Thoi</h1>
-                
+
                 <div class="flex items-center justify-center space-x-2 text-sm text-gray-500 dark:text-gray-400 font-medium tracking-wide uppercase">
                     <span>大四学生</span>
                     <span class="w-1 h-1 bg-gray-300 dark:bg-gray-600 rounded-full"></span>
@@ -154,7 +153,7 @@
                 </div>
             </div>
         </div>
-        
+
         <article class="prose dark:prose-invert prose md:prose-lg mx-auto prose-headings:font-serif prose-p:text-gray-600 dark:prose-p:text-gray-300 prose-a:no-underline hover:prose-a:text-blue-600 transition-colors opacity-0 animate-fade-in-up [animation-delay:300ms]">
             <!-- Introduction: Narrative style with Drop Cap -->
             <div class="relative">
@@ -182,7 +181,7 @@
             <!-- Tech & Interests: Modern Grid Layout -->
             <div class="not-prose grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 mb-16">
                 <!-- Left: Code -->
-                <div class="group p-6 rounded-2xl bg-gray-50 dark:bg-gray-900/50 hover:bg-blue-50/50 dark:hover:bg-blue-900/10 transition-colors duration-300 border border-transparent hover:border-blue-100 dark:hover:border-blue-900/30">
+                <div class="glass-card group p-6 rounded-2xl bg-gray-50 dark:bg-gray-900/50 hover:bg-blue-50/50 dark:hover:bg-blue-900/10 transition-colors duration-300 border border-transparent hover:border-blue-100 dark:hover:border-blue-900/30">
                     <div class="flex items-center mb-4">
                         <div class="p-2 bg-white dark:bg-gray-800 rounded-lg shadow-sm mr-3 text-blue-500">
                             <i data-lucide="code-2" class="w-5 h-5"></i>
@@ -200,7 +199,7 @@
                 </div>
 
                 <!-- Right: Explore -->
-                <div class="group p-6 rounded-2xl bg-gray-50 dark:bg-gray-900/50 hover:bg-indigo-50/50 dark:hover:bg-indigo-900/10 transition-colors duration-300 border border-transparent hover:border-indigo-100 dark:hover:border-indigo-900/30">
+                <div class="glass-card group p-6 rounded-2xl bg-gray-50 dark:bg-gray-900/50 hover:bg-indigo-50/50 dark:hover:bg-indigo-900/10 transition-colors duration-300 border border-transparent hover:border-indigo-100 dark:hover:border-indigo-900/30">
                     <div class="flex items-center mb-4">
                         <div class="p-2 bg-white dark:bg-gray-800 rounded-lg shadow-sm mr-3 text-indigo-500">
                             <i data-lucide="telescope" class="w-5 h-5"></i>
@@ -219,7 +218,7 @@
             </div>
 
             <!-- Philosophy Block -->
-            <div class="relative bg-gradient-to-br from-gray-50 to-white dark:from-gray-900 dark:to-gray-900 border border-gray-100 dark:border-gray-800 p-8 rounded-2xl shadow-sm mb-16">
+            <div class="glass-card relative bg-gradient-to-br from-gray-50 to-white dark:from-gray-900 dark:to-gray-900 border border-gray-100 dark:border-gray-800 p-8 rounded-2xl shadow-sm mb-16">
                 <i data-lucide="quote" class="absolute top-6 left-6 w-8 h-8 text-gray-200 dark:text-gray-700 -z-10"></i>
                 <p class="text-gray-700 dark:text-gray-300 italic text-center font-serif text-lg leading-loose">
                     "在这个信息爆炸的时代，我希望通过 RSS 订阅回归阅读的本质，通过精选的网页收藏构建知识的图谱。去除了多余的装饰，只保留最核心的阅读体验。"
@@ -243,7 +242,7 @@
                 这个网站是我数字生命的一部分，它会随着我的成长而缓慢生长。<br>
                 如果你能在这里找到一篇有用的文章，一张喜欢的图片，那便是我最大的荣幸。
             </p>
-            
+
             <div class="flex items-center justify-center mt-12 mb-4">
                 <span class="font-serif italic text-gray-400 text-sm">—— 2025. Thoi</span>
             </div>
@@ -427,6 +426,5 @@
         }
     </script>
 <script src="js/tracker.js"></script>
-    <script src="js/cat-cursor.js"></script>
 </body>
 </html>

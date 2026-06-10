@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const momentsContainer = document.querySelector('#moments-grid');
     const searchInput = document.querySelector('#search-input');
     const tagFiltersContainer = document.querySelector('#tag-filters');
-    
+
     // Stats Elements
     const statsCount = document.getElementById('stats-count');
     const statsDays = document.getElementById('stats-days');
@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const lightboxShare = document.getElementById('lightbox-share');
     const lightboxPrev = document.getElementById('lightbox-prev');
     const lightboxNext = document.getElementById('lightbox-next');
-    
+
     // EXIF Elements
     const lightboxExif = document.getElementById('lightbox-exif');
     const exifCamera = document.getElementById('exif-camera');
@@ -59,7 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Handle ISO string or simple YYYY-MM-DD
         let date = new Date(dateStr);
         if (!isNaN(date.getTime())) return date;
-        
+
         // Safari fallback
         date = new Date(dateStr.replace(/-/g, '/'));
         return isNaN(date.getTime()) ? new Date() : date;
@@ -103,7 +103,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function initBackToTop() {
         if (!backToTopBtn) return;
-        
+
         window.addEventListener('scroll', () => {
             if (window.scrollY > 300) {
                 backToTopBtn.classList.remove('opacity-0', 'translate-y-10');
@@ -161,13 +161,13 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         const sortedTags = Object.keys(tagCounts).sort((a, b) => tagCounts[b] - tagCounts[a]);
-        
+
         tagFiltersContainer.innerHTML = `
-            <button class="tag-chip px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap flex-shrink-0 transition-all border ${!activeTag ? 'bg-blue-600 text-white border-blue-600 shadow-md' : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700'}" data-tag="all">
+            <button class="tag-chip glass-pill px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap flex-shrink-0 transition-all border ${!activeTag ? 'bg-blue-600 text-white border-blue-600 shadow-md' : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700'}" data-tag="all">
                 全部 <span class="opacity-80 text-xs ml-1">(${moments.length})</span>
             </button>
             ${sortedTags.map(tag => `
-                <button class="tag-chip px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap flex-shrink-0 transition-all border ${activeTag === tag ? 'bg-blue-600 text-white border-blue-600 shadow-md' : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700'}" data-tag="${tag}">
+                <button class="tag-chip glass-pill px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap flex-shrink-0 transition-all border ${activeTag === tag ? 'bg-blue-600 text-white border-blue-600 shadow-md' : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700'}" data-tag="${tag}">
                     #${tag} <span class="opacity-60 text-xs ml-1">(${tagCounts[tag]})</span>
                 </button>
             `).join('')}
@@ -205,11 +205,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const years = new Set(moments.map(m => safeDate(m.date).getFullYear()));
         const currentYear = new Date().getFullYear();
-        years.add(currentYear); 
+        years.add(currentYear);
         years.add(2026); // Explicitly add 2026 for forward planning
-        
+
         const sortedYears = Array.from(years).sort((a, b) => b - a);
-        
+
         // Button styles
         const activeClass = "inline-flex items-center px-3 py-1 text-xs font-medium rounded-full bg-blue-600 text-white dark:bg-blue-500 dark:text-white shadow-sm transition-all duration-300 ring-2 ring-blue-200 dark:ring-blue-500/40";
         const inactiveClass = "inline-flex items-center px-3 py-1 text-xs font-medium rounded-full text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-300";
@@ -223,7 +223,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 </button>
              `;
         });
-        
+
         container.innerHTML = html;
     }
 
@@ -290,7 +290,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function switchView(view) {
         if (currentView === view) return;
         currentView = view;
-        
+
         // Update Buttons
         if (view === 'grid') {
             viewGridBtn.className = "p-1.5 rounded-lg bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 transition-all shadow-sm";
@@ -332,7 +332,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderSkeleton() {
         momentsContainer.className = "columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6";
         momentsContainer.innerHTML = Array(6).fill(0).map((_, i) => `
-            <div class="break-inside-avoid bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 overflow-hidden h-full animate-pulse mb-6">
+            <div class="glass-card break-inside-avoid bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 overflow-hidden h-full animate-pulse mb-6">
                 <div class="h-64 bg-gray-200 dark:bg-gray-800"></div>
                 <div class="p-6 space-y-4">
                     <div class="h-4 w-24 bg-gray-200 dark:bg-gray-800 rounded"></div>
@@ -346,10 +346,10 @@ document.addEventListener('DOMContentLoaded', () => {
         renderSkeleton();
         try {
             await new Promise(resolve => setTimeout(resolve, 600));
-            
+
             // 1. Fetch Local Data - DISABLED to prioritize real-time GitHub Issues
             let localMoments = [];
-            
+
             try {
                 const localResponse = await fetch(`public/data/moments.json?v=${Date.now()}`);
                 if (localResponse.ok) {
@@ -358,14 +358,14 @@ document.addEventListener('DOMContentLoaded', () => {
             } catch (e) {
                 console.warn('Failed to fetch local moments:', e);
             }
-            
+
 
             // 2. Fetch GitHub Issues (Primary Source)
-            const GITHUB_USERNAME = 'Harrington1106'; 
+            const GITHUB_USERNAME = 'Harrington1106';
             const GITHUB_REPO = 'blog-add';
-            
+
             let githubMoments = [];
-            
+
             // Always fetch from API for real-time updates
             if (GITHUB_USERNAME !== 'your-username') {
                 try {
@@ -421,7 +421,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             const tagMatches = content.match(/#[\w\u4e00-\u9fa5]+/g);
                             if (tagMatches) {
                                 tags.push(...tagMatches.map(t => t.substring(1)));
-                                content = content.replace(/#[\w\u4e00-\u9fa5]+/g, ''); 
+                                content = content.replace(/#[\w\u4e00-\u9fa5]+/g, '');
                             }
 
                             return {
@@ -444,9 +444,9 @@ document.addEventListener('DOMContentLoaded', () => {
             // Filter out duplicates if both sources are used (based on ID or content)
             const localIds = new Set(localMoments.map(m => m.id));
             const newGithubMoments = githubMoments.filter(m => !localIds.has(m.id));
-            
+
             allMoments = [...newGithubMoments, ...localMoments];
-            
+
             // Sort by date descending
             allMoments.sort((a, b) => safeDate(b.date) - safeDate(a.date));
 
@@ -480,7 +480,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             filterMoments();
-            
+
             // Handle Deep Link
             const params2 = new URLSearchParams(window.location.search);
             const initialId = params2.get('id');
@@ -552,15 +552,15 @@ document.addEventListener('DOMContentLoaded', () => {
             const date = safeDate(moment.date).toLocaleDateString('zh-CN', {
                 year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
             });
-            
+
             const imageHtml = moment.image ? `
                 <div class="relative overflow-hidden rounded-xl mb-4 group cursor-zoom-in" onclick="openLightbox('${moment.id}')">
                     <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10 flex items-center justify-center">
                         <i data-lucide="maximize-2" class="w-8 h-8 text-white drop-shadow-lg transform scale-75 group-hover:scale-100 transition-transform"></i>
                     </div>
-                    <img 
-                        src="${optimizeGithubImage(moment.image)}" 
-                        alt="Moment" 
+                    <img
+                        src="${optimizeGithubImage(moment.image)}"
+                        alt="Moment"
                         loading="lazy"
                         class="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-105"
                     />
@@ -580,24 +580,24 @@ document.addEventListener('DOMContentLoaded', () => {
             ` : '';
 
             return `
-            <div 
-                class="break-inside-avoid bg-white dark:bg-neutral-900 rounded-2xl shadow-sm hover:shadow-lg border border-gray-100 dark:border-gray-800 p-5 transition-all duration-300 hover:-translate-y-1 animate-fade-in"
+            <div
+                class="moment-card glass-card break-inside-avoid bg-white dark:bg-neutral-900 rounded-2xl shadow-sm hover:shadow-lg border border-gray-100 dark:border-gray-800 p-5 transition-all duration-300 hover:-translate-y-1 animate-fade-in"
                 style="animation-delay: ${index * 0.05}s"
             >
                 ${imageHtml}
-                
+
                 <div class="relative">
                     <div class="text-xs font-medium text-gray-400 mb-2 flex items-center">
                         <i data-lucide="clock" class="w-3 h-3 mr-1.5 text-blue-500"></i>
                         ${date}
                     </div>
-                    
+
                     <p class="text-gray-700 dark:text-gray-300 leading-relaxed font-serif text-lg">
                         ${moment.content}
                     </p>
-                    
+
                     ${locationHtml}
-                    
+
                     ${moment.tags ? `
                         <div class="flex flex-wrap gap-2 mt-4">
                             ${moment.tags.map(tag => `
@@ -609,20 +609,20 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
             `;
         }).join('');
-        
+
         safeLucideCreateIcons();
     }
 
     function renderTimeline(moments) {
         momentsContainer.className = "max-w-3xl mx-auto pl-8 border-l-2 border-blue-100 dark:border-gray-800 space-y-10";
-        
+
         let lastYearMonth = '';
-        
+
         momentsContainer.innerHTML = moments.map((moment, index) => {
             const dateObj = safeDate(moment.date);
             const yearMonth = dateObj.toLocaleDateString('zh-CN', { year: 'numeric', month: 'long' });
             const dateStr = dateObj.toLocaleDateString('zh-CN', { day: 'numeric', hour: '2-digit', minute: '2-digit' });
-            
+
             let headerHtml = '';
             if (yearMonth !== lastYearMonth) {
                 lastYearMonth = yearMonth;
@@ -642,9 +642,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const imageHtml = moment.image ? `
                 <div class="relative w-full md:w-48 h-48 md:h-auto shrink-0 overflow-hidden rounded-xl cursor-zoom-in" onclick="openLightbox('${moment.id}')">
-                    <img 
-                        src="${optimizeGithubImage(moment.image)}" 
-                        alt="Moment" 
+                    <img
+                        src="${optimizeGithubImage(moment.image)}"
+                        alt="Moment"
                         loading="lazy"
                         class="w-full h-full object-cover transition-transform duration-700 hover:scale-110"
                     />
@@ -654,10 +654,10 @@ document.addEventListener('DOMContentLoaded', () => {
             return `
             <div class="relative animate-fade-in" style="animation-delay: ${index * 0.05}s">
                 ${headerHtml}
-                
-                <div class="ml-4 mt-8 bg-white dark:bg-neutral-900 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-800 hover:shadow-md transition-shadow flex flex-col md:flex-row gap-6">
+
+                <div class="moment-card glass-card ml-4 mt-8 bg-white dark:bg-neutral-900 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-800 hover:shadow-md transition-shadow flex flex-col md:flex-row gap-6">
                     ${imageHtml}
-                    
+
                     <div class="flex-1">
                         <div class="flex items-center text-xs text-gray-400 mb-3">
                             <i data-lucide="clock" class="w-3 h-3 mr-1.5"></i>
@@ -670,11 +670,11 @@ document.addEventListener('DOMContentLoaded', () => {
                                 </a>
                             ` : ''}
                         </div>
-                        
+
                         <p class="text-gray-700 dark:text-gray-300 leading-relaxed font-serif text-lg mb-4">
                             ${moment.content}
                         </p>
-                        
+
                         ${moment.tags ? `
                             <div class="flex flex-wrap gap-2">
                                 ${moment.tags.map(tag => `
@@ -687,7 +687,7 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
             `;
         }).join('');
-        
+
         safeLucideCreateIcons();
     }
 
@@ -709,7 +709,7 @@ document.addEventListener('DOMContentLoaded', () => {
         lightboxDate.textContent = safeDate(moment.date).toLocaleDateString('zh-CN', {
             year: 'numeric', month: 'long', day: 'numeric', weekday: 'long'
         });
-        
+
         if (moment.location) {
             lightboxLocation.textContent = moment.location;
             lightboxLocationContainer.classList.remove('hidden');
@@ -726,7 +726,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Tags
         if (moment.tags && moment.tags.length > 0) {
-            lightboxTags.innerHTML = moment.tags.map(tag => 
+            lightboxTags.innerHTML = moment.tags.map(tag =>
                 `<span class="text-xs font-medium text-blue-600 dark:text-blue-300 bg-blue-50 dark:bg-blue-500/10 px-2.5 py-1 rounded-full border border-blue-100 dark:border-blue-500/20">#${tag}</span>`
             ).join('');
             lightboxTags.classList.remove('hidden');
@@ -769,10 +769,10 @@ document.addEventListener('DOMContentLoaded', () => {
         lightbox.classList.add('opacity-0');
         setTimeout(() => {
             lightbox.classList.add('hidden');
-            lightboxImg.src = ''; 
+            lightboxImg.src = '';
         }, 300);
         document.body.style.overflow = '';
-        
+
         // Remove ID from URL
         const newUrl = new URL(window.location);
         newUrl.searchParams.delete('id');
@@ -801,14 +801,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Event Listeners for Lightbox
     lightboxClose.addEventListener('click', closeLightbox);
-    
+
     // Share Button
     if (lightboxShare) {
         lightboxShare.addEventListener('click', async () => {
             const url = window.location.href;
             try {
                 await navigator.clipboard.writeText(url);
-                
+
                 // Visual feedback
                 const originalIcon = lightboxShare.innerHTML;
                 lightboxShare.innerHTML = '<i data-lucide="check" class="w-6 h-6 text-green-600 dark:text-green-400"></i>';
@@ -838,7 +838,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Keyboard navigation
     document.addEventListener('keydown', (e) => {
         if (lightbox.classList.contains('hidden')) return;
-        
+
         if (e.key === 'Escape') closeLightbox();
         if (e.key === 'ArrowRight') nextImage();
         if (e.key === 'ArrowLeft') prevImage();
@@ -847,16 +847,16 @@ document.addEventListener('DOMContentLoaded', () => {
     // Touch Gestures (Swipe)
     let touchStartX = 0;
     let touchEndX = 0;
-    
+
     lightboxImg.addEventListener('touchstart', e => {
         touchStartX = e.changedTouches[0].screenX;
     }, { passive: true });
-    
+
     lightboxImg.addEventListener('touchend', e => {
         touchEndX = e.changedTouches[0].screenX;
         handleSwipe();
     }, { passive: true });
-    
+
     function handleSwipe() {
         if (touchEndX < touchStartX - 50) nextImage(); // Swipe Left -> Next
         if (touchEndX > touchStartX + 50) prevImage(); // Swipe Right -> Prev
@@ -866,7 +866,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (searchInput) {
         searchInput.addEventListener('input', filterMoments);
     }
-    
+
     if (btnRandom) {
         btnRandom.addEventListener('click', openRandomLightbox);
     }
