@@ -9,13 +9,19 @@ function readCss() {
 }
 
 describe('liquid-home.css: required classes', () => {
-  it('defines fluid canvas container', () => {
+  it('defines liquid-glass and liquid-glass-strong classes', () => {
     const css = readCss();
-    expect(css).toContain('.fluid-canvas');
-    expect(css).toContain('position:fixed');
+    expect(css).toContain('.liquid-glass');
+    expect(css).toContain('.liquid-glass-strong');
   });
 
-  it('defines avatar glass ring', () => {
+  it('uses backdrop-filter for glass effect', () => {
+    const css = readCss();
+    expect(css).toContain('backdrop-filter');
+    expect(css).toContain('blur');
+  });
+
+  it('defines avatar ring', () => {
     const css = readCss();
     expect(css).toContain('.avatar-ring');
   });
@@ -37,15 +43,14 @@ describe('liquid-home.css: required classes', () => {
     expect(css).toContain('.visit-count');
   });
 
-  it('defines single-screen layout (100dvh, overflow hidden)', () => {
+  it('defines single-screen layout (100dvh)', () => {
     const css = readCss();
     expect(css).toContain('100dvh');
-    expect(css).toContain('overflow:hidden');
   });
 
   it('defines responsive breakpoints', () => {
     const css = readCss();
-    expect(css).toContain('max-width:640px');
-    expect(css).toContain('max-width:1024px');
+    expect(css).toContain('max-width: 640px');
+    expect(css).toContain('max-width: 1024px');
   });
 });

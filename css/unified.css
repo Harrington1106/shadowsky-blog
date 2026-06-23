@@ -77,15 +77,25 @@ body{
 #navbar{
   position:fixed;top:16px;left:50%;transform:translateX(-50%);
   z-index:var(--z-sticky);
-  background:var(--nav-bg);
-  backdrop-filter:var(--nav-blur);
-  -webkit-backdrop-filter:var(--nav-blur);
-  border:1px solid var(--nav-border);
+  background:rgba(255,255,255,0.04);
+  backdrop-filter:blur(20px) saturate(1.1);
+  -webkit-backdrop-filter:blur(20px) saturate(1.1);
+  border:1px solid rgba(255,255,255,0.08);
   border-radius:var(--radius-full);
-  box-shadow:var(--glass-shadow-soft);
-  transition:all var(--duration-normal) var(--ease-out);
-  padding:6px 8px;
-  width:auto;max-width:calc(100vw - 32px);
+  box-shadow:0 20px 60px rgba(0,0,0,0.25),inset 0 1px 0 rgba(255,255,255,0.08);
+  padding:6px 8px;width:auto;max-width:calc(100vw - 32px);
+  position:relative;overflow:hidden;
+}
+/* 边缘微光（mask 渐变边框，liquid-portfolio 风格） */
+#navbar::before{
+  content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  padding:1px;
+  background:linear-gradient(180deg,
+    rgba(255,255,255,0.35) 0%,rgba(255,255,255,0.08) 30%,
+    transparent 50%,transparent 70%,
+    rgba(255,255,255,0.08) 80%,rgba(255,255,255,0.3) 100%);
+  -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude;
 }
 #navbar .nav-inner{
   display:flex;align-items:center;justify-content:center;gap:2px;
@@ -113,6 +123,12 @@ body{
 }
 #navbar .nav-link i{width:16px;height:16px}
 
+/* 桌面端隐藏文字，仅显示图标 */
+#navbar .nav-text { display: none; }
+@media (max-width: 1024px) {
+  #navbar .nav-text { display: inline; }
+}
+
 /* Theme toggle */
 #theme-toggle.theme-toggle{
   display:inline-flex;align-items:center;justify-content:center;
@@ -136,26 +152,32 @@ body{
 #mobile-menu{
   display:none;position:fixed;inset:0;
   z-index:var(--z-overlay);
-  background:var(--nav-mobile-bg);
-  backdrop-filter:var(--nav-blur);
-  -webkit-backdrop-filter:var(--nav-blur);
-  padding:80px var(--sp-6) var(--sp-6);flex-direction:column;gap:var(--sp-2);overflow-y:auto;
+  background:rgba(6,11,24,0.92);
+  backdrop-filter:blur(40px) saturate(1.2);
+  -webkit-backdrop-filter:blur(40px) saturate(1.2);
+  padding:80px var(--sp-6) var(--sp-6);flex-direction:column;gap:var(--sp-1);overflow-y:auto;
 }
 #mobile-menu.open{display:flex}
 #mobile-menu .nav-link{
   display:flex;align-items:center;gap:var(--sp-3);
   padding:var(--sp-4) var(--sp-5);
   border-radius:var(--radius-lg);
-  font-size:var(--text-lg);color:var(--color-text-primary);
-  border:1px solid transparent;text-decoration:none;
-  transition:all var(--duration-fast);
+  font-size:var(--text-lg);color:rgba(255,255,255,0.7);
+  text-decoration:none;transition:all 0.15s ease;
 }
 #mobile-menu .nav-link:hover,
 #mobile-menu .nav-link.active{
-  background:var(--nav-link-active-bg);
-  border-color:var(--nav-link-active-border);
-  color:var(--nav-link-active-color);
+  background:rgba(255,255,255,0.06);
+  color:rgba(255,255,255,0.95);
 }
+.light #mobile-menu{
+  background:rgba(245,247,250,0.92);
+  backdrop-filter:blur(40px) saturate(1.2);
+  -webkit-backdrop-filter:blur(40px) saturate(1.2);
+}
+.light #mobile-menu .nav-link{color:rgba(0,0,0,0.6)}
+.light #mobile-menu .nav-link:hover,
+.light #mobile-menu .nav-link.active{background:rgba(0,0,0,0.04);color:rgba(0,0,0,0.9)}
 
 @media(max-width:1024px){
   #navbar .nav-links{display:none}
@@ -163,6 +185,26 @@ body{
   #navbar #theme-toggle{margin-left:8px}
   #navbar{padding:4px 6px}
 }
+
+/* 亮色主题导航栏 */
+.light #navbar{
+  background:rgba(255,255,255,0.55);
+  backdrop-filter:blur(20px) saturate(1.2);
+  -webkit-backdrop-filter:blur(20px) saturate(1.2);
+  border-color:rgba(0,0,0,0.08);
+  box-shadow:0 20px 60px rgba(0,0,0,0.08),inset 0 1px 0 rgba(255,255,255,0.6);
+}
+.light #navbar::before{
+  background:linear-gradient(180deg,
+    rgba(0,0,0,0.1) 0%,rgba(0,0,0,0.03) 30%,
+    transparent 50%,transparent 70%,
+    rgba(0,0,0,0.03) 80%,rgba(0,0,0,0.08) 100%);
+}
+.light #navbar .nav-link{color:rgba(0,0,0,0.65)}
+.light #navbar .nav-link:hover{color:rgba(0,0,0,0.9);background:rgba(0,0,0,0.04)}
+.light #navbar .nav-link.active{color:rgba(0,0,0,0.9);background:rgba(0,0,0,0.06);box-shadow:inset 0 0 0 1px rgba(0,0,0,0.1)}
+.light #navbar #theme-toggle{color:rgba(0,0,0,0.55)}
+.light #navbar #nav-hamburger{color:rgba(0,0,0,0.55)}
 
 /* ═══════ FOOTER ═══════ */
 footer{

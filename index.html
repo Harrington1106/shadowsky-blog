@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#060B18" media="(prefers-color-scheme: dark)">
-    <meta name="theme-color" content="#E8ECF1" media="(prefers-color-scheme: light)">
-    <title>SHADOW THOI — 探索未知</title>
+    <meta name="theme-color" content="#F5F7FA" media="(prefers-color-scheme: light)">
+    <title>SHADOW THOI</title>
     <link rel="icon" type="image/png" href="public/img/favicon256.png">
 
     <link rel="preconnect" href="https://fonts.loli.net">
@@ -16,21 +16,17 @@
     <link href="css/liquid-home.css" rel="stylesheet">
 </head>
 <body class="font-sans">
-    <!-- ═══════ 流体背景层 ═══════ -->
-    <canvas id="fluid-canvas" class="fluid-canvas" style="display:none;"></canvas>
-    <div id="fluid-fallback" class="fluid-fallback"></div>
-
-    <!-- ═══════ NAVBAR（精简：图标+文字 居中）═══════ -->
+    <!-- ═══════ NAVBAR（桌面：仅图标，移动：图标+文字）═══════ -->
     <nav id="navbar">
         <div class="nav-inner">
             <div class="nav-links" role="navigation" aria-label="Main">
-                <a href="index.html" class="nav-link active"><i data-lucide="house"></i><span>首页</span></a>
-                <a href="blog.html" class="nav-link"><i data-lucide="file-text"></i><span>笔记</span></a>
-                <a href="moments.html" class="nav-link"><i data-lucide="camera"></i><span>片刻</span></a>
-                <a href="bookmarks.html" class="nav-link"><i data-lucide="bookmark"></i><span>收藏</span></a>
-                <a href="rss.html" class="nav-link"><i data-lucide="rss"></i><span>订阅</span></a>
-                <a href="acg.html" class="nav-link"><i data-lucide="film"></i><span>ACG</span></a>
-                <a href="about.html" class="nav-link"><i data-lucide="user-circle"></i><span>关于</span></a>
+                <a href="index.html" class="nav-link active" title="首页"><i data-lucide="house"></i><span class="nav-text">首页</span></a>
+                <a href="blog.html" class="nav-link" title="笔记"><i data-lucide="file-text"></i><span class="nav-text">笔记</span></a>
+                <a href="moments.html" class="nav-link" title="片刻"><i data-lucide="camera"></i><span class="nav-text">片刻</span></a>
+                <a href="bookmarks.html" class="nav-link" title="收藏"><i data-lucide="bookmark"></i><span class="nav-text">收藏</span></a>
+                <a href="rss.html" class="nav-link" title="订阅"><i data-lucide="rss"></i><span class="nav-text">订阅</span></a>
+                <a href="acg.html" class="nav-link" title="ACG"><i data-lucide="film"></i><span class="nav-text">ACG</span></a>
+                <a href="about.html" class="nav-link" title="关于"><i data-lucide="user-circle"></i><span class="nav-text">关于</span></a>
             </div>
             <button id="theme-toggle" class="theme-toggle" aria-label="切换主题">
                 <i data-lucide="sun" class="dark-only"></i>
@@ -55,18 +51,18 @@
     <!-- ═══════ 单屏舞台 ═══════ -->
     <div class="home-stage">
         <div class="home-focus">
-            <div class="avatar-ring">
+            <div class="avatar-ring liquid-glass-strong">
                 <img src="public/img/avatar.jpg" alt="Avatar">
             </div>
             <h1 class="home-name">SHADOW THOI</h1>
             <p class="typewriter"><span class="tw-text"></span><span class="cursor">&nbsp;</span></p>
             <div class="tag-pills">
-                <span class="tag-pill" style="animation-delay:.0s"><i data-lucide="code-2" style="width:14px;height:14px;"></i> 全栈</span>
-                <span class="tag-pill" style="animation-delay:.08s"><i data-lucide="telescope" style="width:14px;height:14px;"></i> 天文</span>
-                <span class="tag-pill" style="animation-delay:.16s"><i data-lucide="gamepad-2" style="width:14px;height:14px;"></i> ACG</span>
-                <span class="tag-pill" style="animation-delay:.24s"><i data-lucide="moon" style="width:14px;height:14px;"></i> 夜猫子</span>
-                <span class="tag-pill" style="animation-delay:.32s"><i data-lucide="star" style="width:14px;height:14px;"></i> 开源</span>
-                <span class="tag-pill" style="animation-delay:.40s"><i data-lucide="map-pin" style="width:14px;height:14px;"></i> 香港</span>
+                <span class="tag-pill" style="animation-delay:.0s"><i data-lucide="code-2" style="width:13px;height:13px;"></i> 全栈</span>
+                <span class="tag-pill" style="animation-delay:.08s"><i data-lucide="telescope" style="width:13px;height:13px;"></i> 天文</span>
+                <span class="tag-pill" style="animation-delay:.16s"><i data-lucide="gamepad-2" style="width:13px;height:13px;"></i> ACG</span>
+                <span class="tag-pill" style="animation-delay:.24s"><i data-lucide="moon" style="width:13px;height:13px;"></i> 夜猫子</span>
+                <span class="tag-pill" style="animation-delay:.32s"><i data-lucide="star" style="width:13px;height:13px;"></i> 开源</span>
+                <span class="tag-pill" style="animation-delay:.40s"><i data-lucide="map-pin" style="width:13px;height:13px;"></i> 香港</span>
             </div>
         </div>
 
@@ -75,20 +71,17 @@
                 <span class="pulse-dot"></span>
                 <span id="visit-num">0</span> 次浏览
             </span>
-            <span>&copy; 2025 SHADOW THOI · Built with Liquid Glass</span>
+            <span>&copy; 2025 SHADOW THOI</span>
         </footer>
     </div>
 
-    <!-- ═══════ Scripts（全普通加载，无 module）═══════ -->
     <script src="js/vendor/lucide.min.js"></script>
-    <script src="js/fluid-config.js"></script>
-    <script src="js/fluid-bg.js"></script>
     <script src="js/typewriter.js"></script>
     <script src="js/navbar.js"></script>
     <script>
         lucide.createIcons();
 
-        // 打字机启动
+        // 打字机
         if (window.LiquidTypewriter) {
             LiquidTypewriter.initTypewriter('.typewriter', [
                 '星河欲转千帆舞',
@@ -99,30 +92,34 @@
             ], { typeMs: 60, deleteMs: 30 });
         }
 
-        // 浏览量 count-up
+        // 浏览量
         (function() {
             var el = document.getElementById('visit-num');
             if (!el) return;
-            if (window.api && typeof window.api.fetchSiteStats === 'function') {
-                window.api.fetchSiteStats().then(function(stats) {
-                    var target = Number(stats.total) || 0;
-                    if (!target) { el.textContent = '—'; return; }
-                    var cur = 0;
-                    var step = Math.max(1, Math.ceil(target / 60));
-                    function tick() {
-                        cur = Math.min(target, cur + step);
-                        el.textContent = cur.toLocaleString();
-                        if (cur < target) requestAnimationFrame(tick);
-                    }
-                    tick();
+            if (window.api && window.api.fetchSiteStats) {
+                window.api.fetchSiteStats().then(function(s) {
+                    var t = Number(s.total) || 0;
+                    if (!t) { el.textContent = '—'; return; }
+                    var c = 0, step = Math.max(1, Math.ceil(t / 60));
+                    (function tick() {
+                        c = Math.min(t, c + step);
+                        el.textContent = c.toLocaleString();
+                        if (c < t) requestAnimationFrame(tick);
+                    })();
                 }).catch(function() { el.textContent = '—'; });
-            } else {
-                el.textContent = '—';
-            }
+            } else { el.textContent = '—'; }
         })();
-    </script>
 
-    <!-- 右键菜单 + 访问追踪 -->
+        // 主题 logo 同步
+        var h = document.documentElement;
+        function sync() {
+            var d = h.classList.contains('dark');
+            document.querySelectorAll('img.dark-only').forEach(function(i) { i.style.display = d ? 'inline' : 'none'; });
+            document.querySelectorAll('img.light-only').forEach(function(i) { i.style.display = d ? 'none' : 'inline'; });
+        }
+        window.addEventListener('themechange', sync);
+        sync();
+    </script>
     <script src="js/context-menu.js"></script>
     <script src="js/api.js"></script>
     <script src="js/tracker.js"></script>
