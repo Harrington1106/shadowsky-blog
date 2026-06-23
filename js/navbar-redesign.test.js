@@ -8,25 +8,23 @@ function readCss() {
   return readFileSync(path.join(ROOT, 'css/unified.css'), 'utf8');
 }
 
-describe('navbar redesign: unified inline-groove style', () => {
+describe('navbar redesign: floating glass pill', () => {
   const css = readCss();
 
-  it('nav-link has transparent background (no independent pill)', () => {
-    // 新设计：默认背景透明，不再是独立玻璃药丸
+  it('navbar uses floating pill design (border-radius:full)', () => {
+    expect(css).toContain('border-radius:var(--radius-full)');
+  });
+
+  it('navbar is centered (left:50%;transform:translateX)', () => {
+    expect(css).toContain('left:50%');
+    expect(css).toContain('translateX(-50%)');
+  });
+
+  it('nav-link has transparent background by default', () => {
     expect(css).toContain('background:transparent');
   });
 
-  it('defines a hover groove highlight class', () => {
-    expect(css).toContain('.nav-link:hover');
-  });
-
-  it('defines an active state with neon underline', () => {
-    expect(css).toContain('.nav-link.active');
-    // active 态有霓虹下划线（渐变）
-    expect(css).toMatch(/linear-gradient.*--neon/);
-  });
-
-  it('brand and links are separated by a divider', () => {
-    expect(css).toContain('.nav-divider');
+  it('nav-link active uses inset shadow (not neon underline)', () => {
+    expect(css).toContain('box-shadow:inset');
   });
 });

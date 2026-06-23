@@ -75,118 +75,79 @@ body{
 
 /* ═══════ NAVBAR ═══════ */
 #navbar{
-  position:fixed;top:0;left:0;right:0;height:var(--nav-height);
+  position:fixed;top:16px;left:50%;transform:translateX(-50%);
   z-index:var(--z-sticky);
   background:var(--nav-bg);
   backdrop-filter:var(--nav-blur);
   -webkit-backdrop-filter:var(--nav-blur);
-  border-bottom:1px solid var(--nav-border);
-  box-shadow:var(--nav-shadow);
-  transition:box-shadow var(--duration-normal) var(--ease-out);
+  border:1px solid var(--nav-border);
+  border-radius:var(--radius-full);
+  box-shadow:var(--glass-shadow-soft);
+  transition:all var(--duration-normal) var(--ease-out);
+  padding:6px 8px;
+  width:auto;max-width:calc(100vw - 32px);
 }
-#navbar.scrolled{box-shadow:var(--glass-shadow)}
-
 #navbar .nav-inner{
-  display:flex;align-items:center;justify-content:space-between;height:100%;
-  max-width:var(--content-max);margin-inline:auto;padding-inline:var(--sp-6);
+  display:flex;align-items:center;justify-content:center;gap:2px;
 }
-
-#navbar .nav-brand{
-  display:flex;align-items:center;gap:var(--sp-3);
-  font-weight:var(--weight-bold);font-size:var(--text-xl);letter-spacing:-0.02em;
-  color:var(--color-text-primary);transition:opacity var(--duration-fast);
+#navbar .nav-links{
+  display:flex;align-items:center;gap:2px;
 }
-#navbar .nav-brand:hover{opacity:0.8}
-#navbar .nav-brand img{height:32px;width:32px;border-radius:var(--radius-sm)}
-
-/* Desktop nav links — 一体式玻璃条内嵌凹槽（去独立 pill，统一 15 页） */
-#navbar .nav-links{display:flex;align-items:center;gap:var(--sp-1)}
 #navbar .nav-link{
   display:inline-flex;align-items:center;gap:6px;
-  padding:7px 14px;
-  border-radius:var(--radius-md);
+  padding:8px 16px;border-radius:var(--radius-full);
   font-size:var(--text-sm);font-weight:var(--weight-medium);
-  background:transparent;             /* 默认透明，不再独立药丸 */
-  border:1px solid transparent;
   color:var(--nav-link-color);
+  text-decoration:none;white-space:nowrap;
   transition:all var(--duration-fast) var(--ease-out);
-  white-space:nowrap;position:relative;
+  background:transparent;border:none;
 }
-/* hover：柔和光块（无硬边框），文字微提亮 */
 #navbar .nav-link:hover{
   color:var(--nav-link-hover-color);
-  background:var(--nav-link-hover-bg);
-  border-color:var(--nav-link-hover-border);
-  box-shadow:var(--nav-link-hover-shadow);
-  transform:translateY(-1px);
+  background:var(--nav-link-active-bg);
 }
-/* active：底部 2px 霓虹渐变下划线 + 提亮 */
 #navbar .nav-link.active{
   color:var(--nav-link-active-color);
   background:var(--nav-link-active-bg);
-  border-color:var(--nav-link-active-border);
-  box-shadow:var(--nav-link-active-shadow);
+  box-shadow:inset 0 0 0 1px var(--nav-link-active-border);
 }
-#navbar .nav-link.active::after{
-  content:'';position:absolute;left:14px;right:14px;bottom:2px;height:2px;
-  background:linear-gradient(90deg,var(--neon-blue),var(--neon-purple),var(--neon-pink));
-  border-radius:2px;
-}
-#navbar .nav-link i{width:16px;height:16px}   /* 图标缩小到 16px */
-
-/* 品牌区与链接区分隔线 */
-.nav-divider{
-  width:1px;height:24px;
-  background:var(--color-border);
-  margin-inline:var(--sp-2);
-}
+#navbar .nav-link i{width:16px;height:16px}
 
 /* Theme toggle */
 #theme-toggle.theme-toggle{
   display:inline-flex;align-items:center;justify-content:center;
-  width:38px;height:38px;
-  border-radius:var(--radius-full);
-  background:var(--nav-link-bg);
-  border:1px solid var(--nav-link-border);
-  color:var(--nav-link-color);
-  cursor:pointer;
-  transition:all var(--duration-fast) var(--ease-out);
-  margin-left:var(--sp-2);
+  width:38px;height:38px;border-radius:var(--radius-full);
+  background:transparent;border:none;
+  color:var(--nav-link-color);cursor:pointer;
+  transition:all var(--duration-fast);
+  margin-left:4px;
 }
-#theme-toggle.theme-toggle:hover{
-  background:var(--nav-link-hover-bg);
-  border-color:var(--nav-link-hover-border);
-}
+#theme-toggle.theme-toggle:hover{color:var(--nav-link-hover-color);background:var(--nav-link-active-bg)}
 
 /* Hamburger */
 #nav-hamburger.nav-hamburger{
   display:none;align-items:center;justify-content:center;
-  width:40px;height:40px;border:1px solid var(--nav-link-border);
-  border-radius:var(--radius-full);cursor:pointer;
-  background:var(--nav-link-bg);color:var(--nav-link-color);
-  transition:all var(--duration-fast);
-}
-#nav-hamburger.nav-hamburger:hover{
-  background:var(--nav-link-hover-bg);
-  border-color:var(--nav-link-hover-border);
+  width:40px;height:40px;border:none;border-radius:var(--radius-full);
+  cursor:pointer;background:transparent;color:var(--nav-link-color);
+  margin-left:4px;
 }
 
 /* Mobile menu */
 #mobile-menu{
-  display:none;position:fixed;inset:0;top:var(--nav-height);
+  display:none;position:fixed;inset:0;
   z-index:var(--z-overlay);
   background:var(--nav-mobile-bg);
   backdrop-filter:var(--nav-blur);
   -webkit-backdrop-filter:var(--nav-blur);
-  padding:var(--sp-6);flex-direction:column;gap:var(--sp-2);overflow-y:auto;
+  padding:80px var(--sp-6) var(--sp-6);flex-direction:column;gap:var(--sp-2);overflow-y:auto;
 }
 #mobile-menu.open{display:flex}
 #mobile-menu .nav-link{
   display:flex;align-items:center;gap:var(--sp-3);
-  padding:var(--sp-3) var(--sp-5);
+  padding:var(--sp-4) var(--sp-5);
   border-radius:var(--radius-lg);
-  font-size:var(--text-base);color:var(--color-text-primary);
-  border:1px solid transparent;
+  font-size:var(--text-lg);color:var(--color-text-primary);
+  border:1px solid transparent;text-decoration:none;
   transition:all var(--duration-fast);
 }
 #mobile-menu .nav-link:hover,
@@ -199,6 +160,8 @@ body{
 @media(max-width:1024px){
   #navbar .nav-links{display:none}
   #nav-hamburger.nav-hamburger{display:flex}
+  #navbar #theme-toggle{margin-left:8px}
+  #navbar{padding:4px 6px}
 }
 
 /* ═══════ FOOTER ═══════ */
