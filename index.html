@@ -14,35 +14,28 @@
 
     <link href="css/unified.css" rel="stylesheet">
     <link href="css/liquid-home.css" rel="stylesheet">
-    <script src="js/vendor/lucide.min.js"></script>
 </head>
 <body class="font-sans">
     <!-- ═══════ 流体背景层 ═══════ -->
     <canvas id="fluid-canvas" class="fluid-canvas"></canvas>
     <div id="fluid-fallback" class="fluid-fallback" style="display:none;"></div>
 
-    <!-- ═══════ NAVBAR ═══════ -->
+    <!-- ═══════ NAVBAR（精简：图标+文字 居中）═══════ -->
     <nav id="navbar">
         <div class="nav-inner">
-            <a href="index.html" class="nav-brand" aria-label="ShadowQuake Home">
-                <img src="public/img/black256.png" alt="Logo" class="dark-only">
-                <img src="public/img/favicon256.png" alt="Logo" class="light-only">
-                <span>ShadowQuake</span>
-            </a>
-            <span class="nav-divider"></span>
             <div class="nav-links" role="navigation" aria-label="Main">
-                <a href="index.html" class="nav-link active"><i data-lucide="house"></i> 首页</a>
-                <a href="blog.html" class="nav-link"><i data-lucide="file-text"></i> 笔记</a>
-                <a href="moments.html" class="nav-link"><i data-lucide="camera"></i> 片刻</a>
-                <a href="bookmarks.html" class="nav-link"><i data-lucide="bookmark"></i> 收藏</a>
-                <a href="rss.html" class="nav-link"><i data-lucide="rss"></i> 订阅</a>
-                <a href="acg.html" class="nav-link"><i data-lucide="film"></i> ACG</a>
-                <a href="about.html" class="nav-link"><i data-lucide="user-circle"></i> 关于</a>
-                <button id="theme-toggle" class="theme-toggle" aria-label="切换主题">
-                    <i data-lucide="sun" class="dark-only"></i>
-                    <i data-lucide="moon" class="light-only"></i>
-                </button>
+                <a href="index.html" class="nav-link active"><i data-lucide="house"></i><span>首页</span></a>
+                <a href="blog.html" class="nav-link"><i data-lucide="file-text"></i><span>笔记</span></a>
+                <a href="moments.html" class="nav-link"><i data-lucide="camera"></i><span>片刻</span></a>
+                <a href="bookmarks.html" class="nav-link"><i data-lucide="bookmark"></i><span>收藏</span></a>
+                <a href="rss.html" class="nav-link"><i data-lucide="rss"></i><span>订阅</span></a>
+                <a href="acg.html" class="nav-link"><i data-lucide="film"></i><span>ACG</span></a>
+                <a href="about.html" class="nav-link"><i data-lucide="user-circle"></i><span>关于</span></a>
             </div>
+            <button id="theme-toggle" class="theme-toggle" aria-label="切换主题">
+                <i data-lucide="sun" class="dark-only"></i>
+                <i data-lucide="moon" class="light-only"></i>
+            </button>
             <button id="nav-hamburger" class="nav-hamburger" aria-label="菜单" aria-expanded="false">
                 <i data-lucide="menu"></i>
             </button>
@@ -86,54 +79,50 @@
         </footer>
     </div>
 
-    <script type="module" src="js/fluid-config.js"></script>
-    <script type="module" src="js/fluid-bg.js"></script>
+    <!-- ═══════ Scripts（全普通加载，无 module）═══════ -->
+    <script src="js/vendor/lucide.min.js"></script>
+    <script src="js/fluid-config.js"></script>
+    <script src="js/fluid-bg.js"></script>
+    <script src="js/typewriter.js"></script>
     <script src="js/navbar.js"></script>
-    <script>lucide.createIcons();</script>
-    <script type="module">
-        import { initTypewriter } from './js/typewriter.js';
-        initTypewriter('.typewriter', [
-            '星河欲转千帆舞',
-            '心有猛虎，细嗅蔷薇',
-            '且将新火试新茶，诗酒趁年华',
-            '路漫漫其修远兮，吾将上下而求索',
-            '星垂平野阔，月涌大江流'
-        ], { typeMs: 60, deleteMs: 30 });
+    <script>
+        lucide.createIcons();
 
-        (async function() {
-            const el = document.getElementById('visit-num');
-            if (!el) return;
-            try {
-                let target = 0;
-                if (window.api && typeof window.api.fetchSiteStats === 'function') {
-                    const stats = await window.api.fetchSiteStats();
-                    target = Number(stats.total) || 0;
-                } else if (window.api && typeof window.api.fetchVisitCount === 'function') {
-                    const result = await window.api.fetchVisitCount('index');
-                    target = Number(result.total) || Number(result.count) || 0;
-                }
-                if (target === 0) { el.textContent = '—'; return; }
-                let cur = 0;
-                const step = Math.max(1, Math.ceil(target / 60));
-                const tick = () => {
-                    cur = Math.min(target, cur + step);
-                    el.textContent = cur.toLocaleString();
-                    if (cur < target) requestAnimationFrame(tick);
-                };
-                tick();
-            } catch (e) { el.textContent = '—'; }
-        })();
-
-        const html = document.documentElement;
-        function syncLogos() {
-            const dark = html.classList.contains('dark');
-            document.querySelectorAll('img.dark-only').forEach(i => i.style.display = dark ? 'inline' : 'none');
-            document.querySelectorAll('img.light-only').forEach(i => i.style.display = dark ? 'none' : 'inline');
+        // 打字机启动
+        if (window.LiquidTypewriter) {
+            LiquidTypewriter.initTypewriter('.typewriter', [
+                '星河欲转千帆舞',
+                '心有猛虎，细嗅蔷薇',
+                '且将新火试新茶，诗酒趁年华',
+                '路漫漫其修远兮，吾将上下而求索',
+                '星垂平野阔，月涌大江流'
+            ], { typeMs: 60, deleteMs: 30 });
         }
-        window.addEventListener('themechange', syncLogos);
-        syncLogos();
+
+        // 浏览量 count-up
+        (function() {
+            var el = document.getElementById('visit-num');
+            if (!el) return;
+            if (window.api && typeof window.api.fetchSiteStats === 'function') {
+                window.api.fetchSiteStats().then(function(stats) {
+                    var target = Number(stats.total) || 0;
+                    if (!target) { el.textContent = '—'; return; }
+                    var cur = 0;
+                    var step = Math.max(1, Math.ceil(target / 60));
+                    function tick() {
+                        cur = Math.min(target, cur + step);
+                        el.textContent = cur.toLocaleString();
+                        if (cur < target) requestAnimationFrame(tick);
+                    }
+                    tick();
+                }).catch(function() { el.textContent = '—'; });
+            } else {
+                el.textContent = '—';
+            }
+        })();
     </script>
 
+    <!-- 右键菜单 + 访问追踪 -->
     <script src="js/context-menu.js"></script>
     <script src="js/api.js"></script>
     <script src="js/tracker.js"></script>
