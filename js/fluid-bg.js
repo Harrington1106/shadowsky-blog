@@ -37,14 +37,16 @@
   const gl = getWebGLContext();
   const webglSupported = !!gl;
 
-  /* ── 降级路径 ── */
+  /* ── 降级路径：WebGL 不可用时，fallback 已默认显示，canvas 保持隐藏 ── */
   if (CFG.shouldUseFallback({ webglSupported, reducedMotion })) {
-    canvas.style.display = 'none';
-    const fb = document.getElementById('fluid-fallback');
-    if (fb) fb.style.display = 'block';
     console.info('[fluid-bg] 降级到 CSS 后备方案');
     return;
   }
+
+  // WebGL 成功 → 显示 canvas，隐藏 CSS fallback
+  canvas.style.display = 'block';
+  const fb = document.getElementById('fluid-fallback');
+  if (fb) fb.style.display = 'none';
 
   /* ── 浮点纹理支持检测 ── */
   let halfFloatExt = null;
