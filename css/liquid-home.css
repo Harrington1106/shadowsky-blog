@@ -3,7 +3,10 @@
    单屏布局：流体背景 + 中央聚焦玻璃区 + 底栏
    ═══════════════════════════════════════════════════════ */
 
-/* ── 流体画布层（WebGL，固定全屏，最底层）── */
+/* ── 主页 body 背景覆盖：透明，让底部流体 canvas 透出 ── */
+body{background:none!important}
+
+/* ── 流体画布层（WebGL，固定全屏）── */
 .fluid-canvas{
   position:fixed;inset:0;width:100vw;height:100dvh;
   z-index:-1;display:block;
