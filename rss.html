@@ -95,29 +95,6 @@
     <main class="rs-page">
         <div class="rs-container">
 
-            <!-- Hero -->
-            <section class="rs-hero">
-                <h1>RSS 订阅</h1>
-                <p class="rs-hero-desc">聚合优质信息源，在信息洪流中保持专注。</p>
-                <div class="rs-hero-stats">
-                    <div class="rs-stat-pill">
-                        <i data-lucide="rss" class="rs-stat-icon"></i>
-                        <span class="rs-stat-value" id="sub-count">—</span>
-                        <span>订阅源</span>
-                    </div>
-                    <div class="rs-stat-pill">
-                        <i data-lucide="folder-tree" class="rs-stat-icon"></i>
-                        <span class="rs-stat-value" id="cat-count">—</span>
-                        <span>分类</span>
-                    </div>
-                    <div class="rs-stat-pill">
-                        <i data-lucide="clock" class="rs-stat-icon"></i>
-                        <span class="rs-stat-value" id="last-updated">—</span>
-                        <span>最近更新</span>
-                    </div>
-                </div>
-            </section>
-
             <!-- ═══ 三栏工作台 ═══ -->
             <div class="rs-workbench" id="rss-workbench">
 
@@ -131,7 +108,16 @@
 
                 <!-- ═══ 侧栏：订阅源列表 ═══ -->
                 <aside class="rs-sidebar" id="rss-sidebar" data-ui-panel="rss-sources">
-                    <div class="rs-sidebar-header">订阅源</div>
+                    <div class="rs-sidebar-header">
+                        <span>订阅源</span>
+                        <span class="rs-sidebar-stats">
+                            <span data-stat="feeds"><span id="sub-count">—</span> 个源</span>
+                            <span class="rs-sidebar-stat-sep">·</span>
+                            <span data-stat="cats"><span id="cat-count">—</span> 类</span>
+                            <span class="rs-sidebar-stat-sep">·</span>
+                            <span data-stat="time"><span id="last-updated">—</span></span>
+                        </span>
+                    </div>
 
                     <!-- 全部文章 -->
                     <button id="all-feeds-btn" class="rs-sidebar-all-btn">

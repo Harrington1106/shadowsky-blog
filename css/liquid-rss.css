@@ -107,136 +107,7 @@
 
 
 /* ═══════════════════════════════════════════════════════
-   HERO — 紧凑液态标题（全高布局优化）
-   ═══════════════════════════════════════════════════════ */
-.rs-hero {
-    position: relative;
-    z-index: 1;
-    padding: 16px 24px 18px;
-    text-align: center;
-    overflow: hidden;
-    flex-shrink: 0;
-}
-
-.rs-hero::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 500px;
-    height: 140px;
-    background: radial-gradient(ellipse, var(--rs-accent-glow), transparent 70%);
-    pointer-events: none;
-    z-index: -1;
-    opacity: 0.5;
-}
-
-.rs-hero h1 {
-    font-size: clamp(2rem, 5vw, 3.2rem);
-    font-weight: 700;
-    letter-spacing: -0.03em;
-    margin-bottom: 10px;
-    background: var(--rs-hero-gradient);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    line-height: 1.15;
-    position: relative;
-}
-
-.rs-hero h1::after {
-    content: '';
-    display: block;
-    width: 64px;
-    height: 3px;
-    margin: 12px auto 0;
-    border-radius: 3px;
-    background: linear-gradient(90deg, transparent, var(--rs-accent), transparent);
-    opacity: 0.6;
-}
-
-.rs-hero-desc {
-    font-size: 0.95rem;
-    max-width: 480px;
-    margin: 0 auto 28px;
-    line-height: 1.7;
-    color: var(--rs-text-body);
-}
-
-/* Hero 统计胶囊 */
-.rs-hero-stats {
-    display: flex;
-    gap: 12px;
-    justify-content: center;
-    flex-wrap: wrap;
-}
-
-.rs-stat-pill {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 22px;
-    background: var(--rs-card-bg);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid var(--rs-card-border);
-    border-radius: 14px;
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    cursor: default;
-    position: relative;
-    overflow: hidden;
-}
-
-.rs-stat-pill::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    background: linear-gradient(135deg,
-            rgba(255, 255, 255, 0.06) 0%,
-            transparent 40%,
-            transparent 70%,
-            rgba(45, 212, 191, 0.04) 100%);
-    pointer-events: none;
-}
-
-.rs-stat-pill:hover {
-    transform: translateY(-2px);
-    border-color: var(--rs-accent-glow);
-    background: var(--rs-card-hover-bg);
-    box-shadow: var(--rs-card-hover-shadow);
-}
-
-.rs-stat-icon {
-    width: 16px;
-    height: 16px;
-    color: var(--rs-accent);
-    opacity: 0.6;
-    transition: opacity 0.3s ease;
-}
-
-.rs-stat-pill:hover .rs-stat-icon {
-    opacity: 1;
-}
-
-.rs-stat-value {
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: var(--rs-accent);
-    line-height: 1;
-    font-variant-numeric: tabular-nums;
-}
-
-.rs-stat-pill span:last-child {
-    font-size: 0.8rem;
-    color: var(--rs-text-dim);
-    font-weight: 500;
-}
-
-
-/* ═══════════════════════════════════════════════════════
-   WORKBENCH — 三栏玻璃工作台（全高布局）
+   WORKBENCH — 三栏玻璃工作台（全高布局，直接接导航栏）
    ═══════════════════════════════════════════════════════ */
 .rs-workbench {
     display: flex;
@@ -267,12 +138,31 @@
 }
 
 .rs-sidebar-header {
-    padding: 18px 20px 10px;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    padding: 14px 16px 8px;
     font-size: 0.7rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.08em;
     color: var(--rs-text-dim);
+}
+
+.rs-sidebar-stats {
+    font-size: 0.65rem;
+    font-weight: 500;
+    text-transform: none;
+    letter-spacing: 0.02em;
+    color: var(--rs-text-dim);
+    opacity: 0.7;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.rs-sidebar-stat-sep {
+    opacity: 0.4;
 }
 
 /* 全部文章按钮 */
@@ -1788,14 +1678,6 @@
         padding: 32px 32px 56px;
     }
 
-    .rs-hero {
-        padding: 12px 20px 14px;
-    }
-
-    .rs-hero h1 {
-        font-size: clamp(1.6rem, 4vw, 2.4rem);
-    }
-
     /* 专注模式下阅读器全宽 */
     .rs-workbench--focus .rs-article {
         padding: 32px 32px 56px;
@@ -1814,44 +1696,6 @@
     .rs-container {
         width: 100%;
         padding: 0 6px;
-    }
-
-    /* Hero 更紧凑 */
-    .rs-hero {
-        padding: 8px 16px 10px;
-    }
-
-    .rs-hero h1 {
-        font-size: 1.5rem;
-    }
-
-    .rs-hero h1::after {
-        margin: 6px auto 0;
-        width: 40px;
-        height: 2px;
-    }
-
-    .rs-hero-desc {
-        font-size: 0.8rem;
-        margin-bottom: 10px;
-        max-width: 280px;
-    }
-
-    .rs-hero-stats {
-        gap: 6px;
-    }
-
-    .rs-stat-pill {
-        padding: 7px 14px;
-        border-radius: 12px;
-    }
-
-    .rs-stat-value {
-        font-size: 1rem;
-    }
-
-    .rs-stat-pill span:last-child {
-        font-size: 0.72rem;
     }
 
     /* 工作台 → 垂直堆叠 + 滑动切换 */
@@ -2017,41 +1861,6 @@
         padding-top: 64px;
     }
 
-    .rs-hero {
-        padding: 6px 12px 8px;
-    }
-
-    .rs-hero h1 {
-        font-size: 1.3rem;
-    }
-
-    .rs-hero-desc {
-        font-size: 0.75rem;
-        max-width: 240px;
-    }
-
-    .rs-hero-stats {
-        gap: 4px;
-    }
-
-    .rs-stat-pill {
-        padding: 6px 10px;
-        gap: 4px;
-    }
-
-    .rs-stat-value {
-        font-size: 0.9rem;
-    }
-
-    .rs-stat-icon {
-        width: 14px;
-        height: 14px;
-    }
-
-    .rs-stat-pill span:last-child {
-        font-size: 0.68rem;
-    }
-
     .rs-card {
         padding: 12px 14px;
     }
@@ -2133,36 +1942,6 @@
 @media (max-width: 900px) and (orientation: landscape) {
     .rs-page {
         padding-top: 52px;
-    }
-
-    .rs-hero {
-        padding: 4px 16px 6px;
-    }
-
-    .rs-hero h1 {
-        font-size: 1.2rem;
-        margin-bottom: 2px;
-    }
-
-    .rs-hero h1::after {
-        display: none;
-    }
-
-    .rs-hero-desc {
-        display: none;
-    }
-
-    .rs-hero-stats {
-        gap: 6px;
-    }
-
-    .rs-stat-pill {
-        padding: 4px 10px;
-        border-radius: 8px;
-    }
-
-    .rs-stat-value {
-        font-size: 0.85rem;
     }
 
     .rs-workbench {
