@@ -1002,16 +1002,14 @@ function openArticle(index) {
         if (!el || el._smoothEnabled) return;
         el._smoothEnabled = true;
 
-        let velocity = 0;
         let target = el.scrollTop;
         let animating = false;
-        const friction = 0.12;
-        const threshold = 0.5;
+        const ease = 0.13;
+        const threshold = 0.3;
 
         el.addEventListener('wheel', function(e) {
             e.preventDefault();
-            velocity += e.deltaY;
-            target = el.scrollTop + velocity;
+            target += e.deltaY;
             target = Math.max(0, Math.min(target, el.scrollHeight - el.clientHeight));
             if (!animating) {
                 animating = true;
@@ -1021,16 +1019,12 @@ function openArticle(index) {
 
         function tick() {
             const diff = target - el.scrollTop;
-            if (Math.abs(diff) < threshold && Math.abs(velocity) < threshold) {
+            if (Math.abs(diff) < threshold) {
                 el.scrollTop = target;
-                velocity = 0;
                 animating = false;
                 return;
             }
-            velocity *= (1 - friction);
-            el.scrollTop += (target - el.scrollTop) * 0.2 + velocity * friction;
-            target = el.scrollTop + velocity;
-            target = Math.max(0, Math.min(target, el.scrollHeight - el.clientHeight));
+            el.scrollTop += diff * ease;
             requestAnimationFrame(tick);
         }
     }
