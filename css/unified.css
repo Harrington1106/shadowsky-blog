@@ -8,11 +8,11 @@
    - 流体运动贯穿始终（CSS blobs + WebGL）
    ═══════════════════════════════════════════════════════ */
 
+@import './design-tokens.css';
+
 /* ── Theme FOUC prevention: 暗色模式下隐藏 dark-only，亮色隐藏 light-only ── */
 html:not(.dark) .dark-only{display:none !important}
 html.dark .light-only{display:none !important}
-
-@import './design-tokens.css';
 
 /* ═══════ RESET ═══════ */
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
