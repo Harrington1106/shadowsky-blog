@@ -997,10 +997,42 @@ function openArticle(index) {
         });
     }
 
-    // --- Reading progress bar + reader BTT button ---
+    // --- Lenis 平滑滚动 ---
+    if (container._lenis) container._lenis.destroy();
+    if (window.Lenis) {
+        const lenis = new Lenis({
+            wrapper: container,
+            content: container.firstElementChild,
+            duration: 0.6,
+            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -6 * t)),
+            smoothTouch: false,
+            touchMultiplier: 2,
+        });
+        container._lenis = lenis;
+
+        let rafId;
+        function raf(time) { lenis.raf(time); rafId = requestAnimationFrame(raf); }
+        rafId = requestAnimationFrame(raf);
+        container._lenisRaf = rafId;
+
+        // BTT 使用 Lenis scrollTo
+        const readerBttTmp = document.getElementById('reader-btt');
+        if (readerBttTmp) {
+            readerBttTmp.onclick = () => lenis.scrollTo(0, { immediate: false });
+        }
+
+        // 进度条 + BTT 显隐
+        lenis.on('scroll', ({ scroll, limit }) => {
+            const pct = limit > 0 ? Math.min((scroll / limit) * 100, 100) : 0;
+            if (progressBar) progressBar.style.width = pct + '%';
+            if (readerBttTmp) readerBttTmp.classList.toggle('rs-reader-btt--visible', scroll > 100);
+        });
+    }
+
+    // --- Reading progress bar + reader BTT button (fallback if no Lenis) ---
     const progressBar = document.getElementById('reading-progress');
     const readerBtt = document.getElementById('reader-btt');
-    if (progressBar) {
+    if (progressBar && !container._lenis) {
         if (container._scrollHandler) {
             container.removeEventListener('scroll', container._scrollHandler);
         }
