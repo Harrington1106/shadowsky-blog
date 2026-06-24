@@ -90,9 +90,9 @@ class ActivityChart {
         const isDark = document.documentElement.classList.contains('dark')
         const theme = {
           axis: isDark ? 'rgba(148, 163, 184, 0.2)' : 'rgba(100,116,139,0.2)',
-          lineStart: isDark ? '#38bdf8' : '#3b82f6',
-          lineEnd: isDark ? '#60a5fa' : '#6366f1',
-          dot: isDark ? '#38bdf8' : '#3b82f6',
+          lineStart: isDark ? '#2dd4bf' : '#0d9488',
+          lineEnd: isDark ? '#5eead4' : '#14b8a6',
+          dot: isDark ? '#2dd4bf' : '#0d9488',
           tooltipBg: isDark ? 'rgba(15, 23, 42, 0.9)' : 'rgba(255, 255, 255, 0.9)',
           tooltipText: isDark ? '#f1f5f9' : '#0f172a',
           tooltipBorder: isDark ? 'rgba(148, 163, 184, 0.2)' : 'rgba(226, 232, 240, 1)'
@@ -113,7 +113,7 @@ class ActivityChart {
 
         // Draw Fill (Area)
         const fillGrad = ctx.createLinearGradient(0, 0, 0, height)
-        fillGrad.addColorStop(0, isDark ? 'rgba(56, 189, 248, 0.2)' : 'rgba(59, 130, 246, 0.2)')
+        fillGrad.addColorStop(0, isDark ? 'rgba(45, 212, 191, 0.2)' : 'rgba(13, 148, 136, 0.2)')
         fillGrad.addColorStop(1, 'rgba(0, 0, 0, 0)')
         
         ctx.fillStyle = fillGrad

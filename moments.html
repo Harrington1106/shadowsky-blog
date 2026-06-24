@@ -243,6 +243,27 @@
         window.addEventListener('scroll', () => btt.classList.toggle('visible', window.scrollY > 500));
         btt.addEventListener('click', () => lenis.scrollTo(0));
 
+        // Toolbar 滚动折叠：向下滚动收起标签行，向上/顶部展开
+        const filterBar = document.getElementById('filter-bar');
+        let lastScrollY = 0;
+        let toolbarTicking = false;
+        function updateToolbar() {
+            const y = window.scrollY;
+            if (y > 120 && y > lastScrollY) {
+                filterBar.classList.add('mm-toolbar--compact');
+            } else if (y < 80 || y < lastScrollY - 10) {
+                filterBar.classList.remove('mm-toolbar--compact');
+            }
+            lastScrollY = y;
+            toolbarTicking = false;
+        }
+        window.addEventListener('scroll', () => {
+            if (!toolbarTicking) {
+                requestAnimationFrame(updateToolbar);
+                toolbarTicking = true;
+            }
+        }, { passive: true });
+
         // Theme
         window.toggleTheme = function() {
             const btn = document.getElementById('theme-toggle');

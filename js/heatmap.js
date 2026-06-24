@@ -14,22 +14,22 @@ class HeatmapChart {
             // The "Pure Sky" Palette - Minimalist & Airy
             colorScheme: {
                 light: [
-                    'bg-slate-200',
-                    'bg-sky-200',
-                    'bg-sky-300',
-                    'bg-sky-400',
-                    'bg-blue-500',
-                    'bg-blue-600',
-                    'bg-slate-800'
+                    'bg-slate-100',
+                    'bg-teal-100',
+                    'bg-teal-200',
+                    'bg-teal-300',
+                    'bg-teal-400',
+                    'bg-teal-500',
+                    'bg-teal-700'
                 ],
                 dark: [
-            'dark:bg-slate-800',
-            'dark:bg-sky-950/60',
-                    'dark:bg-sky-900/70',
-                    'dark:bg-sky-700',
-                    'dark:bg-sky-600',
-                    'dark:bg-sky-500',
-                    'dark:bg-cyan-400'
+            'dark:bg-white/5',
+            'dark:bg-teal-950/50',
+                    'dark:bg-teal-900/60',
+                    'dark:bg-teal-800/70',
+                    'dark:bg-teal-700',
+                    'dark:bg-teal-500',
+                    'dark:bg-teal-300'
                 ]
             },
             cellSize: 11,       // Refined size
@@ -307,7 +307,7 @@ class HeatmapChart {
 
         // Month Labels Row（在顶部）
         const monthsRow = document.createElement('div');
-        monthsRow.className = "flex text-[10px] text-slate-400 dark:text-slate-500 mb-2 h-4 relative w-full font-bold uppercase tracking-widest heatmap-label opacity-60 border-b border-gray-100 dark:border-gray-800 pb-1";
+        monthsRow.className = "flex text-[10px] text-slate-400 dark:text-white/25 mb-2 h-4 relative w-full font-bold uppercase tracking-widest heatmap-label opacity-60 border-b border-slate-100 dark:border-white/5 pb-1";
 
         // 左侧日标签与右侧网格并排容器
         const hRow = document.createElement('div');
@@ -392,7 +392,7 @@ class HeatmapChart {
                 cell.style.opacity = '0'; // Initial state for animation
 
                 if (isFuture) {
-                    cell.className += ' bg-slate-100 dark:bg-white/5 opacity-60';
+                    cell.className += ' bg-slate-100 dark:bg-white/[0.03] opacity-40';
                 } else {
                     let level = 0;
                     if (count > 1) {
@@ -413,7 +413,7 @@ class HeatmapChart {
                         cell.className += ` ${darkClass}`;
                     }
                     if (key === `${today.getFullYear()}-${today.getMonth()}-${today.getDate()}`) {
-                        cell.className += ' outline outline-2 outline-blue-400 dark:outline-cyan-300 outline-offset-1';
+                        cell.className += ' outline outline-2 outline-teal-400 dark:outline-teal-300 outline-offset-1';
                     }
                     cell.setAttribute('data-level', level); // For Legend Interaction
                     

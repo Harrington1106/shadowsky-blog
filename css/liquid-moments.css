@@ -197,10 +197,10 @@
 .mm-heatmap-legend .mm-legend-bar {
     width: 100px; height: 6px;
     border-radius: 3px;
-    background: linear-gradient(90deg, rgba(255,255,255,.05), #3b82f6, #1e293b);
+    background: linear-gradient(90deg, #e2e8f0, #2dd4bf, #0f766e);
 }
 .dark .mm-heatmap-legend .mm-legend-bar {
-    background: linear-gradient(90deg, rgba(255,255,255,.05), #60a5fa, #67e8f9);
+    background: linear-gradient(90deg, rgba(255,255,255,.05), #0d9488, #5eead4);
 }
 
 
@@ -219,6 +219,30 @@
     flex-wrap: wrap;
     gap: 12px;
     align-items: center;
+    transition: all .3s ease;
+}
+
+/* 紧凑模式：收起标签行 */
+.mm-toolbar--compact {
+    padding: 8px 16px;
+    border-radius: 14px;
+    box-shadow: 0 0 0 1px var(--mm-card-border), 0 4px 20px rgba(0,0,0,.15);
+}
+.mm-toolbar--compact .mm-tags-row {
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    pointer-events: none;
+    margin: 0;
+}
+.mm-toolbar--compact .mm-search input {
+    padding: 8px 14px 8px 34px;
+    font-size: .82rem;
+}
+
+.mm-tags-row {
+    transition: max-height .3s ease, opacity .3s ease, margin .3s ease;
+    max-height: 60px;
 }
 
 .mm-search {
