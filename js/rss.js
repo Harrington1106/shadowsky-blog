@@ -815,6 +815,11 @@ function openArticle(index) {
                 <p>— 完 —</p>
             </div>
         </article>
+
+        <!-- 阅读器内回到顶部 -->
+        <button id="reader-btt" class="rs-reader-btt" title="回到顶部" aria-label="回到顶部">
+            <i data-lucide="chevron-up"></i>
+        </button>
     `;
 
     // Apply saved font size preference
@@ -980,7 +985,7 @@ function openArticle(index) {
 
             // Toggle reader back-to-top button visibility
             if (readerBtt) {
-                readerBtt.classList.toggle('rs-reader-btt--visible', scrollTop > 200);
+                readerBtt.classList.toggle('rs-reader-btt--visible', scrollTop > 100);
             }
         };
         container.addEventListener('scroll', container._scrollHandler, { passive: true });
