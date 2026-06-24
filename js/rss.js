@@ -360,6 +360,17 @@ function setupEventListeners() {
         promptInput.addEventListener('input', updateCount);
         updateCount();
     }
+
+    // Prompt preset pills
+    document.querySelectorAll('.rs-preset-pill').forEach(pill => {
+        pill.addEventListener('click', () => {
+            const prompt = pill.dataset.prompt;
+            if (prompt && promptInput) {
+                promptInput.value = prompt;
+                promptInput.dispatchEvent(new Event('input'));
+            }
+        });
+    });
 }
 
 // ===========================================
