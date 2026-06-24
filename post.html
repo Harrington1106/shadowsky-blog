@@ -14,8 +14,7 @@
     <link href="https://fonts.loli.net/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&family=ZCOOL+KuaiLe&display=swap" rel="stylesheet">
     
     <!-- Unified CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-        <link href="css/unified.css?v=20260626e" rel="stylesheet">
+    <link href="css/unified.css?v=20260626e" rel="stylesheet">
     <link href="css/liquid-ambient.css?v=20260624v5" rel="stylesheet">
 
     <!-- Lucide Icons -->
@@ -580,36 +579,26 @@
         <i data-lucide="chevron-up" class="w-6 h-6"></i>
     </button>
 
-    <!-- Light/dark visibility -->
+    <!-- FOUC prevention -->
     <style>
-        .dark .light-only { display: none !important; }
-        .dark .dark-only { display: inline !important; }
-        .light-only { display: inline; }
-        .dark-only { display: none; }
-        img.light-only, img.dark-only { display: none; }
-        .dark img.dark-only { display: inline; }
-        img.light-only { display: inline; }
-        .dark img.light-only { display: none; }
+        html:not(.dark) .dark-only{display:none!important}
+        html.dark .light-only{display:none!important}
     </style>
 
     <!-- Scripts -->
-    <script src="js/navbar.js?v=20260626b"></script>
+    <script src="js/navbar.js?v=2606250600"></script>
     <script src="js/api.js?v=20260624v5"></script>
-    <script src="js/main.js?v=20260626b"></script>
+    <script src="js/main.js?v=2606250600"></script>
     <script src="js/post-viewer.js?v=20260624v5"></script>
     <script src="js/click-effect.js?v=20260624v5"></script>
     <script src="https://unpkg.com/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
     <script src="js/context-menu.js?v=20260624v5"></script>
     <script>
-        // Initialize Lenis for smooth scrolling
+        // Lenis 平滑滚动
         const lenis = new Lenis({
-            duration: 0.5
+            duration: 0.5,
             easing: (t) => Math.min(1, 1.001 - Math.pow(2, -6 * t)),
-            direction: 'vertical',
-            gestureDirection: 'vertical',
-            smooth: true,
-            mouseMultiplier: 1,
-            smoothTouch: true,
+            smoothTouch: false,
             touchMultiplier: 2,
         });
 
