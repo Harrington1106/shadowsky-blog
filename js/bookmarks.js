@@ -847,6 +847,7 @@ function renderCard(bookmark) {
                         <img src="${favicon}" loading="lazy" alt=""
                              onerror="handleFaviconError(this, '${domain}')" />
                     </div>
+                    <span class="bm-card-domain">${domain}</span>
                     <div class="bm-card-actions">
                         <button class="bm-card-copy" onclick="copyBookmarkLink('${bookmark.url}', event)" title="复制链接" aria-label="复制链接">
                             <i data-lucide="copy"></i>
