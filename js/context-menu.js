@@ -339,7 +339,7 @@
                 if(s) navigator.clipboard.writeText(s);
             }, id: 'ctx-copy' }, // Hidden by default if no selection
             { type: 'divider' },
-            { label: '切换主题', icon: 'sun-moon', action: () => window.toggleTheme && window.toggleTheme(), id: 'ctx-theme' },
+            { label: '切换主题', icon: 'sun', action: () => window.toggleTheme && window.toggleTheme(), id: 'ctx-theme' },
             { label: '回到顶部', icon: 'chevron-up', action: handleBackToTop },
             { label: '首页', icon: 'house', action: () => window.location.href = 'index.html' }
         ];
@@ -415,37 +415,19 @@
                     }
                 }
 
-                // Theme Button State
+                // Theme Button State — 每次右键时刷新图标和文字
                 const themeBtn = document.getElementById('ctx-theme');
                 if (themeBtn) {
                     const isDark = document.documentElement.classList.contains('dark');
-                    const icon = themeBtn.querySelector('.ctx-icon');
-                    const text = themeBtn.querySelector('span:not(.ctx-shortcut)');
-                    
-                    if (icon && text) {
-                         // Reset icon element if it was replaced by lucide (svg)
-                         // Actually lucide replaces <i> with <svg>.
-                         // We can just update the attribute if it's <i>, or re-create if it's <svg>
-                         // Simplest: clear and re-create icon
-                         
-                         let newIcon = document.createElement('i');
-                         newIcon.className = 'ctx-icon';
-                         
-                         if (isDark) {
-                             newIcon.setAttribute('data-lucide', 'sun');
-                             text.textContent = '切换亮色';
-                         } else {
-                             newIcon.setAttribute('data-lucide', 'sun-moon');
-                             text.textContent = '切换暗色';
-                         }
-                         
-                         if (icon.tagName.toLowerCase() === 'svg') {
-                             icon.replaceWith(newIcon);
-                         } else {
-                             // It's <i>
-                             icon.setAttribute('data-lucide', isDark ? 'sun' : 'moon');
-                             text.textContent = isDark ? '切换亮色' : '切换暗色';
-                         }
+                    const iconEl = themeBtn.querySelector('.ctx-icon');
+                    const labelEl = themeBtn.querySelector('span:not(.ctx-shortcut)');
+                    if (iconEl && labelEl) {
+                        // 重建 <i>，避免 lucide SVG 状态混乱
+                        const newIcon = document.createElement('i');
+                        newIcon.className = 'ctx-icon';
+                        newIcon.setAttribute('data-lucide', isDark ? 'sun' : 'moon');
+                        iconEl.replaceWith(newIcon);
+                        labelEl.textContent = isDark ? '切换亮色' : '切换暗色';
                     }
                 }
 

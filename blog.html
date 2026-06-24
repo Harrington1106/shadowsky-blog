@@ -12,11 +12,11 @@
     <link rel="preconnect" href="https://gstatic.loli.net" crossorigin>
     <link href="https://fonts.loli.net/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&family=ZCOOL+KuaiLe&display=swap" rel="stylesheet">
 
-    <link href="css/unified.css?v=20260625i" rel="stylesheet">
-    <link href="css/liquid-ambient.css?v=20260625i" rel="stylesheet">
-    <link href="css/liquid-blog.css?v=20260625i" rel="stylesheet">
+    <link href="css/unified.css?v=20260625j" rel="stylesheet">
+    <link href="css/liquid-ambient.css?v=20260625j" rel="stylesheet">
+    <link href="css/liquid-blog.css?v=20260625j" rel="stylesheet">
 
-    <script src="js/vendor/lucide.min.js?v=20260625i"></script>
+    <script src="js/vendor/lucide.min.js?v=20260625j"></script>
 
     <style>
         html:not(.dark) .dark-only{display:none!important}
@@ -146,12 +146,12 @@
     </button>
 
     <!-- Scripts -->
-    <script src="js/navbar.js?v=20260625i"></script>
-    <script src="js/api.js?v=20260625i"></script>
-    <script src="js/blog.js?v=20260625i"></script>
-    <script src="js/click-effect.js?v=20260625i"></script>
-    <script src="js/context-menu.js?v=20260625i"></script>
-    <script src="js/tracker.js?v=20260625i"></script>
+    <script src="js/navbar.js?v=20260625j"></script>
+    <script src="js/api.js?v=20260625j"></script>
+    <script src="js/blog.js?v=20260625j"></script>
+    <script src="js/click-effect.js?v=20260625j"></script>
+    <script src="js/context-menu.js?v=20260625j"></script>
+    <script src="js/tracker.js?v=20260625j"></script>
     <script src="https://unpkg.com/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
     <script>
         lucide.createIcons();
@@ -179,6 +179,12 @@
                 document.getElementById('search-input')?.focus();
             }
         });
+
+        // 右键菜单：暴露主题切换
+        window.toggleTheme = function() {
+            const btn = document.getElementById('theme-toggle');
+            if (btn) btn.click();
+        };
 
         // Theme: 图标动态切换 + Logo 同步
         const htmlEl = document.documentElement;
