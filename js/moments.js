@@ -211,8 +211,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const sortedYears = Array.from(years).sort((a, b) => b - a);
 
         // Button styles
-        const activeClass = "inline-flex items-center px-3 py-1 text-xs font-medium rounded-full bg-teal-500/15 text-teal-600 dark:bg-teal-400/15 dark:text-teal-300 border border-teal-500/20 transition-all duration-300";
-        const inactiveClass = "inline-flex items-center px-3 py-1 text-xs font-medium rounded-full text-slate-400 dark:text-white/30 hover:text-teal-500 dark:hover:text-teal-300 hover:bg-teal-500/5 transition-all duration-300";
+        const activeClass = "mm-year-btn active";
+        const inactiveClass = "mm-year-btn";
 
         let html = '';
 

@@ -161,26 +161,63 @@
     box-shadow: 0 0 0 1px var(--mm-card-border);
     padding: 18px 20px;
     overflow: hidden;
+    transition: box-shadow .3s;
+}
+
+.mm-chart-panel:hover {
+    box-shadow: 0 0 0 1px var(--mm-card-border), 0 4px 20px rgba(0,0,0,.08);
 }
 
 .mm-chart-panel h3 {
-    font-size: .8rem;
+    font-size: .78rem;
     font-weight: 600;
     color: #0f172a;
-    margin-bottom: 12px;
+    margin-bottom: 14px;
     display: flex;
     align-items: center;
     gap: 8px;
+    letter-spacing: .02em;
 }
 
 .dark .mm-chart-panel h3 { color: #e2e8f0; }
-.mm-chart-panel h3 i { width:15px; height:15px; opacity:.6; }
+.mm-chart-panel h3 i { width:14px; height:14px; opacity:.5; }
 
 /* 热力图容器 */
 .mm-heatmap-wrap {
     width: 100%;
     overflow-x: auto;
     padding-bottom: 4px;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+.mm-heatmap-wrap::-webkit-scrollbar { display:none; }
+
+/* 年份选择器 */
+#heatmap-years {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+}
+
+.mm-year-btn {
+    padding: 4px 12px;
+    border-radius: 9999px;
+    font-size: .72rem;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: all .2s ease;
+    font-family: inherit;
+    background: transparent;
+    color: rgba(15,23,42,.35);
+}
+.dark .mm-year-btn { color: rgba(255,255,255,.25); }
+.mm-year-btn:hover { border-color: var(--mm-card-border); color: var(--mm-accent); }
+.mm-year-btn.active {
+    background: rgba(45,212,191,.1);
+    border-color: rgba(45,212,191,.2);
+    color: var(--mm-accent);
 }
 
 /* 渐变图例 */
@@ -190,17 +227,17 @@
     justify-content: center;
     gap: 8px;
     font-size: .65rem;
-    color: rgba(15,23,42,.35);
-    margin-top: 10px;
+    color: rgba(15,23,42,.3);
+    margin-top: 12px;
 }
-.dark .mm-heatmap-legend { color: rgba(255,255,255,.25); }
+.dark .mm-heatmap-legend { color: rgba(255,255,255,.2); }
 .mm-heatmap-legend .mm-legend-bar {
-    width: 100px; height: 6px;
+    width: 100px; height: 5px;
     border-radius: 3px;
     background: linear-gradient(90deg, #e2e8f0, #2dd4bf, #0f766e);
 }
 .dark .mm-heatmap-legend .mm-legend-bar {
-    background: linear-gradient(90deg, rgba(255,255,255,.05), #0d9488, #5eead4);
+    background: linear-gradient(90deg, rgba(255,255,255,.04), #0d9488, #5eead4);
 }
 
 
@@ -287,14 +324,22 @@
 }
 .dark .mm-search-icon { color: rgba(255,255,255,.25); }
 
-/* 标签滤片 */
+/* 标签滤片 — 单行横向滚动，不换行 */
 .mm-tags-row {
     display: flex;
     gap: 6px;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     flex: 1;
     min-width: 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-bottom: 4px;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    mask-image: linear-gradient(to right, transparent 0%, black 4%, black 96%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to right, transparent 0%, black 4%, black 96%, transparent 100%);
 }
+.mm-tags-row::-webkit-scrollbar { display: none; }
 
 /* 覆盖 moments.js 的 tag-chip Tailwind 类 */
 .tag-chip {
