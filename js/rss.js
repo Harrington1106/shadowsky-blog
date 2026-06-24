@@ -1050,14 +1050,15 @@ function openArticle(index) {
 // ===========================================
 
 async function translateArticle(content) {
-    const provider = localStorage.getItem('ai-provider') || 'openai';
-    const baseUrl = localStorage.getItem('ai-base-url') || getDefaultBaseUrl(provider);
-    const apiKey = localStorage.getItem('ai-api-key');
-    const model = localStorage.getItem('ai-model') || getDefaultModel(provider);
-    const systemPrompt = localStorage.getItem('ai-system-prompt') || 'You are a helpful translator. Translate the following content to Simplified Chinese.';
-    
+    const settings = JSON.parse(localStorage.getItem('ai_settings') || '{}');
+    const provider = settings.provider || 'openai';
+    const baseUrl = settings.baseUrl || AI_PROVIDERS[provider]?.baseUrl || '';
+    const apiKey = settings.apiKey;
+    const model = settings.model || (AI_PROVIDERS[provider]?.models[0]) || '';
+    const systemPrompt = settings.systemPrompt || '你是一个专业的翻译助手，请将以下内容翻译成简体中文，保持原文格式和语气。';
+
     if (!apiKey) {
-        throw new Error('API Key 未设置');
+        throw new Error('API Key 未设置，请在 AI 设置中填写');
     }
     
     const messages = [
@@ -1215,13 +1216,27 @@ async function fetchFeedXml(url) {
         }
 
         if (usePublicProxy) {
-            const publicProxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
-            const ppResponse = await fetch(publicProxyUrl);
-            if (!ppResponse.ok) throw new Error(`Public proxy HTTP ${ppResponse.status}`);
-            xmlText = await ppResponse.text();
+            // 1. allorigins 公共代理
+            let ppOk = false;
+            try {
+                const publicProxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
+                const ppResponse = await fetch(publicProxyUrl);
+                if (ppResponse.ok) {
+                    xmlText = await ppResponse.text();
+                    ppOk = true;
+                }
+            } catch (_) {}
+
+            // 2. Cloudflare Worker 代理（突破 GFW）
+            if (!ppOk) {
+                const cfProxyUrl = `https://bangumi.shadowquake.top/fetch?url=${encodeURIComponent(url)}`;
+                const cfResponse = await fetch(cfProxyUrl);
+                if (!cfResponse.ok) throw new Error(`CF proxy HTTP ${cfResponse.status}`);
+                xmlText = await cfResponse.text();
+            }
         }
     } catch (e) {
-        // Direct fallback
+        // 最后兜底：直接请求（大概率被墙）
         const directResponse = await fetch(url);
         if (!directResponse.ok) throw new Error(`Direct fetch HTTP ${directResponse.status}`);
         xmlText = await directResponse.text();
