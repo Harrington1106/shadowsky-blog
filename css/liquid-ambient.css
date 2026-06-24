@@ -1,0 +1,140 @@
+/* ═══════════════════════════════════════════════════════
+   Aqua Vitrum — Liquid Ambient CSS
+   纯 CSS 流体光斑系统（不依赖 WebGL）
+   
+   用于：博客页、关于页、片刻页等所有非首页的流体背景
+   
+   使用方法：
+   <div class="liquid-ambient" aria-hidden="true">
+     <div class="liquid-blob liquid-blob--1"></div>
+     <div class="liquid-blob liquid-blob--2"></div>
+     <div class="liquid-blob liquid-blob--3"></div>
+   </div>
+   
+   强度控制（加在 body 或容器上）：
+   - .ambient-strong  : 高不透明度，适合深色背景
+   - .ambient-gentle  : 低不透明度，适合亮色背景
+   - .ambient-subtle  : 极淡，不干扰阅读
+   ═══════════════════════════════════════════════════════ */
+
+/* ── 容器：固定全屏，穿透点击 ── */
+.liquid-ambient{
+  position:fixed;inset:0;pointer-events:none;z-index:0;
+  overflow:hidden;
+}
+
+/* ── 单个光斑 ── */
+.liquid-blob{
+  position:absolute;border-radius:50%;
+  filter:blur(100px);
+  opacity:0.45;
+  will-change:transform;
+}
+
+/* 暗色模式下光斑稍亮 */
+.dark .liquid-blob{opacity:0.55;}
+
+/* ── 光斑 1：左上，青蓝 ── */
+.liquid-blob--1{
+  width:600px;height:600px;
+  background:var(--blob-color-1);
+  top:-15%;left:5%;
+}
+
+/* ── 光斑 2：右下，青 ── */
+.liquid-blob--2{
+  width:500px;height:500px;
+  background:var(--blob-color-2);
+  bottom:-10%;right:-5%;
+}
+
+/* ── 光斑 3：中左，紫 ── */
+.liquid-blob--3{
+  width:400px;height:400px;
+  background:var(--blob-color-3);
+  top:45%;left:25%;
+}
+
+/* ── 光斑 4：中右，粉（可选）── */
+.liquid-blob--4{
+  width:350px;height:350px;
+  background:var(--blob-color-4);
+  top:30%;right:20%;
+}
+
+
+/* ═══════ 动画（尊重 reduced motion）═══════ */
+@media(prefers-reduced-motion:no-preference){
+  .liquid-blob--1{animation:liquidDrift1 20s ease-in-out infinite}
+  .liquid-blob--2{animation:liquidDrift2 24s ease-in-out infinite}
+  .liquid-blob--3{animation:liquidDrift3 18s ease-in-out infinite}
+  .liquid-blob--4{animation:liquidDrift4 22s ease-in-out infinite}
+}
+
+@keyframes liquidDrift1{
+  0%,100%{transform:translate(0,0) scale(1) rotate(0deg)}
+  20%{transform:translate(65px,-45px) scale(1.1) rotate(5deg)}
+  40%{transform:translate(-30px,-70px) scale(0.9) rotate(-3deg)}
+  60%{transform:translate(-55px,35px) scale(1.05) rotate(2deg)}
+  80%{transform:translate(25px,55px) scale(0.95) rotate(-4deg)}
+}
+
+@keyframes liquidDrift2{
+  0%,100%{transform:translate(0,0) scale(1) rotate(0deg)}
+  25%{transform:translate(-55px,70px) scale(1.08) rotate(-6deg)}
+  50%{transform:translate(45px,25px) scale(0.92) rotate(4deg)}
+  75%{transform:translate(35px,-50px) scale(1.06) rotate(-2deg)}
+}
+
+@keyframes liquidDrift3{
+  0%,100%{transform:translate(0,0) scale(1) rotate(0deg)}
+  33%{transform:translate(-50px,-55px) scale(1.12) rotate(7deg)}
+  66%{transform:translate(60px,45px) scale(0.88) rotate(-5deg)}
+}
+
+@keyframes liquidDrift4{
+  0%,100%{transform:translate(0,0) scale(1) rotate(0deg)}
+  25%{transform:translate(-70px,35px) scale(1.06) rotate(-3deg)}
+  50%{transform:translate(30px,-65px) scale(0.94) rotate(6deg)}
+  75%{transform:translate(45px,30px) scale(1.08) rotate(-4deg)}
+}
+
+
+/* ═══════ 强度变体 ═══════ */
+
+/* 强光斑：高不透明度，适合深色背景页面 */
+.ambient-strong .liquid-blob{opacity:0.65;}
+.dark .ambient-strong .liquid-blob{opacity:0.75;}
+
+/* 柔和光斑：降低不透明度 */
+.ambient-gentle .liquid-blob{opacity:0.3;}
+.dark .ambient-gentle .liquid-blob{opacity:0.4;}
+
+/* 极淡光斑：几乎不可见，不干扰阅读 */
+.ambient-subtle .liquid-blob{opacity:0.18;}
+.dark .ambient-subtle .liquid-blob{opacity:0.25;}
+
+
+/* ═══════ 性能优化 ═══════ */
+
+/* 移动端缩小光斑尺寸，减少 blur 计算量 */
+@media(max-width:768px){
+  .liquid-blob--1{width:400px;height:400px;}
+  .liquid-blob--2{width:350px;height:350px;}
+  .liquid-blob--3{width:280px;height:280px;}
+  .liquid-blob--4{width:240px;height:240px;}
+  .liquid-blob{filter:blur(70px);}
+}
+
+/* 小屏手机进一步降级 */
+@media(max-width:480px){
+  .liquid-blob{filter:blur(50px);}
+  .ambient-gentle .liquid-blob,
+  .ambient-subtle .liquid-blob{opacity:0.12;}
+}
+
+
+/* ═══════ 禁用状态 ═══════ */
+@media(prefers-reduced-motion:reduce){
+  .liquid-blob{animation:none !important;opacity:0.12;}
+}

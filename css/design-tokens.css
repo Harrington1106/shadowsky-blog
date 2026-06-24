@@ -1,91 +1,141 @@
 /* ═══════════════════════════════════════════════════════
-   Liquid Glass Design Tokens v3
+   Aqua Vitrum — Liquid Glass Design Tokens v4
    Three-layer: Primitive → Semantic → Component
+   
+   设计理念：液态玻璃作为核心设计语言
+   - 纵深层次 (Depth 1→4)：背景流体 → 中景面板 → 前景卡片 → 聚焦覆盖
+   - 光折射 (Refraction)：玻璃边缘渐变光晕，模拟光线穿过玻璃
+   - 流体生命 (Fluid)：CSS 光斑动画 + WebGL 流体引擎
    ═══════════════════════════════════════════════════════ */
 
-/* ── L1: Primitive ── */
+/* ── L1: Primitive Palette ── */
 :root{
+  /* == Slate Blue (保留兼容) == */
   --pr-slate-blue:#56697A;--pr-slate-blue-50:#EDF0F3;--pr-slate-blue-100:#D6DCE2;
   --pr-slate-blue-200:#B0BAC5;--pr-slate-blue-300:#8A98A7;--pr-slate-blue-400:#6E7E8F;
   --pr-slate-blue-500:#56697A;--pr-slate-blue-600:#455565;--pr-slate-blue-700:#34414F;
   --pr-slate-blue-800:#232C38;--pr-slate-blue-900:#121822;
 
+  /* == Aqua (液态玻璃主色) == */
+  --pr-aqua:#14B8A6;--pr-aqua-50:#F0FDFA;--pr-aqua-100:#CCFBF1;
+  --pr-aqua-200:#99F6E4;--pr-aqua-300:#5EEAD4;--pr-aqua-400:#2DD4BF;
+  --pr-aqua-500:#14B8A6;--pr-aqua-600:#0D9488;--pr-aqua-700:#0F766E;
+  --pr-aqua-800:#115E59;--pr-aqua-900:#134E4A;
+
+  /* == Cyan (流体霓虹) == */
+  --pr-cyan:#06B6D4;--pr-cyan-50:#ECFEFF;--pr-cyan-100:#CFFAFE;
+  --pr-cyan-200:#A5F3FC;--pr-cyan-300:#67E8F9;--pr-cyan-400:#22D3EE;
+  --pr-cyan-500:#06B6D4;--pr-cyan-600:#0891B2;--pr-cyan-700:#0E7490;
+  --pr-cyan-800:#155E75;--pr-cyan-900:#164E63;
+
+  /* == Glass Alpha Scale (透明度阶梯) == */
+  --pr-glass-05:0.05;--pr-glass-08:0.08;--pr-glass-10:0.10;
+  --pr-glass-12:0.12;--pr-glass-15:0.15;--pr-glass-18:0.18;
+  --pr-glass-22:0.22;--pr-glass-28:0.28;--pr-glass-35:0.35;
+  --pr-glass-45:0.45;--pr-glass-55:0.55;--pr-glass-65:0.65;
+  --pr-glass-72:0.72;--pr-glass-78:0.78;--pr-glass-85:0.85;
+  --pr-glass-92:0.92;
+
+  /* == Silver == */
   --pr-silver:#A9B7C6;--pr-silver-50:#F5F7FA;--pr-silver-100:#E8ECF1;
   --pr-silver-200:#D1D8E2;--pr-silver-300:#BCC5D0;--pr-silver-400:#A9B7C6;
   --pr-silver-500:#8E9FB2;--pr-silver-600:#73879D;--pr-silver-700:#5B6D80;
 
+  /* == Gold == */
   --pr-gold:#D9A066;--pr-gold-50:#FBF5EE;--pr-gold-100:#F5E6D2;
   --pr-gold-200:#EDD0AD;--pr-gold-300:#E3B882;--pr-gold-400:#D9A066;
   --pr-gold-500:#C8894A;--pr-gold-600:#A76E37;
 
+  /* == Gray == */
   --pr-white:#FFFFFF;
   --pr-gray-50:#F8FAFC;--pr-gray-100:#F1F5F9;--pr-gray-200:#E2E8F0;
   --pr-gray-300:#CBD5E1;--pr-gray-400:#94A3B8;--pr-gray-500:#64748B;
   --pr-gray-600:#475569;--pr-gray-700:#334155;--pr-gray-800:#1E293B;
   --pr-gray-900:#0F172A;--pr-gray-950:#020617;
 
+  /* == Dark scale == */
   --pr-dark-950:#060B18;--pr-dark-900:#0B1120;--pr-dark-850:#0F1729;
   --pr-dark-800:#111827;--pr-dark-700:#1A2332;
 
+  /* == Typography == */
   --pr-font-sans:'Inter','Noto Sans SC','PingFang SC','Microsoft YaHei',system-ui,sans-serif;
   --pr-font-serif:'Noto Serif SC','Georgia',serif;
   --pr-font-mono:'JetBrains Mono','Fira Code','Cascadia Code',monospace;
+  --pr-font-display:'ZCOOL KuaiLe',cursive;
 
+  /* == Spacing == */
   --sp-1:4px;--sp-2:8px;--sp-3:12px;--sp-4:16px;--sp-5:20px;
   --sp-6:24px;--sp-8:32px;--sp-10:40px;--sp-12:48px;--sp-16:64px;--sp-20:80px;
 
+  /* == Type Scale == */
   --text-xs:.75rem;--text-sm:.875rem;--text-base:1rem;--text-lg:1.125rem;
   --text-xl:1.25rem;--text-2xl:1.5rem;--text-3xl:1.875rem;--text-4xl:2.25rem;
   --text-5xl:3rem;--text-6xl:3.75rem;
 
+  /* == Font Weights == */
   --weight-light:300;--weight-regular:400;--weight-medium:500;
   --weight-semibold:600;--weight-bold:700;
 
+  /* == Line Heights == */
   --leading-tight:1.25;--leading-snug:1.375;--leading-normal:1.5;
   --leading-relaxed:1.625;--leading-loose:1.75;
 
+  /* == Radii == */
   --radius-sm:6px;--radius-md:10px;--radius-lg:16px;--radius-xl:24px;--radius-full:9999px;
 
+  /* == Shadows == */
   --shadow-sm:0 1px 3px rgba(0,0,0,.05);
   --shadow-md:0 4px 12px rgba(0,0,0,.06);
   --shadow-lg:0 12px 28px rgba(0,0,0,.08);
   --shadow-xl:0 20px 50px rgba(0,0,0,.1);
 
+  /* == Timing & Easing == */
   --duration-fast:150ms;--duration-normal:250ms;--duration-slow:500ms;
+  --duration-glacial:800ms;--duration-fluid:1200ms;
   --ease-out:cubic-bezier(.16,1,.3,1);
   --ease-in-out:cubic-bezier(.4,0,.2,1);
   --ease-spring:cubic-bezier(.34,1.56,.64,1);
+  --ease-liquid:cubic-bezier(.45,0,.25,1.02);
 
+  /* == Z-Index == */
   --z-base:0;--z-dropdown:100;--z-sticky:200;--z-overlay:300;--z-modal:400;--z-toast:500;
 }
 
-/* ── L2: Semantic ── */
+
+/* ═══════════════════════════════════════════════════════
+   L2: Semantic Tokens (Light Theme)
+   ═══════════════════════════════════════════════════════ */
 :root{
+  /* == Surface == */
   --color-surface:var(--pr-silver-50);
   --color-surface-raised:var(--pr-white);
   --color-surface-overlay:rgba(255,255,255,.88);
 
+  /* == Text == */
   --color-text-primary:var(--pr-gray-900);
   --color-text-secondary:var(--pr-gray-600);
   --color-text-muted:var(--pr-gray-400);
   --color-text-inverse:var(--pr-white);
 
-  --color-primary:var(--pr-slate-blue-500);
-  --color-primary-hover:var(--pr-slate-blue-600);
-  --color-primary-subtle:rgba(86,105,122,.1);
+  /* == Brand == */
+  --color-primary:var(--pr-aqua-600);
+  --color-primary-hover:var(--pr-aqua-700);
+  --color-primary-subtle:rgba(13,148,136,.1);
   --color-secondary:var(--pr-silver-400);
   --color-accent:var(--pr-gold-400);
   --color-accent-hover:var(--pr-gold-500);
 
+  /* == Border & Divider == */
   --color-border:rgba(148,163,184,.2);
   --color-border-light:rgba(148,163,184,.1);
   --color-divider:rgba(148,163,184,.12);
-  --color-selection:rgba(86,105,122,.15);
+  --color-selection:rgba(20,184,166,.18);
 
-  --color-link:var(--pr-slate-blue-500);
-  --color-link-hover:var(--pr-slate-blue-700);
+  /* == Links == */
+  --color-link:var(--pr-aqua-600);
+  --color-link-hover:var(--pr-aqua-800);
 
-  /* ── Glass variables ── */
+  /* ── Glass Core (向后兼容) ── */
   --glass-bg:rgba(255,255,255,.72);
   --glass-card-bg:rgba(255,255,255,.58);
   --glass-border:rgba(255,255,255,.55);
@@ -95,14 +145,52 @@
   --glass-shadow:0 20px 50px rgba(15,23,42,.1);
   --glass-shadow-soft:0 10px 30px rgba(15,23,42,.06);
 
-  /* Body background */
-  --body-bg-gradient:
-    radial-gradient(ellipse at 20% 0%,rgba(96,165,250,.15),transparent 40%),
-    radial-gradient(ellipse at 80% 0%,rgba(167,139,250,.12),transparent 35%),
-    radial-gradient(ellipse at 50% 100%,rgba(34,197,94,.08),transparent 35%),
-    linear-gradient(180deg,rgba(255,255,255,.9),rgba(239,246,255,.7));
+  /* ── Glass Depth System (v4 新增) ── */
+  /* depth-1: 远景玻璃 — 最透明，最强模糊，用于背景层 */
+  --glass-depth-1-bg:rgba(255,255,255,.35);
+  --glass-depth-1-blur:blur(24px) saturate(140%);
+  --glass-depth-1-border:rgba(255,255,255,.28);
+  --glass-depth-1-shadow:0 8px 32px rgba(15,23,42,.04);
 
-  /* Navbar */
+  /* depth-2: 中景玻璃 — 面板/侧栏 */
+  --glass-depth-2-bg:rgba(255,255,255,.55);
+  --glass-depth-2-blur:blur(20px) saturate(150%);
+  --glass-depth-2-border:rgba(255,255,255,.4);
+  --glass-depth-2-shadow:0 16px 40px rgba(15,23,42,.07);
+
+  /* depth-3: 前景玻璃 — 卡片 */
+  --glass-depth-3-bg:rgba(255,255,255,.68);
+  --glass-depth-3-blur:blur(16px) saturate(160%);
+  --glass-depth-3-border:rgba(255,255,255,.5);
+  --glass-depth-3-shadow:0 12px 36px rgba(15,23,42,.09);
+
+  /* depth-4: 聚焦玻璃 — 模态/弹窗 */
+  --glass-depth-4-bg:rgba(255,255,255,.82);
+  --glass-depth-4-blur:blur(12px) saturate(165%);
+  --glass-depth-4-border:rgba(255,255,255,.6);
+  --glass-depth-4-shadow:0 24px 56px rgba(15,23,42,.12);
+
+  /* ── Glass Refraction (光折射) ── */
+  --glass-refract-top:rgba(255,255,255,.7);
+  --glass-refract-bottom:rgba(200,220,240,.15);
+  --glass-refract-angle:135deg;
+
+  /* ── Glass Ripple (液态波纹) ── */
+  --glass-ripple-color:rgba(20,184,166,.25);
+  --glass-ripple-duration:600ms;
+
+  /* ── Glass Morph (形态过渡) ── */
+  --glass-morph-duration:500ms;
+  --glass-morph-easing:cubic-bezier(.35,0,.15,1);
+
+  /* ── Body Background ── */
+  --body-bg-gradient:
+    radial-gradient(ellipse at 20% 0%,rgba(20,184,166,.12),transparent 40%),
+    radial-gradient(ellipse at 80% 0%,rgba(6,182,212,.1),transparent 35%),
+    radial-gradient(ellipse at 50% 100%,rgba(167,139,250,.08),transparent 35%),
+    linear-gradient(180deg,rgba(255,255,255,.9),rgba(240,253,250,.7));
+
+  /* ── Navbar ── */
   --nav-height:64px;
   --nav-bg:rgba(255,255,255,.78);
   --nav-border:rgba(148,163,184,.22);
@@ -110,20 +198,20 @@
   --nav-shadow:0 1px 0 rgba(0,0,0,.04);
   --nav-mobile-bg:rgba(255,255,255,.94);
 
-  /* Nav links */
+  /* ── Nav Links ── */
   --nav-link-color:rgba(51,65,85,.88);
   --nav-link-bg:linear-gradient(180deg,rgba(255,255,255,.44),rgba(255,255,255,.14));
-  --nav-link-border:rgba(191,219,254,.5);
-  --nav-link-hover-color:var(--pr-slate-blue-600);
-  --nav-link-hover-bg:linear-gradient(180deg,rgba(255,255,255,.72),rgba(219,234,254,.32));
-  --nav-link-hover-border:rgba(147,197,253,.6);
-  --nav-link-hover-shadow:0 4px 16px rgba(59,130,246,.1);
-  --nav-link-active-color:rgb(30,64,175);
-  --nav-link-active-bg:linear-gradient(180deg,rgba(255,255,255,.78),rgba(219,234,254,.48));
-  --nav-link-active-border:rgba(147,197,253,.65);
-  --nav-link-active-shadow:0 6px 20px rgba(59,130,246,.13);
+  --nav-link-border:rgba(20,184,166,.3);
+  --nav-link-hover-color:var(--pr-aqua-700);
+  --nav-link-hover-bg:linear-gradient(180deg,rgba(255,255,255,.72),rgba(204,251,241,.32));
+  --nav-link-hover-border:rgba(20,184,166,.5);
+  --nav-link-hover-shadow:0 4px 16px rgba(20,184,166,.1);
+  --nav-link-active-color:rgb(15,118,110);
+  --nav-link-active-bg:linear-gradient(180deg,rgba(255,255,255,.78),rgba(204,251,241,.48));
+  --nav-link-active-border:rgba(20,184,166,.55);
+  --nav-link-active-shadow:0 6px 20px rgba(20,184,166,.13);
 
-  /* Cards */
+  /* ── Cards ── */
   --card-bg:rgba(255,255,255,.65);
   --card-border:rgba(148,163,184,.18);
   --card-radius:var(--radius-lg);
@@ -131,36 +219,54 @@
   --card-shadow:var(--shadow-sm);
   --card-shadow-hover:var(--shadow-lg);
 
+  /* ── Layout ── */
   --content-max:1152px;
   --content-narrow:720px;
 
-  /* ── Neon liquid tokens (light theme) ── */
-  --neon-blue:#93c5fd;--neon-purple:#c4b5fd;--neon-pink:#f9a8d4;--neon-cyan:#67e8f9;
+  /* ── Neon Liquid Tokens (light — soft pastels) ── */
+  --neon-blue:#93c5fd;--neon-purple:#c4b5fd;--neon-pink:#f9a8d4;
+  --neon-cyan:#67e8f9;--neon-teal:#5eead4;--neon-gold:#fcd34d;
   --neon-dye-alpha:.35;
   --neon-splatter-interval:3200ms;
-  --neon-glow:0 0 24px rgba(147,197,253,.45);
+  --neon-glow:0 0 24px rgba(20,184,166,.35);
   --liquid-canvas-bg:#E8ECF1;
+
+  /* ── Ambient Blob Tokens (CSS 流体光斑) ── */
+  --blob-color-1:rgba(20,184,166,.18);
+  --blob-color-2:rgba(6,182,212,.14);
+  --blob-color-3:rgba(139,92,246,.1);
+  --blob-color-4:rgba(236,72,153,.08);
+  --blob-size-1:600px;--blob-size-2:450px;--blob-size-3:350px;
+  --blob-speed-1:18s;--blob-speed-2:22s;--blob-speed-3:16s;
 }
 
-/* ── L2: Dark mode overrides ── */
+
+/* ═══════════════════════════════════════════════════════
+   L2: Semantic Tokens (Dark Theme)
+   ═══════════════════════════════════════════════════════ */
 .dark{
+  /* == Surface == */
   --color-surface:var(--pr-dark-900);
   --color-surface-raised:var(--pr-dark-850);
   --color-surface-overlay:rgba(11,17,32,.92);
 
+  /* == Text == */
   --color-text-primary:var(--pr-gray-100);
   --color-text-secondary:var(--pr-gray-400);
   --color-text-muted:var(--pr-gray-500);
 
-  --color-primary-subtle:rgba(86,105,122,.18);
+  /* == Brand == */
+  --color-primary-subtle:rgba(20,184,166,.15);
   --color-border:rgba(255,255,255,.06);
   --color-border-light:rgba(255,255,255,.04);
   --color-divider:rgba(255,255,255,.05);
-  --color-selection:rgba(86,105,122,.3);
+  --color-selection:rgba(20,184,166,.28);
 
-  --color-link:var(--pr-silver-300);
+  /* == Links == */
+  --color-link:var(--pr-cyan-300);
   --color-link-hover:var(--pr-gold-400);
 
+  /* ── Glass Core (向后兼容) ── */
   --glass-bg:rgba(17,24,39,.74);
   --glass-card-bg:rgba(17,24,39,.56);
   --glass-border:rgba(148,163,184,.28);
@@ -170,39 +276,113 @@
   --glass-shadow:0 24px 60px rgba(2,8,23,.35);
   --glass-shadow-soft:0 14px 34px rgba(2,8,23,.25);
 
+  /* ── Glass Depth System (v4 新增) ── */
+  --glass-depth-1-bg:rgba(11,17,32,.38);
+  --glass-depth-1-blur:blur(28px) saturate(120%);
+  --glass-depth-1-border:rgba(255,255,255,.04);
+  --glass-depth-1-shadow:0 8px 32px rgba(2,8,23,.2);
+
+  --glass-depth-2-bg:rgba(15,23,42,.55);
+  --glass-depth-2-blur:blur(22px) saturate(130%);
+  --glass-depth-2-border:rgba(255,255,255,.07);
+  --glass-depth-2-shadow:0 16px 40px rgba(2,8,23,.28);
+
+  --glass-depth-3-bg:rgba(17,24,39,.65);
+  --glass-depth-3-blur:blur(18px) saturate(145%);
+  --glass-depth-3-border:rgba(255,255,255,.1);
+  --glass-depth-3-shadow:0 12px 36px rgba(2,8,23,.3);
+
+  --glass-depth-4-bg:rgba(17,24,39,.78);
+  --glass-depth-4-blur:blur(14px) saturate(150%);
+  --glass-depth-4-border:rgba(255,255,255,.14);
+  --glass-depth-4-shadow:0 24px 56px rgba(2,8,23,.4);
+
+  /* ── Glass Refraction (光折射) ── */
+  --glass-refract-top:rgba(255,255,255,.1);
+  --glass-refract-bottom:rgba(20,184,166,.08);
+  --glass-refract-angle:135deg;
+
+  /* ── Glass Ripple (液态波纹) ── */
+  --glass-ripple-color:rgba(45,212,191,.3);
+  --glass-ripple-duration:600ms;
+
+  /* ── Body Background ── */
   --body-bg-gradient:
-    radial-gradient(ellipse at 20% 0%,rgba(56,189,248,.1),transparent 40%),
-    radial-gradient(ellipse at 80% 0%,rgba(139,92,246,.12),transparent 35%),
-    radial-gradient(ellipse at 50% 100%,rgba(59,130,246,.08),transparent 35%),
+    radial-gradient(ellipse at 20% 0%,rgba(20,184,166,.1),transparent 40%),
+    radial-gradient(ellipse at 80% 0%,rgba(6,182,212,.12),transparent 35%),
+    radial-gradient(ellipse at 50% 100%,rgba(139,92,246,.06),transparent 35%),
     linear-gradient(180deg,rgba(6,11,24,.96),rgba(11,17,32,.88));
 
+  /* ── Navbar ── */
   --nav-bg:rgba(11,17,32,.78);
   --nav-border:rgba(148,163,184,.2);
   --nav-blur:blur(18px) saturate(140%);
   --nav-shadow:0 1px 0 rgba(255,255,255,.04);
   --nav-mobile-bg:rgba(11,17,32,.94);
 
+  /* ── Nav Links ── */
   --nav-link-color:rgba(226,232,240,.88);
   --nav-link-bg:linear-gradient(180deg,rgba(15,23,42,.5),rgba(15,23,42,.2));
   --nav-link-border:rgba(71,85,105,.6);
   --nav-link-hover-color:#fff;
-  --nav-link-hover-bg:linear-gradient(180deg,rgba(30,41,59,.65),rgba(15,23,42,.35));
-  --nav-link-hover-border:rgba(148,163,184,.4);
+  --nav-link-hover-bg:linear-gradient(180deg,rgba(20,184,166,.15),rgba(15,23,42,.35));
+  --nav-link-hover-border:rgba(20,184,166,.35);
   --nav-link-hover-shadow:0 4px 18px rgba(0,0,0,.2);
-  --nav-link-active-color:rgb(147,197,253);
-  --nav-link-active-bg:linear-gradient(180deg,rgba(30,58,138,.45),rgba(15,23,42,.55));
-  --nav-link-active-border:rgba(96,165,250,.45);
-  --nav-link-active-shadow:0 6px 24px rgba(37,99,235,.2);
+  --nav-link-active-color:rgb(94,234,212);
+  --nav-link-active-bg:linear-gradient(180deg,rgba(20,184,166,.2),rgba(15,23,42,.45));
+  --nav-link-active-border:rgba(45,212,191,.4);
+  --nav-link-active-shadow:0 6px 24px rgba(20,184,166,.18);
 
+  /* ── Cards ── */
   --card-bg:rgba(17,24,39,.55);
   --card-border:rgba(148,163,184,.14);
   --card-shadow:0 1px 3px rgba(0,0,0,.15);
   --card-shadow-hover:0 12px 28px rgba(0,0,0,.25);
 
-  /* ── Neon liquid tokens (dark theme) ── */
-  --neon-blue:#3b82f6;--neon-purple:#8b5cf6;--neon-pink:#ec4899;--neon-cyan:#06b6d4;
+  /* ── Neon Liquid Tokens (dark — vibrant) ── */
+  --neon-blue:#3b82f6;--neon-purple:#8b5cf6;--neon-pink:#ec4899;
+  --neon-cyan:#06b6d4;--neon-teal:#14b8a6;--neon-gold:#f59e0b;
   --neon-dye-alpha:.85;
   --neon-splatter-interval:2800ms;
-  --neon-glow:0 0 32px rgba(59,130,246,.6);
+  --neon-glow:0 0 32px rgba(20,184,166,.5);
   --liquid-canvas-bg:#060B18;
+
+  /* ── Ambient Blob Tokens (CSS 流体光斑) ── */
+  --blob-color-1:rgba(20,184,166,.22);
+  --blob-color-2:rgba(6,182,212,.18);
+  --blob-color-3:rgba(139,92,246,.14);
+  --blob-color-4:rgba(236,72,153,.1);
+  --blob-size-1:600px;--blob-size-2:450px;--blob-size-3:350px;
+  --blob-speed-1:18s;--blob-speed-2:22s;--blob-speed-3:16s;
+}
+
+
+/* ═══════════════════════════════════════════════════════
+   L3: Component Tokens (Optional overrides)
+   ═══════════════════════════════════════════════════════ */
+:root{
+  /* Back-to-top button */
+  --btt-size:44px;
+  --btt-bg:var(--glass-depth-3-bg);
+  --btt-border:var(--glass-depth-3-border);
+  --btt-shadow:var(--glass-depth-3-shadow);
+
+  /* Context menu */
+  --ctx-bg:var(--glass-depth-4-bg);
+  --ctx-blur:var(--glass-depth-4-blur);
+  --ctx-border:var(--glass-depth-4-border);
+
+  /* Focus mode overlay */
+  --focus-overlay-bg:rgba(6,11,24,.92);
+  --focus-overlay-blur:blur(48px) saturate(1.2);
+}
+.dark{
+  --btt-bg:var(--glass-depth-3-bg);
+  --btt-border:var(--glass-depth-3-border);
+  --btt-shadow:var(--glass-depth-3-shadow);
+  --ctx-bg:var(--glass-depth-4-bg);
+  --ctx-blur:var(--glass-depth-4-blur);
+  --ctx-border:var(--glass-depth-4-border);
+  --focus-overlay-bg:rgba(6,11,24,.94);
+  --focus-overlay-blur:blur(48px) saturate(1.2);
 }
