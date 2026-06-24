@@ -254,19 +254,20 @@ function renderGridView(container) {
                     ${coverHtml}
                     <div class="blog-card-body">
                         <span class="blog-card-badge">
-                            <i data-lucide="folder" style="width:12px;height:12px;"></i>
-                            ${post.category || '笔记'}
+                            <i data-lucide="folder"></i>
+                            <span>${post.category || '笔记'}</span>
                         </span>
                         <h2 class="blog-card-title">${post.title}</h2>
                         <p class="blog-card-excerpt">${post.excerpt || '暂无摘要...'}</p>
                         <div class="blog-card-footer">
                             <i data-lucide="calendar-days"></i>
                             <span>${dateStr}</span>
-                            <i data-lucide="tag" style="margin-left:4px;"></i>
-                            <span>${(post.tags || []).length}</span>
+                            <span class="footer-dot-sep">·</span>
+                            <i data-lucide="tag"></i>
+                            <span>${(post.tags || []).length} 个标签</span>
                             <span class="footer-spacer"></span>
                             <span class="footer-arrow">
-                                <i data-lucide="arrow-right" style="width:16px;height:16px;"></i>
+                                <i data-lucide="arrow-right"></i>
                             </span>
                         </div>
                     </div>
