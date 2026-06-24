@@ -1,11 +1,11 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
+﻿<!DOCTYPE html>
+<html lang="zh-CN" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
-    <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
-    <title>文章详情 - 夏日科技探索</title>
+    <meta name="theme-color" content="#0B1120" media="(prefers-color-scheme: dark)">
+    <meta name="theme-color" content="#F5F7FA" media="(prefers-color-scheme: light)">
+    <title>文章详情 — Shadow Quake</title>
     <link rel="icon" type="image/png" href="public/img/favicon256.png">
     
     <!-- Fonts -->
@@ -13,8 +13,9 @@
     <link rel="preconnect" href="https://gstatic.loli.net" crossorigin>
     <link href="https://fonts.loli.net/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&family=ZCOOL+KuaiLe&display=swap" rel="stylesheet">
     
-    <!-- Tailwind CSS (预编译，不再使用 CDN 运行时编译) -->
-    <link href="css/style.css?v=1781114612" rel="stylesheet">
+    <!-- Unified CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="css/unified.css" rel="stylesheet">
 
     <!-- Lucide Icons -->
     <script src="js/vendor/lucide.min.js"></script>
@@ -161,13 +162,12 @@
             background-color: #fafafa;
             color: #383a42;
             border: 1px solid #e5e7eb;
-            overflow: hidden; /* Changed from auto to hidden to contain header */
+            overflow: hidden;
             position: relative;
         }
         
         /* Dark Mode Override */
         html.dark .prose pre {
-            /* VS Code Dark Background */
             background-color: #1e1e1e !important;
             color: #d4d4d4 !important;
             border-color: #404040;
@@ -220,7 +220,7 @@
         /* Force hljs container to be transparent so pre background shows */
         .hljs {
             background: transparent !important;
-            padding: 0 !important; /* Let pre handle padding */
+            padding: 0 !important;
             font-family: 'Consolas', 'Monaco', 'Andale Mono', 'Ubuntu Mono', monospace;
             font-size: 0.9em;
             line-height: 1.6;
@@ -230,9 +230,8 @@
         
         /* Override Tailwind Typography defaults for code blocks */
         .prose pre {
-            /* Fix padding for code blocks */
             padding: 1rem !important;
-            padding-top: 3.8rem !important; /* Space for window controls + padding */
+            padding-top: 3.8rem !important;
         }
         .prose pre code {
             background-color: transparent !important;
@@ -240,13 +239,11 @@
             padding: 0 !important;
             font-weight: inherit !important;
             border-radius: 0 !important;
-            /* Ensure code has breathing room from edges */
             display: block;
             padding-left: 0.5rem !important; 
         }
-        /* Ensure Highlight.js block has padding too if needed, but pre padding usually handles it */
         .hljs {
-            padding: 0 !important; /* Let pre handle padding */
+            padding: 0 !important;
         }
         
         .hljs::-webkit-scrollbar {
@@ -271,7 +268,7 @@
 
         /* TOC Styles */
         html {
-            scroll-padding-top: 5rem; /* Prevent fixed navbar from covering anchors */
+            scroll-padding-top: 5rem;
         }
         
         html.lenis, html.lenis body {
@@ -296,34 +293,31 @@
             margin: 0;
         }
         
-        /* Sublist transitions */
         .toc-sublist {
             list-style: none;
-            margin-left: 0; /* Handled by padding in links or specific level classes */
+            margin-left: 0;
             overflow: hidden;
             transition: all 0.3s ease-in-out;
         }
 
-        /* TOC Links */
         .toc-link {
             display: block;
             padding: 0.5rem 0.75rem;
-            color: #6b7280; /* Gray-500 */
+            color: #6b7280;
             text-decoration: none;
             transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             font-size: 0.9rem;
-            border-left: 3px solid transparent; /* Thicker border */
+            border-left: 3px solid transparent;
             border-radius: 0 0.5rem 0.5rem 0;
             margin-bottom: 4px;
             line-height: 1.5;
         }
         html.dark .toc-link {
-            color: #9ca3af; /* Gray-400 */
+            color: #9ca3af;
         }
         
-        /* Hover State */
         .toc-link:hover {
-            background-color: rgba(243, 244, 246, 0.8); /* lighter gray */
+            background-color: rgba(243, 244, 246, 0.8);
             color: #111827;
             border-left-color: #d1d5db;
         }
@@ -333,14 +327,13 @@
             border-left-color: #4b5563;
         }
 
-        /* Active State */
         .toc-link.active {
             border-left-color: #2563eb;
             background-color: #eff6ff;
             color: #1d4ed8;
             font-weight: 600;
-            padding-left: 1rem; /* Visual indent */
-            transform: translateX(2px); /* Slight shift */
+            padding-left: 1rem;
+            transform: translateX(2px);
         }
         html.dark .toc-link.active {
             border-left-color: #60a5fa;
@@ -348,7 +341,6 @@
             color: #60a5fa;
         }
 
-        /* Header Spacing */
         #post-header {
             padding-top: 1rem;
             padding-bottom: 2rem;
@@ -384,125 +376,64 @@
             background-color: rgba(75, 85, 99, 0.8);
         }
     </style>
-    <script>
-        (function() {
-            try {
-                let stored = null;
-                try {
-                    const theme = localStorage.getItem('theme');
-                    if (theme === 'dark' || theme === 'light') stored = theme;
-                } catch (e) {}
-                const systemDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-                const theme = stored || (systemDark ? 'dark' : 'light');
-                if (theme === 'dark') {
-                    document.documentElement.classList.add('dark');
-                } else {
-                    document.documentElement.classList.remove('dark');
-                }
-            } catch(e) {}
-        })();
-    </script>
 </head>
-<body class="public-page liquid-glass-ui bg-gray-50 dark:bg-black text-gray-900 dark:text-gray-100 font-sans pt-16 transition-colors duration-500 overflow-x-hidden" data-force-scrolled-nav>
+<body class="font-sans" data-force-scrolled-nav>
 
     <!-- Progress Bar -->
     <div id="progress-container" class="fixed top-0 left-0 h-1 w-full z-[60] bg-transparent pointer-events-none">
         <div id="progress-bar" class="h-full bg-gradient-to-r from-blue-400 to-indigo-600 w-0 transition-all duration-150 ease-out shadow-[0_0_10px_rgba(59,130,246,0.5)]"></div>
     </div>
 
-    <!-- Navbar -->
-    <nav id="navbar" class="fixed w-full z-50 top-0 transition-all duration-300 bg-white/80 dark:bg-gray-950/80 backdrop-blur-md border-b border-gray-100 dark:border-gray-800">
-        <div class="public-shell px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16">
-                <div class="flex items-center">
-                    <a href="index.html" class="flex items-center group">
-                        <div class="relative">
-                            <div class="absolute -inset-1 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full blur opacity-25 group-hover:opacity-50 transition duration-200"></div>
-                            <img src="public/img/favicon256.png" alt="Logo" class="relative h-8 w-8 mr-2 dark:hidden">
-                            <img src="public/img/black256.png" alt="Logo" class="relative h-8 w-8 mr-2 hidden dark:block">
-                        </div>
-                        <span id="nav-title" class="font-cute text-xl tracking-tight transition-colors duration-300 text-gray-900 dark:text-white">
-                            夏日科技探索
-                        </span>
-                    </a>
-                </div>
-                
-                <div class="hidden lg:flex items-center space-x-1">
-                    <a href="index.html" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-600 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-white/10 dark:hover:text-white" title="首页">
-                        <i data-lucide="house" class="w-5 h-5"></i>
-                    </a>
-                    <a href="blog.html" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 bg-blue-50/80 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400" title="星空笔记">
-                        <i data-lucide="file-text" class="w-5 h-5"></i>
-                    </a>
-                    <a href="moments.html" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-600 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-white/10 dark:hover:text-white" title="随手拍">
-                        <i data-lucide="camera" class="w-5 h-5"></i>
-                    </a>
-                    <a href="bookmarks.html" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-600 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-white/10 dark:hover:text-white" title="收藏">
-                        <i data-lucide="bookmark" class="w-5 h-5"></i>
-                    </a>
-                    <a href="rss.html" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-600 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-white/10 dark:hover:text-white" title="订阅">
-                        <i data-lucide="rss" class="w-5 h-5"></i>
-                    </a>
-                    <a href="acg.html" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-600 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-white/10 dark:hover:text-white" title="视频">
-                        <i data-lucide="film" class="w-5 h-5"></i>
-                    </a>
-                    <a href="about.html" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-600 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-white/10 dark:hover:text-white" title="关于">
-                        <i data-lucide="user-circle" class="w-5 h-5"></i>
-                    </a>
-                    
-                    <!-- Theme Toggle -->
-                    <button id="theme-toggle" class="ml-4 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors focus:outline-none ring-2 ring-transparent focus:ring-blue-500" aria-label="Toggle Theme">
-                        <i id="theme-toggle-icon" data-lucide="moon" class="w-5 h-5 text-gray-600 dark:text-gray-300"></i>
-                    </button>
-                </div>
-
-                <div class="lg:hidden flex items-center">
-                    <button onclick="toggleTheme()" class="mr-4 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors" aria-label="Toggle Theme">
-                        <i data-lucide="moon" class="w-5 h-5 text-blue-600 dark:hidden"></i>
-                        <i data-lucide="sun" class="w-5 h-5 text-yellow-400 hidden dark:block"></i>
-                    </button>
-                    
-                    <button id="mobile-menu-btn" class="p-2 rounded-md transition-colors text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800" aria-label="Toggle Menu">
-                        <i data-lucide="menu" class="w-6 h-6"></i>
-                    </button>
+    <!-- ═══════════ NAVBAR ═══════════ -->
+    <nav id="navbar" class="homepage-cover-nav-shell" data-ui-region="home-nav-shell">
+        <div class="nav-inner">
+            <div class="nav-left">
+                <a href="index.html" class="nav-brand" aria-label="Shadow Quake Home">
+                    <img src="public/img/black256.png" alt="Logo" class="dark-only">
+                    <img src="public/img/favicon256.png" alt="Logo" class="light-only">
+                    <span>Shadow Quake</span>
+                </a>
+                <span class="nav-divider" aria-hidden="true"></span>
+                <div class="nav-links homepage-cover-nav-actions" role="navigation" aria-label="Main">
+                    <a href="index.html" class="nav-link" title="首页"><i data-lucide="house"></i><span class="nav-text">首页</span></a>
+                    <a href="blog.html" class="nav-link active" aria-current="page" title="笔记"><i data-lucide="file-text"></i><span class="nav-text">笔记</span></a>
+                    <a href="moments.html" class="nav-link" title="片刻"><i data-lucide="camera"></i><span class="nav-text">片刻</span></a>
+                    <a href="bookmarks.html" class="nav-link" title="收藏"><i data-lucide="bookmark"></i><span class="nav-text">收藏</span></a>
+                    <a href="rss.html" class="nav-link" title="订阅"><i data-lucide="rss"></i><span class="nav-text">订阅</span></a>
+                    <a href="acg.html" class="nav-link" title="ACG"><i data-lucide="film"></i><span class="nav-text">ACG</span></a>
+                    <a href="about.html" class="nav-link" title="关于"><i data-lucide="user-circle"></i><span class="nav-text">关于</span></a>
                 </div>
             </div>
-        </div>
-
-        <!-- Mobile menu -->
-        <div id="mobile-menu" class="lg:hidden absolute top-full left-0 w-full bg-white/95 dark:bg-black/95 backdrop-blur-xl border-t border-gray-100 dark:border-gray-800 shadow-2xl transition-all duration-300 ease-in-out transform opacity-0 -translate-y-4 pointer-events-none">
-            <div class="px-4 pt-4 pb-6 space-y-2">
-                <a href="index.html" class="flex items-center px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 text-gray-600 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-white/10 hover:shadow-sm hover:translate-x-1">
-                    <i data-lucide="house" class="w-5 h-5 mr-3"></i>
-                    首页
-                </a>
-                <a href="blog.html" class="flex items-center px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 text-blue-600 bg-blue-50 dark:bg-blue-900/20 dark:text-blue-400 shadow-sm">
-                    <i data-lucide="file-text" class="w-5 h-5 mr-3"></i>
-                    星空笔记
-                </a>
-                <a href="moments.html" class="flex items-center px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 text-gray-600 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-white/10 hover:shadow-sm hover:translate-x-1">
-                    <i data-lucide="camera" class="w-5 h-5 mr-3"></i>
-                    随手拍
-                </a>
-                <a href="bookmarks.html" class="flex items-center px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 text-gray-600 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-white/10 hover:shadow-sm hover:translate-x-1">
-                    <i data-lucide="bookmark" class="w-5 h-5 mr-3"></i>
-                    收藏
-                </a>
-                <a href="rss.html" class="flex items-center px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 text-gray-600 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-white/10 hover:shadow-sm hover:translate-x-1">
-                    <i data-lucide="rss" class="w-5 h-5 mr-3"></i>
-                    订阅
-                </a>
-                <a href="acg.html" class="flex items-center px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 text-gray-600 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-white/10 hover:shadow-sm hover:translate-x-1">
-                    <i data-lucide="film" class="w-5 h-5 mr-3"></i>
-                    视频
-                </a>
-                <a href="about.html" class="flex items-center px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 text-gray-600 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-white/10 hover:shadow-sm hover:translate-x-1">
-                    <i data-lucide="user-circle" class="w-5 h-5 mr-3"></i>
-                    关于
-                </a>
+            <div class="nav-actions">
+                <button id="theme-toggle" class="theme-toggle" aria-label="切换主题">
+                    <i data-lucide="sun" class="dark-only"></i>
+                    <i data-lucide="moon" class="light-only"></i>
+                </button>
+                <button id="nav-hamburger" class="nav-hamburger" aria-label="菜单" aria-expanded="false">
+                    <i data-lucide="menu"></i>
+                </button>
             </div>
         </div>
     </nav>
+
+    <!-- ═══════ 移动端菜单 ═══════ -->
+    <div id="mobile-menu" role="dialog" aria-label="导航菜单" aria-modal="true">
+        <div class="mobile-menu-header">
+            <span class="mobile-menu-brand">Shadow Quake</span>
+            <button class="mobile-menu-close" aria-label="关闭菜单">
+                <i data-lucide="x"></i>
+            </button>
+        </div>
+        <div class="mobile-menu-links">
+            <a href="index.html" class="mobile-nav-link homepage-mobile-menu-link"><i data-lucide="house"></i><span>首页</span></a>
+            <a href="blog.html" class="mobile-nav-link active homepage-mobile-menu-link"><i data-lucide="file-text"></i><span>笔记</span></a>
+            <a href="moments.html" class="mobile-nav-link homepage-mobile-menu-link"><i data-lucide="camera"></i><span>片刻</span></a>
+            <a href="bookmarks.html" class="mobile-nav-link homepage-mobile-menu-link"><i data-lucide="bookmark"></i><span>收藏</span></a>
+            <a href="rss.html" class="mobile-nav-link homepage-mobile-menu-link"><i data-lucide="rss"></i><span>订阅</span></a>
+            <a href="acg.html" class="mobile-nav-link homepage-mobile-menu-link"><i data-lucide="film"></i><span>ACG</span></a>
+            <a href="about.html" class="mobile-nav-link homepage-mobile-menu-link"><i data-lucide="user-circle"></i><span>关于</span></a>
+        </div>
+    </div>
 
     <!-- Main Content -->
     <article class="min-h-screen pb-20 relative">
@@ -625,22 +556,14 @@
             </div>
         </div>
 
-
         <!-- Overlay -->
         <div id="toc-overlay" class="fixed inset-0 bg-black/20 dark:bg-black/50 backdrop-blur-sm z-40 hidden opacity-0 transition-opacity duration-300"></div>
     </article>
 
-    <!-- Footer -->
-    <footer class="public-footer bg-white/80 dark:bg-gray-950/80 backdrop-blur-md border-t border-gray-100 dark:border-gray-800 py-8 relative z-10 transition-colors duration-300 mt-12">
-        <div class="public-footer__inner px-4 flex flex-col md:flex-row justify-center items-center gap-4 text-center">
-            <p class="text-xs tracking-widest uppercase text-gray-500 dark:text-gray-400 opacity-80 flex items-center">
-                &copy; 2025 Thoi <span class="mx-2 text-blue-500">|</span> Designed with <span class="text-red-500 animate-pulse mx-1">❤️</span>
-            </p>
-            <div class="inline-flex items-center gap-2 px-3 py-1 bg-gray-100 dark:bg-gray-800 rounded-full text-xs font-mono text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-700">
-                <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-                <span id="visit-count">加载中…</span>
-            </div>
-        </div>
+    <!-- ═══════════ FOOTER ═══════════ -->
+    <footer>
+        <p>&copy; 2025 Shadow Quake. Designed with care.</p>
+        <span id="visit-count" class="text-muted" style="font-size:var(--text-xs);font-family:var(--pr-font-mono);margin-top:var(--sp-1);display:block;">—</span>
     </footer>
 
     <!-- Back to Top Button -->
@@ -648,6 +571,20 @@
         <i data-lucide="chevron-up" class="w-6 h-6"></i>
     </button>
 
+    <!-- Light/dark visibility -->
+    <style>
+        .dark .light-only { display: none !important; }
+        .dark .dark-only { display: inline !important; }
+        .light-only { display: inline; }
+        .dark-only { display: none; }
+        img.light-only, img.dark-only { display: none; }
+        .dark img.dark-only { display: inline; }
+        img.light-only { display: inline; }
+        .dark img.light-only { display: none; }
+    </style>
+
+    <!-- Scripts -->
+    <script src="js/navbar.js"></script>
     <script src="js/api.js"></script>
     <script src="js/main.js"></script>
     <script src="js/post-viewer.js?v=2"></script>
@@ -657,8 +594,8 @@
     <script>
         // Initialize Lenis for smooth scrolling
         const lenis = new Lenis({
-            duration: 1.5,
-            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+            duration: 0.5
+            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -6 * t)),
             direction: 'vertical',
             gestureDirection: 'vertical',
             smooth: true,

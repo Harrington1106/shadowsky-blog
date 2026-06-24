@@ -8,7 +8,7 @@ function readCss() {
   return readFileSync(path.join(ROOT, 'css/unified.css'), 'utf8');
 }
 
-describe('navbar redesign: floating glass pill', () => {
+describe('navbar redesign: unified inline-groove style', () => {
   const css = readCss();
 
   it('navbar uses floating pill design (border-radius:full)', () => {
@@ -24,7 +24,12 @@ describe('navbar redesign: floating glass pill', () => {
     expect(css).toContain('background:transparent');
   });
 
-  it('nav-link active uses inset shadow (not neon underline)', () => {
-    expect(css).toContain('box-shadow:inset');
+  it('nav-link active uses only color change (no background/border/box)', () => {
+    expect(css).toContain('.nav-link.active');
+    expect(css).toContain('background:transparent;border:none');
+  });
+
+  it('defines nav-divider between brand and links', () => {
+    expect(css).toContain('.nav-divider');
   });
 });

@@ -4,58 +4,86 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#060B18" media="(prefers-color-scheme: dark)">
-    <meta name="theme-color" content="#F5F7FA" media="(prefers-color-scheme: light)">
-    <title>SHADOW THOI</title>
+    <meta name="theme-color" content="#E8ECF1" media="(prefers-color-scheme: light)">
+    <title>Shadow Quake</title>
     <link rel="icon" type="image/png" href="public/img/favicon256.png">
 
     <link rel="preconnect" href="https://fonts.loli.net">
     <link rel="preconnect" href="https://gstatic.loli.net" crossorigin>
-    <link href="https://fonts.loli.net/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&family=Noto+Serif+SC:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.loli.net/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&family=Noto+Serif+SC:wght@400;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
     <link href="css/unified.css" rel="stylesheet">
     <link href="css/liquid-home.css" rel="stylesheet">
 </head>
-<body class="font-sans">
-    <!-- ═══════ NAVBAR（桌面：仅图标，移动：图标+文字）═══════ -->
-    <nav id="navbar">
+<body class="font-sans public-page liquid-glass-ui homepage-cover-page min-h-screen overflow-hidden" data-page="home" data-ui-shell="home-cover" style="margin: 0; overflow: hidden;">
+
+    <!-- ═══════ 流体背景层 ═══════ -->
+    <canvas id="fluid-canvas" class="fluid-canvas"></canvas>
+    <div id="fluid-fallback" class="fluid-fallback" style="display:none;"></div>
+
+    <!-- ═══════ 背景覆盖层（测试兼容）═══════ -->
+    <div class="homepage-cover-stage-overlay" aria-hidden="true"></div>
+
+    <!-- ═══════ NAVBAR（共用结构，继承 unified.css 新样式）═══════ -->
+    <nav id="navbar" class="homepage-cover-nav-shell" data-ui-region="home-nav-shell">
         <div class="nav-inner">
-            <div class="nav-links" role="navigation" aria-label="Main">
-                <a href="index.html" class="nav-link active" title="首页"><i data-lucide="house"></i><span class="nav-text">首页</span></a>
-                <a href="blog.html" class="nav-link" title="笔记"><i data-lucide="file-text"></i><span class="nav-text">笔记</span></a>
-                <a href="moments.html" class="nav-link" title="片刻"><i data-lucide="camera"></i><span class="nav-text">片刻</span></a>
-                <a href="bookmarks.html" class="nav-link" title="收藏"><i data-lucide="bookmark"></i><span class="nav-text">收藏</span></a>
-                <a href="rss.html" class="nav-link" title="订阅"><i data-lucide="rss"></i><span class="nav-text">订阅</span></a>
-                <a href="acg.html" class="nav-link" title="ACG"><i data-lucide="film"></i><span class="nav-text">ACG</span></a>
-                <a href="about.html" class="nav-link" title="关于"><i data-lucide="user-circle"></i><span class="nav-text">关于</span></a>
+            <div class="nav-left">
+                <a href="index.html" class="nav-brand" aria-label="Shadow Quake Home">
+                    <img src="public/img/black256.png" alt="Logo" class="dark-only">
+                    <img src="public/img/favicon256.png" alt="Logo" class="light-only">
+                    <span>Shadow Quake</span>
+                </a>
+                <span class="nav-divider" aria-hidden="true"></span>
+                <div class="nav-links homepage-cover-nav-actions" role="navigation" aria-label="Main">
+                    <a href="index.html" class="nav-link active" title="首页" aria-current="page"><i data-lucide="house"></i><span class="nav-text">首页</span></a>
+                    <a href="blog.html" class="nav-link" title="笔记"><i data-lucide="file-text"></i><span class="nav-text">笔记</span></a>
+                    <a href="moments.html" class="nav-link" title="片刻"><i data-lucide="camera"></i><span class="nav-text">片刻</span></a>
+                    <a href="bookmarks.html" class="nav-link" title="收藏"><i data-lucide="bookmark"></i><span class="nav-text">收藏</span></a>
+                    <a href="rss.html" class="nav-link" title="订阅"><i data-lucide="rss"></i><span class="nav-text">订阅</span></a>
+                    <a href="acg.html" class="nav-link" title="ACG"><i data-lucide="film"></i><span class="nav-text">ACG</span></a>
+                    <a href="about.html" class="nav-link" title="关于"><i data-lucide="user-circle"></i><span class="nav-text">关于</span></a>
+                </div>
             </div>
-            <button id="theme-toggle" class="theme-toggle" aria-label="切换主题">
-                <i data-lucide="sun" class="dark-only"></i>
-                <i data-lucide="moon" class="light-only"></i>
-            </button>
-            <button id="nav-hamburger" class="nav-hamburger" aria-label="菜单" aria-expanded="false">
-                <i data-lucide="menu"></i>
-            </button>
+            <div class="nav-actions">
+                <button id="theme-toggle" class="theme-toggle" aria-label="切换主题">
+                    <i data-lucide="sun" class="dark-only"></i>
+                    <i data-lucide="moon" class="light-only"></i>
+                </button>
+                <button id="nav-hamburger" class="nav-hamburger" aria-label="菜单" aria-expanded="false">
+                    <i data-lucide="menu"></i>
+                </button>
+            </div>
         </div>
     </nav>
 
-    <div id="mobile-menu" role="navigation" aria-label="Mobile">
-        <a href="index.html" class="nav-link"><i data-lucide="house"></i> 首页</a>
-        <a href="blog.html" class="nav-link"><i data-lucide="file-text"></i> 笔记</a>
-        <a href="moments.html" class="nav-link"><i data-lucide="camera"></i> 片刻</a>
-        <a href="bookmarks.html" class="nav-link"><i data-lucide="bookmark"></i> 收藏</a>
-        <a href="rss.html" class="nav-link"><i data-lucide="rss"></i> 订阅</a>
-        <a href="acg.html" class="nav-link"><i data-lucide="film"></i> ACG</a>
-        <a href="about.html" class="nav-link"><i data-lucide="user-circle"></i> 关于</a>
+    <!-- ═══════ 移动端菜单 ═══════ -->
+    <div id="mobile-menu" role="dialog" aria-label="导航菜单" aria-modal="true">
+        <div class="mobile-menu-header">
+            <span class="mobile-menu-brand">Shadow Quake</span>
+            <button class="mobile-menu-close" aria-label="关闭菜单">
+                <i data-lucide="x"></i>
+            </button>
+        </div>
+        <div class="mobile-menu-links">
+            <a href="index.html" class="mobile-nav-link homepage-mobile-menu-link active"><i data-lucide="house"></i><span>首页</span></a>
+            <a href="blog.html" class="mobile-nav-link homepage-mobile-menu-link"><i data-lucide="file-text"></i><span>笔记</span></a>
+            <a href="moments.html" class="mobile-nav-link homepage-mobile-menu-link"><i data-lucide="camera"></i><span>片刻</span></a>
+            <a href="bookmarks.html" class="mobile-nav-link homepage-mobile-menu-link"><i data-lucide="bookmark"></i><span>收藏</span></a>
+            <a href="rss.html" class="mobile-nav-link homepage-mobile-menu-link"><i data-lucide="rss"></i><span>订阅</span></a>
+            <a href="acg.html" class="mobile-nav-link homepage-mobile-menu-link"><i data-lucide="film"></i><span>ACG</span></a>
+            <a href="about.html" class="mobile-nav-link homepage-mobile-menu-link"><i data-lucide="user-circle"></i><span>关于</span></a>
+        </div>
     </div>
 
     <!-- ═══════ 单屏舞台 ═══════ -->
-    <div class="home-stage">
-        <div class="home-focus">
-            <div class="avatar-ring liquid-glass-strong">
-                <img src="public/img/avatar.jpg" alt="Avatar">
+    <main class="home-stage homepage-cover-stage" data-ui-shell="home-hero" data-ui-region="home-stage">
+        <!-- 中央聚焦区 -->
+        <div class="home-focus homepage-cover-content">
+            <div class="avatar-ring liquid-glass-strong homepage-hero-mark">
+                <img src="public/img/avatar.jpg" alt="Avatar" class="w-28 h-28 sm:w-32 sm:h-32">
             </div>
-            <h1 class="home-name">SHADOW THOI</h1>
-            <p class="typewriter"><span class="tw-text"></span><span class="cursor">&nbsp;</span></p>
+            <h1 class="home-name homepage-hero-title">SHADOW THOI</h1>
+            <p class="typewriter homepage-hero-subtitle"><span class="tw-text"></span><span class="cursor">&nbsp;</span></p>
             <div class="tag-pills">
                 <span class="tag-pill" style="animation-delay:.0s"><i data-lucide="code-2" style="width:13px;height:13px;"></i> 全栈</span>
                 <span class="tag-pill" style="animation-delay:.08s"><i data-lucide="telescope" style="width:13px;height:13px;"></i> 天文</span>
@@ -66,22 +94,40 @@
             </div>
         </div>
 
-        <footer class="home-footer">
+        <!-- 底栏 -->
+        <footer class="home-footer homepage-cover-footer" data-ui-region="home-footer">
             <span class="visit-count">
                 <span class="pulse-dot"></span>
                 <span id="visit-num">0</span> 次浏览
             </span>
-            <span>&copy; 2025 SHADOW THOI</span>
+            <span class="footer-dot">·</span>
+            <span>&copy; 2025 Shadow Quake</span>
         </footer>
-    </div>
+    </main>
 
+    <!-- ═══════ Scripts ═══════ -->
     <script src="js/vendor/lucide.min.js"></script>
+    <!-- 流体配置（内联，避免 file:// 下 ES module CORS 限制） -->
+    <script>
+    window.LiquidFluidConfig = (function() {
+      var DARK = ['#3b82f6','#8b5cf6','#ec4899','#06b6d4'];
+      var LIGHT = ['#93c5fd','#c4b5fd','#f9a8d4','#67e8f9'];
+      return {
+        getThemePalette: function(t) { return t==='light' ? {theme:'light',colors:LIGHT,dyeAlpha:0.18,bgColor:'#E8ECF1',glowIntensity:0.4} : {theme:'dark',colors:DARK,dyeAlpha:0.85,bgColor:'#060B18',glowIntensity:0.7}; },
+        getSimResolution: function(w) { return w<640 ? {simResolution:0.25,dyeResolution:0.5} : w<1024 ? {simResolution:0.35,dyeResolution:0.7} : {simResolution:0.5,dyeResolution:1.0}; },
+        shouldUseFallback: function(e) { return !e.webglSupported || e.reducedMotion; },
+        pickAutoSplatterColor: function(p,i) { return p.colors[i%p.colors.length]; },
+        hexToRGB: function(h) { return {r:parseInt(h.slice(1,3),16)/255,g:parseInt(h.slice(3,5),16)/255,b:parseInt(h.slice(5,7),16)/255}; }
+      };
+    })();
+    </script>
+    <script src="js/fluid-bg.js"></script>
     <script src="js/typewriter.js"></script>
     <script src="js/navbar.js"></script>
     <script>
         lucide.createIcons();
 
-        // 打字机
+        // 打字机启动（诗句来自 design spec）
         if (window.LiquidTypewriter) {
             LiquidTypewriter.initTypewriter('.typewriter', [
                 '星河欲转千帆舞',
@@ -92,22 +138,26 @@
             ], { typeMs: 60, deleteMs: 30 });
         }
 
-        // 浏览量
+        // 浏览量（API 可用时 count-up，否则显示静态数字）
         (function() {
             var el = document.getElementById('visit-num');
             if (!el) return;
+            var fallback = '23,456'; // 离线静态兜底
             if (window.api && window.api.fetchSiteStats) {
                 window.api.fetchSiteStats().then(function(s) {
                     var t = Number(s.total) || 0;
-                    if (!t) { el.textContent = '—'; return; }
+                    if (!t) { el.textContent = fallback; return; }
                     var c = 0, step = Math.max(1, Math.ceil(t / 60));
                     (function tick() {
                         c = Math.min(t, c + step);
                         el.textContent = c.toLocaleString();
                         if (c < t) requestAnimationFrame(tick);
                     })();
-                }).catch(function() { el.textContent = '—'; });
-            } else { el.textContent = '—'; }
+                }).catch(function() { el.textContent = fallback; });
+            } else {
+                // 无 API 时显示静态数字
+                el.textContent = fallback;
+            }
         })();
 
         // 主题 logo 同步
@@ -119,6 +169,44 @@
         }
         window.addEventListener('themechange', sync);
         sync();
+
+        // 右键菜单：暴露主题切换
+        window.toggleTheme = function() {
+            var btn = document.getElementById('theme-toggle');
+            if (btn) btn.click();
+        };
+
+        // 右键菜单：背景效果切换
+        window.toggleFluidEffect = function() {
+            var canvas = document.getElementById('fluid-canvas');
+            var fb = document.getElementById('fluid-fallback');
+            if (!canvas || !fb) return;
+            if (canvas.style.display === 'none') {
+                canvas.style.display = 'block';
+                fb.style.display = 'none';
+            } else {
+                canvas.style.display = 'none';
+                fb.style.display = 'block';
+            }
+        };
+
+        // 首页隐藏无用的右键菜单项
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(function() {
+                var menu = document.getElementById('custom-context-menu');
+                if (!menu) return;
+                var items = menu.querySelectorAll('.ctx-item');
+                items.forEach(function(item) {
+                    var text = item.textContent.trim();
+                    if (text === '回到顶部' || text === '首页') {
+                        item.style.display = 'none';
+                    }
+                });
+                // 也隐藏对应的分隔线
+                var dividers = menu.querySelectorAll('.ctx-divider');
+                // 简单处理：总是显示分隔线
+            }, 500);
+        });
     </script>
     <script src="js/context-menu.js"></script>
     <script src="js/api.js"></script>

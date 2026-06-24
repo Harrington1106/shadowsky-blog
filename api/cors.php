@@ -12,14 +12,18 @@
 $allowed_origins = array(
     'https://shadowquake.top',
     'http://shadowquake.top',
+    'https://www.shadowquake.top',
     'http://localhost:3000',
-    'http://localhost:5500'
+    'http://localhost:5500',
+    'https://host.retiehe.com'
 );
 
-// 严格校验 Origin 白名单
+// Also allow any retiehe.com subdomain and same-origin requests
 if (isset($_SERVER['HTTP_ORIGIN'])) {
     $origin = $_SERVER['HTTP_ORIGIN'];
-    if (in_array($origin, $allowed_origins)) {
+    $origin_host = parse_url($origin, PHP_URL_HOST);
+    if (in_array($origin, $allowed_origins) || 
+        ($origin_host && preg_match('/\.retiehe\.com$/', $origin_host))) {
         header("Access-Control-Allow-Origin: " . $origin);
     } else {
         header("Access-Control-Allow-Origin: https://shadowquake.top");

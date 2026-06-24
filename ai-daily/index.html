@@ -1,13 +1,25 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI 日报 存档 | 夏日科技探索</title>
+    <meta name="theme-color" content="#0B1120" media="(prefers-color-scheme: dark)">
+    <meta name="theme-color" content="#F5F7FA" media="(prefers-color-scheme: light)">
+    <title>AI 日报 存档 — ShadowQuake</title>
     <link rel="icon" type="image/png" href="../public/img/favicon256.png">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.loli.net">
+    <link rel="preconnect" href="https://gstatic.loli.net" crossorigin>
     <link href="https://fonts.loli.net/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <link href="../css/style.css?v=1781114612" rel="stylesheet">
+    
+    <!-- Unified CSS -->
+    <link href="../css/unified.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Lucide Icons -->
     <script src="../js/vendor/lucide.min.js"></script>
+
     <style>
         .archive-card {
             transition: all 0.3s ease;
@@ -17,59 +29,107 @@
             border-left-color: #3b82f6;
             transform: translateX(4px);
         }
+        .ai-daily-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.125rem 0.5rem;
+            font-size: 0.75rem;
+            font-weight: 700;
+            border-radius: 9999px;
+            background: rgba(59, 130, 246, 0.1);
+            color: #2563eb;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+        html.dark .ai-daily-badge {
+            color: #60a5fa;
+        }
     </style>
 </head>
-<body class="public-page liquid-glass-ui bg-gray-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans transition-colors duration-500">
-    <nav id="navbar" class="fixed w-full z-50 top-0">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16">
-                <div class="flex items-center">
-                    <a href="../index.html" class="flex items-center group">
-                        <img src="../public/img/favicon256.png" alt="Logo" class="relative h-8 w-8 mr-2 dark:hidden">
-                        <img src="../public/img/black256.png" alt="Logo" class="relative h-8 w-8 mr-2 hidden dark:block">
-                        <span class="font-bold text-xl text-gray-900 dark:text-white">夏日科技探索</span>
-                    </a>
-                    <span class="ml-3 px-2 py-0.5 text-xs font-bold rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20">AI 日报</span>
-                </div>
-                <div class="hidden lg:flex items-center space-x-1">
-                    <a href="../index.html" class="nav-link px-3 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-blue-600 dark:text-gray-300 dark:hover:text-white">首页</a>
-                    <a href="../blog.html" class="nav-link px-3 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-blue-600 dark:text-gray-300 dark:hover:text-white">星空笔记</a>
-                    <button id="theme-toggle" class="glass-pill ml-4 p-2 rounded-full">
-                        <i data-lucide="moon" class="w-5 h-5 text-gray-600 dark:text-gray-300"></i>
-                    </button>
-                </div>
+<body class="font-sans">
+
+    <!-- ═══════════ NAVBAR ═══════════ -->
+    <nav id="navbar">
+        <div class="nav-inner">
+            <a href="../index.html" class="nav-brand" aria-label="ShadowQuake Home">
+                <img src="../public/img/black256.png" alt="Logo" class="dark-only">
+                <img src="../public/img/favicon256.png" alt="Logo" class="light-only">
+                <span>ShadowQuake</span>
+            </a>
+
+            <div class="nav-links" role="navigation" aria-label="Main">
+                <a href="../index.html" class="nav-link"><i data-lucide="house"></i> 首页</a>
+                <a href="../blog.html" class="nav-link"><i data-lucide="file-text"></i> 笔记</a>
+                <a href="../moments.html" class="nav-link"><i data-lucide="camera"></i> 片刻</a>
+                <a href="../bookmarks.html" class="nav-link"><i data-lucide="bookmark"></i> 收藏</a>
+                <a href="../rss.html" class="nav-link"><i data-lucide="rss"></i> 订阅</a>
+                <a href="../acg.html" class="nav-link"><i data-lucide="film"></i> ACG</a>
+                <a href="../about.html" class="nav-link"><i data-lucide="user-circle"></i> 关于</a>
+                <button id="theme-toggle" class="theme-toggle" aria-label="切换主题">
+                    <i data-lucide="sun" class="dark-only"></i>
+                    <i data-lucide="moon" class="light-only"></i>
+                </button>
             </div>
+
+            <button id="nav-hamburger" class="nav-hamburger" aria-label="菜单" aria-expanded="false">
+                <i data-lucide="menu"></i>
+            </button>
         </div>
     </nav>
 
-    <main class="max-w-3xl mx-auto px-4 pt-28 pb-16">
-        <h1 class="text-4xl font-black text-slate-900 dark:text-white mb-2">📰 AI 日报 存档</h1>
-        <p class="text-slate-500 dark:text-slate-400 mb-8">追踪人工智能前沿动态 · 每日精选</p>
+    <div id="mobile-menu" role="navigation" aria-label="Mobile">
+        <a href="../index.html" class="nav-link"><i data-lucide="house"></i> 首页</a>
+        <a href="../blog.html" class="nav-link"><i data-lucide="file-text"></i> 笔记</a>
+        <a href="../moments.html" class="nav-link"><i data-lucide="camera"></i> 片刻</a>
+        <a href="../bookmarks.html" class="nav-link"><i data-lucide="bookmark"></i> 收藏</a>
+        <a href="../rss.html" class="nav-link"><i data-lucide="rss"></i> 订阅</a>
+        <a href="../acg.html" class="nav-link"><i data-lucide="film"></i> ACG</a>
+        <a href="../about.html" class="nav-link"><i data-lucide="user-circle"></i> 关于</a>
+    </div>
 
-        <div class="space-y-3">
-            <a href="2026-06-11.html" class="archive-card glass-card block p-5 rounded-2xl bg-white/80 dark:bg-slate-900/80 border border-slate-200/60 dark:border-slate-800/60 hover:shadow-lg">
-                <div class="flex items-center justify-between">
+    <!-- Main Content -->
+    <main style="max-width: 48rem; margin-inline: auto; padding: 7rem 1rem 4rem;">
+        <h1 style="font-size: 2.25rem; font-weight: 800; margin-bottom: 0.5rem;">📰 AI 日报 存档</h1>
+        <p style="color: var(--color-text-muted); margin-bottom: 2rem;">追踪人工智能前沿动态 · 每日精选</p>
+
+        <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+            <a href="2026-06-11.html" class="archive-card" style="display: block; padding: 1.25rem; border-radius: 1rem; background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-border); text-decoration: none; color: inherit;">
+                <div style="display: flex; align-items: center; justify-content: space-between;">
                     <div>
-                        <span class="text-xs text-slate-400">2026.06.11 · 星期四</span>
-                        <h2 class="text-lg font-bold text-slate-900 dark:text-white mt-1">Claude 4 系列发布 · GPT-5 多模态旗舰 · MCP 生态爆发</h2>
-                        <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">10 条精选 · 4 则重磅 · 6 个开源项目 · 3 篇趋势解读</p>
+                        <span style="font-size: 0.75rem; color: var(--color-text-muted);">2026.06.11 · 星期四</span>
+                        <h2 style="font-size: 1.125rem; font-weight: 700; margin-top: 0.25rem;">Claude 4 系列发布 · GPT-5 多模态旗舰 · MCP 生态爆发</h2>
+                        <p style="font-size: 0.875rem; color: var(--color-text-muted); margin-top: 0.25rem;">10 条精选 · 4 则重磅 · 6 个开源项目 · 3 篇趋势解读</p>
                     </div>
-                    <i data-lucide="chevron-right" class="w-5 h-5 text-slate-400"></i>
+                    <i data-lucide="chevron-right" style="width: 1.25rem; height: 1.25rem; color: var(--color-text-muted);"></i>
                 </div>
             </a>
         </div>
 
-        <div class="mt-12 p-6 rounded-2xl bg-blue-50/50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-900/30 text-center">
-            <p class="text-slate-500 dark:text-slate-400 text-sm">更多日报即将上线 · 每天上午 9:00 更新</p>
+        <div style="margin-top: 3rem; padding: 1.5rem; border-radius: 1rem; background: rgba(59, 130, 246, 0.05); border: 1px solid rgba(59, 130, 246, 0.1); text-align: center;">
+            <p style="color: var(--color-text-muted); font-size: 0.875rem;">更多日报即将上线 · 每天上午 9:00 更新</p>
         </div>
     </main>
 
-    <footer class="bg-white/80 dark:bg-slate-950/80 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 py-6">
-        <div class="text-center text-xs text-slate-500 dark:text-slate-400">
-            © 2026 THOI · AI 日报
-        </div>
+    <!-- ═══════════ FOOTER ═══════════ -->
+    <footer>
+        <p>&copy; 2025 ShadowQuake. Designed with care.</p>
+        <span id="visit-count" class="text-muted" style="font-size:var(--text-xs);font-family:var(--pr-font-mono);margin-top:var(--sp-1);display:block;">—</span>
     </footer>
 
+    <!-- Light/dark visibility -->
+    <style>
+        .dark .light-only { display: none !important; }
+        .dark .dark-only { display: inline !important; }
+        .light-only { display: inline; }
+        .dark-only { display: none; }
+        img.light-only, img.dark-only { display: none; }
+        .dark img.dark-only { display: inline; }
+        img.light-only { display: inline; }
+        .dark img.light-only { display: none; }
+    </style>
+
+    <!-- Scripts -->
+    <script src="../js/navbar.js"></script>
     <script src="../js/api.js"></script>
     <script src="../js/main.js"></script>
     <script>lucide.createIcons();</script>

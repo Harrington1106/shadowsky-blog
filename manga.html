@@ -1,217 +1,228 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
+﻿<!DOCTYPE html>
+<html lang="zh-CN" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="referrer" content="no-referrer">
-    <title>我的漫画 - ACG SPACE</title>
+    <meta name="theme-color" content="#0B1120" media="(prefers-color-scheme: dark)">
+    <meta name="theme-color" content="#F5F7FA" media="(prefers-color-scheme: light)">
+    <title>我的漫画 - Shadow Quake</title>
     <link rel="icon" type="image/png" href="public/img/favicon256.png">
-    
+
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.loli.net">
     <link rel="preconnect" href="https://gstatic.loli.net" crossorigin>
-    <link href="https://fonts.loli.net/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&family=ZCOOL+KuaiLe&display=swap" rel="stylesheet">
-    
-    <!-- Tailwind CSS (Compiled) -->
-    <link href="css/style.css?v=1781114612" rel="stylesheet">
-    <!-- 公共动画（blob/glitch/lenis/滚动条等） -->
-    <link href="css/common-animations.css" rel="stylesheet">
-    
+    <link href="https://fonts.loli.net/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&family=Noto+Serif+SC:wght@400;700&display=swap" rel="stylesheet">
+
+    <!-- Design System -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="css/unified.css" rel="stylesheet">
+
     <!-- Lucide Icons -->
     <script src="js/vendor/lucide.min.js"></script>
-    
+
     <style>
-        body {
-            font-family: 'Inter', 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+        :root {
+            --acg-orange: #f97316;
+            --acg-red: #ef4444;
+        }
+
+        .media-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--sp-4);
+        }
+        @media (min-width: 640px) { .media-grid { grid-template-columns: repeat(3, 1fr); } }
+        @media (min-width: 768px) { .media-grid { grid-template-columns: repeat(4, 1fr); gap: var(--sp-6); } }
+        @media (min-width: 1024px) { .media-grid { grid-template-columns: repeat(6, 1fr); } }
+
+        .filter-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--sp-3);
+            padding: var(--sp-5);
+            margin-bottom: var(--sp-8);
+        }
+        .filter-btn {
+            padding: var(--sp-2) var(--sp-4);
+            border-radius: var(--radius-full);
+            font-size: var(--text-sm);
+            font-weight: var(--weight-medium);
+            background: var(--color-surface-raised);
+            color: var(--color-text-secondary);
+            border: 1px solid var(--color-border);
+            cursor: pointer;
+            transition: all var(--duration-fast) var(--ease-out);
+        }
+        .filter-btn:hover {
+            background: var(--color-primary-subtle);
+            color: var(--color-primary);
+        }
+        .filter-btn.active {
+            background: var(--acg-orange);
+            color: #fff;
+            border-color: var(--acg-orange);
+            box-shadow: 0 2px 8px rgba(249,115,22,0.3);
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
         }
     </style>
 </head>
-<body class="public-page liquid-glass-ui bg-gray-50 dark:bg-black transition-colors duration-300 min-h-screen relative overflow-x-hidden selection:bg-pink-500 selection:text-white">
-    <!-- Background Blobs -->
-    <div class="fixed inset-0 z-0 overflow-hidden pointer-events-none">
-        <div class="absolute top-0 left-1/4 w-96 h-96 bg-purple-300/30 dark:bg-purple-900/20 rounded-full blur-3xl mix-blend-multiply dark:mix-blend-screen filter opacity-70 animate-blob-small"></div>
-        <div class="absolute top-0 right-1/4 w-96 h-96 bg-pink-300/30 dark:bg-pink-900/20 rounded-full blur-3xl mix-blend-multiply dark:mix-blend-screen filter opacity-70 animate-blob-small animation-delay-2000"></div>
-        <div class="absolute -bottom-32 left-1/3 w-96 h-96 bg-yellow-300/30 dark:bg-yellow-900/20 rounded-full blur-3xl mix-blend-multiply dark:mix-blend-screen filter opacity-70 animate-blob-small animation-delay-4000"></div>
-    </div>
-    
-    <!-- Navbar -->
-    <nav id="navbar" class="fixed w-full z-50 top-0 transition-all duration-300 bg-white/80 dark:bg-gray-950/80 backdrop-blur-md border-b border-gray-100 dark:border-gray-800">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16">
-                <div class="flex items-center">
-                    <a href="index.html" class="flex items-center group">
-                        <div class="relative">
-                            <div class="absolute -inset-1 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full blur opacity-25 group-hover:opacity-50 transition duration-200"></div>
-                            <img src="public/img/favicon256.png" alt="Logo" class="relative h-8 w-8 mr-2 dark:hidden">
-                            <img src="public/img/black256.png" alt="Logo" class="relative h-8 w-8 mr-2 hidden dark:block">
-                        </div>
-                        <span id="nav-title" class="font-cute text-xl tracking-tight transition-colors duration-300 text-gray-900 dark:text-white">
-                            二次元空间
-                        </span>
-                    </a>
-                </div>
-                
-                <div class="hidden lg:flex items-center space-x-1">
-                    <a href="index.html" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-600 hover:text-blue-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-white dark:hover:bg-white/10" title="首页">
-                        <i data-lucide="house" class="w-5 h-5"></i>
-                    </a>
-                    <a href="blog.html" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-600 hover:text-blue-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-white dark:hover:bg-white/10" title="星空笔记">
-                        <i data-lucide="file-text" class="w-5 h-5"></i>
-                    </a>
-                    <a href="moments.html" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-600 hover:text-blue-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-white dark:hover:bg-white/10" title="随手拍">
-                        <i data-lucide="camera" class="w-5 h-5"></i>
-                    </a>
-                    <a href="bookmarks.html" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-600 hover:text-blue-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-white dark:hover:bg-white/10" title="收藏">
-                        <i data-lucide="bookmark" class="w-5 h-5"></i>
-                    </a>
-                    <a href="rss.html" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-600 hover:text-blue-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-white dark:hover:bg-white/10" title="订阅">
-                        <i data-lucide="rss" class="w-5 h-5"></i>
-                    </a>
-                    <a href="acg.html" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-blue-600 bg-blue-50/80 dark:bg-blue-900/30 dark:text-blue-400" title="ACG">
-                        <i data-lucide="film" class="w-5 h-5"></i>
-                    </a>
-                    <a href="about.html" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-600 hover:text-blue-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-white dark:hover:bg-white/10" title="关于">
-                        <i data-lucide="user-circle" class="w-5 h-5"></i>
-                    </a>
-                    
-                    <!-- Theme Toggle -->
-                    <button id="theme-toggle" class="glass-pill ml-4 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors focus:outline-none ring-2 ring-transparent focus:ring-blue-500" aria-label="Toggle Theme">
-                        <i id="theme-toggle-icon" data-lucide="moon" class="w-5 h-5 text-gray-600 dark:text-gray-300"></i>
-                    </button>
-                </div>
+<body class="font-sans">
 
-                <div class="lg:hidden flex items-center">
-                    <!-- Theme Toggle Mobile -->
-                    <button onclick="toggleTheme()" class="glass-pill mr-4 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors" aria-label="Toggle Theme">
-                        <i data-lucide="moon" class="w-5 h-5 text-blue-600 dark:hidden"></i>
-                        <i data-lucide="sun" class="w-5 h-5 text-yellow-400 hidden dark:block"></i>
-                    </button>
-                    
-                    <button id="mobile-menu-btn" class="p-2 rounded-md transition-colors text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800" aria-label="Toggle Menu">
-                        <i data-lucide="menu" class="w-6 h-6"></i>
-                    </button>
+    <!-- ═══════════ NAVBAR ═══════════ -->
+    <nav id="navbar" class="homepage-cover-nav-shell" data-ui-region="home-nav-shell">
+        <div class="nav-inner">
+            <div class="nav-left">
+                <a href="index.html" class="nav-brand" aria-label="Shadow Quake Home">
+                    <img src="public/img/black256.png" alt="Logo" class="dark-only">
+                    <img src="public/img/favicon256.png" alt="Logo" class="light-only">
+                    <span>Shadow Quake</span>
+                </a>
+                <span class="nav-divider" aria-hidden="true"></span>
+                <div class="nav-links homepage-cover-nav-actions" role="navigation" aria-label="Main">
+                    <a href="index.html" class="nav-link" title="首页"><i data-lucide="house"></i><span class="nav-text">首页</span></a>
+                    <a href="blog.html" class="nav-link" title="笔记"><i data-lucide="file-text"></i><span class="nav-text">笔记</span></a>
+                    <a href="moments.html" class="nav-link" title="片刻"><i data-lucide="camera"></i><span class="nav-text">片刻</span></a>
+                    <a href="bookmarks.html" class="nav-link" title="收藏"><i data-lucide="bookmark"></i><span class="nav-text">收藏</span></a>
+                    <a href="rss.html" class="nav-link" title="订阅"><i data-lucide="rss"></i><span class="nav-text">订阅</span></a>
+                    <a href="acg.html" class="nav-link active" aria-current="page" title="ACG"><i data-lucide="film"></i><span class="nav-text">ACG</span></a>
+                    <a href="about.html" class="nav-link" title="关于"><i data-lucide="user-circle"></i><span class="nav-text">关于</span></a>
                 </div>
             </div>
-        </div>
-
-        <!-- Mobile menu -->
-        <div id="mobile-menu" class="lg:hidden absolute top-full left-0 w-full bg-white/95 dark:bg-black/95 backdrop-blur-xl border-t border-gray-100 dark:border-gray-800 shadow-2xl transition-all duration-300 ease-in-out transform opacity-0 -translate-y-4 pointer-events-none">
-            <div class="px-4 pt-4 pb-6 space-y-2">
-                <a href="index.html" class="flex items-center px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 text-gray-600 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-white/10 hover:shadow-sm hover:translate-x-1">
-                    <i data-lucide="house" class="w-5 h-5 mr-3"></i>
-                    首页
-                </a>
-                <a href="blog.html" class="flex items-center px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 text-gray-600 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-white/10 hover:shadow-sm hover:translate-x-1">
-                    <i data-lucide="file-text" class="w-5 h-5 mr-3"></i>
-                    星空笔记
-                </a>
-                <a href="moments.html" class="flex items-center px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 text-gray-600 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-white/10 hover:shadow-sm hover:translate-x-1">
-                    <i data-lucide="camera" class="w-5 h-5 mr-3"></i>
-                    随手拍
-                </a>
-                <a href="bookmarks.html" class="flex items-center px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 text-gray-600 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-white/10 hover:shadow-sm hover:translate-x-1">
-                    <i data-lucide="bookmark" class="w-5 h-5 mr-3"></i>
-                    收藏
-                </a>
-                <a href="rss.html" class="flex items-center px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 text-gray-600 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-white/10 hover:shadow-sm hover:translate-x-1">
-                    <i data-lucide="rss" class="w-5 h-5 mr-3"></i>
-                    订阅
-                </a>
-                <a href="acg.html" class="flex items-center px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 text-blue-600 bg-blue-50 dark:bg-blue-900/20 dark:text-blue-400 shadow-sm">
-                    <i data-lucide="film" class="w-5 h-5 mr-3"></i>
-                    ACG
-                </a>
-                <a href="about.html" class="flex items-center px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 text-gray-600 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-white/10 hover:shadow-sm hover:translate-x-1">
-                    <i data-lucide="user-circle" class="w-5 h-5 mr-3"></i>
-                    关于
-                </a>
+            <div class="nav-actions">
+                <button id="theme-toggle" class="theme-toggle" aria-label="切换主题">
+                    <i data-lucide="sun" class="dark-only"></i>
+                    <i data-lucide="moon" class="light-only"></i>
+                </button>
+                <button id="nav-hamburger" class="nav-hamburger" aria-label="菜单" aria-expanded="false">
+                    <i data-lucide="menu"></i>
+                </button>
             </div>
         </div>
     </nav>
 
-    <!-- Main Content -->
-    <div class="min-h-screen py-20 transition-colors duration-300">
-      <div class="public-shell public-shell--floating-nav layout-safe-top max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" data-ui-shell="manga-library">
-        
-        <div class="flex items-center mb-8">
-            <a href="acg.html" class="text-gray-500 hover:text-pink-500 transition-colors mr-4">
-                <i data-lucide="arrow-left" class="w-6 h-6"></i>
-            </a>
-            <div>
-                <span class="editorial-kicker">Manga Library</span>
-                <h1 class="text-3xl font-cute sm:text-4xl text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-red-600 tracking-tighter mt-3">
-                  我的漫画
-                </h1>
-            </div>
+    <!-- ═══════ 移动端菜单 ═══════ -->
+    <div id="mobile-menu" role="dialog" aria-label="导航菜单" aria-modal="true">
+        <div class="mobile-menu-header">
+            <span class="mobile-menu-brand">Shadow Quake</span>
+            <button class="mobile-menu-close" aria-label="关闭菜单">
+                <i data-lucide="x"></i>
+            </button>
         </div>
-
-        <!-- Filters -->
-        <div id="manga-filters" class="utility-glass-bar rounded-[24px] p-4 sm:p-5 flex flex-wrap gap-3 mb-8 animate-fade-in-up layout-toolbar-wrap" data-ui-toolbar="manga-filters">
-            <button data-filter="all" class="px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 bg-orange-500 text-white shadow-md scale-105">全部</button>
-            <button data-filter="reading" class="px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700">连载中</button>
-            <button data-filter="completed" class="px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700">已读完</button>
-            <button data-filter="plan" class="px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700">想读</button>
-            <button data-filter="on_hold" class="px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700">搁置</button>
-            <button data-filter="dropped" class="px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700">抛弃</button>
+        <div class="mobile-menu-links">
+            <a href="index.html" class="mobile-nav-link homepage-mobile-menu-link"><i data-lucide="house"></i><span>首页</span></a>
+            <a href="blog.html" class="mobile-nav-link homepage-mobile-menu-link"><i data-lucide="file-text"></i><span>笔记</span></a>
+            <a href="moments.html" class="mobile-nav-link homepage-mobile-menu-link"><i data-lucide="camera"></i><span>片刻</span></a>
+            <a href="bookmarks.html" class="mobile-nav-link homepage-mobile-menu-link"><i data-lucide="bookmark"></i><span>收藏</span></a>
+            <a href="rss.html" class="mobile-nav-link homepage-mobile-menu-link"><i data-lucide="rss"></i><span>订阅</span></a>
+            <a href="acg.html" class="mobile-nav-link active homepage-mobile-menu-link"><i data-lucide="film"></i><span>ACG</span></a>
+            <a href="about.html" class="mobile-nav-link homepage-mobile-menu-link"><i data-lucide="user-circle"></i><span>关于</span></a>
         </div>
-
-        <!-- Bangumi Manga Collection -->
-        <section class="section-shell" data-ui-section="manga-library-grid">
-            <div id="manga-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
-                <!-- Manga items will be loaded dynamically -->
-                <div class="col-span-full flex justify-center py-20">
-                    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500"></div>
-                </div>
-            </div>
-        </section>
-      </div>
     </div>
 
-    <!-- Footer -->
-    <footer class="public-footer bg-gray-50/80 dark:bg-black/80 backdrop-blur-md border-t border-gray-200 dark:border-gray-800 py-8 relative z-10 transition-colors duration-300">
-        <div class="public-footer__inner px-4 flex flex-col md:flex-row justify-center items-center gap-4 text-center">
-            <p class="text-xs tracking-widest uppercase text-gray-500 dark:text-gray-400 opacity-80 flex items-center">
-                &copy; 2025 Thoi <span class="mx-2 text-blue-500">|</span> Designed with <span class="text-red-500 animate-pulse mx-1">❤️</span>
-            </p>
-            <div class="inline-flex items-center gap-2 px-3 py-1 bg-gray-100 dark:bg-gray-800 rounded-full text-xs font-mono text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-700">
-                <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-                <span id="visit-count">加载中…</span>
+    <!-- ═══════════ MAIN CONTENT ═══════════ -->
+    <main style="padding-top:var(--nav-height);min-height:100dvh;">
+
+        <!-- Subtle blob decorations -->
+        <div class="blob" style="width:400px;height:400px;top:-80px;right:-80px;
+                    background:radial-gradient(circle,rgba(249,115,22,0.2),transparent 70%);"></div>
+
+        <div class="shell" style="padding-block:var(--sp-10);">
+
+            <!-- Page Header with back link -->
+            <div style="display:flex;align-items:center;gap:var(--sp-4);margin-bottom:var(--sp-8);">
+                <a href="acg.html" style="color:var(--color-text-muted);transition:color var(--duration-fast) var(--ease-out);" aria-label="返回">
+                    <i data-lucide="arrow-left" style="width:24px;height:24px;"></i>
+                </a>
+                <div>
+                    <div style="font-size:var(--text-xs);font-weight:var(--weight-medium);color:var(--color-text-muted);text-transform:uppercase;letter-spacing:0.1em;">
+                        Manga Library
+                    </div>
+                    <h1 style="font-size:clamp(var(--text-2xl),3vw,var(--text-3xl));margin:var(--sp-1) 0 0 0;
+                               background:linear-gradient(to right,var(--acg-orange),var(--acg-red));
+                               -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">
+                        我的漫画
+                    </h1>
+                </div>
             </div>
+
+            <!-- Filters -->
+            <div id="manga-filters" class="filter-bar card card-glass">
+                <button data-filter="all" class="filter-btn active">全部</button>
+                <button data-filter="reading" class="filter-btn">连载中</button>
+                <button data-filter="completed" class="filter-btn">已读完</button>
+                <button data-filter="plan" class="filter-btn">想读</button>
+                <button data-filter="on_hold" class="filter-btn">搁置</button>
+                <button data-filter="dropped" class="filter-btn">抛弃</button>
+            </div>
+
+            <!-- Manga Grid -->
+            <div id="manga-grid" class="media-grid">
+                <div style="grid-column:1/-1;display:flex;justify-content:center;padding:var(--sp-20) 0;">
+                    <div style="width:48px;height:48px;border-radius:50%;border:2px solid var(--acg-orange);border-top-color:transparent;animation:spin 0.8s linear infinite;"></div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- ═══════════ FOOTER ═══════════ -->
+    <footer>
+        <p>&copy; 2025 Thoi <span style="margin:0 var(--sp-2);color:var(--color-primary);">|</span> Designed with <span style="color:#ef4444;margin:0 var(--sp-1);">❤️</span></p>
+        <div style="display:inline-flex;align-items:center;gap:var(--sp-2);padding:var(--sp-1) var(--sp-3);background:var(--color-surface-raised);border-radius:var(--radius-full);font-size:var(--text-xs);font-family:var(--pr-font-mono);border:1px solid var(--color-border);margin-top:var(--sp-2);">
+            <span style="width:8px;height:8px;border-radius:50%;background:#22c55e;animation:pulse 2s infinite;"></span>
+            <span id="visit-count">加载中…</span>
         </div>
     </footer>
 
+    <!-- Light/dark visibility helpers -->
+    <style>
+        .dark .light-only { display: none !important; }
+        .dark .dark-only { display: inline !important; }
+        .light-only { display: inline; }
+        .dark-only { display: none; }
+        img.light-only, img.dark-only { display: none; }
+        .dark img.dark-only { display: inline; }
+        img.light-only { display: inline; }
+        .dark img.light-only { display: none; }
+    </style>
+
+    <!-- Scripts -->
     <script src="js/media-data.js?v=2.2"></script>
     <script>
-        // Initialize Media Loader
         document.addEventListener('DOMContentLoaded', () => {
             new MediaLoader('manga', 'manga-grid', { filterContainerId: 'manga-filters' });
         });
     </script>
-
     <script src="js/api.js"></script>
     <script src="js/main.js?v=8"></script>
     <script src="js/click-effect.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
     <script>
         const lenis = new Lenis({
-            duration: 1.2,
-            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+            duration: 0.5
+            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -6 * t)),
             direction: 'vertical',
             gestureDirection: 'vertical',
             smooth: true,
             mouseMultiplier: 1,
             smoothTouch: false,
             touchMultiplier: 2,
-        })
-        
+        });
+
         let rafId;
         function raf(time) {
-            lenis.raf(time)
-            rafId = requestAnimationFrame(raf)
+            lenis.raf(time);
+            rafId = requestAnimationFrame(raf);
         }
-        rafId = requestAnimationFrame(raf)
+        rafId = requestAnimationFrame(raf);
 
-        // Handle bfcache
         window.addEventListener('pageshow', (event) => {
             if (event.persisted) {
                 lenis.start();
@@ -221,6 +232,9 @@
         });
     </script>
     <script src="js/context-menu.js"></script>
-    <script>lucide.createIcons();</script>
+    <script src="js/navbar.js"></script>
+    <script>
+        lucide.createIcons();
+    </script>
 </body>
 </html>

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN" class="dark">
 <head>
     <meta charset="UTF-8">
@@ -6,13 +6,13 @@
     <title>404 - 页面未找到 | 夏日科技探索</title>
     <link rel="icon" type="image/png" href="public/img/favicon256.png">
 
-    <!-- Tailwind CSS -->
-    <link href="css/style.css?v=1781114612" rel="stylesheet">
-
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.loli.net">
     <link rel="preconnect" href="https://gstatic.loli.net" crossorigin>
     <link href="https://fonts.loli.net/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+    <!-- Unified CSS -->
+    <link href="css/unified.css" rel="stylesheet">
 
     <!-- Lucide Icons -->
     <script src="js/vendor/lucide.min.js"></script>
@@ -21,103 +21,67 @@
         body {
             font-family: 'Inter', 'Noto Sans SC', sans-serif;
         }
+        /* Dark/Light visibility */
+        .dark .light-only { display: none !important; }
+        .dark .dark-only { display: inline !important; }
+        img.light-only, img.dark-only { display: none; }
+        .dark img.dark-only { display: inline; }
+        img.light-only { display: inline; }
+        .dark img.light-only { display: none; }
     </style>
 </head>
-<body class="public-page liquid-glass-ui bg-gray-50 dark:bg-black text-gray-900 dark:text-gray-100 font-sans transition-colors duration-500 flex flex-col min-h-screen">
+<body class="font-sans flex flex-col min-h-screen">
 
     <!-- Navbar -->
-    <nav id="navbar" class="fixed w-full z-50 top-0 transition-all duration-300 bg-white/80 dark:bg-black/80 backdrop-blur-md border-b border-gray-100 dark:border-gray-800">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16">
-                <div class="flex items-center">
-                    <a href="index.html" class="flex items-center group">
-                        <div class="relative">
-                            <div class="absolute -inset-1 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full blur opacity-25 group-hover:opacity-50 transition duration-200"></div>
-                            <img src="public/img/favicon256.png" alt="Logo" class="relative h-8 w-8 mr-2 dark:hidden">
-                            <img src="public/img/black256.png" alt="Logo" class="relative h-8 w-8 mr-2 hidden dark:block">
-                        </div>
-                        <span id="nav-title" class="font-bold text-xl tracking-tight transition-colors duration-300 text-gray-900 dark:text-white">
-                            夏日科技探索
-                        </span>
-                    </a>
-                </div>
-
-                <div class="hidden lg:flex items-center space-x-1">
-                    <a href="index.html" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-blue-600 bg-blue-50/80 dark:bg-blue-900/30 dark:text-blue-400" title="首页">
-                        <i data-lucide="house" class="w-5 h-5"></i>
-                    </a>
-                    <a href="blog.html" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-600 hover:text-blue-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-white dark:hover:bg-white/10" title="星空笔记">
-                        <i data-lucide="file-text" class="w-5 h-5"></i>
-                    </a>
-                    <a href="moments.html" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-600 hover:text-blue-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-white dark:hover:bg-white/10" title="随手拍">
-                        <i data-lucide="camera" class="w-5 h-5"></i>
-                    </a>
-                    <a href="bookmarks.html" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-600 hover:text-blue-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-white dark:hover:bg-white/10" title="收藏">
-                        <i data-lucide="bookmark" class="w-5 h-5"></i>
-                    </a>
-                    <a href="rss.html" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-600 hover:text-blue-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-white dark:hover:bg-white/10" title="订阅">
-                        <i data-lucide="rss" class="w-5 h-5"></i>
-                    </a>
-                    <a href="acg.html" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-600 hover:text-blue-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-white dark:hover:bg-white/10" title="视频">
-                        <i data-lucide="film" class="w-5 h-5"></i>
-                    </a>
-                    <a href="about.html" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-600 hover:text-blue-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-white dark:hover:bg-white/10" title="关于">
-                        <i data-lucide="user-circle" class="w-5 h-5"></i>
-                    </a>
-
-                    <button type="button" id="theme-toggle" class="ml-4 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors focus:outline-none ring-2 ring-transparent focus:ring-blue-500" aria-label="Toggle Theme">
-                        <i id="theme-toggle-icon" data-lucide="moon" class="w-5 h-5 text-gray-600 dark:text-gray-300"></i>
-                    </button>
-                </div>
-
-                <div class="lg:hidden flex items-center">
-                    <button type="button" onclick="toggleTheme()" class="mr-4 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors" aria-label="Toggle Theme">
-                        <i data-lucide="moon" class="w-5 h-5 text-blue-600 dark:hidden"></i>
-                        <i data-lucide="sun" class="w-5 h-5 text-yellow-400 hidden dark:block"></i>
-                    </button>
-
-                    <!-- 复用 js/main.js 的统一移动菜单开关逻辑 -->
-                    <button type="button" id="mobile-menu-btn" class="p-2 rounded-md transition-colors text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800" aria-label="Toggle Menu">
-                        <i data-lucide="menu" class="w-6 h-6"></i>
-                    </button>
+    <nav id="navbar" class="homepage-cover-nav-shell" data-ui-region="home-nav-shell">
+        <div class="nav-inner">
+            <div class="nav-left">
+                <a href="index.html" class="nav-brand" aria-label="Shadow Quake Home">
+                    <img src="public/img/black256.png" alt="Logo" class="dark-only">
+                    <img src="public/img/favicon256.png" alt="Logo" class="light-only">
+                    <span>Shadow Quake</span>
+                </a>
+                <span class="nav-divider" aria-hidden="true"></span>
+                <div class="nav-links homepage-cover-nav-actions" role="navigation" aria-label="Main">
+                    <a href="index.html" class="nav-link active" aria-current="page" title="首页"><i data-lucide="house"></i><span class="nav-text">首页</span></a>
+                    <a href="blog.html" class="nav-link" title="笔记"><i data-lucide="file-text"></i><span class="nav-text">笔记</span></a>
+                    <a href="moments.html" class="nav-link" title="片刻"><i data-lucide="camera"></i><span class="nav-text">片刻</span></a>
+                    <a href="bookmarks.html" class="nav-link" title="收藏"><i data-lucide="bookmark"></i><span class="nav-text">收藏</span></a>
+                    <a href="rss.html" class="nav-link" title="订阅"><i data-lucide="rss"></i><span class="nav-text">订阅</span></a>
+                    <a href="acg.html" class="nav-link" title="ACG"><i data-lucide="film"></i><span class="nav-text">ACG</span></a>
+                    <a href="about.html" class="nav-link" title="关于"><i data-lucide="user-circle"></i><span class="nav-text">关于</span></a>
                 </div>
             </div>
-        </div>
-
-        <!-- Mobile menu -->
-        <div id="mobile-menu" class="lg:hidden absolute top-full left-0 w-full bg-white/95 dark:bg-black/95 backdrop-blur-xl border-t border-gray-100 dark:border-gray-800 shadow-2xl transition-all duration-300 ease-in-out transform opacity-0 -translate-y-4 pointer-events-none">
-            <div class="px-4 pt-4 pb-6 space-y-2">
-                <a href="index.html" class="flex items-center px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 text-blue-600 bg-blue-50 dark:bg-blue-900/20 dark:text-blue-400 shadow-sm">
-                    <i data-lucide="house" class="w-5 h-5 mr-3"></i>
-                    首页
-                </a>
-                <a href="blog.html" class="flex items-center px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 text-gray-600 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-white/10 hover:shadow-sm hover:translate-x-1">
-                    <i data-lucide="file-text" class="w-5 h-5 mr-3"></i>
-                    星空笔记
-                </a>
-                <a href="moments.html" class="flex items-center px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 text-gray-600 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-white/10 hover:shadow-sm hover:translate-x-1">
-                    <i data-lucide="camera" class="w-5 h-5 mr-3"></i>
-                    随手拍
-                </a>
-                <a href="bookmarks.html" class="flex items-center px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 text-gray-600 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-white/10 hover:shadow-sm hover:translate-x-1">
-                    <i data-lucide="bookmark" class="w-5 h-5 mr-3"></i>
-                    收藏
-                </a>
-                <a href="rss.html" class="flex items-center px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 text-gray-600 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-white/10 hover:shadow-sm hover:translate-x-1">
-                    <i data-lucide="rss" class="w-5 h-5 mr-3"></i>
-                    订阅
-                </a>
-                <a href="acg.html" class="flex items-center px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 text-gray-600 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-white/10 hover:shadow-sm hover:translate-x-1">
-                    <i data-lucide="film" class="w-5 h-5 mr-3"></i>
-                    视频
-                </a>
-                <a href="about.html" class="flex items-center px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 text-gray-600 dark:text-gray-300 hover:text-blue-600 hover:bg-gray-50 dark:hover:bg-white/10 hover:shadow-sm hover:translate-x-1">
-                    <i data-lucide="user-circle" class="w-5 h-5 mr-3"></i>
-                    关于
-                </a>
+            <div class="nav-actions">
+                <button id="theme-toggle" class="theme-toggle" aria-label="切换主题">
+                    <i data-lucide="sun" class="dark-only"></i>
+                    <i data-lucide="moon" class="light-only"></i>
+                </button>
+                <button id="nav-hamburger" class="nav-hamburger" aria-label="菜单" aria-expanded="false">
+                    <i data-lucide="menu"></i>
+                </button>
             </div>
         </div>
     </nav>
+
+    <!-- ═══════ 移动端菜单 ═══════ -->
+    <div id="mobile-menu" role="dialog" aria-label="导航菜单" aria-modal="true">
+        <div class="mobile-menu-header">
+            <span class="mobile-menu-brand">Shadow Quake</span>
+            <button class="mobile-menu-close" aria-label="关闭菜单">
+                <i data-lucide="x"></i>
+            </button>
+        </div>
+        <div class="mobile-menu-links">
+            <a href="index.html" class="mobile-nav-link active homepage-mobile-menu-link"><i data-lucide="house"></i><span>首页</span></a>
+            <a href="blog.html" class="mobile-nav-link homepage-mobile-menu-link"><i data-lucide="file-text"></i><span>笔记</span></a>
+            <a href="moments.html" class="mobile-nav-link homepage-mobile-menu-link"><i data-lucide="camera"></i><span>片刻</span></a>
+            <a href="bookmarks.html" class="mobile-nav-link homepage-mobile-menu-link"><i data-lucide="bookmark"></i><span>收藏</span></a>
+            <a href="rss.html" class="mobile-nav-link homepage-mobile-menu-link"><i data-lucide="rss"></i><span>订阅</span></a>
+            <a href="acg.html" class="mobile-nav-link homepage-mobile-menu-link"><i data-lucide="film"></i><span>ACG</span></a>
+            <a href="about.html" class="mobile-nav-link homepage-mobile-menu-link"><i data-lucide="user-circle"></i><span>关于</span></a>
+        </div>
+    </div>
 
     <!-- Main Content -->
     <main class="public-shell public-shell--floating-nav layout-safe-top flex-grow flex flex-col items-center justify-center px-4 pb-12 relative z-10" data-ui-shell="error-playground">
@@ -155,20 +119,14 @@
         </div>
     </main>
 
-    <!-- Standardized Footer -->
-
-    <footer class="public-footer py-8 text-center z-20 transition-all duration-500 relative">
-        <div class="public-footer__inner px-4 flex flex-col md:flex-row justify-center items-center gap-4 text-center">
-            <p class="text-[10px] sm:text-xs tracking-widest uppercase text-gray-400 dark:text-gray-500 opacity-60">
-                &copy; <span id="year"></span> ShadowQuake <span class="mx-2 text-blue-500">|</span> Designed with <span class="text-red-500 animate-pulse">❤️</span>
-            </p>
-        </div>
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2025 ShadowQuake. Built with care.</p>
     </footer>
-
 
     <!-- Scripts -->
     <script src="js/api.js"></script>
-    <script src="js/main.js"></script>
+    <script src="js/navbar.js"></script>
     <script>
         // Initialize Icons
         lucide.createIcons();
@@ -232,7 +190,6 @@
                     roleText.textContent = "切换: 扮演抓捕者";
                     switchRoleButton.className = switchRoleButton.className.replace('text-purple-600', 'text-pink-600').replace('bg-purple-50', 'bg-pink-50');
                 }
-                // Re-render icons if needed (Lucide handles this automatically usually, but we might need to trigger it if we changed innerHTML)
             }
 
             function switchRole() {
@@ -406,17 +363,13 @@
 
                 if (path && path.length > 0) {
                     // Smart Block: Block the immediate next step
-                    // This is simple but effective
                     blockTarget = path[0];
                 } else {
                     // Cat is trapped, just fill random available spots to finish it
-                    // Or try to block neighbors of cat
                     const neighbors = getNeighbors(catPos.x, catPos.y);
                     const available = neighbors.filter(n => !dots[n.y][n.x].blocked);
                     if (available.length > 0) {
                         blockTarget = available[Math.floor(Math.random() * available.length)];
-                    } else {
-                        // All blocked, wait for win check
                     }
                 }
 
@@ -504,7 +457,6 @@
                     }
                 } else {
                     // Player is Cat
-                    // Check if clicked tile is neighbor and not blocked
                     const neighbors = getNeighbors(catPos.x, catPos.y);
                     const isNeighbor = neighbors.some(n => n.x === gridPos.x && n.y === gridPos.y);
                     const dot = dots[gridPos.y][gridPos.x];

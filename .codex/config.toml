@@ -1,0 +1,8 @@
+[shell_environment_policy]
+inherit = "core"
+
+[shell_environment_policy.set]
+ANTHROPIC_BASE_URL = "https://api-inference.modelscope.cn"
+ANTHROPIC_AUTH_TOKEN = "ms-62e53c00-0c3b-4d04-9032-58f4335c5f13"
+ANTHROPIC_MODEL = "moonshotai/Kimi-K2.5"
+ANTHROPIC_SMALL_FAST_MODEL = "moonshotai/Kimi-K2.5"

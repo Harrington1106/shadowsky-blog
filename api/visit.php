@@ -38,11 +38,15 @@ require_once $db_helper;
 $origin = isset($_SERVER['HTTP_ORIGIN']) ? $_SERVER['HTTP_ORIGIN'] : '';
 $allowed_origins = array(
     'https://www.shadowquake.top',
+    'https://shadowquake.top',
     'http://localhost:3000',
-    'http://127.0.0.1:3000'
+    'http://127.0.0.1:3000',
+    'https://host.retiehe.com'
 );
 
-if (in_array($origin, $allowed_origins)) {
+$origin_host = parse_url($origin, PHP_URL_HOST);
+if (in_array($origin, $allowed_origins) || 
+    ($origin_host && preg_match('/\.retiehe\.com$/', $origin_host))) {
     header("Access-Control-Allow-Origin: $origin");
 } else {
     header("Access-Control-Allow-Origin: https://shadowquake.top");
@@ -151,6 +155,7 @@ try {
         'data' => array(
             'page' => $pageId,
             'count' => $stats['pages'][$pageId],
+            'total' => $stats['total'],
             'total_site_visits' => $stats['total'],
             'mode' => 'kv_unified'
         )

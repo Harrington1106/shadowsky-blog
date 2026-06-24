@@ -1,26 +1,78 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
-    <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+    <meta name="theme-color" content="#0B1120" media="(prefers-color-scheme: dark)">
+    <meta name="theme-color" content="#F5F7FA" media="(prefers-color-scheme: light)">
     <title>ShadowQuake Admin Dashboard</title>
-    <!-- Use compiled Tailwind CSS instead of CDN for production -->
-    <link href="../css/style.css" rel="stylesheet">
     <link rel="icon" type="image/png" href="../public/img/favicon256.png">
-    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.loli.net">
+    <link rel="preconnect" href="https://gstatic.loli.net" crossorigin>
+    <link href="https://fonts.loli.net/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Unified CSS -->
+    <link href="../css/unified.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Lucide Icons -->
+    <script src="../js/vendor/lucide.min.js"></script>
+    
+    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; }
+        body { font-family: 'Inter', 'Noto Sans SC', sans-serif; }
         .glass { background: rgba(255, 255, 255, 0.9); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
         .dark .glass { background: rgba(15, 23, 42, 0.9); }
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
-<body class="bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 min-h-screen flex overflow-hidden transition-colors duration-300">
+<body class="font-sans">
+
+    <!-- ═══════════ NAVBAR ═══════════ -->
+    <nav id="navbar">
+        <div class="nav-inner">
+            <a href="../index.html" class="nav-brand" aria-label="ShadowQuake Home">
+                <img src="../public/img/black256.png" alt="Logo" class="dark-only">
+                <img src="../public/img/favicon256.png" alt="Logo" class="light-only">
+                <span>ShadowQuake</span>
+            </a>
+
+            <div class="nav-links" role="navigation" aria-label="Main">
+                <a href="../index.html" class="nav-link"><i data-lucide="house"></i> 首页</a>
+                <a href="../blog.html" class="nav-link"><i data-lucide="file-text"></i> 笔记</a>
+                <a href="../moments.html" class="nav-link"><i data-lucide="camera"></i> 片刻</a>
+                <a href="../bookmarks.html" class="nav-link"><i data-lucide="bookmark"></i> 收藏</a>
+                <a href="../rss.html" class="nav-link"><i data-lucide="rss"></i> 订阅</a>
+                <a href="../acg.html" class="nav-link"><i data-lucide="film"></i> ACG</a>
+                <a href="../about.html" class="nav-link"><i data-lucide="user-circle"></i> 关于</a>
+                <button id="theme-toggle" class="theme-toggle" aria-label="切换主题">
+                    <i data-lucide="sun" class="dark-only"></i>
+                    <i data-lucide="moon" class="light-only"></i>
+                </button>
+            </div>
+
+            <button id="nav-hamburger" class="nav-hamburger" aria-label="菜单" aria-expanded="false">
+                <i data-lucide="menu"></i>
+            </button>
+        </div>
+    </nav>
+
+    <div id="mobile-menu" role="navigation" aria-label="Mobile">
+        <a href="../index.html" class="nav-link"><i data-lucide="house"></i> 首页</a>
+        <a href="../blog.html" class="nav-link"><i data-lucide="file-text"></i> 笔记</a>
+        <a href="../moments.html" class="nav-link"><i data-lucide="camera"></i> 片刻</a>
+        <a href="../bookmarks.html" class="nav-link"><i data-lucide="bookmark"></i> 收藏</a>
+        <a href="../rss.html" class="nav-link"><i data-lucide="rss"></i> 订阅</a>
+        <a href="../acg.html" class="nav-link"><i data-lucide="film"></i> ACG</a>
+        <a href="../about.html" class="nav-link"><i data-lucide="user-circle"></i> 关于</a>
+    </div>
+
+    <!-- ═══════════ ADMIN DASHBOARD ═══════════ -->
     <div id="gh-bookmarks-config" data-owner="Harrington1106" data-repo="blog-add" class="hidden"></div>
 
     <!-- Sidebar Overlay (Mobile) -->
@@ -41,160 +93,147 @@
     </div>
 
     <div class="flex min-h-screen bg-slate-50 font-sans">
-    <!-- Sidebar -->
-    <aside id="sidebar" 
-           class="fixed inset-y-0 left-0 w-64 bg-white border-r border-slate-200 z-50 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 flex flex-col"
-           role="navigation"
-           aria-label="主导航菜单">
-        <div class="p-6 border-b border-slate-100 flex items-center gap-3">
-            <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold shadow-lg shadow-blue-500/30">
-                <i data-lucide="shield" class="w-5 h-5"></i>
-            </div>
-            <span class="text-lg font-bold text-slate-800 tracking-tight">ShadowQuake</span>
-            <button class="lg:hidden ml-auto text-slate-400 hover:text-slate-600" 
-                    onclick="toggleSidebar()"
-                    aria-label="关闭导航菜单">
-                <i data-lucide="x" class="w-5 h-5"></i>
-            </button>
-        </div>
-        
-        <nav class="flex-1 overflow-y-auto p-4 space-y-1" role="navigation" aria-label="主要功能导航">
-            <div class="px-4 py-2 text-xs font-semibold text-slate-400 uppercase tracking-wider" role="heading" aria-level="2">Content</div>
-            <div role="tablist" aria-label="内容管理" class="space-y-1">
-                <button onclick="Dashboard.switchTab('bookmarks')" 
-                        id="nav-bookmarks" 
-                        class="nav-item w-full flex items-center gap-3 px-4 py-2.5 text-slate-600 rounded-lg hover:bg-slate-50 hover:text-blue-600 transition-all group"
-                        role="tab"
-                        aria-selected="false"
-                        aria-controls="view-bookmarks"
-                        tabindex="0">
-                    <i data-lucide="bookmark" class="w-5 h-5 group-hover:scale-110 transition-transform" aria-hidden="true"></i>
-                    <span class="font-medium">收藏夹</span>
-                </button>
-                <button onclick="Dashboard.switchTab('snapshots')" 
-                        id="nav-snapshots" 
-                        class="nav-item w-full flex items-center gap-3 px-4 py-2.5 text-slate-600 rounded-lg hover:bg-slate-50 hover:text-blue-600 transition-all group"
-                        role="tab"
-                        aria-selected="false"
-                        aria-controls="view-snapshots"
-                        tabindex="-1">
-                    <i data-lucide="camera" class="w-5 h-5 group-hover:scale-110 transition-transform" aria-hidden="true"></i>
-                    <span class="font-medium">随手拍</span>
-                </button>
-                <button onclick="Dashboard.switchTab('media')" 
-                        id="nav-media" 
-                        class="nav-item w-full flex items-center gap-3 px-4 py-2.5 text-slate-600 rounded-lg hover:bg-slate-50 hover:text-blue-600 transition-all group"
-                        role="tab"
-                        aria-selected="false"
-                        aria-controls="view-media"
-                        tabindex="-1">
-                    <i data-lucide="film" class="w-5 h-5 group-hover:scale-110 transition-transform" aria-hidden="true"></i>
-                    <span class="font-medium">追番/漫画</span>
-                </button>
-                <button onclick="Dashboard.switchTab('feeds')" 
-                        id="nav-feeds" 
-                        class="nav-item w-full flex items-center gap-3 px-4 py-2.5 text-slate-600 rounded-lg hover:bg-slate-50 hover:text-blue-600 transition-all group"
-                        role="tab"
-                        aria-selected="false"
-                        aria-controls="view-feeds"
-                        tabindex="-1">
-                    <i data-lucide="rss" class="w-5 h-5 group-hover:scale-110 transition-transform" aria-hidden="true"></i>
-                    <span class="font-medium">订阅源</span>
-                </button>
-                <button onclick="Dashboard.switchTab('videos')" 
-                        id="nav-videos" 
-                        class="nav-item w-full flex items-center gap-3 px-4 py-2.5 text-slate-600 rounded-lg hover:bg-slate-50 hover:text-blue-600 transition-all group"
-                        role="tab"
-                        aria-selected="false"
-                        aria-controls="view-videos"
-                        tabindex="-1">
-                    <i data-lucide="youtube" class="w-5 h-5 group-hover:scale-110 transition-transform" aria-hidden="true"></i>
-                    <span class="font-medium">视频推荐</span>
+        <!-- Sidebar -->
+        <aside id="sidebar" 
+               class="fixed inset-y-0 left-0 w-64 bg-white border-r border-slate-200 z-50 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 flex flex-col"
+               role="navigation"
+               aria-label="主导航菜单">
+            <div class="p-6 border-b border-slate-100 flex items-center gap-3">
+                <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold shadow-lg shadow-blue-500/30">
+                    <i data-lucide="shield" class="w-5 h-5"></i>
+                </div>
+                <span class="text-lg font-bold text-slate-800 tracking-tight">ShadowQuake</span>
+                <button class="lg:hidden ml-auto text-slate-400 hover:text-slate-600" 
+                        onclick="toggleSidebar()"
+                        aria-label="关闭导航菜单">
+                    <i data-lucide="x" class="w-5 h-5"></i>
                 </button>
             </div>
             
-            <div class="px-4 py-2 mt-6 text-xs font-semibold text-slate-400 uppercase tracking-wider" role="heading" aria-level="2">System</div>
-            <div role="tablist" aria-label="系统管理" class="space-y-1">
-                <button onclick="Dashboard.switchTab('stats')" 
-                        id="nav-stats" 
-                        class="nav-item w-full flex items-center gap-3 px-4 py-2.5 text-slate-600 rounded-lg hover:bg-slate-50 hover:text-blue-600 transition-all group"
-                        role="tab"
-                        aria-selected="false"
-                        aria-controls="view-stats"
-                        tabindex="-1">
-                    <i data-lucide="bar-chart-2" class="w-5 h-5 group-hover:scale-110 transition-transform" aria-hidden="true"></i>
-                    <span class="font-medium">数据统计</span>
-                </button>
-                <button onclick="Dashboard.switchTab('settings')" 
-                        id="nav-settings" 
-                        class="nav-item w-full flex items-center gap-3 px-4 py-2.5 text-slate-600 rounded-lg hover:bg-slate-50 hover:text-blue-600 transition-all group"
-                        role="tab"
-                        aria-selected="false"
-                        aria-controls="view-settings"
-                        tabindex="-1">
-                    <i data-lucide="settings" class="w-5 h-5 group-hover:scale-110 transition-transform" aria-hidden="true"></i>
-                    <span class="font-medium">系统设置</span>
-                </button>
-            </div>
-        </nav>
+            <nav class="flex-1 overflow-y-auto p-4 space-y-1" role="navigation" aria-label="主要功能导航">
+                <div class="px-4 py-2 text-xs font-semibold text-slate-400 uppercase tracking-wider" role="heading" aria-level="2">Content</div>
+                <div role="tablist" aria-label="内容管理" class="space-y-1">
+                    <button onclick="Dashboard.switchTab('bookmarks')" 
+                            id="nav-bookmarks" 
+                            class="nav-item w-full flex items-center gap-3 px-4 py-2.5 text-slate-600 rounded-lg hover:bg-slate-50 hover:text-blue-600 transition-all group"
+                            role="tab"
+                            aria-selected="false"
+                            aria-controls="view-bookmarks"
+                            tabindex="0">
+                        <i data-lucide="bookmark" class="w-5 h-5 group-hover:scale-110 transition-transform" aria-hidden="true"></i>
+                        <span class="font-medium">收藏夹</span>
+                    </button>
+                    <button onclick="Dashboard.switchTab('snapshots')" 
+                            id="nav-snapshots" 
+                            class="nav-item w-full flex items-center gap-3 px-4 py-2.5 text-slate-600 rounded-lg hover:bg-slate-50 hover:text-blue-600 transition-all group"
+                            role="tab"
+                            aria-selected="false"
+                            aria-controls="view-snapshots"
+                            tabindex="-1">
+                        <i data-lucide="camera" class="w-5 h-5 group-hover:scale-110 transition-transform" aria-hidden="true"></i>
+                        <span class="font-medium">随手拍</span>
+                    </button>
+                    <button onclick="Dashboard.switchTab('media')" 
+                            id="nav-media" 
+                            class="nav-item w-full flex items-center gap-3 px-4 py-2.5 text-slate-600 rounded-lg hover:bg-slate-50 hover:text-blue-600 transition-all group"
+                            role="tab"
+                            aria-selected="false"
+                            aria-controls="view-media"
+                            tabindex="-1">
+                        <i data-lucide="film" class="w-5 h-5 group-hover:scale-110 transition-transform" aria-hidden="true"></i>
+                        <span class="font-medium">追番/漫画</span>
+                    </button>
+                    <button onclick="Dashboard.switchTab('feeds')" 
+                            id="nav-feeds" 
+                            class="nav-item w-full flex items-center gap-3 px-4 py-2.5 text-slate-600 rounded-lg hover:bg-slate-50 hover:text-blue-600 transition-all group"
+                            role="tab"
+                            aria-selected="false"
+                            aria-controls="view-feeds"
+                            tabindex="-1">
+                        <i data-lucide="rss" class="w-5 h-5 group-hover:scale-110 transition-transform" aria-hidden="true"></i>
+                        <span class="font-medium">订阅源</span>
+                    </button>
+                    <button onclick="Dashboard.switchTab('videos')" 
+                            id="nav-videos" 
+                            class="nav-item w-full flex items-center gap-3 px-4 py-2.5 text-slate-600 rounded-lg hover:bg-slate-50 hover:text-blue-600 transition-all group"
+                            role="tab"
+                            aria-selected="false"
+                            aria-controls="view-videos"
+                            tabindex="-1">
+                        <i data-lucide="youtube" class="w-5 h-5 group-hover:scale-110 transition-transform" aria-hidden="true"></i>
+                        <span class="font-medium">视频推荐</span>
+                    </button>
+                </div>
+                
+                <div class="px-4 py-2 mt-6 text-xs font-semibold text-slate-400 uppercase tracking-wider" role="heading" aria-level="2">System</div>
+                <div role="tablist" aria-label="系统管理" class="space-y-1">
+                    <button onclick="Dashboard.switchTab('stats')" 
+                            id="nav-stats" 
+                            class="nav-item w-full flex items-center gap-3 px-4 py-2.5 text-slate-600 rounded-lg hover:bg-slate-50 hover:text-blue-600 transition-all group"
+                            role="tab"
+                            aria-selected="false"
+                            aria-controls="view-stats"
+                            tabindex="-1">
+                        <i data-lucide="bar-chart-2" class="w-5 h-5 group-hover:scale-110 transition-transform" aria-hidden="true"></i>
+                        <span class="font-medium">数据统计</span>
+                    </button>
+                    <button onclick="Dashboard.switchTab('settings')" 
+                            id="nav-settings" 
+                            class="nav-item w-full flex items-center gap-3 px-4 py-2.5 text-slate-600 rounded-lg hover:bg-slate-50 hover:text-blue-600 transition-all group"
+                            role="tab"
+                            aria-selected="false"
+                            aria-controls="view-settings"
+                            tabindex="-1">
+                        <i data-lucide="settings" class="w-5 h-5 group-hover:scale-110 transition-transform" aria-hidden="true"></i>
+                        <span class="font-medium">系统设置</span>
+                    </button>
+                </div>
+            </nav>
 
-        <div class="p-4 border-t border-slate-100">
-            <a href="/" target="_blank" class="flex items-center gap-3 px-4 py-2.5 text-slate-500 hover:text-slate-800 transition-colors rounded-lg hover:bg-slate-50">
-                <i data-lucide="external-link" class="w-4 h-4"></i>
-                <span class="text-sm font-medium">访问前台</span>
-            </a>
-        </div>
-    </aside>
-
-    <!-- Mobile Header -->
-    <div class="md:hidden fixed top-0 w-full bg-white/80 backdrop-blur border-b border-slate-200 z-30 px-4 py-3 flex justify-between items-center">
-        <div class="flex items-center gap-2">
-            <div class="p-1.5 bg-blue-50 rounded-md text-blue-600">
-                <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
-            </div>
-            <span class="font-bold text-slate-800">Admin</span>
-        </div>
-        <button onclick="document.querySelector('aside').classList.toggle('hidden'); document.querySelector('aside').classList.toggle('flex')" class="p-2 text-slate-600 hover:bg-slate-100 rounded-lg" title="Toggle Menu" aria-label="Toggle Menu">
-            <i data-lucide="menu" class="w-6 h-6"></i>
-        </button>
-    </div>
-
-    <!-- Main Content -->
-    <main class="flex-1 lg:ml-64 p-4 lg:p-8 overflow-y-auto h-screen w-full">
-        <!-- Toast Container -->
-        <div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col gap-3 pointer-events-none transition-all duration-300"></div>
-
-        <!-- Header -->
-        <header class="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4 mt-12 lg:mt-0">
-            <div>
-                <h1 class="text-2xl lg:text-3xl font-bold text-slate-800 tracking-tight" id="page-title">概览</h1>
-                <p class="text-slate-500 mt-1">欢迎回来，Admin</p>
-            </div>
-            <div class="flex items-center gap-3">
-                <a href="/" target="_blank" class="px-4 py-2 bg-white border border-slate-200 text-slate-600 rounded-lg hover:bg-slate-50 hover:text-blue-600 transition-all text-sm font-medium flex items-center gap-2 shadow-sm">
+            <div class="p-4 border-t border-slate-100">
+                <a href="/" target="_blank" class="flex items-center gap-3 px-4 py-2.5 text-slate-500 hover:text-slate-800 transition-colors rounded-lg hover:bg-slate-50">
                     <i data-lucide="external-link" class="w-4 h-4"></i>
-                    查看站点
+                    <span class="text-sm font-medium">访问前台</span>
                 </a>
-                <div class="flex items-center gap-2 mr-4">
-                    <span id="auth-status-badge" class="px-2 py-1 text-xs font-bold rounded-full bg-slate-100 text-slate-500 flex items-center gap-1 transition-all">
-                        <i data-lucide="shield-off" class="w-3 h-3"></i>
-                        未验证
-                    </span>
-                    <span id="backend-status-badge" class="px-2 py-1 text-xs font-bold rounded-full bg-slate-100 text-slate-500 flex items-center gap-1 transition-all">
-                        <i data-lucide="server" class="w-3 h-3"></i>
-                        未连接
-                    </span>
-                    <span id="api-base-text" class="hidden md:inline-flex px-2 py-1 text-xs rounded-full bg-slate-50 text-slate-400 border border-slate-200">
-                        API: -
-                    </span>
-                </div>
-                <div class="flex items-center gap-2">
-                    <input id="admin-token-input" type="password" placeholder="管理员令牌" class="bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none w-44" />
-                    <button id="admin-token-save" class="px-3 py-2 bg-slate-900 text-white rounded-lg hover:bg-slate-800 text-sm">登录</button>
-                    <button id="admin-token-clear" class="px-3 py-2 bg-slate-100 text-slate-600 rounded-lg hover:bg-slate-200 text-sm">退出</button>
-                </div>
             </div>
-        </header>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 lg:ml-64 p-4 lg:p-8 overflow-y-auto h-screen w-full">
+            <!-- Toast Container -->
+            <div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col gap-3 pointer-events-none transition-all duration-300"></div>
+
+            <!-- Header -->
+            <header class="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4 mt-12 lg:mt-0">
+                <div>
+                    <h1 class="text-2xl lg:text-3xl font-bold text-slate-800 tracking-tight" id="page-title">概览</h1>
+                    <p class="text-slate-500 mt-1">欢迎回来，Admin</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <a href="/" target="_blank" class="px-4 py-2 bg-white border border-slate-200 text-slate-600 rounded-lg hover:bg-slate-50 hover:text-blue-600 transition-all text-sm font-medium flex items-center gap-2 shadow-sm">
+                        <i data-lucide="external-link" class="w-4 h-4"></i>
+                        查看站点
+                    </a>
+                    <div class="flex items-center gap-2 mr-4">
+                        <span id="auth-status-badge" class="px-2 py-1 text-xs font-bold rounded-full bg-slate-100 text-slate-500 flex items-center gap-1 transition-all">
+                            <i data-lucide="shield-off" class="w-3 h-3"></i>
+                            未验证
+                        </span>
+                        <span id="backend-status-badge" class="px-2 py-1 text-xs font-bold rounded-full bg-slate-100 text-slate-500 flex items-center gap-1 transition-all">
+                            <i data-lucide="server" class="w-3 h-3"></i>
+                            未连接
+                        </span>
+                        <span id="api-base-text" class="hidden md:inline-flex px-2 py-1 text-xs rounded-full bg-slate-50 text-slate-400 border border-slate-200">
+                            API: -
+                        </span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <input id="admin-token-input" type="password" placeholder="管理员令牌" class="bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none w-44" />
+                        <button id="admin-token-save" class="px-3 py-2 bg-slate-900 text-white rounded-lg hover:bg-slate-800 text-sm">登录</button>
+                        <button id="admin-token-clear" class="px-3 py-2 bg-slate-100 text-slate-600 rounded-lg hover:bg-slate-200 text-sm">退出</button>
+                    </div>
+                </div>
+            </header>
 
             <!-- Views -->
             
@@ -245,12 +284,9 @@
                                 <div>
                                     <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">分类 Category</label>
                                     <div class="grid grid-cols-2 gap-2">
-                                        <!-- Primary Category -->
                                         <select id="bm-category-select" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all" aria-label="Primary Category">
                                             <option value="">选择一级分类...</option>
                                         </select>
-                                        
-                                        <!-- Secondary Category -->
                                         <select id="bm-subcategory-select" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed" aria-label="Secondary Category">
                                             <option value="">选择二级分类...</option>
                                         </select>
@@ -294,7 +330,6 @@
                                 </div>
                             </div>
                             
-                            <!-- Progress Bar -->
                             <div id="check-progress-container" class="hidden bg-slate-50 px-4 py-2 border-b border-slate-100 transition-all">
                                 <div class="flex justify-between text-xs text-slate-500 mb-1">
                                     <span id="check-progress-text">检测中...</span>
@@ -555,6 +590,7 @@
                 </div>
             </section>
             
+            <!-- SETTINGS VIEW -->
             <section id="view-settings" class="view-section space-y-6 hidden">
                 <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
                     <div class="p-6 border-b border-slate-100">
@@ -571,8 +607,6 @@
                                 <input type="password" id="setting-admin-token" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-slate-500/20 focus:border-slate-500 transition-all" placeholder="Enter ADMIN_TOKEN from .env">
                                 <p class="text-xs text-slate-400">用于 Node.js 后端鉴权 (对应 .env 中的 ADMIN_TOKEN)</p>
                             </div>
-
-                        
 
                         <!-- Site Notice Management -->
                         <div class="space-y-4 border-t border-slate-100 pt-6">
@@ -611,69 +645,29 @@
             </section>
 
             <!-- Admin Footer -->
-            
-    <footer class="py-8 text-center text-sm text-gray-500 dark:text-gray-400 transition-colors duration-500">
-        <p>&copy; <span id="year"></span> ShadowQuake. All rights reserved.</p>
-        <p class="mt-2 text-xs opacity-50">
-            <span id="visit-count" class="hidden">Visits: <span id="busuanzi_value_site_pv" class="font-mono">Loading...</span></span>
-        </p>
-    </footer>
-
-
+            <footer class="py-8 text-center text-sm text-gray-500 dark:text-gray-400 transition-colors duration-500">
+                <p>&copy; <span id="year"></span> ShadowQuake. All rights reserved.</p>
+                <p class="mt-2 text-xs opacity-50">
+                    <span id="visit-count" class="hidden">Visits: <span id="busuanzi_value_site_pv" class="font-mono">Loading...</span></span>
+                </p>
+            </footer>
         </main>
     </div>
 
-    <!-- Standardized Footer -->
-    <script>
-        function getStoredTheme() {
-            try {
-                const theme = localStorage.getItem('theme');
-                if (theme === 'dark' || theme === 'light') return theme;
-            } catch (e) {}
-            return null;
-        }
+    <!-- Light/dark visibility -->
+    <style>
+        .dark .light-only { display: none !important; }
+        .dark .dark-only { display: inline !important; }
+        .light-only { display: inline; }
+        .dark-only { display: none; }
+        img.light-only, img.dark-only { display: none; }
+        .dark img.dark-only { display: inline; }
+        img.light-only { display: inline; }
+        .dark img.light-only { display: none; }
+    </style>
 
-        function resolveTheme() {
-            const stored = getStoredTheme();
-            if (stored) return stored;
-            const systemDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-            return systemDark ? 'dark' : 'light';
-        }
-
-        function applyTheme(theme) {
-            const isDark = theme === 'dark';
-            if (isDark) {
-                document.documentElement.classList.add('dark');
-            } else {
-                document.documentElement.classList.remove('dark');
-            }
-        }
-
-        applyTheme(resolveTheme());
-
-        if (window.matchMedia) {
-            const media = window.matchMedia('(prefers-color-scheme: dark)');
-            const handler = () => {
-                if (!getStoredTheme()) {
-                    applyTheme(resolveTheme());
-                }
-            };
-            if (media.addEventListener) {
-                media.addEventListener('change', handler);
-            } else if (media.addListener) {
-                media.addListener(handler);
-            }
-        }
-
-        function toggleTheme() {
-            const isDark = document.documentElement.classList.contains('dark');
-            const nextTheme = isDark ? 'light' : 'dark';
-            try {
-                localStorage.setItem('theme', nextTheme);
-            } catch (e) {}
-            applyTheme(nextTheme);
-        }
-    </script>
+    <!-- Scripts -->
+    <script src="../js/navbar.js"></script>
     <script src="admin.js"></script>
     <script>lucide.createIcons();</script>
 </body>

@@ -1,10 +1,3 @@
-node_modules/
-admin/node_modules/
-*.log
-.DS_Store
-Thumbs.db
 .env
-*.bak
-admin/ecosystem.config.js
-public/data/*.json
-data/
+api/data/
+node_modules/

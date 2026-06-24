@@ -116,6 +116,20 @@ shadowsky-blog/
 - 公共壳层：核心公开页额外引入 `public-shell`、`public-shell--floating-nav`、`section-shell`、`utility-glass-bar`、`reading-surface` 等类，用于统一导航留白、工具条节奏、阅读面板和页脚容器。
 - 首页首屏收口：`index.html` 删除标签区和 `home-gateway` 入口块，改为单一 hero 封面，只保留头像、主标题、副句与底栏，用于降低首页突兀感并统一视觉语言。
 - 首页单屏封面：`index.html` 进一步改为严格单屏封面布局，导航、hero 与底栏位于同一背景容器中，用于解决首页滚动感和顶部背景断层问题。
+- 导航定位回归修复：`css/style.css` 明确恢复公开页 `#navbar` 的 `position: fixed` 与 `#mobile-menu` 的 `position: absolute`，避免隐藏移动菜单参与普通文档流后把首页导航壳和单屏布局整体撑爆。
+- 首页背景缝合修复：`css/style.css` 新增 `homepage-cover-stage-overlay` 并在首页关闭 `#navbar` 伪元素，同时将 `homepage-cover-footer` 在深色模式下强制透明，用于消除导航上沿与底栏区域的视觉割裂。
+- 首页导航与头像微调：`index.html` 为首页导航动作区补充 `homepage-cover-nav-actions` 钩子，并将头像尺寸调整回中号；`css/style.css` 为 `homepage-cover-nav-shell` 增加整组内边距和对齐约束，用于让导航胶囊完整包裹左右操作并恢复首页头像存在感。
+- 首页头像与移动菜单精修：`css/style.css` 为 `homepage-hero-mark > img` 增加首页专用尺寸钉死规则，避免头像退回原图尺寸；同时为 `#mobile-menu`、`homepage-mobile-menu-panel`、`homepage-mobile-menu-link` 增加右侧悬浮菜单板和轻卡片菜单项样式，用于改善移动端菜单的体量和层次。
+- 首页移动菜单收口：`css/style.css` 进一步收紧 `homepage-mobile-menu-link` 的左右留白、字重和图标间距，并覆盖旧的 Lucide `mr-3` 间距，用于让移动端菜单项更利落、更紧凑。
+- 首页移动菜单日间模式：`css/style.css` 将移动端菜单默认样式改为浅玻璃日间方案，并把原先的深色菜单板收进 `.dark` 覆盖，用于让日间模式下的菜单面板、菜单项和当前项高亮与首页浅色背景保持统一。
+- 首页日间色温统一：`css/style.css` 将 `homepage-cover-nav-shell` 调整为偏冷白蓝的浅玻璃胶囊，并与日间移动端菜单板共享接近的边框、阴影和背景色温，用于统一首页顶部导航与移动菜单的日间观感。
+- 首页明暗色温隔离：`css/style.css` 将导航胶囊拆分为公共骨架、`html:not(.dark)` 日间冷白样式和 `.dark` 夜间深色样式三层，补回夜间独立阴影，避免日间色温改动继续污染夜间导航。
+- 公开页导航命名与液态材质升级：`css/style.css` 为共享导航按钮补充更强的液态玻璃高光、边缘和 active island 规则，并将 `index.html`、`blog.html`、`post.html`、`moments.html`、`bookmarks.html`、`rss.html`、`acg.html`、`anime.html`、`manga.html`、`edits.html`、`about.html`、`404.html` 的导航文案统一为“首页 / 笔记 / 片刻 / 收藏 / 订阅 / ACG / 关于”，同时同步桌面 `title`、移动端菜单文案和相关 `aria-label`。
+- 博客页收口精修：`blog.html` 删除 `blog-discovery` 发现面板，保留标题区、工具区、文章列表与底栏；`css/style.css` 新增 `data-page="blog"` 作用域下的导航胶囊、工具面板、搜索输入、博客卡片与底栏缝合规则，用于减少首屏留白、提升卡片质感并让博客页导航更接近首页的一体化胶囊感。
+- 博客页克制一体化收口：`css/style.css` 将 `data-page="blog"` 下的顶部背景、搜索工具条、内容卡片与底栏改为同一套克制内容页语言，用于消除顶部断层、搜索区拼装感与底栏贴片感。
+- 博客页 Task3 合同补丁：`css/style.css` 在 `data-page="blog"` 作用域下补齐 `.glass-pill`、`.pagination-btn`、`.blog-post-card .aspect-video` 与 `.public-footer` 选择器，用于兼容现有 `js/blog.js` 动态输出并让 `js/core-pages-ui.test.js` 重新转绿。
+- 博客页高度链根因修复：`blog.html` 去掉 hero 与文章容器的保底最小高度，`css/style.css` 去掉博客页 body 的 `min-height: 100dvh` 和 footer 粘底回退，用于停止通过最小高度链条硬撑页面尾部空白。
+- 右键菜单脱流修复：`css/style.css` 为 `#custom-context-menu` 与 `#context-menu` 增加显式 `position: fixed !important` 覆盖，用于防止共享玻璃样式把隐藏菜单改回普通文档流，重新把博客页和其他公开页底部撑长。
 - 全站布局恢复层：`css/style.css` 追加 `layout-safe-top`、`layout-flow-section`、`layout-toolbar-wrap`、`layout-grid-stable`、`layout-overflow-guard` 等恢复类，统一顶部安全间距、分段节奏、工具条换行、栅格稳定性和溢出防护。
 - 公开页统一主容器与页脚：`index.html` 到 `404.html` 的公开页逐步收敛到 `public-shell`、`public-footer`、`public-footer__inner` 这套共享骨架，减少旧页脚与局部 `max-w-*` 容器分叉。
 - ACG 系列页布局收口：`acg.html`、`anime.html`、`manga.html`、`edits.html` 统一补齐 `layout-safe-top`、筛选工具条和视频栅格保护类，降低平板与手机断点下的换行挤压和横向溢出。
@@ -480,8 +494,9 @@ Git Push
 
 ### 11.4 本次前台 UI 改造验证
 
-- 已执行静态校验，确认公开页已接入 `public-page liquid-glass-ui` 作用域，公共样式块与动态卡片类已写入目标文件。
-- 由于仓库缺少统一的前台测试脚本与根级测试入口，本次未运行自动化 UI 回归测试，验证方式以代码级一致性检查和结构化 grep 复核为主。
+- 已执行 `npx vitest run js/core-pages-ui.test.js`，当前公开页 UI 合同测试为 20 条全部通过，覆盖首页单屏、博客页导航、底栏收口、最小高度链条和右键菜单脱流等约束。
+- 已执行 VS Code Diagnostics，`blog.html`、`css/style.css`、`js/core-pages-ui.test.js` 当前无新增诊断错误。
+- 已通过浏览器复核博客页高度链修复结果，确认 `pagination` 到 `footer` 之间无额外空白，`footer` 下方残留空白归零；尾部异常根因确认为隐藏 `#custom-context-menu` 被共享样式错误带回文档流。
 - 本次改动未触碰 PHP 接口、Node 管理端和 `admin/` 前端，因此未引入新的后端 SQL 注入或后台 Token 校验变更面。
 
 ## 12. 架构观察与维护建议

@@ -1,5 +1,5 @@
 // js/blog.js - 博客列表页面功能
-// 视觉升级版 v3.0 - ShadowSky Theme Enhanced
+// Liquid Glass v4 — Apple 液态玻璃风格
 
 // ===========================================
 // 分页配置和状态
@@ -40,9 +40,9 @@ async function loadBlogPosts() {
     const timeoutId = setTimeout(() => controller.abort(), TIMEOUT_MS);
 
     container.innerHTML = `
-        <div class="flex flex-col items-center justify-center py-20">
-            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-4"></div>
-            <p class="text-sm text-gray-500 animate-pulse font-mono">正在加载星空笔记...</p>
+        <div class="blog-loader">
+            <div class="loader-spinner"></div>
+            <p class="loader-text">正在加载星空笔记...</p>
         </div>
     `;
     if (paginationContainer) paginationContainer.innerHTML = '';
@@ -69,7 +69,7 @@ async function loadBlogPosts() {
         clearTimeout(timeoutId);
         console.error('Load failed:', error);
         container.innerHTML = `
-            <div class="flex flex-col items-center justify-center py-20">
+            <div class="flex flex-col items-center justify-center py-20 fade-in">
                 <div class="w-20 h-20 rounded-full bg-red-50 dark:bg-red-900/20 flex items-center justify-center mb-4">
                     <i data-lucide="alert-circle" class="w-10 h-10 text-red-500"></i>
                 </div>
@@ -88,14 +88,12 @@ async function loadBlogPosts() {
 // 更新统计数据
 // ------------------------
 function updateStats() {
-    // 文章数量
     const postCountEl = document.getElementById('post-count');
     if (postCountEl) {
         postCountEl.textContent = allPosts.length;
         animateNumber(postCountEl, 0, allPosts.length, 1000);
     }
 
-    // 标签数量
     const tagSet = new Set();
     allPosts.forEach(post => {
         (post.tags || []).forEach(tag => tagSet.add(tag));
@@ -105,7 +103,6 @@ function updateStats() {
         animateNumber(tagCountEl, 0, tagSet.size, 1000);
     }
 
-    // 分类数量
     const categorySet = new Set();
     allPosts.forEach(post => {
         categorySet.add(post.category || '未分类');
@@ -143,20 +140,23 @@ function switchView(view) {
     currentView = view;
     currentPage = 1;
 
-    // 更新按钮状态
-    document.querySelectorAll('.view-btn').forEach(btn => {
+    // 更新按钮状态 & data-active
+    const switcher = document.querySelector('.view-switcher');
+    document.querySelectorAll('.view-btn').forEach((btn, idx) => {
         const btnView = btn.getAttribute('data-view');
         if (btnView === view) {
             btn.classList.add('active');
+            if (switcher) switcher.setAttribute('data-active', idx);
         } else {
             btn.classList.remove('active');
         }
     });
 
-    // 渲染对应视图
+    // 过渡动画
     const container = document.getElementById('posts-container');
     container.style.opacity = '0';
     container.style.transform = 'translateY(10px)';
+    container.style.transition = 'opacity 0.2s ease, transform 0.2s ease';
 
     setTimeout(() => {
         renderCurrentView();
@@ -211,7 +211,7 @@ function renderCurrentView() {
 }
 
 // ------------------------
-// 1. 网格视图 (增强版)
+// 1. 网格视图 — Apple 液态玻璃卡片
 // ------------------------
 function renderGridView(container) {
     if (filteredPosts.length === 0) {
@@ -221,64 +221,53 @@ function renderGridView(container) {
 
     container.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8';
 
-    // 分页计算
     const startIndex = (currentPage - 1) * POSTS_PER_PAGE;
     const currentPosts = filteredPosts.slice(startIndex, startIndex + POSTS_PER_PAGE);
 
+    // 无封面时的渐变配色
+    const gradients = [
+        'linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #a855f7 100%)',
+        'linear-gradient(135deg, #059669 0%, #0d9488 50%, #06b6d4 100%)',
+        'linear-gradient(135deg, #e11d48 0%, #db2777 50%, #f97316 100%)',
+        'linear-gradient(135deg, #d97706 0%, #eab308 50%, #f97316 100%)',
+        'linear-gradient(135deg, #c026d3 0%, #7c3aed 50%, #ec4899 100%)',
+        'linear-gradient(135deg, #0891b2 0%, #2563eb 50%, #4f46e5 100%)'
+    ];
+
     currentPosts.forEach((post, index) => {
         const dateStr = formatDateTime(post.date);
-        const delay = index * 100;
-
-        // 动态封面生成
-        const gradients = [
-            'from-blue-600 via-indigo-600 to-purple-600',
-            'from-emerald-500 via-teal-600 to-cyan-600',
-            'from-rose-500 via-pink-600 to-orange-500',
-            'from-amber-500 via-yellow-600 to-orange-500',
-            'from-fuchsia-600 via-purple-600 to-pink-600',
-            'from-cyan-500 via-blue-600 to-indigo-600'
-        ];
+        const delay = index * 80;
         const gradient = gradients[index % gradients.length];
 
+        // 封面区域
         const coverHtml = post.coverImage
-            ? `<div class="h-52 w-full overflow-hidden relative">
-                 <img src="${post.coverImage}" alt="${post.title}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
-                 <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+            ? `<div class="blog-card-cover">
+                 <img src="${post.coverImage}" alt="${post.title}" loading="lazy">
                </div>`
-            : `<div class="h-52 w-full bg-gradient-to-br ${gradient} flex items-center justify-center relative overflow-hidden">
-                 <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMiIgY3k9IjIiIHI9IjEiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4xKSIvPjwvc3ZnPg==')] opacity-50"></div>
-                 <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
-                 <i data-lucide="file-text" class="w-16 h-16 text-white/70 drop-shadow-lg transform transition-transform duration-500 group-hover:scale-110"></i>
+            : `<div class="blog-card-cover-placeholder" style="background:${gradient}">
+                 <i data-lucide="file-text"></i>
                </div>`;
 
-
         const html = `
-            <article class="blog-post-card glass-card group relative bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-gray-800 overflow-hidden card-hover hover:shadow-2xl hover:shadow-blue-500/10 dark:hover:shadow-blue-900/20 flex flex-col h-full animate-fade-in-up" style="animation-delay: ${delay}ms">
-                <a href="post.html?file=${post.file}" class="block flex-1 flex flex-col h-full">
+            <article class="blog-card animate-in" style="animation-delay:${delay}ms">
+                <a href="post.html?file=${post.file}" style="display:flex;flex-direction:column;height:100%;text-decoration:none;color:inherit;">
                     ${coverHtml}
-                    <div class="p-6 flex flex-col flex-1">
-                        <div class="mb-4">
-                            <span class="px-3 py-1 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-xs font-semibold rounded-full">
-                                ${post.category || '笔记'}
+                    <div class="blog-card-body">
+                        <span class="blog-card-badge">
+                            <i data-lucide="folder" style="width:12px;height:12px;"></i>
+                            ${post.category || '笔记'}
+                        </span>
+                        <h2 class="blog-card-title">${post.title}</h2>
+                        <p class="blog-card-excerpt">${post.excerpt || '暂无摘要...'}</p>
+                        <div class="blog-card-footer">
+                            <i data-lucide="calendar-days"></i>
+                            <span>${dateStr}</span>
+                            <i data-lucide="tag" style="margin-left:4px;"></i>
+                            <span>${(post.tags || []).length}</span>
+                            <span class="footer-spacer"></span>
+                            <span class="footer-arrow">
+                                <i data-lucide="arrow-right" style="width:16px;height:16px;"></i>
                             </span>
-                        </div>
-
-                        <h2 class="text-lg font-bold text-gray-900 dark:text-gray-100 mb-3 line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300">
-                            ${post.title}
-                        </h2>
-
-                        <p class="text-sm text-gray-500 dark:text-gray-400 line-clamp-3 mb-4 flex-1 leading-relaxed">
-                            ${post.excerpt || '暂无摘要...'}
-                        </p>
-
-                        <div class="mt-auto pt-4 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between">
-                            <div class="flex items-center gap-4 text-xs text-gray-400 dark:text-gray-500">
-                                <span class="flex items-center gap-1"><i data-lucide="calendar-days" class="w-3.5 h-3.5"></i> ${dateStr}</span>
-                                <span class="flex items-center gap-1"><i data-lucide="tag" class="w-3.5 h-3.5"></i> ${(post.tags || []).length}</span>
-                            </div>
-                            <div class="w-8 h-8 rounded-full bg-gray-50 dark:bg-gray-800 flex items-center justify-center text-gray-400 group-hover:bg-blue-600 group-hover:text-white transition-all duration-300">
-                                <i data-lucide="arrow-right" class="w-4 h-4 transition-transform group-hover:translate-x-0.5"></i>
-                            </div>
                         </div>
                     </div>
                 </a>
@@ -291,7 +280,7 @@ function renderGridView(container) {
 }
 
 // ------------------------
-// 2. 时间轴视图
+// 2. 时间轴视图 — 液态玻璃
 // ------------------------
 function renderTimelineView(container) {
     if (filteredPosts.length === 0) {
@@ -299,7 +288,7 @@ function renderTimelineView(container) {
         return;
     }
 
-    container.className = 'max-w-4xl mx-auto px-4';
+    container.className = 'timeline-container';
 
     // 数据分组
     const grouped = {};
@@ -317,11 +306,10 @@ function renderTimelineView(container) {
         const month = key.split('.')[1];
 
         html += `
-            <div class="relative animate-fade-in-up" style="animation-delay: ${idx * 150}ms">
+            <div class="relative fade-in-up" style="animation-delay: ${idx * 150}ms">
                 <div class="absolute -left-[41px] top-0 w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full z-10 shadow-lg shadow-blue-500/30 flex items-center justify-center">
                     <i data-lucide="calendar" class="w-4 h-4 text-white"></i>
                 </div>
-                <h3 class="text-4xl font-black text-gray-200 dark:text-gray-800 absolute -top-2 -left-4 -z-10 select-none opacity-30 scale-125 origin-top-left">${year}</h3>
                 <div class="flex items-baseline gap-4 mb-6">
                     <h4 class="text-2xl font-bold text-gray-800 dark:text-gray-100 font-mono">${year}.${month}</h4>
                     <span class="text-xs px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 font-medium border border-blue-100 dark:border-blue-800">${grouped[key].length} 篇</span>
@@ -332,15 +320,12 @@ function renderTimelineView(container) {
         grouped[key].forEach((post, pIdx) => {
             const day = new Date(post.date).getDate();
             html += `
-                <a href="post.html?file=${post.file}" class="group block relative pl-6 transition-all hover:pl-8 animate-fade-in" style="animation-delay: ${pIdx * 50}ms">
-                    <div class="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-blue-500 to-purple-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                    <div class="glass-card bg-white dark:bg-slate-900 p-5 rounded-xl border border-gray-200 dark:border-gray-800 hover:border-blue-300 dark:hover:border-blue-700 shadow-sm hover:shadow-lg transition-all">
-                        <div class="flex justify-between items-start">
-                            <div class="flex-1">
-                                <h5 class="font-bold text-gray-800 dark:text-gray-200 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors mb-2">${post.title}</h5>
-                                <p class="text-sm text-gray-500 dark:text-gray-400 line-clamp-1">${post.excerpt || '暂无描述'}</p>
-                            </div>
-                            <span class="text-sm font-mono text-gray-400 whitespace-nowrap ml-4 bg-gray-50 dark:bg-gray-800 px-2 py-1 rounded">${day}日</span>
+                <a href="post.html?file=${post.file}" class="group block relative fade-in" style="animation-delay: ${pIdx * 50}ms">
+                    <div class="timeline-card">
+                        <span class="timeline-day">${day}</span>
+                        <div class="timeline-content">
+                            <div class="timeline-title">${post.title}</div>
+                            <div class="timeline-excerpt">${post.excerpt || '暂无描述'}</div>
                         </div>
                     </div>
                 </a>
@@ -354,13 +339,12 @@ function renderTimelineView(container) {
     html += `</div>`;
     container.innerHTML = html;
 
-    // 隐藏分页
     const pag = document.getElementById('pagination-container');
     if (pag) pag.innerHTML = '';
 }
 
 // ------------------------
-// 3. 目录视图 (IDE 风格)
+// 3. 目录视图 — 液态玻璃文件夹
 // ------------------------
 function renderDirectoryView(container) {
     if (filteredPosts.length === 0) {
@@ -368,7 +352,7 @@ function renderDirectoryView(container) {
         return;
     }
 
-    container.className = 'max-w-3xl mx-auto';
+    container.className = 'dir-container';
 
     const categories = {};
     filteredPosts.forEach(post => {
@@ -377,77 +361,66 @@ function renderDirectoryView(container) {
         categories[c].push(post);
     });
 
-    let html = `
-        <div class="glass-panel bg-white dark:bg-[#1e1e1e] rounded-2xl overflow-hidden border border-gray-200 dark:border-[#333] shadow-2xl animate-fade-in-up font-mono text-sm">
-            <!-- Header -->
-            <div class="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-[#252526] dark:to-[#2d2d2d] px-4 py-3 flex items-center justify-between border-b border-gray-200 dark:border-[#333]">
-                <div class="flex gap-2">
-                    <div class="w-3 h-3 rounded-full bg-red-400 shadow-sm"></div>
-                    <div class="w-3 h-3 rounded-full bg-yellow-400 shadow-sm"></div>
-                    <div class="w-3 h-3 rounded-full bg-green-400 shadow-sm"></div>
-                </div>
-                <div class="text-xs text-gray-500 dark:text-gray-400 font-medium">PROJECT: SHADOWSKY</div>
-            </div>
+    let html = `<div class="space-y-3 fade-in-up">`;
 
-            <!-- Content -->
-            <div class="p-3 dark:text-gray-300">
-                <div class="pl-2 py-1 flex items-center gap-2 text-gray-500 hover:bg-gray-50 dark:hover:bg-[#2a2d2e] rounded cursor-default transition-colors">
-                    <i data-lucide="chevron-down" class="w-4 h-4"></i>
-                    <i data-lucide="folder-open" class="w-4 h-4 text-blue-500"></i>
-                    <span class="font-semibold">src</span>
-                </div>
+    // Header
+    html += `
+        <div class="flex items-center justify-between px-4 py-3 mb-2">
+            <div class="flex gap-2">
+                <div class="w-3 h-3 rounded-full bg-red-400 shadow-sm"></div>
+                <div class="w-3 h-3 rounded-full bg-yellow-400 shadow-sm"></div>
+                <div class="w-3 h-3 rounded-full bg-green-400 shadow-sm"></div>
+            </div>
+            <div class="text-xs font-mono opacity-50">PROJECT: SHADOWSKY</div>
+        </div>
     `;
 
     Object.keys(categories).sort().forEach((cat, idx) => {
-        const catColor = ['blue', 'purple', 'green', 'orange', 'pink', 'cyan'][idx % 6];
+        const catIcons = ['folder', 'folder', 'folder', 'folder', 'folder', 'folder'];
         html += `
-            <div class="ml-4 animate-fade-in" style="animation-delay: ${idx * 50}ms">
-                <details open class="group">
-                    <summary class="flex items-center gap-2 py-1.5 px-2 rounded hover:bg-gray-50 dark:hover:bg-[#2a2d2e] cursor-pointer select-none transition-colors">
-                        <i data-lucide="folder" class="w-4 h-4 text-${catColor}-500 group-open:hidden"></i>
-                        <i data-lucide="folder-open" class="w-4 h-4 text-${catColor}-500 hidden group-open:block"></i>
-                        <span class="${cat === '未分类' ? 'italic opacity-70' : 'font-medium'}">${cat}</span>
-                        <span class="text-xs text-gray-400 ml-1">(${categories[cat].length})</span>
+            <div class="dir-folder fade-in" style="animation-delay:${idx * 60}ms">
+                <details open>
+                    <summary>
+                        <i data-lucide="folder" style="width:18px;height:18px;color:var(--color-primary);"></i>
+                        <span>${cat}</span>
+                        <span style="font-size:var(--text-xs);opacity:0.5;margin-left:auto;">${categories[cat].length} 篇</span>
                     </summary>
-                    <div class="ml-4 border-l-2 border-gray-200 dark:border-[#444] pl-3 mt-1 space-y-1">
         `;
 
-        categories[cat].forEach((post, pIdx) => {
+        categories[cat].forEach((post) => {
             html += `
-                <a href="post.html?file=${post.file}" class="flex items-center gap-2 py-1.5 px-2 rounded hover:bg-blue-50 dark:hover:bg-[#094771] group/file transition-colors">
-                    <i data-lucide="file-code" class="w-4 h-4 text-gray-400 group-hover/file:text-blue-400"></i>
-                    <span class="truncate flex-1 hover:underline decoration-blue-500/30">${post.title}</span>
-                    <span class="text-xs text-gray-400 opacity-60">${formatDateTime(post.date)}</span>
+                <a href="post.html?file=${post.file}" class="dir-file">
+                    <i data-lucide="file-code"></i>
+                    <span class="dir-file-name">${post.title}</span>
+                    <span class="dir-file-date">${formatDateTime(post.date)}</span>
                 </a>
             `;
         });
 
-        html += `   </div>
-                </details>
-            </div>
-        `;
+        html += `   </details>
+            </div>`;
     });
 
+    // Footer bar
     html += `
+        <div class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 text-xs flex justify-between items-center rounded-b-lg mt-1">
+            <div class="flex items-center gap-2">
+                <i data-lucide="git-branch" style="width:12px;height:12px;"></i>
+                <span>master*</span>
             </div>
-            <!-- Footer -->
-            <div class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 text-xs flex justify-between items-center">
-                <div class="flex items-center gap-2">
-                    <i data-lucide="git-branch" class="w-3 h-3"></i>
-                    <span>master*</span>
-                </div>
-                <span>Ln ${filteredPosts.length}, Col 1</span>
-            </div>
+            <span>Ln ${filteredPosts.length}, Col 1</span>
         </div>
     `;
 
+    html += `</div>`;
     container.innerHTML = html;
+
     const pag = document.getElementById('pagination-container');
     if (pag) pag.innerHTML = '';
 }
 
 // ------------------------
-// 4. 标签视图
+// 4. 标签视图 — 液态玻璃标签云
 // ------------------------
 function renderTagsView(container) {
     container.className = 'max-w-5xl mx-auto';
@@ -468,9 +441,9 @@ function renderTagsView(container) {
     }
 
     let html = `
-        <div class="text-center mb-10 animate-fade-in">
-            <p class="glass-pill inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 mb-4">
-                <i data-lucide="sparkles" class="w-3 h-3"></i>
+        <div class="text-center mb-10 fade-in">
+            <p class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 mb-4">
+                <i data-lucide="sparkles" style="width:12px;height:12px;"></i>
                 标签知识图谱
             </p>
             <h2 class="text-2xl font-bold mb-2 text-gray-800 dark:text-white">
@@ -481,53 +454,30 @@ function renderTagsView(container) {
             </p>
         </div>
 
-        <div class="relative max-w-4xl mx-auto mb-10">
-            <div class="pointer-events-none absolute -inset-1 rounded-[32px] bg-gradient-to-r from-blue-500/20 via-purple-500/15 to-pink-500/20 blur-2xl opacity-60"></div>
-            <div class="relative flex flex-wrap justify-center gap-3 p-6 bg-white/80 dark:bg-slate-900/80 rounded-3xl border border-gray-200/80 dark:border-gray-800 shadow-xl backdrop-blur">
+        <div class="tags-cloud">
     `;
 
     tags.forEach((tag, idx) => {
         const count = tagMap[tag].length;
-        const size = count > 5 ? 'text-base px-5 py-2.5' : count > 2 ? 'text-sm px-4 py-2' : 'text-xs px-3 py-1.5';
-        const weight = count > 5 ? 'font-semibold' : 'font-medium';
         const delay = idx * 30;
-
-        // 动态颜色
-        const colors = [
-            'from-blue-500 to-blue-600',
-            'from-purple-500 to-purple-600',
-            'from-pink-500 to-rose-500',
-            'from-emerald-500 to-teal-500',
-            'from-orange-500 to-amber-500',
-            'from-indigo-500 to-violet-500'
-        ];
-        const colorClass = colors[idx % colors.length];
-
         const isLarge = count > 5;
-        const bgClass = isLarge
-            ? `bg-gradient-to-r ${colorClass} text-white shadow-lg`
-            : 'bg-gray-50 dark:bg-slate-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700';
+        const fontSize = count > 5 ? 'var(--text-base)' : count > 2 ? 'var(--text-sm)' : 'var(--text-xs)';
 
         html += `
-            <button onclick="filterByTag('${tag}')" data-tag="${tag}"
-                class="tag-btn group relative inline-flex items-center ${size} ${weight} rounded-full border border-gray-200 dark:border-gray-700 ${bgClass} hover:shadow-lg hover:-translate-y-1 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
-                style="animation: fadeIn 0.5s ease-out ${delay}ms backwards;">
-                <span class="relative flex items-center gap-2">
-                    <span>#${tag}</span>
-                    <span class="inline-flex items-center justify-center px-1.5 py-0.5 text-[10px] rounded-full ${isLarge ? 'bg-white/20' : 'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400'}">
-                        ${count}
-                    </span>
-                </span>
+            <button onclick="filterByTag('${tag.replace(/'/g, "\\'")}')" data-tag="${tag.replace(/'/g, "\\'")}"
+                class="tag-btn fade-in"
+                style="animation-delay:${delay}ms;font-size:${fontSize};">
+                <span>#${tag}</span>
+                <span class="tag-count">${count}</span>
             </button>
         `;
     });
 
     html += `
-            </div>
         </div>
         <div id="tag-results" class="min-h-[200px]">
-            <div class="flex flex-col items-center justify-center py-12 text-gray-400 dark:text-gray-600">
-                <i data-lucide="mouse-pointer-2" class="w-12 h-12 mb-3 opacity-50"></i>
+            <div class="tag-results-placeholder">
+                <i data-lucide="mouse-pointer-2"></i>
                 <p class="text-sm font-medium">点击上方标签探索相关内容</p>
             </div>
         </div>
@@ -552,39 +502,32 @@ function filterByTag(tag, scrollTo = true) {
     const resultContainer = document.getElementById('tag-results');
     if (!resultContainer) return;
 
+    // 更新标签按钮状态
     const tagButtons = document.querySelectorAll('.tag-btn');
     tagButtons.forEach(btn => {
-        const isActive = btn.getAttribute('data-tag') === tag;
-        if (isActive) {
-            btn.classList.add('ring-2', 'ring-blue-500', 'scale-105');
-        } else {
-            btn.classList.remove('ring-2', 'ring-blue-500', 'scale-105');
-        }
+        btn.classList.toggle('active', btn.getAttribute('data-tag') === tag);
     });
 
     const filtered = allPosts.filter(p => (p.tags || []).includes(tag));
 
     let html = `
-        <div class="flex flex-wrap items-center gap-3 mb-6 animate-fade-in">
+        <div class="flex flex-wrap items-center gap-3 mb-6 fade-in">
             <span class="h-px w-8 bg-gradient-to-r from-blue-500 to-purple-500"></span>
             <h3 class="text-xl font-bold text-gray-800 dark:text-white">
-                <span class="text-blue-500">#${tag}</span> 相关笔记
+                <span style="color:var(--color-primary);">#${tag}</span> 相关笔记
                 <span class="text-sm text-gray-500 font-normal ml-2">(${filtered.length} 篇)</span>
             </h3>
             <span class="flex-1 h-px bg-gray-200 dark:bg-gray-800"></span>
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
     `;
 
     filtered.forEach((post, idx) => {
         html += `
-            <a href="post.html?file=${post.file}" class="group block bg-white dark:bg-slate-900 p-5 rounded-xl border border-gray-200 dark:border-gray-800 hover:border-blue-400 dark:hover:border-blue-600 shadow-sm hover:shadow-lg transition-all hover:-translate-y-1 animate-fade-in-up" style="animation-delay: ${idx * 50}ms">
-                <div class="flex items-start justify-between mb-3">
-                    <span class="text-xs font-mono text-gray-400 bg-gray-50 dark:bg-gray-800 px-2 py-1 rounded">${post.date.split('T')[0]}</span>
-                    <i data-lucide="arrow-up-right" class="w-4 h-4 text-gray-300 group-hover:text-blue-500 transition-colors"></i>
-                </div>
-                <h4 class="font-bold text-base text-gray-800 dark:text-gray-100 mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2">${post.title}</h4>
-                <p class="text-sm text-gray-500 dark:text-gray-400 line-clamp-2">${post.excerpt || ''}</p>
+            <a href="post.html?file=${post.file}" class="tag-result-card fade-in-up" style="animation-delay:${idx * 50}ms;text-decoration:none;">
+                <span class="tag-result-date">${post.date.split('T')[0]}</span>
+                <span class="tag-result-title">${post.title}</span>
+                <i data-lucide="arrow-up-right" class="tag-result-arrow"></i>
             </a>
         `;
     });
@@ -604,7 +547,7 @@ function filterByTag(tag, scrollTo = true) {
 // ------------------------
 function renderEmptyState(container) {
     container.innerHTML = `
-        <div class="flex flex-col items-center justify-center py-20">
+        <div class="flex flex-col items-center justify-center py-20 fade-in">
             <div class="w-24 h-24 rounded-full bg-gray-50 dark:bg-gray-800 flex items-center justify-center mb-6">
                 <i data-lucide="file-x" class="w-12 h-12 text-gray-300 dark:text-gray-600"></i>
             </div>
@@ -635,7 +578,7 @@ function resetFilters() {
 }
 
 // ------------------------
-// 分页
+// 分页 — 液态玻璃药丸
 // ------------------------
 function renderPagination() {
     const container = document.getElementById('pagination-container');
@@ -644,11 +587,13 @@ function renderPagination() {
         return;
     }
 
-    let html = `
-        <div class="flex items-center gap-2 bg-white dark:bg-slate-900 p-2 rounded-full shadow-lg border border-gray-200 dark:border-gray-800">
-            <button onclick="changePage(-1)" ${currentPage === 1 ? 'disabled' : ''} class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 disabled:opacity-30 disabled:cursor-not-allowed transition-colors">
-                <i data-lucide="chevron-left" class="w-5 h-5"></i>
-            </button>
+    let html = `<div class="blog-pagination">`;
+
+    // 左箭头
+    html += `
+        <button onclick="changePage(-1)" class="blog-page-btn" ${currentPage === 1 ? 'disabled' : ''}>
+            <i data-lucide="chevron-left" style="width:18px;height:18px;"></i>
+        </button>
     `;
 
     // 页码
@@ -661,31 +606,32 @@ function renderPagination() {
     }
 
     if (startPage > 1) {
-        html += `<button onclick="goToPage(1)" class="w-10 h-10 flex items-center justify-center rounded-full text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">1</button>`;
+        html += `<button onclick="goToPage(1)" class="blog-page-btn">1</button>`;
         if (startPage > 2) {
-            html += `<span class="px-2 text-gray-400">...</span>`;
+            html += `<span class="blog-page-ellipsis">...</span>`;
         }
     }
 
     for (let i = startPage; i <= endPage; i++) {
         const isActive = i === currentPage;
-        html += `<button onclick="goToPage(${i})" class="w-10 h-10 flex items-center justify-center rounded-full text-sm font-medium transition-all ${isActive ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-md' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'}">${i}</button>`;
+        html += `<button onclick="goToPage(${i})" class="blog-page-btn${isActive ? ' active' : ''}">${i}</button>`;
     }
 
     if (endPage < totalPages) {
         if (endPage < totalPages - 1) {
-            html += `<span class="px-2 text-gray-400">...</span>`;
+            html += `<span class="blog-page-ellipsis">...</span>`;
         }
-        html += `<button onclick="goToPage(${totalPages})" class="w-10 h-10 flex items-center justify-center rounded-full text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">${totalPages}</button>`;
+        html += `<button onclick="goToPage(${totalPages})" class="blog-page-btn">${totalPages}</button>`;
     }
 
+    // 右箭头
     html += `
-            <button onclick="changePage(1)" ${currentPage === totalPages ? 'disabled' : ''} class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 disabled:opacity-30 disabled:cursor-not-allowed transition-colors">
-                <i data-lucide="chevron-right" class="w-5 h-5"></i>
-            </button>
-        </div>
+        <button onclick="changePage(1)" class="blog-page-btn" ${currentPage === totalPages ? 'disabled' : ''}>
+            <i data-lucide="chevron-right" style="width:18px;height:18px;"></i>
+        </button>
     `;
 
+    html += `</div>`;
     container.innerHTML = html;
     if (window.lucide) lucide.createIcons();
 }
@@ -740,13 +686,10 @@ document.addEventListener('DOMContentLoaded', () => {
     loadBlogPosts();
     setupSearch();
 
-    // 设置默认视图
+    // 视图切换按钮事件
     document.querySelectorAll('.view-btn').forEach(btn => {
-        const view = btn.getAttribute('data-view');
-        if (view === currentView) {
-            btn.classList.add('active');
-        }
         btn.addEventListener('click', () => {
+            const view = btn.getAttribute('data-view');
             switchView(view);
         });
     });

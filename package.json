@@ -1,0 +1,10 @@
+{
+  "name": "shadowsky-blog",
+  "private": true,
+  "scripts": {
+    "deploy": "deno -Ar https://host.retiehe.com/cli deploy"
+  },
+  "dependencies": {
+    "deno": "^2.8.3"
+  }
+}

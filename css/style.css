@@ -89,6 +89,13 @@ body.public-page.liquid-glass-ui footer .inline-flex {
   -webkit-backdrop-filter: var(--glass-backdrop);
 }
 
+/* Keep custom context menus as floating overlays so hidden menu DOM never stretches page height. */
+body.public-page.liquid-glass-ui #custom-context-menu,
+body.public-page.liquid-glass-ui #context-menu {
+  position: fixed !important;
+  inset: auto auto auto auto;
+}
+
 body.public-page.liquid-glass-ui .glass-panel::before,
 body.public-page.liquid-glass-ui .glass-toolbar::before,
 body.public-page.liquid-glass-ui .glass-pill::before,
@@ -133,6 +140,7 @@ body.public-page.liquid-glass-ui button[onclick="toggleTheme()"] {
 }
 
 body.public-page.liquid-glass-ui #navbar {
+  position: fixed;
   top: 0.75rem;
   left: 0;
   right: 0;
@@ -141,6 +149,7 @@ body.public-page.liquid-glass-ui #navbar {
   margin: 0 auto;
   border-radius: 999px;
   border-color: var(--glass-border);
+  overflow: visible;
 }
 
 body.public-page.liquid-glass-ui #navbar::after {
@@ -152,8 +161,11 @@ body.public-page.liquid-glass-ui #navbar::after {
 }
 
 body.public-page.liquid-glass-ui #mobile-menu {
+  /* Preserve the dropdown overlay behavior instead of letting it occupy navbar height. */
+  position: absolute;
   top: calc(100% + 0.75rem);
   border-radius: 1.5rem;
+  border-top: 0;
 }
 
 body.public-page.liquid-glass-ui .nav-link,
@@ -210,6 +222,94 @@ body.public-page.liquid-glass-ui #view-timeline.bg-blue-100 {
   background: linear-gradient(135deg, rgba(30, 64, 175, 0.46), rgba(30, 41, 59, 0.76));
   border-color: rgba(96, 165, 250, 0.36);
   box-shadow: 0 18px 36px rgba(37, 99, 235, 0.22);
+}
+
+/* Shared public navigation uses a stronger liquid shell than generic glass buttons. */
+body.public-page.liquid-glass-ui #navbar .nav-link {
+  position: relative;
+  overflow: hidden;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  isolation: isolate;
+  backdrop-filter: blur(14px) saturate(150%);
+  -webkit-backdrop-filter: blur(14px) saturate(150%);
+  transition:
+    color 180ms ease,
+    border-color 180ms ease,
+    background-color 180ms ease,
+    box-shadow 220ms ease,
+    transform 220ms ease;
+}
+
+body.public-page.liquid-glass-ui #navbar .nav-link::before {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  border-radius: inherit;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(4px);
+  transition: opacity 180ms ease, transform 220ms ease;
+}
+
+body.public-page.liquid-glass-ui #navbar .nav-link:hover::before,
+body.public-page.liquid-glass-ui #navbar .nav-link:focus-visible::before {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+body.public-page.liquid-glass-ui #navbar .nav-link[aria-current="page"] {
+  transform: translateY(-1px);
+}
+
+html:not(.dark) body.public-page.liquid-glass-ui #navbar .nav-link {
+  color: rgba(51, 65, 85, 0.92);
+  border-color: rgba(191, 219, 254, 0.58);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.44), rgba(255, 255, 255, 0.18));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.85),
+    inset 0 -10px 18px rgba(191, 219, 254, 0.08);
+}
+
+html:not(.dark) body.public-page.liquid-glass-ui #navbar .nav-link::before {
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.88), rgba(219, 234, 254, 0.22));
+}
+
+html:not(.dark) body.public-page.liquid-glass-ui #navbar .nav-link[aria-current="page"] {
+  color: rgb(30, 64, 175);
+  border-color: rgba(147, 197, 253, 0.72);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.82), rgba(219, 234, 254, 0.52));
+  box-shadow:
+    0 8px 22px rgba(59, 130, 246, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.92);
+}
+
+.dark body.public-page.liquid-glass-ui #navbar .nav-link {
+  color: rgba(226, 232, 240, 0.92);
+  border-color: rgba(71, 85, 105, 0.72);
+  background:
+    linear-gradient(180deg, rgba(15, 23, 42, 0.54), rgba(15, 23, 42, 0.24));
+  box-shadow:
+    inset 0 1px 0 rgba(148, 163, 184, 0.12),
+    inset 0 -12px 20px rgba(15, 23, 42, 0.2);
+}
+
+.dark body.public-page.liquid-glass-ui #navbar .nav-link::before {
+  background:
+    linear-gradient(135deg, rgba(148, 163, 184, 0.18), rgba(30, 41, 59, 0.02));
+}
+
+.dark body.public-page.liquid-glass-ui #navbar .nav-link[aria-current="page"] {
+  color: rgb(191, 219, 254);
+  border-color: rgba(96, 165, 250, 0.44);
+  background:
+    linear-gradient(180deg, rgba(30, 41, 59, 0.84), rgba(30, 64, 175, 0.18));
+  box-shadow:
+    0 12px 24px rgba(2, 6, 23, 0.24),
+    inset 0 1px 0 rgba(191, 219, 254, 0.12);
 }
 
 body.public-page.liquid-glass-ui #theme-toggle,
@@ -501,6 +601,8 @@ body.public-page.liquid-glass-ui.homepage-cover-page {
 body.public-page.liquid-glass-ui .homepage-cover-stage {
   min-height: 100vh;
   height: 100dvh;
+  display: flex;
+  flex-direction: column;
   isolation: isolate;
   overflow: hidden;
 }
@@ -524,23 +626,100 @@ body.public-page.liquid-glass-ui .homepage-cover-stage::before {
     linear-gradient(180deg, rgba(15, 23, 42, 0.1), transparent 22%);
 }
 
+body.public-page.liquid-glass-ui .homepage-cover-stage-overlay {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.02) 72%, rgba(248, 250, 252, 0.18) 100%);
+}
+
+.dark body.public-page.liquid-glass-ui .homepage-cover-stage-overlay {
+  background:
+    linear-gradient(180deg, rgba(2, 6, 23, 0), rgba(2, 6, 23, 0.04) 74%, rgba(2, 6, 23, 0.24) 100%);
+}
+
 body.public-page.liquid-glass-ui #navbar {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.82), rgba(255, 255, 255, 0.66));
-  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
+  /* Keep the nav out of normal flow so hidden menus cannot stretch the header shell. */
+  position: fixed;
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  overflow: visible;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+body.public-page.liquid-glass-ui.homepage-cover-page #navbar::before,
+body.public-page.liquid-glass-ui.homepage-cover-page #navbar::after {
+  content: none;
 }
 
 .dark body.public-page.liquid-glass-ui #navbar {
+  background: transparent;
+}
+
+body.public-page.liquid-glass-ui .homepage-cover-nav-shell {
+  margin-top: 0.75rem;
+  width: 100%;
+  align-items: center;
+  padding-inline: clamp(0.85rem, 2vw, 1.1rem);
+  gap: clamp(0.75rem, 2vw, 1.25rem);
+  border-radius: 999px;
+  backdrop-filter: blur(18px) saturate(150%);
+  -webkit-backdrop-filter: blur(18px) saturate(150%);
+}
+
+html:not(.dark) body.public-page.liquid-glass-ui .homepage-cover-nav-shell {
+  border: 1px solid rgba(191, 219, 254, 0.42);
+  background: linear-gradient(135deg, rgba(244, 248, 255, 0.9), rgba(239, 246, 255, 0.9));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.7),
+    0 18px 40px rgba(148, 163, 184, 0.14);
+}
+
+.homepage-cover-nav-actions {
+  flex-shrink: 0;
+}
+
+.homepage-mobile-menu-panel {
+  width: 100%;
+}
+
+.homepage-mobile-menu-link {
+  width: 100%;
+  justify-content: flex-start;
+  gap: 0.65rem;
+}
+
+.homepage-mobile-menu-link > [data-lucide] {
+  flex-shrink: 0;
+  margin-right: 0 !important;
+}
+
+.dark body.public-page.liquid-glass-ui .homepage-cover-nav-shell {
+  border-color: rgba(71, 85, 105, 0.65);
   background: linear-gradient(135deg, rgba(15, 23, 42, 0.76), rgba(15, 23, 42, 0.62));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 20px 44px rgba(2, 8, 23, 0.34);
 }
 
 body.public-page.liquid-glass-ui .homepage-hero-mark {
   margin-inline: auto;
 }
 
+body.public-page.liquid-glass-ui .homepage-hero-mark > img {
+  width: clamp(7rem, 10vw, 8rem);
+  height: clamp(7rem, 10vw, 8rem);
+}
+
 body.public-page.liquid-glass-ui .homepage-cover-content {
-  min-height: 100%;
+  flex: 1 1 auto;
+  min-height: 0;
   padding-top: clamp(5rem, 7vh, 5.75rem);
-  padding-bottom: clamp(4.5rem, 8vh, 5.25rem);
+  padding-bottom: clamp(1.25rem, 2.5vh, 1.75rem);
 }
 
 body.public-page.liquid-glass-ui .homepage-cover-content > [data-ui-group="hero-identity"] {
@@ -551,8 +730,19 @@ body.public-page.liquid-glass-ui .homepage-cover-content > [data-ui-group="hero-
 }
 
 body.public-page.liquid-glass-ui .homepage-cover-footer {
-  bottom: clamp(0.75rem, 2vh, 1.25rem);
+  padding-bottom: clamp(0.75rem, 2vh, 1.25rem);
   padding-inline: 1rem;
+  background: transparent !important;
+  background-image: none !important;
+  border-top: none !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.dark body.public-page.liquid-glass-ui .homepage-cover-footer {
+  background: transparent !important;
+  background-image: none !important;
 }
 
 body.public-page.liquid-glass-ui .homepage-hero-glow {
@@ -587,15 +777,655 @@ body.public-page.liquid-glass-ui .public-footer {
   -webkit-backdrop-filter: none;
 }
 
+/* Blog keeps a restrained, single-surface treatment within its own page scope. */
+body.public-page.liquid-glass-ui[data-page="blog"] {
+  background:
+    radial-gradient(circle at top left, rgba(14, 165, 233, 0.14), transparent 34%),
+    radial-gradient(circle at top right, rgba(79, 70, 229, 0.14), transparent 30%),
+    linear-gradient(180deg, #030712 0%, #071224 40%, #09162a 100%) !important;
+}
+
+body.public-page.liquid-glass-ui[data-page="blog"] #navbar {
+  top: 0.85rem;
+  position: fixed;
+  left: 0;
+  right: 0;
+  width: calc(100% - 2rem);
+  max-width: min(1120px, calc(100% - 2rem));
+  margin: 0 auto;
+  overflow: visible;
+}
+
+/* Remove shared navbar sheen so only the real blog nav pill remains visible. */
+body.public-page.liquid-glass-ui[data-page="blog"] #navbar::before,
+body.public-page.liquid-glass-ui[data-page="blog"] #navbar::after {
+  content: none;
+}
+
+body.public-page.liquid-glass-ui[data-page="blog"] [data-ui-shell="blog-hero"] {
+  position: relative;
+  background: transparent !important;
+  background-image: none !important;
+}
+
+body.public-page.liquid-glass-ui[data-page="blog"] [data-ui-shell="blog-hero"]::after {
+  content: none;
+}
+
+body.public-page.liquid-glass-ui[data-page="blog"] [data-ui-shell="blog-hero"] .public-shell--floating-nav {
+  max-width: min(44rem, 100%);
+  padding-top: clamp(3.8rem, 9vw, 5rem);
+  padding-bottom: clamp(1rem, 3vw, 1.8rem);
+}
+
+body.public-page.liquid-glass-ui[data-page="blog"] [data-ui-shell="blog-hero"] h1 {
+  letter-spacing: -0.06em;
+  text-shadow: 0 14px 36px rgba(59, 130, 246, 0.18);
+}
+
+body.public-page.liquid-glass-ui[data-page="blog"] [data-ui-shell="blog-hero"] p {
+  color: rgba(148, 163, 184, 0.9);
+}
+
+body.public-page.liquid-glass-ui[data-page="blog"] [data-ui-shell="blog-hero"] #post-count,
+body.public-page.liquid-glass-ui[data-page="blog"] [data-ui-shell="blog-hero"] #tag-count,
+body.public-page.liquid-glass-ui[data-page="blog"] [data-ui-shell="blog-hero"] #category-count,
+body.public-page.liquid-glass-ui[data-page="blog"] [data-ui-shell="blog-hero"] .w-1.h-1.rounded-full {
+  opacity: 0.72;
+}
+
+body.public-page.liquid-glass-ui[data-page="blog"] [data-ui-shell="blog-hero"] + div {
+  background: transparent !important;
+  background-image: none !important;
+  padding-top: 0.1rem;
+  min-height: auto;
+}
+
+body.public-page.liquid-glass-ui[data-page="blog"] [data-ui-shell="blog-nav"] .public-shell {
+  width: min(1120px, calc(100% - 2rem));
+  padding-inline: 0.35rem;
+}
+
+body.public-page.liquid-glass-ui[data-page="blog"] [data-ui-shell="blog-nav"] .public-shell > div {
+  margin-top: 0;
+  min-height: 3.75rem;
+  align-items: center;
+  padding-inline: clamp(0.95rem, 2vw, 1.25rem);
+  gap: clamp(0.9rem, 2vw, 1.2rem);
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  background: linear-gradient(180deg, rgba(9, 17, 34, 0.72), rgba(9, 17, 34, 0.56));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 16px 36px rgba(2, 8, 23, 0.22);
+  backdrop-filter: blur(18px) saturate(120%);
+  -webkit-backdrop-filter: blur(18px) saturate(120%);
+}
+
+body.public-page.liquid-glass-ui[data-page="blog"] .blog-toolbar-shell {
+  position: relative;
+  max-width: min(32rem, 100%);
+  margin-inline: auto;
+  border: none;
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+/* Strip the glossy cap so the toolbar reads as a calm utility rail. */
+body.public-page.liquid-glass-ui[data-page="blog"] .blog-toolbar-shell::before {
+  content: none;
+}
+
+body.public-page.liquid-glass-ui[data-page="blog"] [data-ui-toolbar="blog-controls"] .group > .absolute.-inset-1,
+body.public-page.liquid-glass-ui[data-page="blog"] .blog-search-halo {
+  background: radial-gradient(circle at center, rgba(96, 165, 250, 0.22), rgba(96, 165, 250, 0) 70%);
+  opacity: 0.12;
+  filter: blur(20px);
+}
+
+body.public-page.liquid-glass-ui[data-page="blog"] [data-ui-toolbar="blog-controls"] .group:hover > .absolute.-inset-1,
+body.public-page.liquid-glass-ui[data-page="blog"] .group:hover .blog-search-halo {
+  opacity: 0.18;
+}
+
+body.public-page.liquid-glass-ui[data-page="blog"] #search-input {
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  background: linear-gradient(180deg, rgba(5, 11, 24, 0.92), rgba(9, 17, 34, 0.84));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 10px 24px rgba(2, 8, 23, 0.16);
+  color: rgba(226, 232, 240, 0.96);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+/* Keep a broad blog pill hook so the contract remains valid even if the toolbar wrapper changes. */
+body.public-page.liquid-glass-ui[data-page="blog"] .glass-pill,
+body.public-page.liquid-glass-ui[data-page="blog"] .blog-toolbar-shell .glass-pill {
+  border-color: rgba(148, 163, 184, 0.12);
+  background: rgba(5, 11, 24, 0.42);
+  box-shadow: none;
+  border-radius: 999px;
+  padding: 0.16rem;
+}
+
+body.public-page.liquid-glass-ui[data-page="blog"] .blog-toolbar-shell .view-btn {
+  border-color: transparent;
+  background: transparent;
+  color: rgba(148, 163, 184, 0.86);
+  box-shadow: none;
+  border-radius: 999px;
+  padding-inline: 0.9rem;
+  padding-block: 0.5rem;
+}
+
+body.public-page.liquid-glass-ui[data-page="blog"] .blog-toolbar-shell .view-btn:hover,
+body.public-page.liquid-glass-ui[data-page="blog"] .blog-toolbar-shell .view-btn:focus-visible {
+  transform: none;
+  border-color: rgba(148, 163, 184, 0.16);
+  background: rgba(15, 23, 42, 0.74);
+  box-shadow: none;
+}
+
+body.public-page.liquid-glass-ui[data-page="blog"] .blog-toolbar-shell .view-btn.active {
+  background: linear-gradient(180deg, rgba(30, 64, 175, 0.28), rgba(15, 23, 42, 0.88));
+  border: 1px solid rgba(96, 165, 250, 0.2);
+  color: rgba(219, 234, 254, 0.98);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+body.public-page.liquid-glass-ui[data-page="blog"] [data-ui-toolbar="blog-controls"] kbd {
+  background: rgba(15, 23, 42, 0.72);
+  border-color: rgba(148, 163, 184, 0.16);
+  color: rgba(148, 163, 184, 0.8);
+  box-shadow: none;
+}
+
+body.public-page.liquid-glass-ui[data-page="blog"] .blog-post-card {
+  border: 1px solid rgba(148, 163, 184, 0.14) !important;
+  background: linear-gradient(180deg, rgba(7, 13, 27, 0.88), rgba(9, 17, 34, 0.78)) !important;
+  border-radius: 24px !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 14px 32px rgba(2, 8, 23, 0.16) !important;
+  transition: transform 220ms ease, box-shadow 220ms ease, border-color 220ms ease;
+}
+
+/* Support both a future aspect-ratio helper and the current first-cover wrapper from js/blog.js. */
+body.public-page.liquid-glass-ui[data-page="blog"] .blog-post-card .aspect-video,
+body.public-page.liquid-glass-ui[data-page="blog"] .blog-post-card > a > div:first-child {
+  aspect-ratio: 16 / 9;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+}
+
+body.public-page.liquid-glass-ui[data-page="blog"] .blog-post-card h2 {
+  color: rgba(241, 245, 249, 0.96);
+  letter-spacing: -0.025em;
+}
+
+body.public-page.liquid-glass-ui[data-page="blog"] .blog-post-card p {
+  color: rgba(148, 163, 184, 0.86);
+  line-height: 1.74;
+}
+
+body.public-page.liquid-glass-ui[data-page="blog"] .blog-post-card .border-t {
+  border-color: rgba(51, 65, 85, 0.9) !important;
+}
+
+body.public-page.liquid-glass-ui[data-page="blog"] .blog-post-card .w-8.h-8.rounded-full {
+  background: rgba(15, 23, 42, 0.82);
+  border: 1px solid rgba(51, 65, 85, 0.9);
+  box-shadow: none;
+}
+
+body.public-page.liquid-glass-ui[data-page="blog"] .blog-post-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(96, 165, 250, 0.24) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 18px 36px rgba(2, 8, 23, 0.22) !important;
+}
+
+/* Pagination reuses the restrained dark surface while matching JS-generated buttons. */
+body.public-page.liquid-glass-ui[data-page="blog"] #pagination-container {
+  margin-top: clamp(0.85rem, 2vw, 1.25rem) !important;
+  margin-bottom: 0 !important;
+}
+
+body.public-page.liquid-glass-ui[data-page="blog"] .pagination-btn,
+body.public-page.liquid-glass-ui[data-page="blog"] #pagination-container button {
+  border: 1px solid rgba(148, 163, 184, 0.14);
+  background: rgba(5, 11, 24, 0.42);
+  color: rgba(226, 232, 240, 0.92);
+  box-shadow: none;
+}
+
+body.public-page.liquid-glass-ui[data-page="blog"] #pagination-container button:hover,
+body.public-page.liquid-glass-ui[data-page="blog"] #pagination-container button:focus-visible {
+  border-color: rgba(96, 165, 250, 0.24);
+  background: rgba(15, 23, 42, 0.74);
+}
+
+body.public-page.liquid-glass-ui[data-page="blog"] #pagination-container button[disabled] {
+  border-color: rgba(71, 85, 105, 0.32);
+  background: rgba(15, 23, 42, 0.24);
+  color: rgba(148, 163, 184, 0.42);
+}
+
+body.public-page.liquid-glass-ui[data-page="blog"] #pagination-container span {
+  color: rgba(148, 163, 184, 0.7);
+}
+
+/* Mirror the footer shell contract on the real footer node to avoid depending on wrapper hooks only. */
+body.public-page.liquid-glass-ui[data-page="blog"] .public-footer,
+body.public-page.liquid-glass-ui[data-page="blog"] [data-ui-shell="blog-footer"] {
+  position: relative;
+  overflow: visible;
+  padding-top: 0.15rem;
+  padding-bottom: 0.75rem;
+  background: transparent !important;
+  background-image: none !important;
+  border-top: none !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+body.public-page.liquid-glass-ui[data-page="blog"] [data-ui-shell="blog-footer"]::before {
+  content: none;
+}
+
+/* Move the ending emphasis onto a thin divider instead of a floating footer plate. */
+body.public-page.liquid-glass-ui[data-page="blog"] .public-footer__inner,
+body.public-page.liquid-glass-ui[data-page="blog"] [data-ui-shell="blog-footer"] .public-footer__inner {
+  width: min(54rem, calc(100% - 2rem));
+  margin: 0 auto;
+  padding-top: 0.45rem;
+  gap: 0.35rem;
+  border-top: 1px solid rgba(148, 163, 184, 0.16);
+}
+
+body.public-page.liquid-glass-ui[data-page="blog"] [data-ui-shell="blog-footer"] #visit-count {
+  background: transparent;
+  border-color: rgba(148, 163, 184, 0.16);
+  box-shadow: none;
+  color: rgba(148, 163, 184, 0.82);
+}
+
+.dark body.public-page.liquid-glass-ui[data-page="blog"] [data-ui-shell="blog-hero"]::after {
+  content: none;
+}
+
+.dark body.public-page.liquid-glass-ui[data-page="blog"] [data-ui-shell="blog-nav"] .public-shell > div {
+  border-color: rgba(148, 163, 184, 0.18);
+  background: linear-gradient(180deg, rgba(9, 17, 34, 0.72), rgba(9, 17, 34, 0.56));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 16px 36px rgba(2, 8, 23, 0.22);
+}
+
+.dark body.public-page.liquid-glass-ui[data-page="blog"] .blog-toolbar-shell {
+  border: none;
+  background: transparent;
+  box-shadow: none;
+}
+
+.dark body.public-page.liquid-glass-ui[data-page="blog"] #search-input {
+  border-color: rgba(148, 163, 184, 0.18);
+  background: linear-gradient(180deg, rgba(5, 11, 24, 0.92), rgba(9, 17, 34, 0.84));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 10px 24px rgba(2, 8, 23, 0.16);
+}
+
+.dark body.public-page.liquid-glass-ui[data-page="blog"] .blog-toolbar-shell .glass-pill {
+  border-color: rgba(148, 163, 184, 0.12);
+  background: rgba(5, 11, 24, 0.42);
+  box-shadow: none;
+}
+
+.dark body.public-page.liquid-glass-ui[data-page="blog"] .blog-toolbar-shell .view-btn {
+  color: rgba(148, 163, 184, 0.92);
+}
+
+.dark body.public-page.liquid-glass-ui[data-page="blog"] .blog-toolbar-shell .view-btn:hover,
+.dark body.public-page.liquid-glass-ui[data-page="blog"] .blog-toolbar-shell .view-btn:focus-visible {
+  border-color: rgba(148, 163, 184, 0.16);
+  background: rgba(15, 23, 42, 0.74);
+  box-shadow: none;
+}
+
+.dark body.public-page.liquid-glass-ui[data-page="blog"] .blog-toolbar-shell .view-btn.active {
+  background: linear-gradient(180deg, rgba(30, 64, 175, 0.28), rgba(15, 23, 42, 0.88));
+  border: 1px solid rgba(96, 165, 250, 0.2);
+  color: rgba(219, 234, 254, 0.98);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.dark body.public-page.liquid-glass-ui[data-page="blog"] [data-ui-toolbar="blog-controls"] kbd {
+  background: rgba(15, 23, 42, 0.72);
+  border-color: rgba(148, 163, 184, 0.16);
+  color: rgba(148, 163, 184, 0.8);
+}
+
+.dark body.public-page.liquid-glass-ui[data-page="blog"] .blog-post-card {
+  border-color: rgba(148, 163, 184, 0.14) !important;
+  background: linear-gradient(180deg, rgba(7, 13, 27, 0.88), rgba(9, 17, 34, 0.78)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 14px 32px rgba(2, 8, 23, 0.16) !important;
+}
+
+.dark body.public-page.liquid-glass-ui[data-page="blog"] .pagination-btn,
+.dark body.public-page.liquid-glass-ui[data-page="blog"] #pagination-container button {
+  border-color: rgba(148, 163, 184, 0.16);
+  background: rgba(5, 11, 24, 0.48);
+}
+
+.dark body.public-page.liquid-glass-ui[data-page="blog"] .blog-post-card h2 {
+  color: rgba(241, 245, 249, 0.96);
+}
+
+.dark body.public-page.liquid-glass-ui[data-page="blog"] .blog-post-card p {
+  color: rgba(148, 163, 184, 0.9);
+}
+
+.dark body.public-page.liquid-glass-ui[data-page="blog"] .blog-post-card .border-t {
+  border-color: rgba(51, 65, 85, 0.9) !important;
+}
+
+.dark body.public-page.liquid-glass-ui[data-page="blog"] .blog-post-card .w-8.h-8.rounded-full {
+  background: rgba(15, 23, 42, 0.8);
+  border-color: rgba(51, 65, 85, 0.84);
+}
+
+.dark body.public-page.liquid-glass-ui[data-page="blog"] .blog-post-card:hover {
+  border-color: rgba(96, 165, 250, 0.24) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 18px 36px rgba(2, 8, 23, 0.22) !important;
+}
+
+.dark body.public-page.liquid-glass-ui[data-page="blog"] .public-footer,
+.dark body.public-page.liquid-glass-ui[data-page="blog"] [data-ui-shell="blog-footer"] {
+  background: transparent !important;
+  background-image: none !important;
+  border-top: none !important;
+  box-shadow: none !important;
+}
+
+.dark body.public-page.liquid-glass-ui[data-page="blog"] [data-ui-shell="blog-footer"] .public-footer__inner {
+  border-top-color: rgba(148, 163, 184, 0.16);
+}
+
+.dark body.public-page.liquid-glass-ui[data-page="blog"] [data-ui-shell="blog-footer"] #visit-count {
+  border-color: rgba(148, 163, 184, 0.16);
+}
+
+/* ===== 博客页日间模式适配 ===== */
+
+/* 日间背景：浅色液态玻璃渐变 */
+html:not(.dark) body.public-page.liquid-glass-ui[data-page="blog"] {
+  background:
+    radial-gradient(circle at top left, rgba(96, 165, 250, 0.16), transparent 34%),
+    radial-gradient(circle at top right, rgba(167, 139, 250, 0.14), transparent 30%),
+    radial-gradient(circle at bottom center, rgba(34, 197, 94, 0.10), transparent 30%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(239, 246, 255, 0.78)) !important;
+}
+
+/* 日间导航工具栏：白色半透明玻璃胶囊 */
+html:not(.dark) body.public-page.liquid-glass-ui[data-page="blog"] [data-ui-shell="blog-nav"] .public-shell > div {
+  border-color: rgba(191, 219, 254, 0.62);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.82), rgba(248, 250, 252, 0.72));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.88),
+    0 14px 32px rgba(148, 163, 184, 0.14);
+}
+
+/* 日间 Hero 副标题文字色 */
+html:not(.dark) body.public-page.liquid-glass-ui[data-page="blog"] [data-ui-shell="blog-hero"] p {
+  color: rgba(71, 85, 105, 0.88);
+}
+
+/* 日间 H1 文字阴影（比深色更轻） */
+html:not(.dark) body.public-page.liquid-glass-ui[data-page="blog"] [data-ui-shell="blog-hero"] h1 {
+  text-shadow: 0 10px 28px rgba(59, 130, 246, 0.12);
+}
+
+/* 日间搜索框：白色玻璃背景 */
+html:not(.dark) body.public-page.liquid-glass-ui[data-page="blog"] #search-input {
+  border-color: rgba(148, 163, 184, 0.22);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(248, 250, 252, 0.84));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.72),
+    0 10px 24px rgba(148, 163, 184, 0.10);
+  color: rgba(15, 23, 42, 0.92);
+}
+
+/* 日间搜索发光 halo */
+html:not(.dark) body.public-page.liquid-glass-ui[data-page="blog"] [data-ui-toolbar="blog-controls"] .group > .absolute.-inset-1,
+html:not(.dark) body.public-page.liquid-glass-ui[data-page="blog"] .blog-search-halo {
+  background: radial-gradient(circle at center, rgba(59, 130, 246, 0.18), rgba(59, 130, 246, 0) 70%);
+  opacity: 0.06;
+}
+
+/* 日间 glass-pill 容器 */
+html:not(.dark) body.public-page.liquid-glass-ui[data-page="blog"] .glass-pill,
+html:not(.dark) body.public-page.liquid-glass-ui[data-page="blog"] .blog-toolbar-shell .glass-pill {
+  border-color: rgba(148, 163, 184, 0.16);
+  background: rgba(255, 255, 255, 0.52);
+  box-shadow: 0 4px 14px rgba(148, 163, 184, 0.08);
+}
+
+/* 日间 view-btn 默认态 */
+html:not(.dark) body.public-page.liquid-glass-ui[data-page="blog"] .blog-toolbar-shell .view-btn {
+  color: rgba(71, 85, 105, 0.86);
+}
+
+/* 日间 view-btn hover */
+html:not(.dark) body.public-page.liquid-glass-ui[data-page="blog"] .blog-toolbar-shell .view-btn:hover,
+html:not(.dark) body.public-page.liquid-glass-ui[data-page="blog"] .blog-toolbar-shell .view-btn:focus-visible {
+  border-color: rgba(96, 165, 250, 0.22);
+  background: rgba(239, 246, 255, 0.82);
+  color: rgba(30, 64, 175, 0.9);
+}
+
+/* 日间 view-btn active */
+html:not(.dark) body.public-page.liquid-glass-ui[data-page="blog"] .blog-toolbar-shell .view-btn.active {
+  background: linear-gradient(180deg, rgba(219, 234, 254, 0.92), rgba(191, 219, 254, 0.72));
+  border-color: rgba(96, 165, 250, 0.32);
+  color: rgba(30, 64, 175, 0.96);
+  box-shadow: 0 10px 22px rgba(59, 130, 246, 0.14);
+}
+
+/* 日间键盘快捷键提示 */
+html:not(.dark) body.public-page.liquid-glass-ui[data-page="blog"] [data-ui-toolbar="blog-controls"] kbd {
+  background: rgba(241, 245, 249, 0.82);
+  border-color: rgba(148, 163, 184, 0.22);
+  color: rgba(71, 85, 105, 0.8);
+}
+
+/* 日间文章卡片：白色玻璃卡片 */
+html:not(.dark) body.public-page.liquid-glass-ui[data-page="blog"] .blog-post-card {
+  border-color: rgba(148, 163, 184, 0.18) !important;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(248, 250, 252, 0.84)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.72),
+    0 12px 28px rgba(148, 163, 184, 0.10) !important;
+}
+
+/* 日间卡片封面底部分隔线 */
+html:not(.dark) body.public-page.liquid-glass-ui[data-page="blog"] .blog-post-card .aspect-video,
+html:not(.dark) body.public-page.liquid-glass-ui[data-page="blog"] .blog-post-card > a > div:first-child {
+  border-bottom-color: rgba(148, 163, 184, 0.14);
+}
+
+/* 日间卡片标题 */
+html:not(.dark) body.public-page.liquid-glass-ui[data-page="blog"] .blog-post-card h2 {
+  color: rgba(15, 23, 42, 0.94);
+}
+
+/* 日间卡片摘要 */
+html:not(.dark) body.public-page.liquid-glass-ui[data-page="blog"] .blog-post-card p {
+  color: rgba(71, 85, 105, 0.86);
+}
+
+/* 日间卡片分隔线 */
+html:not(.dark) body.public-page.liquid-glass-ui[data-page="blog"] .blog-post-card .border-t {
+  border-color: rgba(203, 213, 225, 0.72) !important;
+}
+
+/* 日间卡片头像底框 */
+html:not(.dark) body.public-page.liquid-glass-ui[data-page="blog"] .blog-post-card .w-8.h-8.rounded-full {
+  background: rgba(241, 245, 249, 0.82);
+  border-color: rgba(203, 213, 225, 0.72);
+}
+
+/* 日间卡片 hover */
+html:not(.dark) body.public-page.liquid-glass-ui[data-page="blog"] .blog-post-card:hover {
+  border-color: rgba(96, 165, 250, 0.28) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.72),
+    0 18px 36px rgba(148, 163, 184, 0.16) !important;
+}
+
+/* 日间分页按钮 */
+html:not(.dark) body.public-page.liquid-glass-ui[data-page="blog"] .pagination-btn,
+html:not(.dark) body.public-page.liquid-glass-ui[data-page="blog"] #pagination-container button {
+  border-color: rgba(148, 163, 184, 0.18);
+  background: rgba(255, 255, 255, 0.62);
+  color: rgba(51, 65, 85, 0.9);
+}
+
+/* 日间分页按钮 hover */
+html:not(.dark) body.public-page.liquid-glass-ui[data-page="blog"] #pagination-container button:hover,
+html:not(.dark) body.public-page.liquid-glass-ui[data-page="blog"] #pagination-container button:focus-visible {
+  border-color: rgba(96, 165, 250, 0.28);
+  background: rgba(239, 246, 255, 0.88);
+}
+
+/* 日间分页按钮 disabled */
+html:not(.dark) body.public-page.liquid-glass-ui[data-page="blog"] #pagination-container button[disabled] {
+  border-color: rgba(148, 163, 184, 0.18);
+  background: rgba(241, 245, 249, 0.48);
+  color: rgba(148, 163, 184, 0.52);
+}
+
+/* 日间分页页码文字 */
+html:not(.dark) body.public-page.liquid-glass-ui[data-page="blog"] #pagination-container span {
+  color: rgba(71, 85, 105, 0.72);
+}
+
+/* 日间脚部分隔线 */
+html:not(.dark) body.public-page.liquid-glass-ui[data-page="blog"] .public-footer__inner,
+html:not(.dark) body.public-page.liquid-glass-ui[data-page="blog"] [data-ui-shell="blog-footer"] .public-footer__inner {
+  border-top-color: rgba(148, 163, 184, 0.18);
+}
+
+/* 日间脚部访问计数徽章 */
+html:not(.dark) body.public-page.liquid-glass-ui[data-page="blog"] [data-ui-shell="blog-footer"] #visit-count {
+  border-color: rgba(148, 163, 184, 0.18);
+  background: rgba(241, 245, 249, 0.72);
+  color: rgba(71, 85, 105, 0.82);
+}
+
 @media (max-width: 1023px) {
   body.public-page.liquid-glass-ui #navbar {
-    width: calc(100% - 0.75rem);
     top: 0.5rem;
   }
 
   body.public-page.liquid-glass-ui #mobile-menu {
-    width: 100%;
+    width: min(20rem, calc(100vw - 1rem));
+    left: auto;
+    right: 0.5rem;
+    top: calc(100% + 0.6rem);
+    border: 1px solid rgba(148, 163, 184, 0.22);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(248, 250, 252, 0.88));
+    box-shadow: 0 24px 48px rgba(148, 163, 184, 0.18);
+    backdrop-filter: blur(22px) saturate(145%);
+    -webkit-backdrop-filter: blur(22px) saturate(145%);
   }
+
+  body.public-page.liquid-glass-ui .homepage-cover-nav-shell {
+    margin-top: 0;
+  }
+
+  body.public-page.liquid-glass-ui .homepage-mobile-menu-panel {
+    padding: 0.9rem;
+    display: grid;
+    gap: 0.55rem;
+  }
+
+  body.public-page.liquid-glass-ui .homepage-mobile-menu-link {
+    min-height: 3rem;
+    padding-inline: 0.85rem;
+    border-radius: 1rem;
+    border: 1px solid rgba(191, 219, 254, 0.72);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.84), rgba(248, 250, 252, 0.92));
+    color: rgba(30, 41, 59, 0.92);
+    font-weight: 560;
+    letter-spacing: -0.01em;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.62),
+      0 10px 24px rgba(148, 163, 184, 0.08);
+  }
+
+  body.public-page.liquid-glass-ui .homepage-mobile-menu-link:hover {
+    background: linear-gradient(180deg, rgba(239, 246, 255, 0.96), rgba(219, 234, 254, 0.82));
+    border-color: rgba(96, 165, 250, 0.32);
+    box-shadow: 0 16px 26px rgba(96, 165, 250, 0.14);
+  }
+
+  body.public-page.liquid-glass-ui .homepage-mobile-menu-link.text-blue-600 {
+    background: linear-gradient(135deg, rgba(219, 234, 254, 0.96), rgba(191, 219, 254, 0.9));
+    border-color: rgba(96, 165, 250, 0.34);
+    color: rgba(29, 78, 216, 0.96);
+    box-shadow: 0 16px 30px rgba(96, 165, 250, 0.16);
+  }
+
+  .dark body.public-page.liquid-glass-ui #mobile-menu {
+    border: 1px solid rgba(148, 163, 184, 0.28);
+    background: linear-gradient(180deg, rgba(15, 23, 42, 0.94), rgba(15, 23, 42, 0.88));
+    box-shadow: 0 24px 60px rgba(2, 8, 23, 0.42);
+  }
+
+  .dark body.public-page.liquid-glass-ui .homepage-mobile-menu-link {
+    border: 1px solid rgba(96, 165, 250, 0.14);
+    background: rgba(15, 23, 42, 0.34);
+    color: rgba(226, 232, 240, 0.96);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  }
+
+  .dark body.public-page.liquid-glass-ui .homepage-mobile-menu-link:hover {
+    background: rgba(37, 99, 235, 0.2);
+    border-color: rgba(96, 165, 250, 0.34);
+    box-shadow: 0 14px 26px rgba(15, 23, 42, 0.22);
+  }
+
+  .dark body.public-page.liquid-glass-ui .homepage-mobile-menu-link.text-blue-600 {
+    background: linear-gradient(135deg, rgba(30, 64, 175, 0.3), rgba(30, 41, 59, 0.72));
+    border-color: rgba(96, 165, 250, 0.4);
+    color: rgba(96, 165, 250, 0.98);
+    box-shadow: 0 16px 30px rgba(37, 99, 235, 0.18);
+  }
+}
+
+html:not(.dark) body.public-page.liquid-glass-ui #mobile-menu {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(239, 246, 255, 0.78));
+  box-shadow:
+    0 22px 48px rgba(148, 163, 184, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+.dark body.public-page.liquid-glass-ui #mobile-menu {
+  background:
+    linear-gradient(180deg, rgba(2, 6, 23, 0.92), rgba(15, 23, 42, 0.84));
+  box-shadow:
+    0 24px 56px rgba(2, 6, 23, 0.42),
+    inset 0 1px 0 rgba(148, 163, 184, 0.08);
 }
 
 @media (max-width: 767px) {
