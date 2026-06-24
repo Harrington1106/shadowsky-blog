@@ -253,8 +253,13 @@ class HeatmapChart {
             startDate = new Date(y, 0, 1);
             const startDayAdj = getDayAdjusted(startDate);
             startDate.setDate(startDate.getDate() - startDayAdj);
-            
-            endDate = new Date(y, 11, 31);
+
+            // 当年：裁剪到今天，不显示未来的空日期
+            if (y === today.getFullYear()) {
+                endDate = new Date(today);
+            } else {
+                endDate = new Date(y, 11, 31);
+            }
             const endDayAdj = getDayAdjusted(endDate);
             endDate.setDate(endDate.getDate() + (6 - endDayAdj));
         }

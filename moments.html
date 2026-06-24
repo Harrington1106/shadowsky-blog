@@ -14,11 +14,11 @@
 
     <!-- Tailwind (保留兼容 moments.js 动态类名) -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="css/unified.css?v=20260625p" rel="stylesheet">
-    <link href="css/liquid-ambient.css?v=20260625p" rel="stylesheet">
-    <link href="css/liquid-moments.css?v=20260625p" rel="stylesheet">
+    <link href="css/unified.css?v=20260625q" rel="stylesheet">
+    <link href="css/liquid-ambient.css?v=20260625q" rel="stylesheet">
+    <link href="css/liquid-moments.css?v=20260625q" rel="stylesheet">
 
-    <script src="js/vendor/lucide.min.js?v=20260625p"></script>
+    <script src="js/vendor/lucide.min.js?v=20260625q"></script>
 
     <style>
         html:not(.dark) .dark-only{display:none!important}
@@ -177,29 +177,29 @@
     </button>
 
     <!-- ═══════ LIGHTBOX ═══════ -->
-    <div id="lightbox" class="fixed inset-0 z-[100] bg-white/95 dark:bg-black/95 backdrop-blur-xl hidden opacity-0 transition-opacity duration-300">
+    <div id="lightbox" class="fixed inset-0 z-[100] hidden opacity-0 transition-opacity duration-300" style="background:rgba(6,11,24,.94);backdrop-filter:blur(30px);-webkit-backdrop-filter:blur(30px);">
         <div class="absolute top-6 right-6 flex items-center space-x-4 z-20">
-            <button id="lightbox-share" class="p-2 rounded-full transition-all" title="分享链接"><i data-lucide="share-2" class="w-6 h-6"></i></button>
-            <button id="lightbox-close" class="p-2 rounded-full transition-all"><i data-lucide="x" class="w-8 h-8"></i></button>
+            <button id="lightbox-share" class="mm-lb-btn" title="分享链接"><i data-lucide="share-2" class="w-5 h-5"></i></button>
+            <button id="lightbox-close" class="mm-lb-btn" title="关闭"><i data-lucide="x" class="w-6 h-6"></i></button>
         </div>
         <div class="h-full w-full flex flex-col md:flex-row">
-            <div class="flex-1 h-1/2 md:h-full relative flex items-center justify-center p-4 group">
+            <div class="flex-1 h-1/2 md:h-full relative flex items-center justify-center p-4">
                 <img id="lightbox-img" src="" alt="" class="max-h-full max-w-full object-contain rounded-lg shadow-2xl">
-                <button id="lightbox-prev" class="absolute left-4 p-3 rounded-full bg-white/10 hover:bg-white/20 text-white backdrop-blur-sm transition-all opacity-0 group-hover:opacity-100 shadow-lg"><i data-lucide="chevron-left" class="w-8 h-8"></i></button>
-                <button id="lightbox-next" class="absolute right-4 p-3 rounded-full bg-white/10 hover:bg-white/20 text-white backdrop-blur-sm transition-all opacity-0 group-hover:opacity-100 shadow-lg"><i data-lucide="chevron-right" class="w-8 h-8"></i></button>
+                <button id="lightbox-prev" class="mm-lb-nav mm-lb-nav--prev"><i data-lucide="chevron-left" class="w-7 h-7"></i></button>
+                <button id="lightbox-next" class="mm-lb-nav mm-lb-nav--next"><i data-lucide="chevron-right" class="w-7 h-7"></i></button>
             </div>
-            <div class="w-full md:w-96 md:border-l border-white/10 p-8 flex flex-col justify-center overflow-y-auto backdrop-blur-md">
-                <div class="space-y-6">
+            <div class="w-full md:w-80 md:border-l p-6 flex flex-col justify-center overflow-y-auto" style="background:rgba(255,255,255,.03);border-color:rgba(255,255,255,.06);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);">
+                <div class="space-y-5">
                     <div>
-                        <div class="flex items-center text-blue-400 mb-2 text-sm font-medium"><i data-lucide="calendar" class="w-4 h-4 mr-2"></i><span id="lightbox-date"></span></div>
+                        <div class="flex items-center text-teal-400 mb-2 text-sm font-medium"><i data-lucide="calendar" class="w-4 h-4 mr-2"></i><span id="lightbox-date"></span></div>
                         <h2 id="lightbox-content" class="text-xl md:text-2xl font-serif text-white leading-relaxed"></h2>
                     </div>
-                    <div id="lightbox-location-container" class="flex items-center text-gray-400 text-sm hover:text-blue-400 transition-colors cursor-pointer group">
-                        <i data-lucide="map-pin" class="w-4 h-4 mr-2 text-red-400 group-hover:scale-110 transition-transform"></i>
-                        <span id="lightbox-location" class="border-b border-dashed border-gray-600 group-hover:border-blue-400"></span>
+                    <div id="lightbox-location-container" class="flex items-center text-gray-400 text-sm hover:text-teal-400 transition-colors cursor-pointer">
+                        <i data-lucide="map-pin" class="w-4 h-4 mr-2 text-red-400"></i>
+                        <span id="lightbox-location" class="border-b border-dashed border-gray-600 hover:border-teal-400"></span>
                     </div>
                     <div id="lightbox-tags" class="flex flex-wrap gap-2"></div>
-                    <div id="lightbox-exif" class="bg-white/5 rounded-xl p-4 border border-white/5 space-y-3 hidden">
+                    <div id="lightbox-exif" class="hidden rounded-xl p-4 space-y-3" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);">
                         <div class="flex items-center text-xs text-gray-500 uppercase tracking-wider font-bold mb-2"><i data-lucide="camera" class="w-3 h-3 mr-1.5"></i> Shot Info</div>
                         <div class="grid grid-cols-2 gap-y-3 gap-x-2 text-sm">
                             <div class="text-gray-400">Camera</div><div class="text-white font-mono text-right" id="exif-camera">--</div>
@@ -215,15 +215,15 @@
     </div>
 
     <!-- ═══════ SCRIPTS ═══════ -->
-    <script src="js/api.js?v=20260625p"></script>
-    <script src="js/main.js?v=20260625p"></script>
-    <script src="js/navbar.js?v=20260625p"></script>
-    <script src="js/activity_chart.js?v=20260625p"></script>
-    <script src="js/heatmap.js?v=20260625p"></script>
-    <script src="js/moments.js?v=20260625p"></script>
-    <script src="js/click-effect.js?v=20260625p"></script>
+    <script src="js/api.js?v=20260625q"></script>
+    <script src="js/main.js?v=20260625q"></script>
+    <script src="js/navbar.js?v=20260625q"></script>
+    <script src="js/activity_chart.js?v=20260625q"></script>
+    <script src="js/heatmap.js?v=20260625q"></script>
+    <script src="js/moments.js?v=20260625q"></script>
+    <script src="js/click-effect.js?v=20260625q"></script>
     <script src="https://unpkg.com/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
-    <script src="js/context-menu.js?v=20260625p"></script>
+    <script src="js/context-menu.js?v=20260625q"></script>
     <script>
         lucide.createIcons();
 
@@ -267,7 +267,7 @@
         window.addEventListener('themechange', updateThemeUI);
         updateThemeUI();
     </script>
-    <script src="js/back-to-top.js?v=20260625p"></script>
-    <script src="js/tracker.js?v=20260625p"></script>
+    <script src="js/back-to-top.js?v=20260625q"></script>
+    <script src="js/tracker.js?v=20260625q"></script>
 </body>
 </html>

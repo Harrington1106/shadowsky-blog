@@ -594,32 +594,56 @@ html:not(.dark) .mm-action-btn { color: #475569; border-color: rgba(0,0,0,.1); }
 
 /* ═══════ LIGHTBOX ═══════ */
 #lightbox {
-    background: rgba(6,11,24,.96) !important;
-    backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
+    background: rgba(6,11,24,.94) !important;
+    backdrop-filter: blur(30px) !important;
+    -webkit-backdrop-filter: blur(30px) !important;
 }
 
-html:not(.dark) #lightbox {
-    background: rgba(255,255,255,.96) !important;
+/* 右上角按钮：X / 分享 */
+.mm-lb-btn {
+    display: flex; align-items: center; justify-content: center;
+    width: 38px; height: 38px;
+    border-radius: 12px;
+    background: rgba(255,255,255,.06);
+    border: 1px solid rgba(255,255,255,.08);
+    color: rgba(255,255,255,.55);
+    cursor: pointer;
+    transition: all .2s ease;
+}
+.mm-lb-btn:hover {
+    background: rgba(45,212,191,.12);
+    border-color: rgba(45,212,191,.25);
+    color: #2dd4bf;
 }
 
-#lightbox .absolute.top-6.right-6 button {
-    background: rgba(255,255,255,.06) !important;
-    border: 1px solid rgba(255,255,255,.08) !important;
-    color: rgba(255,255,255,.6) !important;
-    border-radius: 12px !important;
-    transition: all .2s !important;
+/* 左右导航箭头 — 始终可见 */
+.mm-lb-nav {
+    position: absolute;
+    top: 50%; transform: translateY(-50%);
+    display: flex; align-items: center; justify-content: center;
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.06);
+    border: 1px solid rgba(255,255,255,.08);
+    color: rgba(255,255,255,.65);
+    cursor: pointer;
+    transition: all .2s ease;
+    backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+}
+.mm-lb-nav--prev { left: 16px; }
+.mm-lb-nav--next { right: 16px; }
+.mm-lb-nav:hover {
+    background: rgba(45,212,191,.15);
+    border-color: rgba(45,212,191,.3);
+    color: #fff;
 }
 
-#lightbox .absolute.top-6.right-6 button:hover {
-    background: rgba(45,212,191,.12) !important;
-    color: #2dd4bf !important;
-}
-
-/* Lightbox 详情面板 */
-#lightbox .w-96 {
-    background: rgba(17,24,39,.85) !important;
-    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-    border-left: 1px solid rgba(255,255,255,.06) !important;
+/* 详情面板 */
+#lightbox .md\:w-80 {
+    background: rgba(255,255,255,.03) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    border-color: rgba(255,255,255,.06) !important;
 }
 
 #lightbox #lightbox-content {
@@ -627,9 +651,18 @@ html:not(.dark) #lightbox {
 }
 
 #lightbox #lightbox-exif {
-    background: rgba(255,255,255,.03) !important;
+    background: rgba(255,255,255,.04) !important;
     border: 1px solid rgba(255,255,255,.05) !important;
     border-radius: 12px !important;
+}
+
+/* 标签 */
+#lightbox-tags span {
+    padding: 3px 9px;
+    font-size: .7rem;
+    border-radius: 5px;
+    background: rgba(45,212,191,.08);
+    color: #2dd4bf;
 }
 
 
