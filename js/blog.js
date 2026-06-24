@@ -211,7 +211,7 @@ function renderCurrentView() {
 }
 
 // ------------------------
-// 1. 网格视图 — Apple 液态玻璃卡片
+// 1. 网格视图 — 完全重构卡片
 // ------------------------
 function renderGridView(container) {
     if (filteredPosts.length === 0) {
@@ -219,12 +219,12 @@ function renderGridView(container) {
         return;
     }
 
-    container.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8';
+    container.className = 'posts-grid';
 
     const startIndex = (currentPage - 1) * POSTS_PER_PAGE;
     const currentPosts = filteredPosts.slice(startIndex, startIndex + POSTS_PER_PAGE);
 
-    // 无封面时的渐变配色
+    // 无封面渐变
     const gradients = [
         'linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #a855f7 100%)',
         'linear-gradient(135deg, #059669 0%, #0d9488 50%, #06b6d4 100%)',
@@ -239,37 +239,45 @@ function renderGridView(container) {
         const delay = index * 80;
         const gradient = gradients[index % gradients.length];
 
-        // 封面区域
+        // 标签列表（最多 3 个）
+        const tags = post.tags || [];
+        const tagsHtml = tags.slice(0, 3).map(t =>
+            `<span class="blog-card-tag">#${t}</span>`
+        ).join('');
+
+        // 封面区域 — 徽章浮在封面内部
         const coverHtml = post.coverImage
-            ? `<div class="blog-card-cover">
-                 <img src="${post.coverImage}" alt="${post.title}" loading="lazy">
+            ? `<div class="blog-card-media">
+                 <img src="${post.coverImage}" alt="" loading="lazy" class="blog-card-img" />
+                 <div class="blog-card-media-shade"></div>
+                 <span class="blog-card-badge">
+                   <i data-lucide="folder"></i>
+                   <span>${post.category || '笔记'}</span>
+                 </span>
                </div>`
-            : `<div class="blog-card-cover-placeholder" style="background:${gradient}">
-                 <i data-lucide="file-text"></i>
+            : `<div class="blog-card-media blog-card-media--placeholder" style="background:${gradient}">
+                 <i data-lucide="file-text" class="blog-card-placeholder-icon"></i>
+                 <span class="blog-card-badge">
+                   <i data-lucide="folder"></i>
+                   <span>${post.category || '笔记'}</span>
+                 </span>
                </div>`;
 
         const html = `
             <article class="blog-card animate-in" style="animation-delay:${delay}ms">
-                <a href="post.html?file=${post.file}" style="display:flex;flex-direction:column;height:100%;text-decoration:none;color:inherit;">
+                <a href="post.html?file=${encodeURIComponent(post.file)}" class="blog-card-link">
                     ${coverHtml}
                     <div class="blog-card-body">
-                        <span class="blog-card-badge">
-                            <i data-lucide="folder"></i>
-                            <span>${post.category || '笔记'}</span>
-                        </span>
                         <h2 class="blog-card-title">${post.title}</h2>
                         <p class="blog-card-excerpt">${post.excerpt || '暂无摘要...'}</p>
-                        <div class="blog-card-footer">
-                            <i data-lucide="calendar-days"></i>
-                            <span>${dateStr}</span>
-                            <span class="footer-dot-sep">·</span>
-                            <i data-lucide="tag"></i>
-                            <span>${(post.tags || []).length} 个标签</span>
-                            <span class="footer-spacer"></span>
-                            <span class="footer-arrow">
-                                <i data-lucide="arrow-right"></i>
-                            </span>
-                        </div>
+                    </div>
+                    <div class="blog-card-footer">
+                        <time datetime="${post.date}">${dateStr}</time>
+                        ${tagsHtml ? '<span class="footer-dot-sep">·</span>' + tagsHtml : ''}
+                        <span class="footer-spacer"></span>
+                        <span class="footer-arrow">
+                            <i data-lucide="arrow-right"></i>
+                        </span>
                     </div>
                 </a>
             </article>

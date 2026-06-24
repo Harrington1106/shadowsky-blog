@@ -345,10 +345,11 @@ html:not(.dark) .view-btn:hover {
 }
 
 /* ═══════════════════════════════════════════════════════
-   POST CARDS — 参考 2x.nz / olinl.com 风格
-   ring 轮廓 + backdrop-blur 玻璃底 + 干净悬停
+   POST CARDS — 完全重构 v8
+   徽章浮于封面之上 · 标签真名 · ring 轮廓
    ═══════════════════════════════════════════════════════ */
 
+/* ── 卡片外壳 ── */
 .blog-card {
     position: relative;
     overflow: hidden;
@@ -377,71 +378,116 @@ html:not(.dark) .blog-card:hover {
         0 12px 40px rgba(0, 0, 0, 0.08);
 }
 
-/* ── 封面图 ── */
-.blog-card-cover {
+/* ── 链接 ── */
+.blog-card-link {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    text-decoration: none;
+    color: inherit;
+}
+
+/* ═══════════════════════════════════════════════════════
+   媒体区 — 封面 + 浮于其上的徽章
+   ═══════════════════════════════════════════════════════ */
+.blog-card-media {
+    position: relative;
     width: 100%;
     height: 200px;
     overflow: hidden;
-    position: relative;
     flex-shrink: 0;
 }
 
-.blog-card-cover img {
+.blog-card-img {
     width: 100%;
     height: 100%;
     object-fit: cover;
     transition: transform 0.5s ease;
 }
 
-.blog-card:hover .blog-card-cover img {
+.blog-card:hover .blog-card-img {
     transform: scale(1.05);
 }
 
-/* 无封面占位 */
-.blog-card-cover-placeholder {
-    width: 100%;
-    height: 120px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    flex-shrink: 0;
-}
-
-.blog-card-cover-placeholder i {
-    width: 36px;
-    height: 36px;
-    color: rgba(255, 255, 255, 0.2);
+/* 封面底部渐变遮罩 — 让徽章可读 */
+.blog-card-media-shade {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 80px;
+    background: linear-gradient(to top,
+            rgba(6, 11, 24, 0.7) 0%,
+            transparent 100%);
+    pointer-events: none;
     z-index: 1;
 }
 
-/* ── 内容区 ── */
+html:not(.dark) .blog-card-media-shade {
+    background: linear-gradient(to top,
+            rgba(0, 0, 0, 0.35) 0%,
+            transparent 100%);
+}
+
+/* 徽章 — 绝对定位在封面左下角 */
+.blog-card-badge {
+    position: absolute;
+    bottom: 12px;
+    left: 16px;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 10px;
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 6px;
+    font-size: 0.72rem;
+    font-weight: 500;
+    color: #fff;
+    letter-spacing: 0.02em;
+    pointer-events: none;
+}
+
+.blog-card-badge i {
+    width: 11px;
+    height: 11px;
+    opacity: 0.8;
+}
+
+/* ── 无封面占位 ── */
+.blog-card-media--placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 140px;
+}
+
+.blog-card-media--placeholder .blog-card-badge {
+    position: absolute;
+    bottom: 12px;
+    left: 16px;
+}
+
+.blog-card-placeholder-icon {
+    width: 40px;
+    height: 40px;
+    color: rgba(255, 255, 255, 0.2);
+    z-index: 0;
+}
+
+/* ═══════════════════════════════════════════════════════
+   内容区
+   ═══════════════════════════════════════════════════════ */
 .blog-card-body {
-    padding: 18px 20px 16px;
+    padding: 18px 20px 8px;
     flex: 1;
     display: flex;
     flex-direction: column;
 }
 
-/* 分类徽章 */
-.blog-card-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    align-self: flex-start;
-    font-size: 0.75rem;
-    font-weight: 500;
-    color: var(--bg-accent);
-    margin-bottom: 10px;
-}
-
-.blog-card-badge i {
-    width: 12px;
-    height: 12px;
-    opacity: 0.6;
-}
-
-/* 标题 */
 .blog-card-title {
     font-size: 1.1rem;
     font-weight: 600;
@@ -454,43 +500,64 @@ html:not(.dark) .blog-card:hover {
     overflow: hidden;
 }
 
-/* 摘要 */
 .blog-card-excerpt {
     font-size: 0.85rem;
     line-height: 1.55;
-    margin-bottom: 14px;
     flex: 1;
     color: var(--bg-text-dim);
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
+    margin-bottom: 0;
 }
 
-/* 底部分隔 + 元信息 */
+/* ═══════════════════════════════════════════════════════
+   页脚 — 日期 + 标签真名 + 箭头
+   ═══════════════════════════════════════════════════════ */
 .blog-card-footer {
     display: flex;
     align-items: center;
-    gap: 5px;
+    gap: 4px;
+    padding: 10px 20px 14px;
     font-size: 0.76rem;
     color: var(--bg-text-dim);
-    padding-top: 12px;
     border-top: 1px solid var(--bg-card-border);
+    flex-wrap: wrap;
+    min-width: 0;
 }
 
-.blog-card-footer i {
-    width: 13px;
-    height: 13px;
-    opacity: 0.5;
+.blog-card-footer time {
+    flex-shrink: 0;
+    font-variant-numeric: tabular-nums;
+}
+
+/* 标签真名药丸 */
+.blog-card-tag {
+    display: inline-block;
+    padding: 2px 8px;
+    background: var(--bg-accent-soft);
+    color: var(--bg-accent);
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 500;
+    white-space: nowrap;
+    flex-shrink: 0;
+    transition: background 0.2s ease;
+}
+
+.blog-card:hover .blog-card-tag {
+    background: rgba(45, 212, 191, 0.15);
 }
 
 .footer-dot-sep {
     opacity: 0.3;
-    font-weight: 300;
+    flex-shrink: 0;
 }
 
 .footer-spacer {
     flex: 1;
+    min-width: 8px;
 }
 
 /* 箭头 */
@@ -501,6 +568,7 @@ html:not(.dark) .blog-card:hover {
     width: 26px;
     height: 26px;
     border-radius: 50%;
+    flex-shrink: 0;
     opacity: 0;
     transform: translateX(-6px);
     transition: all 0.25s ease;
