@@ -2,6 +2,32 @@
    Liquid Post v2 — 现代文章阅读页
    ═══════════════════════════════════════════════════════ */
 
+/* ── CSS Variables ── */
+:root {
+    --rs-accent: #0d9488; --rs-accent-glow: rgba(13,148,136,.25); --rs-accent-soft: rgba(13,148,136,.08);
+    --rs-card-bg: rgba(0,0,0,.03); --rs-card-border: rgba(0,0,0,.08); --rs-surface: #fff;
+    --rs-text-title: #0f172a; --rs-text-body: rgba(15,23,42,.75); --rs-text-dim: rgba(15,23,42,.45);
+    --rs-skeleton-base: rgba(0,0,0,.04);
+    --bg: #f8fafc;
+}
+.dark {
+    --rs-accent: #2dd4bf; --rs-accent-glow: rgba(45,212,191,.3); --rs-accent-soft: rgba(45,212,191,.08);
+    --rs-card-bg: rgba(255,255,255,.04); --rs-card-border: rgba(255,255,255,.08); --rs-surface: #0b1120;
+    --rs-text-title: #f1f5f9; --rs-text-body: rgba(241,245,249,.7); --rs-text-dim: rgba(241,245,249,.4);
+    --rs-skeleton-base: rgba(255,255,255,.04);
+    --bg: #060b14;
+}
+.hidden { display: none !important; }
+/* back-to-top.js 需要的工具类 */
+.opacity-0 { opacity: 0; }
+.opacity-100 { opacity: 1; }
+.translate-y-10 { transform: translateY(40px); }
+.-translate-y-10 { transform: translateY(-40px); }
+.translate-y-0 { transform: translateY(0); }
+.pointer-events-none { pointer-events: none; }
+
+body { background: var(--bg); color: var(--rs-text-body); }
+
 /* ── 进度条 ── */
 #progress-container { position: fixed; top: 0; left: 0; height: 2px; width: 100%; z-index: 60; pointer-events: none; }
 #progress-bar { height: 100%; background: linear-gradient(90deg, var(--rs-accent), #6366f1); width: 0; transition: width .1s linear; }
@@ -72,11 +98,16 @@
 .post-toc-card h3 { font-size: .75rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--rs-text-dim); margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
 .post-toc-card h3 svg { width: 15px; height: 15px; color: var(--rs-accent); }
 .post-toc-nav { max-height: 55vh; overflow-y: auto; }
-.toc-link { display: block; padding: 6px 10px; font-size: .8rem; color: var(--rs-text-body); text-decoration: none; border-left: 2px solid transparent; border-radius: 0 6px 6px 0; transition: all .15s; margin-bottom: 2px; line-height: 1.4; }
-.toc-link:hover { background: var(--rs-card-bg); color: var(--rs-text-title); }
-.toc-link.active { border-left-color: var(--rs-accent); color: var(--rs-accent); background: var(--rs-accent-soft); font-weight: 600; }
-.toc-sublist { padding-left: 12px; display: none; }
-.toc-item.expanded > .toc-sublist { display: block; }
+.toc-list { list-style: none; padding: 0; margin: 0; }
+.toc-item { list-style: none; }
+.toc-sublist { list-style: none; padding-left: 14px; margin: 0; }
+.toc-link { display: block; padding: 5px 10px; font-size: .8rem; color: var(--rs-text-body) !important; text-decoration: none; border-left: 2px solid transparent; border-radius: 0 5px 5px 0; transition: all .15s; margin-bottom: 1px; line-height: 1.4; }
+.toc-link:hover { background: var(--rs-card-bg); color: var(--rs-text-title) !important; border-left-color: var(--rs-text-dim); }
+.toc-link.active { border-left-color: var(--rs-accent) !important; color: var(--rs-accent) !important; background: var(--rs-accent-soft); font-weight: 600; }
+/* 空目录 */
+.post-toc-nav .flex { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px 0; }
+.post-toc-nav .text-gray-400, .post-toc-nav .text-xs { color: var(--rs-text-dim) !important; font-size: .75rem; }
+.post-toc-nav svg { opacity: .3; margin-bottom: 8px; }
 
 /* ── 相关推荐 ── */
 .post-reco-card { background: var(--rs-card-bg); border: 1px solid var(--rs-card-border); border-radius: 14px; padding: 18px; margin-top: 14px; }
