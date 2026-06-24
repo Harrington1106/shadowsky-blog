@@ -1067,14 +1067,17 @@ html:not(.dark) .bm-card:hover {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
+    gap: 10px;
     flex-wrap: wrap;
     margin-top: 80px;
-    padding: 24px 24px;
+    padding: 28px 24px;
     border-top: 1px solid var(--bm-card-border);
     color: var(--bm-text-dim);
     font-size: 0.85rem;
-    text-align: center;
+}
+
+.bm-footer p {
+    margin: 0;
 }
 
 .bm-footer-dot {

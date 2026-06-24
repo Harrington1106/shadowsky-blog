@@ -182,7 +182,6 @@
 
     <!-- Scripts -->
     <script src="js/api.js?v=20260624v5"></script>
-    <script src="js/main.js?v=20260624v5"></script>
     <script src="js/navbar.js?v=20260624v5"></script>
     <script src="js/click-effect.js?v=20260624v5"></script>
     <script src="https://unpkg.com/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
@@ -217,12 +216,6 @@
         });
 
         // ── Theme: 单图标动态切换（与 blog.html 一致）──
-        // 覆盖 main.js 的 toggleTheme，防止 navbar.js + main.js 双重绑定互相抵消
-        window.toggleTheme = function() {
-            const btn = document.getElementById('theme-toggle');
-            if (btn) btn.click();
-        };
-
         const themeIconWrap = document.getElementById('theme-icon-wrap');
         function updateThemeUI() {
             const isDark = document.documentElement.classList.contains('dark');
@@ -240,6 +233,21 @@
         }
         window.addEventListener('themechange', updateThemeUI);
         updateThemeUI();
+
+        // ── Visit Counter ──
+        (function() {
+            const el = document.getElementById('visit-count');
+            if (!el) return;
+            const pageId = 'bookmarks';
+            if (window.api && window.api.fetchVisitCount) {
+                const tid = setTimeout(() => { if (el.textContent === '加载中…') el.textContent = '访问 --'; }, 3000);
+                window.api.fetchVisitCount(pageId).then(d => {
+                    clearTimeout(tid);
+                    el.textContent = '访问 ' + d.count;
+                    if (d.total) el.title = '全站访问：' + d.total;
+                }).catch(() => { clearTimeout(tid); el.textContent = '访问 --'; });
+            }
+        })();
     </script>
     <script src="js/back-to-top.js?v=20260624v5"></script>
     <script src="js/bookmarks.js?v=20260624v5"></script>
