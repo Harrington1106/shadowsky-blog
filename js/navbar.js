@@ -59,7 +59,27 @@
   }
 
   // ── Theme toggle ──
-  // 主题切换由 main.js 统一处理，避免双重绑定导致来回抵消
+  const themeToggle = document.getElementById('theme-toggle');
+  if (themeToggle) {
+    // Read saved preference
+    const saved = localStorage.getItem('theme');
+    if (saved === 'light') {
+      html.classList.remove('dark');
+    } else if (saved === 'dark') {
+      html.classList.add('dark');
+    } // else: respect OS preference (default)
+
+    themeToggle.addEventListener('click', () => {
+      // 优先调用 main.js 的完整实现（含图标切换），回退到简单 toggle
+      if (window.toggleTheme) {
+        window.toggleTheme();
+      } else {
+        const isDark = html.classList.toggle('dark');
+        localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        window.dispatchEvent(new CustomEvent('themechange'));
+      }
+    });
+  }
 
   // ── Active link detection ──
   const currentPath = window.location.pathname.split('/').pop() || 'index.html';

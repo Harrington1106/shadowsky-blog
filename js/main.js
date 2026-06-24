@@ -11,12 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 2. Theme Handling
     initTheme();
-    
-    // Add event listener for desktop theme toggle
-    const themeToggleBtn = document.getElementById('theme-toggle');
-    if (themeToggleBtn) {
-        themeToggleBtn.addEventListener('click', window.toggleTheme);
-    }
+    // 按钮 click 由 navbar.js 统一绑定，避免双重监听互相抵消
 
     // 3. Visit Counter
     updateVisitCount();
