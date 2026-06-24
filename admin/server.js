@@ -714,6 +714,93 @@ app.get('/api/rss-proxy', rateLimit(60_000, 60), async (req, res) => {
     }
 });
 
+/**
+ * API: 提取原文全文 — 使用 cheerio 智能抽取正文内容
+ * 用于 RSS 阅读器加载截断文章的完整内容
+ */
+app.get('/api/article-content', rateLimit(30_000, 30), async (req, res) => {
+    const url = req.query.url;
+    if (!url || typeof url !== 'string') return res.status(400).json({ error: 'Missing url' });
+    if (!/^https?:\/\//i.test(url)) return res.status(400).json({ error: 'Invalid protocol' });
+    if (!originAllowed(req)) return res.status(403).json({ error: 'Forbidden' });
+
+    try {
+        await assertPublicAddress(url);
+    } catch (err) {
+        return res.status(403).json({ error: err.message });
+    }
+
+    const lowerHost = (() => {
+        try { return new URL(url).hostname.toLowerCase(); } catch { return ''; }
+    })();
+    if (lowerHost === 'localhost' || lowerHost === '127.0.0.1') {
+        return res.status(400).json({ error: 'Invalid host' });
+    }
+
+    try {
+        const response = await axios.get(url, {
+            responseType: 'text',
+            timeout: 15000,
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (compatible; ShadowQuake RSS Reader/1.0)'
+            },
+            maxRedirects: 3,
+            maxContentLength: 3 * 1024 * 1024,
+        });
+
+        const html = typeof response.data === 'string' ? response.data : '';
+        const $ = cheerio.load(html);
+
+        // 移除干扰元素
+        $('script, style, nav, footer, header, iframe, .sidebar, .comment, .comments, .ad, .advertisement, [role="navigation"], [role="banner"], [role="contentinfo"]').remove();
+
+        // 尝试常见正文选择器
+        const selectors = [
+            'article', '[role="main"]', 'main',
+            '.post-content', '.article-content', '.post-body', '.article-body',
+            '.entry-content', '.content', '#content', '#article',
+            '.markdown-body', '.prose', '.post', '.article'
+        ];
+
+        let content = null;
+        for (const sel of selectors) {
+            const el = $(sel);
+            if (el.length && el.text().trim().length > 200) {
+                content = el.html();
+                break;
+            }
+        }
+
+        // 回退：取最大的文本块
+        if (!content) {
+            let best = null, bestLen = 0;
+            $('div, section').each((_, el) => {
+                const text = $(el).text().trim();
+                if (text.length > bestLen && text.length > 300) {
+                    best = el;
+                    bestLen = text.length;
+                }
+            });
+            if (best) content = $(best).html();
+        }
+
+        // 最终回退：返回 body 内容
+        if (!content) content = $('body').html() || '';
+
+        // 清理：移除空标签、保留链接使其可点击
+        const cleanContent = (content || '').replace(/\s+(href|src)=/g, ' $1=');
+
+        res.json({
+            success: true,
+            content: cleanContent,
+            title: $('title').text().trim() || '',
+        });
+    } catch (e) {
+        console.error('[Article] Fetch error:', e.message);
+        res.status(502).json({ error: 'Failed to fetch article: ' + e.message });
+    }
+});
+
 // API to fetch metadata
 app.get('/api/metadata', requireAdminToken, rateLimit(60_000, 30), async (req, res) => {
     const urlStr = req.query.url;

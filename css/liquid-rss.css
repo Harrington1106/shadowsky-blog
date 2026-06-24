@@ -1174,7 +1174,53 @@
     padding: 48px 56px 80px;
 }
 
-/* 专注模式切换按钮动画 */
+/* 专注模式浮动退出按钮 — 始终可见无需滚回顶部 */
+.rs-focus-exit {
+    position: fixed;
+    top: 100px;
+    right: 24px;
+    z-index: 350;
+    display: none;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border: 1px solid var(--rs-accent-glow);
+    border-radius: 10px;
+    background: var(--glass-depth-3-bg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    color: var(--rs-accent);
+    font-size: 0.8rem;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 20px var(--rs-accent-soft);
+    opacity: 0;
+    transform: translateY(-8px);
+    pointer-events: none;
+}
+
+.rs-workbench--focus .rs-focus-exit {
+    display: flex;
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+.rs-focus-exit:hover {
+    background: var(--rs-accent);
+    color: #fff;
+    border-color: var(--rs-accent);
+    box-shadow: 0 6px 24px var(--rs-accent-glow);
+}
+
+.rs-focus-exit svg {
+    width: 16px;
+    height: 16px;
+}
+
+/* 专注模式切换按钮 */
 .rs-focus-toggle {
     display: inline-flex;
     align-items: center;

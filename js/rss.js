@@ -778,6 +778,11 @@ function openArticle(index) {
                         原文
                     </a>
 
+                    <button id="full-article-btn" class="rs-meta-pill rs-meta-pill--action" title="通过服务器加载完整文章">
+                        <i data-lucide="scroll-text"></i>
+                        加载全文
+                    </button>
+
                     <button id="share-btn" class="rs-meta-pill rs-meta-pill--action" title="分享这篇文章">
                         <i data-lucide="share-2"></i>
                         分享
@@ -820,6 +825,38 @@ function openArticle(index) {
     }
 
     lucide.createIcons();
+
+    // --- Full article loader ---
+    const fullArticleBtn = document.getElementById('full-article-btn');
+    if (fullArticleBtn) {
+        fullArticleBtn.addEventListener('click', async () => {
+            const origHTML = fullArticleBtn.innerHTML;
+            fullArticleBtn.innerHTML = '<i data-lucide="loader-2"></i> 加载中…';
+            fullArticleBtn.disabled = true;
+            lucide.createIcons();
+            try {
+                const resp = await fetch('/api/article-content?url=' + encodeURIComponent(article.link));
+                if (!resp.ok) throw new Error('HTTP ' + resp.status);
+                const data = await resp.json();
+                if (data.success && data.content) {
+                    const body = container.querySelector('.rs-article-body');
+                    if (body) {
+                        body.innerHTML = data.content;
+                        // Re-render lucide icons in loaded content
+                        lucide.createIcons();
+                    }
+                } else {
+                    alert('未能提取完整文章，请尝试打开原文阅读。');
+                }
+            } catch (e) {
+                alert('加载失败: ' + e.message + '\n请尝试直接打开原文。');
+            } finally {
+                fullArticleBtn.innerHTML = origHTML;
+                fullArticleBtn.disabled = false;
+                lucide.createIcons();
+            }
+        });
+    }
 
     // --- Share button ---
     const shareBtn = document.getElementById('share-btn');
@@ -873,13 +910,32 @@ function openArticle(index) {
 
     // --- Focus mode toggle ---
     const focusToggle = document.getElementById('focus-toggle');
+    const focusExitBtn = document.getElementById('focus-exit-btn');
     const workbench = document.getElementById('rss-workbench');
-    if (focusToggle && workbench) {
+
+    function setFocusMode(on) {
+        if (!workbench) return;
+        if (on) {
+            workbench.classList.add('rs-workbench--focus');
+        } else {
+            workbench.classList.remove('rs-workbench--focus');
+        }
+        if (focusToggle) {
+            focusToggle.querySelector('span').textContent = on ? '退出' : '专注';
+        }
+        lucide.createIcons();
+    }
+
+    if (focusToggle) {
         focusToggle.addEventListener('click', () => {
-            const isFocus = workbench.classList.toggle('rs-workbench--focus');
-            focusToggle.querySelector('span').textContent = isFocus ? '退出' : '专注';
-            lucide.createIcons();
+            const isFocus = !workbench.classList.contains('rs-workbench--focus');
+            setFocusMode(isFocus);
         });
+    }
+
+    // Floating exit button
+    if (focusExitBtn) {
+        focusExitBtn.addEventListener('click', () => setFocusMode(false));
     }
 
     // --- Translate button ---

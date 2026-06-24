@@ -98,6 +98,12 @@
             <!-- ═══ 三栏工作台 ═══ -->
             <div class="rs-workbench" id="rss-workbench">
 
+                <!-- 专注模式浮动退出 -->
+                <button class="rs-focus-exit" id="focus-exit-btn" title="退出专注模式">
+                    <i data-lucide="x"></i>
+                    退出专注
+                </button>
+
                 <!-- 加载遮罩 -->
                 <div id="loading-spinner" class="rs-loading-overlay" style="display:none">
                     <div style="text-align:center">
@@ -188,13 +194,6 @@
                 </section>
             </div>
 
-            <!-- ═══ 页脚 ═══ -->
-            <footer class="site-footer">
-                <span class="visit-count"><span class="pulse-dot"></span><span id="visit-count">—</span> 次浏览</span>
-                <span class="footer-dot">·</span>
-                <span>&copy; 2026 Shadow Quake</span>
-            </footer>
-
             <!-- ═══ 移动端底部标签栏 ═══ -->
             <nav class="rs-mobile-tabs" id="rs-mobile-tabs" aria-label="页面切换">
                 <button class="rs-mobile-tab rs-mobile-tab--active" data-panel="rss-sidebar">
@@ -212,6 +211,13 @@
             </nav>
         </div>
     </main>
+
+    <!-- ═══════ 页脚 ═══════ -->
+    <footer class="site-footer">
+        <span class="visit-count"><span class="pulse-dot"></span><span id="visit-count">—</span> 次浏览</span>
+        <span class="footer-dot">·</span>
+        <span>&copy; 2026 Shadow Quake</span>
+    </footer>
 
     <!-- ═══════ AI 设置弹窗 ═══════ -->
     <div id="ai-settings-modal" class="rs-modal-overlay" style="display:none">
