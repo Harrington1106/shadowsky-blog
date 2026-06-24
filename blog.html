@@ -12,20 +12,15 @@
     <link rel="preconnect" href="https://gstatic.loli.net" crossorigin>
     <link href="https://fonts.loli.net/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&family=ZCOOL+KuaiLe&display=swap" rel="stylesheet">
 
-    <link href="css/unified.css?v=20260625h" rel="stylesheet">
-    <link href="css/liquid-ambient.css?v=20260625h" rel="stylesheet">
-    <link href="css/liquid-blog.css?v=20260625h" rel="stylesheet">
+    <link href="css/unified.css?v=20260625i" rel="stylesheet">
+    <link href="css/liquid-ambient.css?v=20260625i" rel="stylesheet">
+    <link href="css/liquid-blog.css?v=20260625i" rel="stylesheet">
 
-    <script src="js/vendor/lucide.min.js?v=20260625h"></script>
+    <script src="js/vendor/lucide.min.js?v=20260625i"></script>
 
     <style>
-        .dark .light-only{display:none!important}
-        .dark .dark-only{display:inline!important}
-        .light-only{display:inline}.dark-only{display:none}
-        img.light-only,img.dark-only{display:none}
-        .dark img.dark-only{display:inline}
-        img.light-only{display:inline}
-        .dark img.light-only{display:none}
+        html:not(.dark) .dark-only{display:none!important}
+        html.dark .light-only{display:none!important}
     </style>
 </head>
 <body class="font-sans">
@@ -60,8 +55,7 @@
             </div>
             <div class="nav-actions">
                 <button id="theme-toggle" class="theme-toggle" aria-label="切换主题">
-                    <i data-lucide="sun" class="dark-only"></i>
-                    <i data-lucide="moon" class="light-only"></i>
+                    <span id="theme-icon-wrap"><i data-lucide="sun"></i></span>
                 </button>
                 <button id="nav-hamburger" class="nav-hamburger" aria-label="菜单" aria-expanded="false">
                     <i data-lucide="menu"></i>
@@ -152,12 +146,12 @@
     </button>
 
     <!-- Scripts -->
-    <script src="js/navbar.js?v=20260625h"></script>
-    <script src="js/api.js?v=20260625h"></script>
-    <script src="js/blog.js?v=20260625h"></script>
-    <script src="js/click-effect.js?v=20260625h"></script>
-    <script src="js/context-menu.js?v=20260625h"></script>
-    <script src="js/tracker.js?v=20260625h"></script>
+    <script src="js/navbar.js?v=20260625i"></script>
+    <script src="js/api.js?v=20260625i"></script>
+    <script src="js/blog.js?v=20260625i"></script>
+    <script src="js/click-effect.js?v=20260625i"></script>
+    <script src="js/context-menu.js?v=20260625i"></script>
+    <script src="js/tracker.js?v=20260625i"></script>
     <script src="https://unpkg.com/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
     <script>
         lucide.createIcons();
@@ -186,15 +180,27 @@
             }
         });
 
-        // Theme logo sync
-        const h = document.documentElement;
-        function syncLogos(){
-            const d = h.classList.contains('dark');
-            document.querySelectorAll('img.dark-only').forEach(i => i.style.display = d ? 'inline' : 'none');
-            document.querySelectorAll('img.light-only').forEach(i => i.style.display = d ? 'none' : 'inline');
+        // Theme: 图标动态切换 + Logo 同步
+        const htmlEl = document.documentElement;
+        const iconWrap = document.getElementById('theme-icon-wrap');
+
+        function updateThemeUI() {
+            const isDark = htmlEl.classList.contains('dark');
+            // Logo
+            document.querySelectorAll('img.dark-only').forEach(i => i.style.display = isDark ? '' : 'none');
+            document.querySelectorAll('img.light-only').forEach(i => i.style.display = isDark ? 'none' : '');
+            // Theme icon — 重建 <i> + 重渲染，绕过 lucide 状态问题
+            if (iconWrap) {
+                iconWrap.innerHTML = `<i data-lucide="${isDark ? 'sun' : 'moon'}"></i>`;
+                if (window.lucide) lucide.createIcons({ elements: [iconWrap] });
+            }
+            // Meta theme-color
+            const meta = document.querySelector('meta[name="theme-color"]');
+            if (meta) meta.content = isDark ? '#0B1120' : '#F5F7FA';
         }
-        window.addEventListener('themechange', syncLogos);
-        syncLogos();
+
+        window.addEventListener('themechange', updateThemeUI);
+        updateThemeUI();
     </script>
 </body>
 </html>
