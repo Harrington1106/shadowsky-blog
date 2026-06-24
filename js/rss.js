@@ -1198,49 +1198,60 @@ async function loadAllFeedsArticles() {
 
 async function fetchFeedXml(url) {
     let xmlText = '';
+
+    // 代理链路：PHP → allorigins → CF Worker → 直连
+    let needProxy = true;
+
+    // 1. PHP 代理
     try {
         const proxyUrl = `/api/rss-proxy.php?url=${encodeURIComponent(url)}`;
         const response = await fetch(proxyUrl);
-        
-        let usePublicProxy = false;
-        
         if (response.ok) {
             const text = await response.text();
-            if (text.includes('<?php') || text.trim().startsWith('<?=')) {
-                usePublicProxy = true;
-            } else {
+            if (!text.includes('<?php') && !text.trim().startsWith('<?=')) {
                 xmlText = text;
-            }
-        } else {
-            usePublicProxy = true;
-        }
-
-        if (usePublicProxy) {
-            // 1. allorigins 公共代理
-            let ppOk = false;
-            try {
-                const publicProxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
-                const ppResponse = await fetch(publicProxyUrl);
-                if (ppResponse.ok) {
-                    xmlText = await ppResponse.text();
-                    ppOk = true;
-                }
-            } catch (_) {}
-
-            // 2. Cloudflare Worker 代理（突破 GFW）
-            if (!ppOk) {
-                const cfProxyUrl = `https://bangumi.shadowquake.top/fetch?url=${encodeURIComponent(url)}`;
-                const cfResponse = await fetch(cfProxyUrl);
-                if (!cfResponse.ok) throw new Error(`CF proxy HTTP ${cfResponse.status}`);
-                xmlText = await cfResponse.text();
+                needProxy = false;
             }
         }
-    } catch (e) {
-        // 最后兜底：直接请求（大概率被墙）
-        const directResponse = await fetch(url);
-        if (!directResponse.ok) throw new Error(`Direct fetch HTTP ${directResponse.status}`);
-        xmlText = await directResponse.text();
+    } catch (_) {
+        // PHP 不可用或超时，继续回退
     }
+
+    // 2. allorigins 公共 CORS 代理
+    if (needProxy) {
+        try {
+            const ppUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
+            const ppResp = await fetch(ppUrl);
+            if (ppResp.ok) {
+                xmlText = await ppResp.text();
+                needProxy = false;
+            }
+        } catch (_) {}
+    }
+
+    // 3. Cloudflare Worker（突破 GFW）
+    if (needProxy) {
+        try {
+            const cfUrl = `https://bangumi.shadowquake.top/fetch?url=${encodeURIComponent(url)}`;
+            const cfResp = await fetch(cfUrl);
+            if (cfResp.ok) {
+                xmlText = await cfResp.text();
+                needProxy = false;
+            }
+        } catch (_) {}
+    }
+
+    // 4. 直连兜底
+    if (needProxy) {
+        try {
+            const directResp = await fetch(url);
+            if (!directResp.ok) throw new Error(`HTTP ${directResp.status}`);
+            xmlText = await directResp.text();
+        } catch (e) {
+            throw new Error(`所有加载方式均失败: ${e.message}`);
+        }
+    }
+
     return xmlText;
 }
 // ===========================================
