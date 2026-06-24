@@ -204,6 +204,13 @@
 
         window.addEventListener('themechange', updateThemeUI);
         updateThemeUI();
+
+        // Visit counter
+        (function() {
+            const el = document.getElementById('visit-count-text');
+            if (!el || !window.api || !window.api.fetchVisitCount) return;
+            window.api.fetchVisitCount('blog').then(d => { el.textContent = d.count; }).catch(() => {});
+        })();
     </script>
 </body>
 </html>

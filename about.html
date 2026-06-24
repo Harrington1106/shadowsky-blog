@@ -331,6 +331,12 @@
             }
         });
 
+        // Visit counter
+        (function() {
+            const el = document.getElementById('visit-count');
+            if (!el || !window.api || !window.api.fetchVisitCount) return;
+            window.api.fetchVisitCount('about').then(d => { el.textContent = d.count; }).catch(() => {});
+        })();
     </script>
     <script src="js/back-to-top.js?v=20260624v5"></script>
     <script>
