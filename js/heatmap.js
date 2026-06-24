@@ -11,26 +11,10 @@ class HeatmapChart {
         }
 
         this.options = Object.assign({
-            // The "Pure Sky" Palette - Minimalist & Airy
-            colorScheme: {
-                light: [
-                    'bg-slate-100',
-                    'bg-teal-100',
-                    'bg-teal-200',
-                    'bg-teal-300',
-                    'bg-teal-400',
-                    'bg-teal-500',
-                    'bg-teal-700'
-                ],
-                dark: [
-            'dark:bg-white/5',
-            'dark:bg-teal-950/50',
-                    'dark:bg-teal-900/60',
-                    'dark:bg-teal-800/70',
-                    'dark:bg-teal-700',
-                    'dark:bg-teal-500',
-                    'dark:bg-teal-300'
-                ]
+            // 内联颜色 — 不依赖 Tailwind CDN
+            colors: {
+                light: ['#e2e8f0','#99f6e4','#5eead4','#2dd4bf','#14b8a6','#0d9488','#0f766e'],
+                dark:  ['rgba(255,255,255,.04)','rgba(20,184,166,.12)','rgba(20,184,166,.22)','rgba(20,184,166,.35)','rgba(45,212,191,.5)','rgba(45,212,191,.68)','rgba(94,234,212,.85)']
             },
             cellSize: 11,       // Refined size
             cellGap: 4,         // Airy
@@ -392,7 +376,8 @@ class HeatmapChart {
                 cell.style.opacity = '0'; // Initial state for animation
 
                 if (isFuture) {
-                    cell.className += ' bg-slate-100 dark:bg-white/[0.03] opacity-40';
+                    cell.style.backgroundColor = 'rgba(255,255,255,.02)';
+                    cell.style.opacity = '0.3';
                 } else {
                     let level = 0;
                     if (count > 1) {
@@ -401,19 +386,16 @@ class HeatmapChart {
                         else if (count >= 4) level = 4;
                         else if (count >= 2) level = 3;
                     }
+                    if (count === 1) level = 3;
 
-                    if (count === 1) {
-                        level = 3;
-                    }
+                    // 内联颜色，不再依赖 Tailwind CDN 动态类名
+                    const isDark = document.documentElement.classList.contains('dark');
+                    const palette = isDark ? this.options.colors.dark : this.options.colors.light;
+                    cell.style.backgroundColor = palette[level] || palette[0];
 
-                    const lightClass = this.options.colorScheme.light[level] || this.options.colorScheme.light[0];
-                    const darkClass = this.options.colorScheme.dark[level] || '';
-                    cell.className += ` ${lightClass}`;
-                    if (darkClass) {
-                        cell.className += ` ${darkClass}`;
-                    }
                     if (key === `${today.getFullYear()}-${today.getMonth()}-${today.getDate()}`) {
-                        cell.className += ' outline outline-2 outline-teal-400 dark:outline-teal-300 outline-offset-1';
+                        cell.style.outline = '2px solid ' + (isDark ? '#5eead4' : '#0d9488');
+                        cell.style.outlineOffset = '1px';
                     }
                     cell.setAttribute('data-level', level); // For Legend Interaction
                     
