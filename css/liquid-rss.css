@@ -263,7 +263,8 @@
 
 /* 分类标题 */
 .rs-feed-cat-header {
-    padding: 16px 12px 6px;
+    padding: 8px 10px 5px;
+    margin: 0 4px;
     font-size: 0.68rem;
     font-weight: 700;
     text-transform: uppercase;
@@ -274,6 +275,7 @@
     background: var(--rs-surface);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
+    border-radius: 8px;
     z-index: 5;
 }
 
