@@ -82,16 +82,16 @@
 
 
 /* ═══════════════════════════════════════════════════════
-   PAGE — 容器
+   PAGE — 全高容器
    ═══════════════════════════════════════════════════════ */
 .rs-page {
     position: relative;
     z-index: 1;
-    min-height: 100dvh;
-    padding-top: 100px;
-    padding-bottom: 80px;
+    height: 100dvh;
+    padding-top: 88px;
     display: flex;
     flex-direction: column;
+    overflow: hidden;
 }
 
 .rs-container {
@@ -101,18 +101,21 @@
     flex: 1;
     display: flex;
     flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
 }
 
 
 /* ═══════════════════════════════════════════════════════
-   HERO — 紧凑液态标题
+   HERO — 紧凑液态标题（全高布局优化）
    ═══════════════════════════════════════════════════════ */
 .rs-hero {
     position: relative;
     z-index: 1;
-    padding: 24px 24px 36px;
+    padding: 16px 24px 18px;
     text-align: center;
     overflow: hidden;
+    flex-shrink: 0;
 }
 
 .rs-hero::after {
@@ -233,7 +236,7 @@
 
 
 /* ═══════════════════════════════════════════════════════
-   WORKBENCH — 三栏玻璃工作台
+   WORKBENCH — 三栏玻璃工作台（全高布局）
    ═══════════════════════════════════════════════════════ */
 .rs-workbench {
     display: flex;
@@ -246,7 +249,8 @@
     -webkit-backdrop-filter: blur(20px);
     border: 1px solid var(--rs-card-border);
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.04);
-    margin-top: 8px;
+    margin-top: 4px;
+    margin-bottom: 4px;
 }
 
 /* ── 侧栏面板 ── */
@@ -259,6 +263,7 @@
     background: var(--rs-surface);
     position: relative;
     z-index: 2;
+    overflow: hidden;
 }
 
 .rs-sidebar-header {
@@ -515,6 +520,7 @@
     background: var(--rs-card-bg);
     position: relative;
     z-index: 1;
+    overflow: hidden;
 }
 
 /* 收件箱头部 */
@@ -840,6 +846,7 @@
     scroll-behavior: smooth;
     scrollbar-width: thin;
     scrollbar-color: var(--rs-text-dim) transparent;
+    position: relative;
 }
 
 .rs-reader-content::-webkit-scrollbar {
@@ -853,6 +860,46 @@
 .rs-reader-content::-webkit-scrollbar-thumb {
     background: var(--rs-text-dim);
     border-radius: 5px;
+}
+
+/* ── 阅读器内回到顶部按钮 ── */
+.rs-reader-btt {
+    position: absolute;
+    bottom: 24px;
+    right: 24px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--rs-accent);
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 15;
+    opacity: 0;
+    transform: translateY(12px);
+    pointer-events: none;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 4px 16px var(--rs-accent-glow);
+}
+
+.rs-reader-btt--visible {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+.rs-reader-btt:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px var(--rs-accent-glow);
+    filter: brightness(1.1);
+}
+
+.rs-reader-btt svg {
+    width: 20px;
+    height: 20px;
 }
 
 /* ── 文章布局 ── */
@@ -954,10 +1001,11 @@
 
 /* ── 工具栏：字号 + 专注模式 ── */
 .rs-reader-toolbar {
-    display: flex;
+    display: inline-flex;
     align-items: center;
     gap: 6px;
     margin-left: auto;
+    flex-shrink: 0;
 }
 
 .rs-font-btn {
@@ -1720,7 +1768,14 @@
 /* ═══════════════════════════════════════════════════════
    RESPONSIVE — 平板 (<=1024px)
    ═══════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════
+   RESPONSIVE — 平板 (<=1024px)
+   ═══════════════════════════════════════════════════════ */
 @media (max-width: 1024px) {
+    .rs-page {
+        padding-top: 82px;
+    }
+
     .rs-sidebar {
         width: 240px;
     }
@@ -1734,7 +1789,7 @@
     }
 
     .rs-hero {
-        padding: 16px 20px 24px;
+        padding: 12px 20px 14px;
     }
 
     .rs-hero h1 {
@@ -1753,8 +1808,7 @@
    ═══════════════════════════════════════════════════════ */
 @media (max-width: 768px) {
     .rs-page {
-        padding-top: 76px;
-        padding-bottom: 80px;
+        padding-top: 72px;
     }
 
     .rs-container {
@@ -1764,7 +1818,7 @@
 
     /* Hero 更紧凑 */
     .rs-hero {
-        padding: 10px 16px 16px;
+        padding: 8px 16px 10px;
     }
 
     .rs-hero h1 {
@@ -1779,7 +1833,7 @@
 
     .rs-hero-desc {
         font-size: 0.8rem;
-        margin-bottom: 14px;
+        margin-bottom: 10px;
         max-width: 280px;
     }
 
@@ -1804,8 +1858,8 @@
     .rs-workbench {
         flex-direction: column;
         border-radius: 16px;
-        margin-top: 4px;
-        min-height: calc(100dvh - 280px);
+        margin-top: 2px;
+        margin-bottom: 70px;
     }
 
     .rs-sidebar,
@@ -1860,7 +1914,7 @@
         display: flex;
     }
 
-    /* 面板切换：滑动式 */
+    /* 面板切换 */
     .rs-panel-hidden {
         display: none !important;
     }
@@ -1878,11 +1932,6 @@
 
     .rs-card-desc {
         -webkit-line-clamp: 1;
-    }
-
-    .rs-card-read-time {
-        font-size: 0.64rem;
-        padding: 1px 7px;
     }
 
     /* 文章 */
@@ -1910,9 +1959,12 @@
         min-height: 34px;
     }
 
-    .rs-editor-tools {
-        flex-wrap: wrap;
-        gap: 4px;
+    /* 阅读器工具栏在手机上换行 */
+    .rs-reader-toolbar {
+        flex-basis: 100%;
+        margin-left: 0;
+        margin-top: 4px;
+        justify-content: flex-start;
     }
 
     /* 专注模式 */
@@ -1949,6 +2001,11 @@
         padding: 12px 14px;
         min-height: 48px;
     }
+
+    /* 阅读器内回顶按钮偏移避免和移动标签栏重叠 */
+    .rs-reader-btt {
+        bottom: 80px;
+    }
 }
 
 
@@ -1956,8 +2013,12 @@
    RESPONSIVE — 小手机 (<=480px)
    ═══════════════════════════════════════════════════════ */
 @media (max-width: 480px) {
+    .rs-page {
+        padding-top: 64px;
+    }
+
     .rs-hero {
-        padding: 8px 12px 12px;
+        padding: 6px 12px 8px;
     }
 
     .rs-hero h1 {
@@ -2021,6 +2082,12 @@
         min-height: 32px;
     }
 
+    .rs-reader-toolbar {
+        flex-basis: 100%;
+        margin-left: 0;
+        margin-top: 2px;
+    }
+
     .rs-font-btn {
         width: 28px;
         height: 28px;
@@ -2050,6 +2117,13 @@
         width: 18px;
         height: 18px;
     }
+
+    .rs-reader-btt {
+        bottom: 80px;
+        right: 16px;
+        width: 40px;
+        height: 40px;
+    }
 }
 
 
@@ -2058,16 +2132,16 @@
    ═══════════════════════════════════════════════════════ */
 @media (max-width: 900px) and (orientation: landscape) {
     .rs-page {
-        padding-top: 60px;
+        padding-top: 52px;
     }
 
     .rs-hero {
-        padding: 6px 16px 10px;
+        padding: 4px 16px 6px;
     }
 
     .rs-hero h1 {
         font-size: 1.2rem;
-        margin-bottom: 4px;
+        margin-bottom: 2px;
     }
 
     .rs-hero h1::after {
@@ -2094,7 +2168,6 @@
     .rs-workbench {
         flex-direction: row;
         border-radius: 12px;
-        height: calc(100dvh - 140px);
     }
 
     .rs-sidebar {

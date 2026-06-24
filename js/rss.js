@@ -778,16 +778,22 @@ function openArticle(index) {
                         原文
                     </a>
 
+                    <button id="share-btn" class="rs-meta-pill rs-meta-pill--action" title="分享这篇文章">
+                        <i data-lucide="share-2"></i>
+                        分享
+                    </button>
+
                     <button id="translate-btn" class="rs-meta-pill rs-meta-pill--action">
                         <i data-lucide="languages"></i>
-                        AI 翻译
+                        翻译
                     </button>
 
                     <span class="rs-reader-toolbar">
+                        <span style="font-size:0.7rem;color:var(--rs-text-dim);margin-right:2px">字号</span>
                         <button class="rs-font-btn${fontSize === 'sm' ? ' rs-font-btn--active' : ''}" data-font="sm" title="小号字体" aria-label="小号字体">A</button>
                         <button class="rs-font-btn${fontSize === 'md' ? ' rs-font-btn--active' : ''}" data-font="md" title="默认字体" aria-label="默认字体" style="font-size:0.85rem">A</button>
                         <button class="rs-font-btn${fontSize === 'lg' ? ' rs-font-btn--active' : ''}" data-font="lg" title="大号字体" aria-label="大号字体" style="font-size:0.95rem">A</button>
-                        <span style="width:4px"></span>
+                        <span style="width:6px"></span>
                         <button id="focus-toggle" class="rs-focus-toggle" title="专注模式" aria-label="切换专注模式">
                             <i data-lucide="scan-eye"></i>
                             <span>专注</span>
@@ -815,15 +821,50 @@ function openArticle(index) {
 
     lucide.createIcons();
 
+    // --- Share button ---
+    const shareBtn = document.getElementById('share-btn');
+    if (shareBtn) {
+        shareBtn.addEventListener('click', async () => {
+            const shareData = {
+                title: article.title,
+                text: article.title,
+                url: article.link
+            };
+            // Try Web Share API first
+            if (navigator.share) {
+                try {
+                    await navigator.share(shareData);
+                    return;
+                } catch (e) {
+                    // User cancelled or API failed, fall through to clipboard
+                    if (e.name === 'AbortError') return;
+                }
+            }
+            // Fallback: copy link to clipboard
+            try {
+                await navigator.clipboard.writeText(article.link);
+                // Visual feedback
+                shareBtn.innerHTML = '<i data-lucide="check"></i> 已复制';
+                shareBtn.style.color = 'var(--rs-accent)';
+                lucide.createIcons();
+                setTimeout(() => {
+                    shareBtn.innerHTML = '<i data-lucide="share-2"></i> 分享';
+                    shareBtn.style.color = '';
+                    lucide.createIcons();
+                }, 2000);
+            } catch (e) {
+                alert('无法分享: ' + e.message);
+            }
+        });
+    }
+
     // --- Font size buttons ---
     container.querySelectorAll('.rs-font-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             const size = btn.dataset.font;
             setFontSizePreference(size);
-            // Update reader class
             readerEl.classList.remove('rs-reader--font-sm', 'rs-reader--font-md', 'rs-reader--font-lg');
             readerEl.classList.add('rs-reader--font-' + size);
-            // Update button states
             container.querySelectorAll('.rs-font-btn').forEach(b => {
                 b.classList.toggle('rs-font-btn--active', b.dataset.font === size);
             });
@@ -837,11 +878,6 @@ function openArticle(index) {
         focusToggle.addEventListener('click', () => {
             const isFocus = workbench.classList.toggle('rs-workbench--focus');
             focusToggle.querySelector('span').textContent = isFocus ? '退出' : '专注';
-            // Update icon
-            const icon = focusToggle.querySelector('i');
-            if (icon) {
-                icon.setAttribute('data-lucide', isFocus ? 'scan-eye' : 'scan-eye');
-            }
             lucide.createIcons();
         });
     }
@@ -851,6 +887,9 @@ function openArticle(index) {
     if (translateBtn) {
         translateBtn.addEventListener('click', async () => {
             try {
+                translateBtn.innerHTML = '<i data-lucide="loader-2"></i> 翻译中…';
+                translateBtn.disabled = true;
+                lucide.createIcons();
                 const translated = await translateArticle(article.content);
                 if (translated) {
                     const body = container.querySelector('.rs-article-body');
@@ -858,26 +897,41 @@ function openArticle(index) {
                 }
             } catch (e) {
                 alert('翻译失败: ' + e.message);
+            } finally {
+                translateBtn.innerHTML = '<i data-lucide="languages"></i> 翻译';
+                translateBtn.disabled = false;
+                lucide.createIcons();
             }
         });
     }
 
-    // --- Reading progress bar ---
+    // --- Reading progress bar + reader BTT button ---
     const progressBar = document.getElementById('reading-progress');
+    const readerBtt = document.getElementById('reader-btt');
     if (progressBar) {
-        const newContainer = container;
-        // Remove previous handler if any
-        if (newContainer._scrollHandler) {
-            newContainer.removeEventListener('scroll', newContainer._scrollHandler);
+        if (container._scrollHandler) {
+            container.removeEventListener('scroll', container._scrollHandler);
         }
-        newContainer._scrollHandler = () => {
-            const scrollTop = newContainer.scrollTop;
-            const scrollHeight = newContainer.scrollHeight - newContainer.clientHeight;
+        container._scrollHandler = () => {
+            const scrollTop = container.scrollTop;
+            const scrollHeight = container.scrollHeight - container.clientHeight;
             const progress = scrollHeight > 0 ? Math.min((scrollTop / scrollHeight) * 100, 100) : 0;
             progressBar.style.width = progress + '%';
+
+            // Toggle reader back-to-top button visibility
+            if (readerBtt) {
+                readerBtt.classList.toggle('rs-reader-btt--visible', scrollTop > 500);
+            }
         };
-        newContainer.addEventListener('scroll', newContainer._scrollHandler, { passive: true });
+        container.addEventListener('scroll', container._scrollHandler, { passive: true });
         progressBar.style.width = '0%';
+    }
+
+    // --- Reader back-to-top button ---
+    if (readerBtt) {
+        readerBtt.onclick = () => {
+            container.scrollTo({ top: 0, behavior: 'smooth' });
+        };
     }
 
     // Scroll to top
