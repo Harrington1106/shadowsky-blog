@@ -149,12 +149,9 @@
     </button>
 
     <!-- Footer -->
-    <footer class="bm-footer">
-        <span class="bm-visit">
-            <span class="bm-pulse-dot"></span>
-            <span id="visit-count">加载中…</span>
-        </span>
-        <span class="bm-footer-dot">·</span>
+    <footer class="site-footer">
+        <span class="visit-count"><span class="pulse-dot"></span><span id="visit-count">—</span> 次浏览</span>
+        <span class="footer-dot">·</span>
         <span>&copy; 2026 Shadow Quake</span>
     </footer>
 
@@ -238,14 +235,12 @@
         (function() {
             const el = document.getElementById('visit-count');
             if (!el) return;
-            const pageId = 'bookmarks';
             if (window.api && window.api.fetchVisitCount) {
-                const tid = setTimeout(() => { if (el.textContent === '加载中…') el.textContent = '访问 --'; }, 3000);
-                window.api.fetchVisitCount(pageId).then(d => {
+                const tid = setTimeout(() => { if (el.textContent === '—') el.textContent = '—'; }, 3000);
+                window.api.fetchVisitCount('bookmarks').then(d => {
                     clearTimeout(tid);
-                    el.textContent = '访问 ' + d.count;
-                    if (d.total) el.title = '全站访问：' + d.total;
-                }).catch(() => { clearTimeout(tid); el.textContent = '访问 --'; });
+                    el.textContent = d.count;
+                }).catch(() => { clearTimeout(tid); });
             }
         })();
     </script>
