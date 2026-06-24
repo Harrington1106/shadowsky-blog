@@ -27,23 +27,10 @@ html:not(.dark) #navbar {
     border-color: rgba(0,0,0,.08) !important;
 }
 
-/* 主题图标 — 纯 CSS 显隐，不依赖 lucide */
+/* 主题图标 — 纯 CSS 显隐 */
 .theme-icon-sun, .theme-icon-moon { display: none; }
 html.dark .theme-icon-sun { display: block; }
 html:not(.dark) .theme-icon-moon { display: block; }
-
-#theme-toggle {
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    width: 34px !important; height: 34px !important;
-    border-radius: 9999px !important;
-    background: transparent !important;
-    border: none !important;
-    cursor: pointer !important;
-    color: rgba(226,232,240,.75) !important;
-}
-html:not(.dark) #theme-toggle { color: rgba(51,65,85,.6) !important; }
 
 /* ═══════ 页面容器 ═══════ */
 .mm-page {
@@ -280,13 +267,24 @@ html:not(.dark) #theme-toggle { color: rgba(51,65,85,.6) !important; }
     backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
     border-radius: 16px;
     box-shadow: 0 0 0 1px var(--mm-card-border);
-    padding: 12px 16px;
+    padding: 10px 14px;
     margin-bottom: 32px;
     display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
+    flex-wrap: nowrap;
+    gap: 10px;
     align-items: center;
     transition: all .3s ease;
+    overflow: hidden;
+}
+
+@media(max-width:768px) {
+    .mm-toolbar {
+        flex-wrap: wrap;
+    }
+    .mm-tags-row {
+        order: 3;
+        width: 100%;
+    }
 }
 
 .mm-tags-row {
@@ -342,12 +340,14 @@ html:not(.dark) #theme-toggle { color: rgba(51,65,85,.6) !important; }
     flex-wrap: nowrap;
     flex: 1;
     min-width: 0;
+    max-width: 100%;
     overflow-x: auto;
     overflow-y: hidden;
-    padding-bottom: 4px;
+    padding: 2px 0 6px;
     scrollbar-width: none;
     -ms-overflow-style: none;
     -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
 }
 .mm-tags-row::-webkit-scrollbar { display: none; }
 
@@ -558,20 +558,21 @@ html:not(.dark) .mm-action-btn { color: #475569; border-color: rgba(0,0,0,.1); }
 #moments-grid.max-w-3xl {
     max-width: 680px !important;
     margin: 0 auto !important;
-    padding-left: 2.5rem !important;
+    padding-left: 3.5rem !important;
     border-left: 2px solid var(--mm-card-border) !important;
 }
 
-/* 时间轴每项容器 — 设为定位参考 */
+/* 每项容器 */
 #moments-grid .relative.animate-fade-in {
     position: relative !important;
-    margin-bottom: 12px !important;
+    margin-bottom: 20px !important;
+    padding-top: 0 !important;
 }
 
-/* 时间轴卡片 */
+/* 卡片 */
 #moments-grid .moment-card.ml-4,
 #moments-grid .moment-card {
-    margin: 0 0 16px 0 !important;
+    margin: 0 !important;
     background: var(--mm-card-bg) !important;
     backdrop-filter: blur(14px) !important;
     -webkit-backdrop-filter: blur(14px) !important;
@@ -586,11 +587,11 @@ html:not(.dark) .mm-action-btn { color: #475569; border-color: rgba(0,0,0,.1); }
     box-shadow: 0 0 0 1px rgba(45,212,191,.15), 0 6px 24px rgba(0,0,0,.15) !important;
 }
 
-/* 时间轴圆点 — 全新 class */
+/* 时间轴圆点 */
 .tl-month-marker {
-    position: absolute; left: -31px; top: 2px;
-    display: flex; align-items: center; gap: 10px;
-    z-index: 5;
+    position: absolute; left: -45px; top: 0;
+    display: flex; align-items: center; gap: 8px;
+    z-index: 5; pointer-events: none;
 }
 .tl-month-dot {
     width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0;
@@ -600,17 +601,16 @@ html:not(.dark) .mm-action-btn { color: #475569; border-color: rgba(0,0,0,.1); }
 }
 html:not(.dark) .tl-month-dot { border-color: #fff; }
 .tl-month-label {
-    font-size: .78rem; font-weight: 600;
-    padding: 2px 10px; border-radius: 9999px;
+    font-size: .75rem; font-weight: 600;
+    padding: 3px 10px; border-radius: 9999px;
     background: rgba(45,212,191,.08); color: #2dd4bf;
     border: 1px solid rgba(45,212,191,.15);
     white-space: nowrap;
 }
 html:not(.dark) .tl-month-label { color: #0d9488; }
 
-/* 普通小圆点 */
 .tl-item-dot {
-    position: absolute; left: -29px; top: 10px;
+    position: absolute; left: -41px; top: 12px;
     width: 8px; height: 8px; border-radius: 50%; z-index: 3;
     background: rgba(45,212,191,.35);
     border: 2px solid rgba(6,11,24,.8);

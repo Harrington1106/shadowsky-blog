@@ -3,9 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>随手拍 — Shadow Quake</title>
+    <!-- 阻塞脚本：页面渲染前就切到正确主题，消除闪烁 -->
+    <script>
+        (function(){
+            try {
+                var t = localStorage.getItem('theme');
+                if (t === 'light') document.documentElement.classList.remove('dark');
+                else if (!t && window.matchMedia('(prefers-color-scheme:light)').matches) document.documentElement.classList.remove('dark');
+            } catch(e) {}
+        })();
+    </script>
     <meta name="theme-color" content="#0B1120" media="(prefers-color-scheme: dark)">
     <meta name="theme-color" content="#F5F7FA" media="(prefers-color-scheme: light)">
-    <title>随手拍 — Shadow Quake</title>
     <link rel="icon" type="image/png" href="public/img/favicon256.png">
 
     <link rel="preconnect" href="https://fonts.loli.net">
@@ -14,11 +24,11 @@
 
     <!-- Tailwind (保留兼容 moments.js 动态类名) -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="css/unified.css?v=20260625s" rel="stylesheet">
-    <link href="css/liquid-ambient.css?v=20260625s" rel="stylesheet">
-    <link href="css/liquid-moments.css?v=20260625s" rel="stylesheet">
+    <link href="css/unified.css?v=20260625t" rel="stylesheet">
+    <link href="css/liquid-ambient.css?v=20260625t" rel="stylesheet">
+    <link href="css/liquid-moments.css?v=20260625t" rel="stylesheet">
 
-    <script src="js/vendor/lucide.min.js?v=20260625s"></script>
+    <script src="js/vendor/lucide.min.js?v=20260625t"></script>
 
     <style>
         html:not(.dark) .dark-only{display:none!important}
@@ -216,15 +226,15 @@
     </div>
 
     <!-- ═══════ SCRIPTS ═══════ -->
-    <script src="js/api.js?v=20260625s"></script>
-    <script src="js/main.js?v=20260625s"></script>
-    <script src="js/navbar.js?v=20260625s"></script>
-    <script src="js/activity_chart.js?v=20260625s"></script>
-    <script src="js/heatmap.js?v=20260625s"></script>
-    <script src="js/moments.js?v=20260625s"></script>
-    <script src="js/click-effect.js?v=20260625s"></script>
+    <script src="js/api.js?v=20260625t"></script>
+    <script src="js/main.js?v=20260625t"></script>
+    <script src="js/navbar.js?v=20260625t"></script>
+    <script src="js/activity_chart.js?v=20260625t"></script>
+    <script src="js/heatmap.js?v=20260625t"></script>
+    <script src="js/moments.js?v=20260625t"></script>
+    <script src="js/click-effect.js?v=20260625t"></script>
     <script src="https://unpkg.com/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
-    <script src="js/context-menu.js?v=20260625s"></script>
+    <script src="js/context-menu.js?v=20260625t"></script>
     <script>
         lucide.createIcons();
 
@@ -261,7 +271,7 @@
         window.addEventListener('themechange', updateThemeUI);
         updateThemeUI();
     </script>
-    <script src="js/back-to-top.js?v=20260625s"></script>
-    <script src="js/tracker.js?v=20260625s"></script>
+    <script src="js/back-to-top.js?v=20260625t"></script>
+    <script src="js/tracker.js?v=20260625t"></script>
 </body>
 </html>
