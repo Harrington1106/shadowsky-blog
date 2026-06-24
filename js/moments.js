@@ -293,11 +293,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Update Buttons
         if (view === 'grid') {
-            viewGridBtn.className = "p-1.5 rounded-lg bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 transition-all shadow-sm";
-            viewTimelineBtn.className = "p-1.5 rounded-lg text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700 transition-all";
+            viewGridBtn.className = "mm-view-btn active";
+            viewTimelineBtn.className = "mm-view-btn";
         } else {
-            viewTimelineBtn.className = "p-1.5 rounded-lg bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 transition-all shadow-sm";
-            viewGridBtn.className = "p-1.5 rounded-lg text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700 transition-all";
+            viewTimelineBtn.className = "mm-view-btn active";
+            viewGridBtn.className = "mm-view-btn";
         }
 
         const url = new URL(window.location);
