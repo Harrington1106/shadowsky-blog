@@ -997,39 +997,6 @@ function openArticle(index) {
         });
     }
 
-    // --- 平滑惯性滚动（仅对阅读区）---
-    function enableSmoothScroll(el) {
-        if (!el || el._smoothEnabled) return;
-        el._smoothEnabled = true;
-
-        let target = el.scrollTop;
-        let lastWheel = 0;
-        let frameId = null;
-        const ease = 0.28;
-        const threshold = 0.4;
-
-        el.addEventListener('wheel', function(e) {
-            e.preventDefault();
-            target += e.deltaY;
-            target = Math.max(0, Math.min(target, el.scrollHeight - el.clientHeight));
-            lastWheel = performance.now();
-            if (!frameId) frameId = requestAnimationFrame(tick);
-        }, { passive: false });
-
-        function tick() {
-            const dt = performance.now() - lastWheel;
-            // 鼠标停下超过 80ms 就立即停止
-            if (dt > 80 && Math.abs(target - el.scrollTop) < 3) {
-                el.scrollTop = target;
-                frameId = null;
-                return;
-            }
-            el.scrollTop += (target - el.scrollTop) * ease;
-            frameId = requestAnimationFrame(tick);
-        }
-    }
-    enableSmoothScroll(container);
-
     // --- Reading progress bar + reader BTT button ---
     const progressBar = document.getElementById('reading-progress');
     const readerBtt = document.getElementById('reader-btt');
