@@ -1166,6 +1166,50 @@
     color: var(--rs-text-title);
 }
 
+/* 键盘按键 */
+.rs-article-body kbd {
+    display: inline-block;
+    padding: 2px 6px;
+    font-size: .82em; font-family: inherit;
+    border: 1px solid var(--rs-card-border);
+    border-radius: 5px;
+    background: var(--rs-skeleton-base);
+    box-shadow: 0 1px 0 var(--rs-card-border);
+}
+/* 高亮 */
+.rs-article-body mark {
+    background: var(--rs-accent-soft);
+    color: var(--rs-accent);
+    padding: 1px 4px; border-radius: 3px;
+}
+/* 标签/徽章类元素（博客平台常用） */
+.rs-article-body span[style*="background"],
+.rs-article-body span[style*="color"],
+.rs-article-body .tag, .rs-article-body .badge, .rs-article-body .label,
+.rs-article-body [class*="tag"], .rs-article-body [class*="badge"], .rs-article-body [class*="pill"] {
+    border-radius: 6px !important;
+}
+/* 折叠面板 */
+.rs-article-body details {
+    border: 1px solid var(--rs-card-border);
+    border-radius: 10px;
+    padding: 12px 16px; margin: 1em 0;
+    background: var(--rs-skeleton-base);
+}
+.rs-article-body summary { cursor: pointer; font-weight: 600; color: var(--rs-accent); }
+/* 视频 / iframe 响应式 */
+.rs-article-body video,
+.rs-article-body iframe {
+    max-width: 100%; border-radius: 12px; margin: 1.5em 0;
+}
+/* 缩写 */
+.rs-article-body abbr { text-decoration: underline dotted; cursor: help; }
+/* 上下标 */
+.rs-article-body sup, .rs-article-body sub { font-size: .75em; }
+/* 插入/删除 */
+.rs-article-body ins { text-decoration: none; background: #10b98118; padding: 1px 4px; border-radius: 3px; }
+.rs-article-body del { text-decoration: line-through; opacity: .5; }
+
 /* 第一个标题去掉上边距 */
 .rs-article-body > *:first-child {
     margin-top: 0;
