@@ -20,23 +20,24 @@
                 position: fixed;
                 z-index: 10000;
                 width: 220px;
-                background: rgba(255, 255, 255, 0.95);
-                backdrop-filter: blur(10px);
-                border-radius: 12px;
-                box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(0,0,0,0.05);
+                background: rgba(255, 255, 255, 0.85);
+                backdrop-filter: blur(24px) saturate(1.2);
+                -webkit-backdrop-filter: blur(24px) saturate(1.2);
+                border-radius: 14px;
+                box-shadow: 0 12px 40px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.06);
                 padding: 6px;
                 display: flex;
                 flex-direction: column;
                 opacity: 0;
-                transform: scale(0.95);
+                transform: scale(0.92);
                 visibility: hidden;
-                transition: opacity 0.15s ease, transform 0.15s ease, visibility 0.15s;
+                transition: opacity 0.2s ease, transform 0.2s cubic-bezier(0.16,1,0.3,1), visibility 0.2s;
                 font-family: 'Inter', 'Noto Sans SC', sans-serif;
             }
-            
+
             html.dark #custom-context-menu {
-                background: rgba(30, 30, 30, 0.95);
-                box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255,255,255,0.1);
+                background: rgba(17, 24, 39, 0.88);
+                box-shadow: 0 12px 40px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.08);
             }
 
             #custom-context-menu.visible {
@@ -49,12 +50,13 @@
                 display: flex;
                 align-items: center;
                 padding: 8px 12px;
-                font-size: 14px;
+                font-size: 13px;
                 color: #374151;
                 cursor: pointer;
-                border-radius: 6px;
-                transition: all 0.1s;
+                border-radius: 8px;
+                transition: all 0.15s ease;
                 user-select: none;
+                font-weight: 450;
             }
 
             html.dark .ctx-item {
@@ -62,37 +64,44 @@
             }
 
             .ctx-item:hover {
-                background-color: #eff6ff;
-                color: #2563eb;
+                background-color: rgba(20, 184, 166, 0.1);
+                color: #0d9488;
             }
 
             html.dark .ctx-item:hover {
-                background-color: rgba(59, 130, 246, 0.15);
-                color: #60a5fa;
+                background-color: rgba(45, 212, 191, 0.12);
+                color: #2dd4bf;
             }
 
             .ctx-icon {
                 margin-right: 10px;
-                stroke-width: 2px;
+                width: 16px;
+                height: 16px;
+                opacity: 0.65;
             }
 
             .ctx-divider {
                 height: 1px;
                 background-color: #e5e7eb;
-                margin: 4px 0;
+                margin: 4px 8px;
             }
 
             html.dark .ctx-divider {
-                background-color: #374151;
+                background-color: rgba(255,255,255,0.06);
             }
-            
+
             .ctx-shortcut {
                 margin-left: auto;
                 font-size: 10px;
                 color: #9ca3af;
                 font-weight: 500;
+                font-family: 'JetBrains Mono', 'Fira Code', monospace;
             }
-            
+
+            html.dark .ctx-shortcut {
+                color: rgba(255,255,255,0.3);
+            }
+
             #ctx-dynamic:empty {
                 display: none;
             }
@@ -211,18 +220,20 @@
                 }
             },
             {
-                selector: '.blog-post-card',
+                selector: '.blog-card',
                 getItems: (target) => {
-                    const el = target.closest('.blog-post-card');
+                    const el = target.closest('.blog-card');
                     const file = el.dataset.file;
-                    const title = el.dataset.title;
-                    const link = `${window.location.origin}/post.html?file=${file}`;
+                    const title = el.dataset.title || '文章';
+                    if (!file) return [];
+                    const link = `${window.location.origin}/post.html?file=${encodeURIComponent(file)}`;
                     return [
                         { label: '阅读文章', icon: 'book-open', action: () => window.location.href = link },
                         { label: '在新标签页打开', icon: 'external-link', action: () => window.open(link, '_blank') },
-                        { label: '复制链接', icon: 'link', action: () => { navigator.clipboard.writeText(link); alert('文章链接已复制'); } },
-                        { label: '分享到 Twitter', icon: 'share-2', action: () => {
-                             const text = `Read "${title}" on ShadowSky Blog`;
+                        { label: '复制文章链接', icon: 'link', action: () => { navigator.clipboard.writeText(link); alert('文章链接已复制到剪贴板'); } },
+                        { type: 'divider' },
+                        { label: '分享到 Twitter', icon: 'twitter', action: () => {
+                             const text = `Read "${title}" on Shadow Quake`;
                              const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(link)}`;
                              window.open(url, '_blank');
                         }}
@@ -244,6 +255,26 @@
 
         // Page Contexts: Page-specific items (shown if no element context matched, or we can choose to merge)
         const pageContexts = [
+            {
+                // Blog List Page
+                check: () => window.location.pathname.includes('blog.html') || document.getElementById('posts-container'),
+                getItems: () => {
+                    const items = [
+                        { label: '搜索笔记', icon: 'search', action: () => {
+                            const input = document.getElementById('search-input');
+                            if (input) { input.focus(); input.scrollIntoView({ behavior: 'smooth' }); }
+                        }, shortcut: '⌘K' },
+                        { type: 'divider' },
+                        { label: '网格视图', icon: 'grid-3x3', action: () => { if (window.switchView) window.switchView('grid'); } },
+                        { label: '时间轴视图', icon: 'clock', action: () => { if (window.switchView) window.switchView('timeline'); } },
+                        { label: '目录视图', icon: 'folder-tree', action: () => { if (window.switchView) window.switchView('directory'); } },
+                        { label: '标签视图', icon: 'tags', action: () => { if (window.switchView) window.switchView('tags'); } },
+                        { type: 'divider' },
+                        { label: '刷新列表', icon: 'rotate-cw', action: () => window.location.reload(), shortcut: 'F5' },
+                    ];
+                    return items;
+                }
+            },
             {
                 // Post Page
                 check: () => document.getElementById('post-title') || window.location.pathname.includes('post.html'),

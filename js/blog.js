@@ -264,7 +264,7 @@ function renderGridView(container) {
                </div>`;
 
         const html = `
-            <article class="blog-card animate-in" style="animation-delay:${delay}ms">
+            <article class="blog-card animate-in" style="animation-delay:${delay}ms" data-file="${post.file}" data-title="${post.title.replace(/"/g, '&quot;')}">
                 <a href="post.html?file=${encodeURIComponent(post.file)}" class="blog-card-link">
                     ${coverHtml}
                     <div class="blog-card-body">
