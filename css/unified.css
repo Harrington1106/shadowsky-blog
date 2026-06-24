@@ -1,12 +1,16 @@
 /* ═══════════════════════════════════════════════════════
    Aqua Vitrum v4 — Unified Glass System
    Token-driven liquid glassmorphism for ShadowQuake
-   
+
    设计理念：
    - 每一层都是玻璃，光在层间折射
    - 深度通过 blur + opacity 级联构建
    - 流体运动贯穿始终（CSS blobs + WebGL）
    ═══════════════════════════════════════════════════════ */
+
+/* ── Theme FOUC prevention: 暗色模式下隐藏 dark-only，亮色隐藏 light-only ── */
+html:not(.dark) .dark-only{display:none !important}
+html.dark .light-only{display:none !important}
 
 @import './design-tokens.css';
 
