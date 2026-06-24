@@ -20,6 +20,13 @@
     --mm-surface: rgba(255,255,255,.04);
 }
 
+/* 亮色模式导航栏可见性 */
+html:not(.dark) #navbar {
+    background: rgba(255,255,255,.75) !important;
+    box-shadow: 0 8px 32px rgba(0,0,0,.06), 0 0 0 1px rgba(0,0,0,.04) inset !important;
+    border-color: rgba(0,0,0,.08) !important;
+}
+
 /* ═══════ 页面容器 ═══════ */
 .mm-page {
     position: relative;
@@ -310,7 +317,7 @@
 }
 .dark .mm-search-icon { color: rgba(255,255,255,.25); }
 
-/* 标签滤片 — 单行横向滚动，不换行 */
+/* 标签滤片 — 单行横向滚动 */
 .mm-tags-row {
     display: flex;
     gap: 6px;
@@ -322,8 +329,7 @@
     padding-bottom: 4px;
     scrollbar-width: none;
     -ms-overflow-style: none;
-    mask-image: linear-gradient(to right, transparent 0%, black 4%, black 96%, transparent 100%);
-    -webkit-mask-image: linear-gradient(to right, transparent 0%, black 4%, black 96%, transparent 100%);
+    -webkit-overflow-scrolling: touch;
 }
 .mm-tags-row::-webkit-scrollbar { display: none; }
 
@@ -531,65 +537,72 @@ html:not(.dark) .mm-action-btn { color: #475569; border-color: rgba(0,0,0,.1); }
 
 
 /* ═══════ TIMELINE 时间轴视图 ═══════ */
-.mm-timeline {
-    max-width: 680px;
-    margin: 0 auto;
-    position: relative;
-    padding-left: 36px;
-}
-
-.mm-timeline::before {
-    content: '';
-    position: absolute;
-    left: 11px; top: 0; bottom: 0;
-    width: 2px;
-    background: var(--mm-card-border);
-}
-
-.mm-timeline .moment-card {
-    margin-bottom: 24px;
-    position: relative;
-}
-
-/* 时间轴容器 — 覆盖 moments.js 的 Tailwind 类 */
+/* 容器 */
 #moments-grid.max-w-3xl {
     max-width: 680px !important;
+    margin: 0 auto !important;
+    padding-left: 2rem !important;
+    border-left: 2px solid var(--mm-card-border) !important;
 }
 
-/* 时间轴卡片 */
+/* 时间轴卡片 — 覆盖 Tailwind */
 #moments-grid .moment-card.ml-4 {
     margin-left: 0 !important;
-    margin-top: 16px !important;
+    margin-top: 0 !important;
+    margin-bottom: 20px !important;
     background: var(--mm-card-bg) !important;
     backdrop-filter: blur(14px) !important;
     -webkit-backdrop-filter: blur(14px) !important;
     box-shadow: 0 0 0 1px var(--mm-card-border) !important;
     border: none !important;
-    border-radius: 16px !important;
+    border-radius: 14px !important;
+    padding: 16px 18px !important;
 }
 
 #moments-grid .moment-card.ml-4:hover {
-    box-shadow: 0 0 0 1px rgba(45,212,191,.15), 0 8px 28px rgba(0,0,0,.15) !important;
+    box-shadow: 0 0 0 1px rgba(45,212,191,.15), 0 6px 24px rgba(0,0,0,.15) !important;
+    transform: translateX(3px) !important;
 }
 
-/* 时间轴线条 */
-#moments-grid.border-l-2 {
-    border-left: 2px solid var(--mm-card-border) !important;
-    border-color: var(--mm-card-border) !important;
+/* 时间轴内部文字 */
+#moments-grid .moment-card .text-gray-700 { color: var(--bg-text-body, #0f172a) !important; }
+.dark #moments-grid .moment-card .text-gray-700 { color: #e2e8f0 !important; }
+#moments-grid .moment-card .text-xs { color: rgba(15,23,42,.4) !important; }
+.dark #moments-grid .moment-card .text-xs { color: rgba(255,255,255,.35) !important; }
+
+/* 时间轴卡片内的图片容器 */
+#moments-grid .moment-card .md\\:w-48 {
+    border-radius: 10px !important;
+    overflow: hidden !important;
 }
 
-/* 时间轴文字 */
-#moments-grid .moment-card p {
-    font-size: .93rem !important;
-    line-height: 1.6 !important;
-}
-
-/* 时间轴标签 */
+/* 标签 */
 #moments-grid .moment-card .px-2.py-1 {
     background: rgba(45,212,191,.06) !important;
     color: var(--mm-accent) !important;
     border-radius: 5px !important;
+    font-size: .68rem !important;
+    padding: 2px 7px !important;
 }
+.dark #moments-grid .moment-card .px-2.py-1 { background: rgba(45,212,191,.1) !important; }
+
+/* 月份标题行 — 定位修正 */
+#moments-grid .absolute.-left-\\[41px\\] {
+    left: -33px !important;
+    top: -4px !important;
+    z-index: 5 !important;
+}
+
+/* 小圆点（非首月标记）— 半透明teal */
+#moments-grid .-left-\\[37px\\] {
+    left: -33px !important;
+    top: 8px !important;
+    z-index: 3 !important;
+}
+
+/* 时间轴间距 */
+#moments-grid .space-y-10 > * { margin-bottom: 0 !important; }
+#moments-grid .relative.animate-fade-in { margin-bottom: 4px !important; }
 
 
 /* ═══════ LIGHTBOX ═══════ */
@@ -599,71 +612,77 @@ html:not(.dark) .mm-action-btn { color: #475569; border-color: rgba(0,0,0,.1); }
     -webkit-backdrop-filter: blur(30px) !important;
 }
 
-/* 右上角按钮：X / 分享 */
-.mm-lb-btn {
-    display: flex; align-items: center; justify-content: center;
-    width: 38px; height: 38px;
-    border-radius: 12px;
-    background: rgba(255,255,255,.06);
-    border: 1px solid rgba(255,255,255,.08);
-    color: rgba(255,255,255,.55);
-    cursor: pointer;
-    transition: all .2s ease;
-}
-.mm-lb-btn:hover {
-    background: rgba(45,212,191,.12);
-    border-color: rgba(45,212,191,.25);
-    color: #2dd4bf;
+html:not(.dark) #lightbox {
+    background: rgba(255,255,255,.94) !important;
 }
 
-/* 左右导航箭头 — 始终可见 */
-.mm-lb-nav {
-    position: absolute;
-    top: 50%; transform: translateY(-50%);
+/* 图片区 */
+#lightbox img {
+    max-height: 100%; max-width: 100%; object-fit: contain;
+}
+
+/* 右上角按钮 */
+.mm-lb-btn {
     display: flex; align-items: center; justify-content: center;
-    width: 44px; height: 44px;
-    border-radius: 50%;
-    background: rgba(255,255,255,.06);
-    border: 1px solid rgba(255,255,255,.08);
-    color: rgba(255,255,255,.65);
-    cursor: pointer;
-    transition: all .2s ease;
+    width: 38px; height: 38px; border-radius: 12px;
+    background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.1);
+    color: rgba(255,255,255,.6); cursor: pointer; transition: all .2s;
+}
+html:not(.dark) .mm-lb-btn {
+    background: rgba(0,0,0,.04); border-color: rgba(0,0,0,.08); color: rgba(0,0,0,.5);
+}
+.mm-lb-btn:hover { background: rgba(45,212,191,.15); border-color: rgba(45,212,191,.3); color: #2dd4bf; }
+
+/* 左右导航 */
+.mm-lb-nav {
+    position: absolute; top: 50%; transform: translateY(-50%);
+    width: 44px; height: 44px; border-radius: 50%;
+    background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.1);
+    color: rgba(255,255,255,.7); cursor: pointer; transition: all .2s;
     backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+    display: flex; align-items: center; justify-content: center;
+}
+html:not(.dark) .mm-lb-nav {
+    background: rgba(0,0,0,.04); border-color: rgba(0,0,0,.08); color: rgba(0,0,0,.5);
 }
 .mm-lb-nav--prev { left: 16px; }
 .mm-lb-nav--next { right: 16px; }
-.mm-lb-nav:hover {
-    background: rgba(45,212,191,.15);
-    border-color: rgba(45,212,191,.3);
-    color: #fff;
-}
+.mm-lb-nav:hover { background: rgba(45,212,191,.15); border-color: rgba(45,212,191,.3); color: #2dd4bf; }
 
-/* 详情面板 */
-#lightbox .md\:w-80 {
+/* Lightbox 详情面板 */
+#lightbox .md\\:w-80 {
     background: rgba(255,255,255,.03) !important;
-    backdrop-filter: blur(20px) !important;
-    -webkit-backdrop-filter: blur(20px) !important;
     border-color: rgba(255,255,255,.06) !important;
+}
+html:not(.dark) #lightbox .md\\:w-80 {
+    background: rgba(0,0,0,.02) !important;
+    border-color: rgba(0,0,0,.06) !important;
 }
 
 #lightbox #lightbox-content {
     font-family: 'Noto Serif SC', Georgia, serif !important;
 }
+html:not(.dark) #lightbox #lightbox-content { color: #1e293b !important; }
+
+#lightbox #lightbox-date { color: #2dd4bf !important; }
+html:not(.dark) #lightbox #lightbox-date { color: #0d9488 !important; }
+
+#lightbox #lightbox-location { color: rgba(255,255,255,.5) !important; }
+html:not(.dark) #lightbox #lightbox-location { color: rgba(0,0,0,.45) !important; }
 
 #lightbox #lightbox-exif {
     background: rgba(255,255,255,.04) !important;
-    border: 1px solid rgba(255,255,255,.05) !important;
-    border-radius: 12px !important;
+    border: 1px solid rgba(255,255,255,.05) !important; border-radius: 12px !important;
+}
+html:not(.dark) #lightbox #lightbox-exif {
+    background: rgba(0,0,0,.02) !important; border-color: rgba(0,0,0,.05) !important;
 }
 
-/* 标签 */
 #lightbox-tags span {
-    padding: 3px 9px;
-    font-size: .7rem;
-    border-radius: 5px;
-    background: rgba(45,212,191,.08);
-    color: #2dd4bf;
+    padding: 3px 9px; font-size: .7rem; border-radius: 5px;
+    background: rgba(45,212,191,.08); color: #2dd4bf;
 }
+html:not(.dark) #lightbox-tags span { color: #0d9488; }
 
 
 /* ═══════ FOOTER ═══════ */
