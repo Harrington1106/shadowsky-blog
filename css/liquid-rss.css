@@ -13,6 +13,12 @@
 .hidden { display: none !important; }
 .animate-spin { animation: rs-spin 1s linear infinite; }
 
+/* 加载中状态 — 按钮 disabled 时内部图标自动旋转 */
+#full-article-btn:disabled svg,
+.rs-empty-loading svg {
+    animation: rs-spin 1s linear infinite;
+}
+
 /* ═══════ CSS Variables ═══════ */
 :root {
     --rs-accent: #0d9488;

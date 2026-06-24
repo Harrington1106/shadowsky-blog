@@ -980,7 +980,7 @@ function openArticle(index) {
 
             // Toggle reader back-to-top button visibility
             if (readerBtt) {
-                readerBtt.classList.toggle('rs-reader-btt--visible', scrollTop > 500);
+                readerBtt.classList.toggle('rs-reader-btt--visible', scrollTop > 200);
             }
         };
         container.addEventListener('scroll', container._scrollHandler, { passive: true });
