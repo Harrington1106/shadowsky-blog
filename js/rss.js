@@ -194,6 +194,72 @@ async function fetchFeedsData() {
     return Array.isArray(feeds) ? feeds : [];
 }
 
+// ===========================================
+// Helper Utilities
+// ===========================================
+
+/**
+ * 估算阅读时间（中文约 400 字/分钟，英文约 200 词/分钟）
+ * @param {string} htmlContent - HTML 内容
+ * @returns {string} 格式化的阅读时间，如 "3 分钟"
+ */
+function getReadingTime(htmlContent) {
+    if (!htmlContent) return '1 分钟';
+    // 去除 HTML 标签
+    const text = htmlContent.replace(/<[^>]*>/g, '');
+    // 中文字符计数
+    const chineseChars = (text.match(/[一-鿿㐀-䶿]/g) || []).length;
+    // 英文单词计数
+    const words = text.replace(/[一-鿿㐀-䶿]/g, '').match(/\b\w+\b/g) || [];
+    // 中文 400 字/分钟，英文 200 词/分钟
+    const minutes = Math.ceil(chineseChars / 400 + words.length / 200);
+    return minutes > 0 ? minutes + ' 分钟' : '1 分钟';
+}
+
+/**
+ * 相对时间格式化
+ * @param {Date|string} date - 日期
+ * @returns {string} 如 "3小时前"、"昨天"、"6月15日"
+ */
+function getRelativeTime(date) {
+    const now = new Date();
+    const d = date instanceof Date ? date : new Date(date);
+    const diffMs = now - d;
+    const diffSec = Math.floor(diffMs / 1000);
+    const diffMin = Math.floor(diffSec / 60);
+    const diffHour = Math.floor(diffMin / 60);
+    const diffDay = Math.floor(diffHour / 24);
+
+    if (diffSec < 60) return '刚刚';
+    if (diffMin < 60) return diffMin + '分钟前';
+    if (diffHour < 24) return diffHour + '小时前';
+    if (diffDay === 1) return '昨天';
+    if (diffDay < 7) return diffDay + '天前';
+    if (diffDay < 30) return Math.floor(diffDay / 7) + '周前';
+
+    const month = d.getMonth() + 1;
+    const day = d.getDate();
+    if (d.getFullYear() === now.getFullYear()) {
+        return month + '月' + day + '日';
+    }
+    return d.getFullYear() + '年' + month + '月' + day + '日';
+}
+
+/**
+ * 获取/设置阅读器字号偏好
+ */
+function getFontSizePreference() {
+    return localStorage.getItem('rs-font-size') || 'md';
+}
+
+function setFontSizePreference(size) {
+    localStorage.setItem('rs-font-size', size);
+}
+
+// ===========================================
+// Event Listeners
+// ===========================================
+
 function setupEventListeners() {
     // All Articles button
     const allFeedsBtn = document.getElementById('all-feeds-btn');
@@ -635,18 +701,23 @@ function renderArticleList(articles, feedTitle) {
         item.className = 'rs-card';
         item.onclick = () => openArticle(index);
 
-        const dateStr = article.pubDate.toLocaleDateString();
-        const timeStr = article.pubDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        const relativeTime = getRelativeTime(article.pubDate);
+        const readingTime = getReadingTime(article.content || article.description || '');
         const sourceLabel = article.feedTitle || feedTitle;
+        const desc = article.description ? article.description.substring(0, 120).trim() + '…' : '暂无描述';
 
         item.innerHTML = `
             <span class="rs-card-source">${sourceLabel}</span>
             <h3 class="rs-card-title">${article.title}</h3>
-            <p class="rs-card-desc">${article.description ? article.description.substring(0, 120) + '…' : '暂无描述'}</p>
+            <p class="rs-card-desc">${desc}</p>
             <div class="rs-card-meta">
                 <span class="rs-card-date">
-                    <i data-lucide="calendar" style="width:12px;height:12px"></i>
-                    ${dateStr} ${timeStr}
+                    <i data-lucide="clock" style="width:11px;height:11px"></i>
+                    ${relativeTime}
+                </span>
+                <span class="rs-card-read-time">
+                    <i data-lucide="book-open" style="width:10px;height:10px"></i>
+                    ${readingTime}
                 </span>
                 ${article.author ? `<span class="rs-card-author">${article.author}</span>` : ''}
             </div>
@@ -676,6 +747,9 @@ function openArticle(index) {
     // Sanitize content if DOMPurify is available
     const safeContent = window.DOMPurify ? DOMPurify.sanitize(article.content) : article.content;
     const dateStr = article.pubDate.toLocaleString();
+    const relativeTime = getRelativeTime(article.pubDate);
+    const readingTime = getReadingTime(article.content || article.description || '');
+    const fontSize = getFontSizePreference();
 
     container.innerHTML = `
         <article class="rs-article">
@@ -685,7 +759,12 @@ function openArticle(index) {
                 <div class="rs-article-meta">
                     <span class="rs-meta-pill">
                         <i data-lucide="calendar"></i>
-                        ${dateStr}
+                        <span title="${dateStr}">${relativeTime}</span>
+                    </span>
+
+                    <span class="rs-meta-pill rs-meta-pill--read-time">
+                        <i data-lucide="clock"></i>
+                        ${readingTime}
                     </span>
 
                     ${article.author ? `
@@ -703,6 +782,17 @@ function openArticle(index) {
                         <i data-lucide="languages"></i>
                         AI 翻译
                     </button>
+
+                    <span class="rs-reader-toolbar">
+                        <button class="rs-font-btn${fontSize === 'sm' ? ' rs-font-btn--active' : ''}" data-font="sm" title="小号字体" aria-label="小号字体">A</button>
+                        <button class="rs-font-btn${fontSize === 'md' ? ' rs-font-btn--active' : ''}" data-font="md" title="默认字体" aria-label="默认字体" style="font-size:0.85rem">A</button>
+                        <button class="rs-font-btn${fontSize === 'lg' ? ' rs-font-btn--active' : ''}" data-font="lg" title="大号字体" aria-label="大号字体" style="font-size:0.95rem">A</button>
+                        <span style="width:4px"></span>
+                        <button id="focus-toggle" class="rs-focus-toggle" title="专注模式" aria-label="切换专注模式">
+                            <i data-lucide="scan-eye"></i>
+                            <span>专注</span>
+                        </button>
+                    </span>
                 </div>
             </header>
 
@@ -716,9 +806,47 @@ function openArticle(index) {
         </article>
     `;
 
+    // Apply saved font size preference
+    const readerEl = document.getElementById('rss-reader');
+    if (readerEl) {
+        readerEl.classList.remove('rs-reader--font-sm', 'rs-reader--font-md', 'rs-reader--font-lg');
+        readerEl.classList.add('rs-reader--font-' + fontSize);
+    }
+
     lucide.createIcons();
 
-    // Translate button
+    // --- Font size buttons ---
+    container.querySelectorAll('.rs-font-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const size = btn.dataset.font;
+            setFontSizePreference(size);
+            // Update reader class
+            readerEl.classList.remove('rs-reader--font-sm', 'rs-reader--font-md', 'rs-reader--font-lg');
+            readerEl.classList.add('rs-reader--font-' + size);
+            // Update button states
+            container.querySelectorAll('.rs-font-btn').forEach(b => {
+                b.classList.toggle('rs-font-btn--active', b.dataset.font === size);
+            });
+        });
+    });
+
+    // --- Focus mode toggle ---
+    const focusToggle = document.getElementById('focus-toggle');
+    const workbench = document.getElementById('rss-workbench');
+    if (focusToggle && workbench) {
+        focusToggle.addEventListener('click', () => {
+            const isFocus = workbench.classList.toggle('rs-workbench--focus');
+            focusToggle.querySelector('span').textContent = isFocus ? '退出' : '专注';
+            // Update icon
+            const icon = focusToggle.querySelector('i');
+            if (icon) {
+                icon.setAttribute('data-lucide', isFocus ? 'scan-eye' : 'scan-eye');
+            }
+            lucide.createIcons();
+        });
+    }
+
+    // --- Translate button ---
     const translateBtn = document.getElementById('translate-btn');
     if (translateBtn) {
         translateBtn.addEventListener('click', async () => {
@@ -734,19 +862,21 @@ function openArticle(index) {
         });
     }
 
-    // Reading progress bar
+    // --- Reading progress bar ---
     const progressBar = document.getElementById('reading-progress');
     if (progressBar) {
-        // Remove old listener by cloning
         const newContainer = container;
+        // Remove previous handler if any
+        if (newContainer._scrollHandler) {
+            newContainer.removeEventListener('scroll', newContainer._scrollHandler);
+        }
         newContainer._scrollHandler = () => {
             const scrollTop = newContainer.scrollTop;
             const scrollHeight = newContainer.scrollHeight - newContainer.clientHeight;
-            const progress = scrollHeight > 0 ? (scrollTop / scrollHeight) * 100 : 0;
+            const progress = scrollHeight > 0 ? Math.min((scrollTop / scrollHeight) * 100, 100) : 0;
             progressBar.style.width = progress + '%';
         };
         newContainer.addEventListener('scroll', newContainer._scrollHandler, { passive: true });
-        // Reset progress
         progressBar.style.width = '0%';
     }
 

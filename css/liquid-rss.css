@@ -35,6 +35,14 @@
     --rs-badge-text: #0d9488;
     --rs-icon-avatar-bg: rgba(0, 0, 0, 0.04);
     --rs-icon-avatar-text: rgba(15, 23, 42, 0.55);
+    /* 阅读排版变量 */
+    --rs-reader-font-size: 1rem;
+    --rs-reader-line-height: 1.85;
+    --rs-reader-max-width: 720px;
+    --rs-reader-paragraph-spacing: 1.3em;
+    /* 阅读时间徽章 */
+    --rs-read-time-bg: rgba(13, 148, 136, 0.08);
+    --rs-read-time-text: #0d9488;
 }
 
 .dark {
@@ -62,6 +70,14 @@
     --rs-badge-text: #2dd4bf;
     --rs-icon-avatar-bg: rgba(255, 255, 255, 0.06);
     --rs-icon-avatar-text: rgba(241, 245, 249, 0.55);
+    /* 阅读排版变量 */
+    --rs-reader-font-size: 1rem;
+    --rs-reader-line-height: 1.85;
+    --rs-reader-max-width: 720px;
+    --rs-reader-paragraph-spacing: 1.3em;
+    /* 阅读时间徽章 */
+    --rs-read-time-bg: rgba(45, 212, 191, 0.12);
+    --rs-read-time-text: #2dd4bf;
 }
 
 
@@ -746,6 +762,27 @@
     max-width: 100px;
 }
 
+/* ── 阅读时间徽章 ── */
+.rs-card-read-time {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 0.66rem;
+    font-weight: 500;
+    color: var(--rs-read-time-text);
+    background: var(--rs-read-time-bg);
+    padding: 2px 8px;
+    border-radius: 9999px;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.rs-card-read-time svg {
+    width: 10px;
+    height: 10px;
+    opacity: 0.7;
+}
+
 /* ── 活跃 / 正在阅读的卡片 ── */
 .rs-card--active {
     border-color: var(--rs-accent-glow);
@@ -820,25 +857,27 @@
 
 /* ── 文章布局 ── */
 .rs-article {
-    max-width: 860px;
+    max-width: var(--rs-reader-max-width);
     margin: 0 auto;
-    padding: 36px 40px 60px;
+    padding: 40px 48px 80px;
+    width: 100%;
 }
 
 /* ── 文章头部 ── */
 .rs-article-header {
-    margin-bottom: 36px;
-    padding-bottom: 28px;
+    margin-bottom: 40px;
+    padding-bottom: 32px;
     border-bottom: 1px solid var(--rs-divider);
 }
 
 .rs-article-header h1 {
-    font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+    font-size: clamp(1.5rem, 3.5vw, 2.2rem);
     font-weight: 700;
     color: var(--rs-text-title);
-    line-height: 1.3;
+    line-height: 1.4;
     letter-spacing: -0.02em;
-    margin-bottom: 18px;
+    margin-bottom: 20px;
+    word-break: break-word;
 }
 
 /* 元数据药丸行 */
@@ -849,26 +888,35 @@
     gap: 8px;
 }
 
+.rs-article-meta-divider {
+    flex-basis: 100%;
+    height: 0;
+    margin: 0;
+}
+
 .rs-meta-pill {
     display: inline-flex;
     align-items: center;
     gap: 5px;
-    padding: 5px 14px;
+    padding: 6px 14px;
     border-radius: 9999px;
     border: 1px solid var(--rs-card-border);
     background: var(--rs-card-bg);
-    font-size: 0.76rem;
+    font-size: 0.78rem;
     color: var(--rs-text-body);
     font-weight: 500;
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
     transition: all 0.25s ease;
+    white-space: nowrap;
+    min-height: 36px;
 }
 
 .rs-meta-pill svg {
-    width: 13px;
-    height: 13px;
+    width: 14px;
+    height: 14px;
     opacity: 0.6;
+    flex-shrink: 0;
 }
 
 .rs-meta-pill--link {
@@ -886,6 +934,7 @@
 
 .rs-meta-pill--action {
     cursor: pointer;
+    user-select: none;
 }
 
 .rs-meta-pill--action:hover {
@@ -894,109 +943,335 @@
     background: var(--rs-feed-active-bg);
 }
 
-/* ── 文章正文 ── */
-.rs-article-body {
-    font-size: 1rem;
-    line-height: 1.8;
-    color: var(--rs-text-body);
-    word-break: break-word;
+/* 阅读时间徽章 */
+.rs-meta-pill--read-time {
+    color: var(--rs-read-time-text);
+    background: var(--rs-read-time-bg);
+    border-color: transparent;
+    font-feature-settings: "tnum";
+    font-variant-numeric: tabular-nums;
 }
 
-/* 正文中的通用排版增强 */
+/* ── 工具栏：字号 + 专注模式 ── */
+.rs-reader-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-left: auto;
+}
+
+.rs-font-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border: 1px solid var(--rs-card-border);
+    border-radius: 8px;
+    background: var(--rs-card-bg);
+    color: var(--rs-text-dim);
+    cursor: pointer;
+    font-size: 0.75rem;
+    font-weight: 600;
+    font-family: inherit;
+    transition: all 0.2s ease;
+    padding: 0;
+    min-width: 32px;
+    min-height: 32px;
+}
+
+.rs-font-btn:hover {
+    border-color: var(--rs-accent-glow);
+    color: var(--rs-accent);
+    background: var(--rs-feed-active-bg);
+}
+
+.rs-font-btn--active {
+    background: var(--rs-accent);
+    color: #fff;
+    border-color: var(--rs-accent);
+}
+
+.rs-font-btn--active:hover {
+    background: var(--rs-accent);
+    color: #fff;
+}
+
+/* ── 文章正文 —— 阅读优化 ── */
+.rs-article-body {
+    font-size: var(--rs-reader-font-size);
+    line-height: var(--rs-reader-line-height);
+    color: var(--rs-text-body);
+    word-break: break-word;
+    /* 中文阅读优化 */
+    letter-spacing: 0.01em;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* 字号变体 */
+.rs-reader--font-sm {
+    --rs-reader-font-size: 0.875rem;
+    --rs-reader-line-height: 1.75;
+}
+
+.rs-reader--font-md {
+    --rs-reader-font-size: 1rem;
+    --rs-reader-line-height: 1.85;
+}
+
+.rs-reader--font-lg {
+    --rs-reader-font-size: 1.175rem;
+    --rs-reader-line-height: 1.95;
+}
+
+/* 正文字体族优化：中文优先 */
+.rs-article-body {
+    font-family: 'Noto Sans SC', 'Inter', 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif;
+}
+
+/* 标题字体 */
 .rs-article-body h1,
 .rs-article-body h2,
 .rs-article-body h3,
-.rs-article-body h4 {
+.rs-article-body h4,
+.rs-article-body h5,
+.rs-article-body h6 {
     color: var(--rs-text-title);
     font-weight: 700;
-    margin-top: 2em;
-    margin-bottom: 0.8em;
-    line-height: 1.35;
+    margin-top: 2.2em;
+    margin-bottom: 0.7em;
+    line-height: 1.4;
+    letter-spacing: -0.015em;
+    font-family: 'Inter', 'Noto Sans SC', sans-serif;
 }
 
-.rs-article-body h2 { font-size: 1.5rem; }
-.rs-article-body h3 { font-size: 1.2rem; }
+.rs-article-body h1 { font-size: 1.8em; }
+.rs-article-body h2 { font-size: 1.5em; border-bottom: 1px solid var(--rs-divider); padding-bottom: 0.35em; }
+.rs-article-body h3 { font-size: 1.25em; }
+.rs-article-body h4 { font-size: 1.1em; }
 
 .rs-article-body p {
-    margin-bottom: 1.25em;
+    margin-bottom: var(--rs-reader-paragraph-spacing);
     text-align: justify;
+    hyphens: auto;
+    -webkit-hyphens: auto;
 }
 
 .rs-article-body a {
     color: var(--rs-accent);
     text-decoration: none;
     border-bottom: 1px solid var(--rs-accent-soft);
-    transition: border-color 0.2s ease;
+    transition: border-color 0.2s ease, color 0.2s ease;
+    word-break: break-all;
 }
 
 .rs-article-body a:hover {
     border-bottom-color: var(--rs-accent);
 }
 
+.rs-article-body strong {
+    color: var(--rs-text-title);
+    font-weight: 600;
+}
+
 .rs-article-body img {
     max-width: 100%;
-    border-radius: 14px;
-    margin: 1.5em 0;
-    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+    height: auto;
+    border-radius: 12px;
+    margin: 1.8em auto;
+    display: block;
+    box-shadow: 0 2px 16px rgba(0, 0, 0, 0.06);
+    transition: box-shadow 0.3s ease;
+}
+
+.rs-article-body img:hover {
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12);
 }
 
 .dark .rs-article-body img {
-    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 2px 16px rgba(0, 0, 0, 0.3);
+}
+
+.dark .rs-article-body img:hover {
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.45);
+}
+
+/* 图片容器：确保响应式 */
+.rs-article-body figure {
+    margin: 1.8em 0;
+    text-align: center;
+}
+
+.rs-article-body figure img {
+    margin: 0 auto;
+}
+
+.rs-article-body figcaption {
+    font-size: 0.85em;
+    color: var(--rs-text-dim);
+    margin-top: 0.6em;
+    text-align: center;
 }
 
 .rs-article-body pre {
     background: var(--rs-skeleton-base);
     border: 1px solid var(--rs-card-border);
     border-radius: 12px;
-    padding: 18px 22px;
+    padding: 20px 24px;
     overflow-x: auto;
-    font-size: 0.85rem;
-    line-height: 1.6;
-    margin: 1.2em 0;
+    font-size: 0.85em;
+    line-height: 1.65;
+    margin: 1.5em 0;
+    -webkit-overflow-scrolling: touch;
 }
 
 .rs-article-body code {
-    font-family: 'JetBrains Mono', 'Fira Code', monospace;
-    font-size: 0.85em;
+    font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
+    font-size: 0.88em;
     background: var(--rs-skeleton-base);
-    padding: 2px 6px;
+    padding: 2px 7px;
     border-radius: 5px;
+    word-break: break-word;
 }
 
 .rs-article-body pre code {
     background: none;
     padding: 0;
+    font-size: 0.9em;
 }
 
 .rs-article-body blockquote {
     border-left: 3px solid var(--rs-accent);
-    padding: 8px 20px;
-    margin: 1.2em 0;
+    padding: 10px 22px;
+    margin: 1.5em 0;
     color: var(--rs-text-dim);
-    font-style: italic;
+    background: var(--rs-skeleton-base);
+    border-radius: 0 8px 8px 0;
+    font-style: normal;
+}
+
+.rs-article-body blockquote p:last-child {
+    margin-bottom: 0;
 }
 
 .rs-article-body ul,
 .rs-article-body ol {
-    padding-left: 1.5em;
-    margin-bottom: 1.25em;
+    padding-left: 1.6em;
+    margin-bottom: 1.3em;
+    line-height: var(--rs-reader-line-height);
 }
 
 .rs-article-body li {
-    margin-bottom: 0.4em;
+    margin-bottom: 0.35em;
+}
+
+.rs-article-body li > ul,
+.rs-article-body li > ol {
+    margin-top: 0.35em;
+    margin-bottom: 0;
+}
+
+.rs-article-body hr {
+    border: none;
+    border-top: 1px solid var(--rs-divider);
+    margin: 2.5em 0;
+}
+
+.rs-article-body table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5em 0;
+    font-size: 0.9em;
+    overflow-x: auto;
+    display: block;
+}
+
+.rs-article-body th,
+.rs-article-body td {
+    border: 1px solid var(--rs-card-border);
+    padding: 10px 14px;
+    text-align: left;
+}
+
+.rs-article-body th {
+    background: var(--rs-skeleton-base);
+    font-weight: 600;
+    color: var(--rs-text-title);
+}
+
+/* 第一个标题去掉上边距 */
+.rs-article-body > *:first-child {
+    margin-top: 0;
 }
 
 /* ── 文末标记 ── */
 .rs-article-end {
     text-align: center;
     color: var(--rs-text-dim);
-    font-size: 0.8rem;
-    padding-top: 40px;
-    margin-top: 40px;
+    font-size: 0.82rem;
+    padding-top: 48px;
+    margin-top: 48px;
     border-top: 1px solid var(--rs-divider);
-    letter-spacing: 0.04em;
+    letter-spacing: 0.05em;
+    user-select: none;
 }
 
+
+/* ═══════════════════════════════════════════════════════
+   FOCUS MODE — 专注阅读模式
+   ═══════════════════════════════════════════════════════ */
+/* 隐藏侧栏和收件箱，阅读器占满全宽 */
+.rs-workbench--focus .rs-sidebar,
+.rs-workbench--focus .rs-inbox {
+    display: none;
+}
+
+.rs-workbench--focus .rs-reader {
+    border-radius: 20px;
+}
+
+.rs-workbench--focus .rs-article {
+    max-width: 860px;
+    padding: 48px 56px 80px;
+}
+
+/* 专注模式切换按钮动画 */
+.rs-focus-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 12px;
+    border: 1px solid var(--rs-card-border);
+    border-radius: 8px;
+    background: var(--rs-card-bg);
+    color: var(--rs-text-dim);
+    font-size: 0.75rem;
+    font-weight: 500;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    white-space: nowrap;
+    min-height: 32px;
+    min-width: 32px;
+}
+
+.rs-focus-toggle:hover {
+    border-color: var(--rs-accent-glow);
+    color: var(--rs-accent);
+    background: var(--rs-feed-active-bg);
+}
+
+.rs-focus-toggle svg {
+    width: 14px;
+    height: 14px;
+}
+
+.rs-workbench--focus .rs-focus-toggle {
+    color: var(--rs-accent);
+    background: var(--rs-feed-active-bg);
+    border-color: var(--rs-accent-glow);
+}
 
 /* ═══════════════════════════════════════════════════════
    EMPTY STATE — 空状态
@@ -1451,11 +1726,11 @@
     }
 
     .rs-inbox {
-        width: 300px;
+        width: 280px;
     }
 
     .rs-article {
-        padding: 28px 24px 48px;
+        padding: 32px 32px 56px;
     }
 
     .rs-hero {
@@ -1465,77 +1740,91 @@
     .rs-hero h1 {
         font-size: clamp(1.6rem, 4vw, 2.4rem);
     }
+
+    /* 专注模式下阅读器全宽 */
+    .rs-workbench--focus .rs-article {
+        padding: 32px 32px 56px;
+    }
 }
 
 
 /* ═══════════════════════════════════════════════════════
-   RESPONSIVE — 手机 (<=768px)
+   RESPONSIVE — 小平板 / 大手机 (<=768px)
    ═══════════════════════════════════════════════════════ */
 @media (max-width: 768px) {
     .rs-page {
-        padding-top: 80px;
+        padding-top: 76px;
         padding-bottom: 80px;
     }
 
     .rs-container {
         width: 100%;
-        padding: 0 8px;
+        padding: 0 6px;
     }
 
     /* Hero 更紧凑 */
     .rs-hero {
-        padding: 12px 16px 20px;
+        padding: 10px 16px 16px;
     }
 
     .rs-hero h1 {
-        font-size: 1.6rem;
+        font-size: 1.5rem;
     }
 
     .rs-hero h1::after {
-        margin: 8px auto 0;
-        width: 48px;
+        margin: 6px auto 0;
+        width: 40px;
+        height: 2px;
     }
 
     .rs-hero-desc {
-        font-size: 0.82rem;
-        margin-bottom: 16px;
-        max-width: 320px;
+        font-size: 0.8rem;
+        margin-bottom: 14px;
+        max-width: 280px;
     }
 
     .rs-hero-stats {
-        gap: 8px;
+        gap: 6px;
     }
 
     .rs-stat-pill {
-        padding: 8px 16px;
+        padding: 7px 14px;
+        border-radius: 12px;
     }
 
     .rs-stat-value {
-        font-size: 1.1rem;
+        font-size: 1rem;
     }
 
-    /* 工作台 → 单面板 */
+    .rs-stat-pill span:last-child {
+        font-size: 0.72rem;
+    }
+
+    /* 工作台 → 垂直堆叠 + 滑动切换 */
     .rs-workbench {
         flex-direction: column;
         border-radius: 16px;
         margin-top: 4px;
+        min-height: calc(100dvh - 280px);
     }
 
     .rs-sidebar,
     .rs-inbox,
     .rs-reader {
         width: 100%;
-        flex-shrink: 1;
+        flex-shrink: 0;
         border-right: none;
+        border-radius: 16px;
     }
 
     .rs-sidebar {
-        border-bottom: 1px solid var(--rs-divider);
-        max-height: 55vh;
+        max-height: none;
+        flex: 1;
     }
 
     .rs-inbox {
-        max-height: 55vh;
+        max-height: none;
+        flex: 1;
     }
 
     .rs-reader {
@@ -1545,6 +1834,7 @@
         background: var(--color-surface);
         border-radius: 0;
         display: none;
+        padding-top: env(safe-area-inset-top);
     }
 
     .rs-reader--open {
@@ -1553,6 +1843,16 @@
 
     .rs-reader-back {
         display: inline-flex;
+        padding: 10px 16px;
+        margin: 12px;
+        margin-top: max(12px, env(safe-area-inset-top));
+        font-size: 0.85rem;
+        min-height: 44px;
+    }
+
+    .rs-reader-back svg {
+        width: 18px;
+        height: 18px;
     }
 
     /* 移动端标签栏 */
@@ -1560,39 +1860,94 @@
         display: flex;
     }
 
-    /* 隐藏的面板 */
+    /* 面板切换：滑动式 */
     .rs-panel-hidden {
-        display: none;
+        display: none !important;
     }
 
     /* 卡片微调 */
     .rs-card {
         padding: 14px 16px;
         border-radius: 12px;
+        margin-bottom: 5px;
     }
 
     .rs-card-title {
         font-size: 0.85rem;
     }
 
+    .rs-card-desc {
+        -webkit-line-clamp: 1;
+    }
+
+    .rs-card-read-time {
+        font-size: 0.64rem;
+        padding: 1px 7px;
+    }
+
+    /* 文章 */
     .rs-article {
-        padding: 20px 16px 40px;
+        padding: 20px 16px 48px;
+    }
+
+    .rs-article-header {
+        margin-bottom: 24px;
+        padding-bottom: 20px;
     }
 
     .rs-article-header h1 {
-        font-size: 1.4rem;
+        font-size: 1.35rem;
+        line-height: 1.45;
+    }
+
+    .rs-article-meta {
+        gap: 6px;
+    }
+
+    .rs-meta-pill {
+        padding: 5px 12px;
+        font-size: 0.73rem;
+        min-height: 34px;
+    }
+
+    .rs-editor-tools {
+        flex-wrap: wrap;
+        gap: 4px;
+    }
+
+    /* 专注模式 */
+    .rs-workbench--focus .rs-article {
+        padding: 20px 16px 48px;
     }
 
     /* 模态全屏 */
+    .rs-modal-overlay {
+        padding: 0;
+        align-items: flex-end;
+    }
+
     .rs-modal {
         max-width: 100%;
         border-radius: 20px 20px 0 0;
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        max-height: 85vh;
+        max-height: 90dvh;
         overflow-y: auto;
+        padding: 20px 20px calc(20px + env(safe-area-inset-bottom));
+    }
+
+    /* 进度条加粗便于触摸 */
+    .rs-progress-container {
+        height: 4px;
+    }
+
+    /* 触摸友好的列表项间距 */
+    .rs-feed-item {
+        padding: 11px 14px;
+        min-height: 48px;
+    }
+
+    .rs-sidebar-all-btn {
+        padding: 12px 14px;
+        min-height: 48px;
     }
 }
 
@@ -1601,21 +1956,166 @@
    RESPONSIVE — 小手机 (<=480px)
    ═══════════════════════════════════════════════════════ */
 @media (max-width: 480px) {
+    .rs-hero {
+        padding: 8px 12px 12px;
+    }
+
     .rs-hero h1 {
-        font-size: 1.4rem;
+        font-size: 1.3rem;
+    }
+
+    .rs-hero-desc {
+        font-size: 0.75rem;
+        max-width: 240px;
+    }
+
+    .rs-hero-stats {
+        gap: 4px;
+    }
+
+    .rs-stat-pill {
+        padding: 6px 10px;
+        gap: 4px;
+    }
+
+    .rs-stat-value {
+        font-size: 0.9rem;
+    }
+
+    .rs-stat-icon {
+        width: 14px;
+        height: 14px;
+    }
+
+    .rs-stat-pill span:last-child {
+        font-size: 0.68rem;
     }
 
     .rs-card {
         padding: 12px 14px;
     }
 
+    .rs-card-title {
+        font-size: 0.82rem;
+    }
+
+    .rs-card-source {
+        font-size: 0.64rem;
+    }
+
+    .rs-article {
+        padding: 16px 14px 40px;
+    }
+
+    .rs-article-header h1 {
+        font-size: 1.25rem;
+    }
+
     .rs-article-meta {
-        gap: 6px;
+        gap: 5px;
     }
 
     .rs-meta-pill {
         padding: 4px 10px;
         font-size: 0.7rem;
+        min-height: 32px;
+    }
+
+    .rs-font-btn {
+        width: 28px;
+        height: 28px;
+        min-width: 28px;
+        min-height: 28px;
+        font-size: 0.7rem;
+        border-radius: 6px;
+    }
+
+    .rs-focus-toggle {
+        min-height: 28px;
+        font-size: 0.7rem;
+        padding: 4px 10px;
+    }
+
+    .rs-mobile-tabs {
+        padding: 4px 8px;
+        padding-bottom: max(4px, env(safe-area-inset-bottom));
+    }
+
+    .rs-mobile-tab {
+        font-size: 0.6rem;
+        padding: 5px 6px;
+    }
+
+    .rs-mobile-tab svg {
+        width: 18px;
+        height: 18px;
+    }
+}
+
+
+/* ═══════════════════════════════════════════════════════
+   RESPONSIVE — 横屏手机
+   ═══════════════════════════════════════════════════════ */
+@media (max-width: 900px) and (orientation: landscape) {
+    .rs-page {
+        padding-top: 60px;
+    }
+
+    .rs-hero {
+        padding: 6px 16px 10px;
+    }
+
+    .rs-hero h1 {
+        font-size: 1.2rem;
+        margin-bottom: 4px;
+    }
+
+    .rs-hero h1::after {
+        display: none;
+    }
+
+    .rs-hero-desc {
+        display: none;
+    }
+
+    .rs-hero-stats {
+        gap: 6px;
+    }
+
+    .rs-stat-pill {
+        padding: 4px 10px;
+        border-radius: 8px;
+    }
+
+    .rs-stat-value {
+        font-size: 0.85rem;
+    }
+
+    .rs-workbench {
+        flex-direction: row;
+        border-radius: 12px;
+        height: calc(100dvh - 140px);
+    }
+
+    .rs-sidebar {
+        width: 200px;
+        flex-shrink: 0;
+    }
+
+    .rs-inbox {
+        width: 260px;
+        flex-shrink: 0;
+    }
+
+    .rs-reader {
+        flex: 1;
+        position: relative;
+        display: flex;
+        border-radius: 0 12px 12px 0;
+    }
+
+    .rs-mobile-tabs {
+        display: none;
     }
 }
 
