@@ -16,10 +16,10 @@
     <link rel="preconnect" href="https://gstatic.loli.net" crossorigin>
     <link href="https://fonts.loli.net/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&family=Noto+Serif+SC:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="css/unified.css?v=20260626f" rel="stylesheet">
-    <link href="css/liquid-ambient.css?v=20260626f" rel="stylesheet">
-    <link href="css/liquid-moments.css?v=20260626f" rel="stylesheet">
-    <script src="js/vendor/lucide.min.js?v=20260626f"></script>
+    <link href="css/unified.css?v=20260626g" rel="stylesheet">
+    <link href="css/liquid-ambient.css?v=20260626g" rel="stylesheet">
+    <link href="css/liquid-moments.css?v=20260626g" rel="stylesheet">
+    <script src="js/vendor/lucide.min.js?v=20260626g"></script>
     <style>
         html:not(.dark) .dark-only{display:none!important}
         html.dark .light-only{display:none!important}
@@ -131,41 +131,41 @@
 
     <!-- LIGHTBOX -->
     <div id="lightbox">
-        <div class="lb-top"><button id="lightbox-share"><i data-lucide="share-2"></i></button><button id="lightbox-close"><i data-lucide="x"></i></button></div>
-        <div class="lb-main">
-            <div class="lb-img-wrap">
+        <div class="lb-top">
+            <button id="lightbox-share"><i data-lucide="share-2"></i></button>
+            <button id="lightbox-close"><i data-lucide="x"></i></button>
+        </div>
+        <div class="lb-stage">
+            <div class="lb-image">
                 <img id="lightbox-img" src="" alt="">
-                <button id="lightbox-prev" class="lb-nav lb-prev"><i data-lucide="chevron-left"></i></button>
-                <button id="lightbox-next" class="lb-nav lb-next"><i data-lucide="chevron-right"></i></button>
+                <button id="lightbox-prev" class="lb-arrow lb-prev"><i data-lucide="chevron-left"></i></button>
+                <button id="lightbox-next" class="lb-arrow lb-next"><i data-lucide="chevron-right"></i></button>
             </div>
-            <div class="lb-info">
-                <div class="lb-date"><i data-lucide="calendar"></i><span id="lightbox-date"></span></div>
-                <h2 id="lightbox-content"></h2>
+            <div class="lb-side">
+                <div class="lb-meta"><i data-lucide="calendar"></i><span id="lightbox-date"></span></div>
+                <p id="lightbox-content"></p>
                 <div id="lightbox-location-container"><i data-lucide="map-pin"></i><span id="lightbox-location"></span></div>
                 <div id="lightbox-tags"></div>
                 <div id="lightbox-exif">
-                    <div class="lb-exif-title"><i data-lucide="camera"></i>Shot Info</div>
-                    <div class="lb-exif-grid">
-                        <span>Camera</span><span id="exif-camera">--</span>
-                        <span>Lens</span><span id="exif-lens">--</span>
-                        <span>ISO</span><span id="exif-iso">--</span>
-                        <span>Aperture</span><span id="exif-aperture">--</span>
-                        <span>Shutter</span><span id="exif-shutter">--</span>
-                    </div>
+                    <div>Camera</div><div id="exif-camera">--</div>
+                    <div>Lens</div><div id="exif-lens">--</div>
+                    <div>ISO</div><div id="exif-iso">--</div>
+                    <div>Aperture</div><div id="exif-aperture">--</div>
+                    <div>Shutter</div><div id="exif-shutter">--</div>
                 </div>
             </div>
         </div>
     </div>
 
-    <script src="js/api.js?v=20260626f"></script>
-    <script src="js/main.js?v=20260626f"></script>
-    <script src="js/navbar.js?v=20260626f"></script>
-    <script src="js/activity_chart.js?v=20260626f"></script>
-    <script src="js/heatmap.js?v=20260626f"></script>
-    <script src="js/moments.js?v=20260626f"></script>
-    <script src="js/click-effect.js?v=20260626f"></script>
+    <script src="js/api.js?v=20260626g"></script>
+    <script src="js/main.js?v=20260626g"></script>
+    <script src="js/navbar.js?v=20260626g"></script>
+    <script src="js/activity_chart.js?v=20260626g"></script>
+    <script src="js/heatmap.js?v=20260626g"></script>
+    <script src="js/moments.js?v=20260626g"></script>
+    <script src="js/click-effect.js?v=20260626g"></script>
     <script src="https://unpkg.com/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
-    <script src="js/context-menu.js?v=20260626f"></script>
+    <script src="js/context-menu.js?v=20260626g"></script>
     <script>
         lucide.createIcons();
         const lenis = new Lenis({duration:.5,easing:t=>Math.min(1,1.001-Math.pow(2,-6*t)),smooth:true,smoothTouch:false,touchMultiplier:2});
@@ -209,7 +209,7 @@
         // Tags drag scroll
         document.addEventListener('DOMContentLoaded',function(){setTimeout(function(){var r=document.getElementById('tag-filters');if(!r)return;var d=false,sx,sl;r.addEventListener('mousedown',function(e){d=true;sx=e.pageX-r.offsetLeft;sl=r.scrollLeft});r.addEventListener('mouseleave',function(){d=false});r.addEventListener('mouseup',function(){d=false});r.addEventListener('mousemove',function(e){if(!d)return;e.preventDefault();r.scrollLeft=sl-(e.pageX-r.offsetLeft-sx)*1.5})},800)});
     </script>
-    <script src="js/back-to-top.js?v=20260626f"></script>
-    <script src="js/tracker.js?v=20260626f"></script>
+    <script src="js/back-to-top.js?v=20260626g"></script>
+    <script src="js/tracker.js?v=20260626g"></script>
 </body>
 </html>
