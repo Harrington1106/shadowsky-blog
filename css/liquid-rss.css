@@ -1523,12 +1523,12 @@ html:not(.dark) .rs-modal {
 .rs-divider { height: 1px; background: var(--rs-card-border); margin: 11px 0; }
 
 /* ── 服务商卡片 ── */
-.rs-provider-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.rs-provider-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; }
 .rs-provider-card {
-    display: flex; align-items: center; gap: 8px;
-    padding: 9px 11px; border-radius: 10px;
+    display: flex; align-items: center; gap: 6px;
+    padding: 8px 9px; border-radius: 9px;
     border: 1.5px solid var(--rs-card-border); background: var(--rs-card-bg);
-    color: var(--rs-text-body); font-family: inherit; cursor: pointer; transition: all .15s ease;
+    color: var(--rs-text-body); font-family: inherit; cursor: pointer; transition: all .12s ease;
 }
 .rs-provider-card:hover { border-color: var(--rs-accent); background: var(--rs-accent-soft); }
 .rs-provider-card.rs-provider-card--active {
@@ -1536,17 +1536,23 @@ html:not(.dark) .rs-modal {
     box-shadow: 0 0 0 3px var(--rs-accent-glow);
 }
 .rs-provider-badge {
-    width: 26px; height: 26px; border-radius: 7px; flex-shrink: 0;
-    display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: .72rem;
+    width: 22px; height: 22px; border-radius: 6px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: .66rem;
 }
-.rs-provider-badge--openai   { background: #10a37f18; color: #10a37f; }
+.rs-provider-badge--openai    { background: #10a37f18; color: #10a37f; }
+.rs-provider-badge--anthropic{ background: #d9770618; color: #d97706; }
 .rs-provider-badge--deepseek { background: #4f46e518; color: #6366f1; }
 .rs-provider-badge--gemini   { background: #4285f418; color: #4285f4; }
+.rs-provider-badge--grok     { background: #94a3b818; color: #94a3b8; }
+.rs-provider-badge--qwen     { background: #3b82f618; color: #3b82f6; }
+.rs-provider-badge--kimi     { background: #8b5cf618; color: #8b5cf6; }
+.rs-provider-badge--glm      { background: #06b6d418; color: #06b6d4; }
 .rs-provider-badge--doubao   { background: #f9731618; color: #f97316; }
+.rs-provider-badge--mistral  { background: #f59e0b18; color: #f59e0b; }
 .rs-provider-badge--custom   { background: var(--rs-accent-soft); color: var(--rs-accent); }
-.rs-provider-text { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
-.rs-provider-name { font-weight: 600; font-size: .76rem; }
-.rs-provider-desc { font-size: .63rem; font-weight: 400; opacity: .5; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rs-provider-text { display: flex; flex-direction: column; gap: 0; min-width: 0; }
+.rs-provider-name { font-weight: 600; font-size: .72rem; }
+.rs-provider-desc { font-size: .6rem; font-weight: 400; opacity: .45; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 /* ── 字段 ── */
 .rs-modal-body .rs-field { margin-bottom: 10px; }

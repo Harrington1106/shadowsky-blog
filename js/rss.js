@@ -1268,6 +1268,13 @@ const AI_PROVIDERS = {
         help: '行业标杆，翻译质量最高',
         apiKeyUrl: 'https://platform.openai.com/api-keys'
     },
+    anthropic: {
+        name: 'Anthropic',
+        baseUrl: 'https://api.anthropic.com/v1',
+        models: ['claude-opus-4-8', 'claude-sonnet-4-6', 'claude-haiku-4-5'],
+        help: '长文翻译细腻，文学感最佳',
+        apiKeyUrl: 'https://console.anthropic.com/keys'
+    },
     deepseek: {
         name: 'DeepSeek',
         baseUrl: 'https://api.deepseek.com/v1',
@@ -1282,12 +1289,47 @@ const AI_PROVIDERS = {
         help: '免费额度充裕，多语言能力顶尖',
         apiKeyUrl: 'https://aistudio.google.com/apikey'
     },
+    grok: {
+        name: 'Grok',
+        baseUrl: 'https://api.x.ai/v1',
+        models: ['grok-4.3', 'grok-4.2', 'grok-4-mini'],
+        help: 'xAI 模型，多语言流畅，价格实惠',
+        apiKeyUrl: 'https://console.x.ai/api-keys'
+    },
+    qwen: {
+        name: '通义千问',
+        baseUrl: 'https://dashscope.aliyuncs.com/compatible-mode/v1',
+        models: ['qwen3.7-max', 'qwen3.5-plus', 'qwen3.5-turbo'],
+        help: '阿里云，代码+翻译均衡，中文语感好',
+        apiKeyUrl: 'https://bailian.console.aliyun.com/#/api-key'
+    },
+    kimi: {
+        name: 'Kimi',
+        baseUrl: 'https://api.moonshot.cn/v1',
+        models: ['kimi-k2.7', 'kimi-k2.6', 'kimi-k2-mini'],
+        help: '月之暗面，长文理解力强',
+        apiKeyUrl: 'https://platform.moonshot.cn/console/api-keys'
+    },
+    glm: {
+        name: '智谱 GLM',
+        baseUrl: 'https://open.bigmodel.cn/api/paas/v4',
+        models: ['glm-5.2', 'glm-5.1', 'glm-5-flash'],
+        help: '清华系，国产老牌，综合均衡',
+        apiKeyUrl: 'https://open.bigmodel.cn/usercenter/apikeys'
+    },
     doubao: {
         name: '豆包',
         baseUrl: 'https://ark.cn-beijing.volces.com/api/v3',
         models: ['doubao-seed-2.0', 'doubao-pro-1.5', 'doubao-lite-1.5'],
         help: '字节跳动，Seed 2.0 综合能力接近 GPT-5.5',
         apiKeyUrl: 'https://console.volcengine.com/ark/region:ark+cn-beijing/apiKey'
+    },
+    mistral: {
+        name: 'Mistral',
+        baseUrl: 'https://api.mistral.ai/v1',
+        models: ['mistral-large-3', 'mistral-medium-3', 'mistral-small-3'],
+        help: '欧洲最强，多语言翻译自然',
+        apiKeyUrl: 'https://console.mistral.ai/api-keys'
     },
     custom: {
         name: '自定义',
@@ -1310,7 +1352,7 @@ function loadAISettings() {
     if (providerSelect) providerSelect.value = settings.provider || 'openai';
     if (baseUrlInput) baseUrlInput.value = settings.baseUrl || AI_PROVIDERS.openai.baseUrl;
     if (apiKeyInput) apiKeyInput.value = settings.apiKey || '';
-    if (modelInput) modelInput.value = settings.model || 'gpt-4o-mini';
+    if (modelInput) modelInput.value = settings.model || 'gpt-4.1';
     if (systemPromptInput) systemPromptInput.value = settings.systemPrompt || '你是一个专业的翻译助手，请将以下内容翻译成简体中文，保持原文格式和语气。';
 
     // Update char count
