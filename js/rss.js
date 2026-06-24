@@ -815,11 +815,6 @@ function openArticle(index) {
                 <p>— 完 —</p>
             </div>
         </article>
-
-        <!-- 阅读器内回到顶部 -->
-        <button id="reader-btt" class="rs-reader-btt" title="回到顶部" aria-label="回到顶部">
-            <i data-lucide="chevron-up"></i>
-        </button>
     `;
 
     // Apply saved font size preference
