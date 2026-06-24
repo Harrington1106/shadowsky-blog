@@ -998,13 +998,14 @@ function openArticle(index) {
     }
 
     // --- Lenis 平滑滚动 ---
-    if (container._lenis) container._lenis.destroy();
+    if (container._lenis) { container._lenis.destroy(); container.style.overflowY = 'auto'; }
     if (window.Lenis) {
+        container.style.overflowY = 'hidden'; // 关原生滚动，Lenis 接管
         const lenis = new Lenis({
             wrapper: container,
             content: container.firstElementChild,
-            duration: 0.25,
-            lerp: 0.08,
+            duration: 0.3,
+            lerp: 0.06,
             smoothTouch: false,
             touchMultiplier: 2,
         });
