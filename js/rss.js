@@ -584,51 +584,7 @@ async function loadFeedArticles(feed) {
     }
 
     try {
-        // Try proxy first to avoid CORS
-        let xmlText = '';
-        try {
-            // Use public CORS proxy if PHP proxy fails or is unavailable
-            // Strategy: 
-            // 1. Try local PHP proxy (for best privacy/performance if available)
-            // 2. Fallback to 'api.allorigins.win' (Public CORS proxy)
-            
-            const proxyUrl = `/api/rss-proxy.php?url=${encodeURIComponent(feed.xmlUrl)}`;
-            const response = await fetch(proxyUrl);
-            
-            let usePublicProxy = false;
-            
-            if (response.ok) {
-                const text = await response.text();
-                // Check if it's PHP source code (server not executing PHP)
-                if (text.includes('<?php') || text.trim().startsWith('<?=')) {
-                    console.warn('[RSS] PHP not supported on this server. Switching to public CORS proxy.');
-                    usePublicProxy = true;
-                } else {
-                    xmlText = text;
-                }
-            } else if (response.status === 503 || response.status === 429) {
-                 // Server overloaded, try public proxy
-                 usePublicProxy = true;
-            } else {
-                // Other errors (404, 500), try public proxy as backup
-                usePublicProxy = true;
-            }
-
-            if (usePublicProxy) {
-                // Public Proxy Fallback
-                const publicProxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(feed.xmlUrl)}`;
-                const ppResponse = await fetch(publicProxyUrl);
-                if (!ppResponse.ok) throw new Error(`Public proxy HTTP ${ppResponse.status}`);
-                xmlText = await ppResponse.text();
-            }
-
-        } catch (e) {
-            console.warn('[RSS] Proxy fetch failed, attempting direct fetch (CORS might block):', e);
-            // Fallback to direct fetch
-            const directResponse = await fetch(feed.xmlUrl);
-            if (!directResponse.ok) throw new Error(`Direct fetch HTTP ${directResponse.status}`);
-            xmlText = await directResponse.text();
-        }
+        const xmlText = await fetchFeedXml(feed.xmlUrl);
 
         const articles = parseRSSContent(xmlText);
         
