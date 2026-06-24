@@ -401,17 +401,6 @@ function renderDirectoryView(container) {
             </div>`;
     });
 
-    // Footer bar
-    html += `
-        <div class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 text-xs flex justify-between items-center rounded-b-lg mt-1">
-            <div class="flex items-center gap-2">
-                <i data-lucide="git-branch" style="width:12px;height:12px;"></i>
-                <span>master*</span>
-            </div>
-            <span>Ln ${filteredPosts.length}, Col 1</span>
-        </div>
-    `;
-
     html += `</div>`;
     container.innerHTML = html;
 
@@ -519,7 +508,7 @@ function filterByTag(tag, scrollTo = true) {
             </h3>
             <span class="flex-1 h-px bg-gray-200 dark:bg-gray-800"></span>
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div class="tag-results-list">
     `;
 
     filtered.forEach((post, idx) => {

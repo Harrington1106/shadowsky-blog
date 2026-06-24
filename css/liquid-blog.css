@@ -331,11 +331,17 @@ html:not(.dark) .view-btn:hover {
     padding: 0 24px;
 }
 
-/* Grid 模式 */
+/* Grid 模式 — 固定 3 列 + 限制卡片最大宽度 */
 #posts-container.posts-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-    gap: 28px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+}
+
+@media(max-width:1024px) {
+    #posts-container.posts-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
 }
 
 /* ── 露珠卡片核心 ── */
@@ -408,6 +414,7 @@ html:not(.dark) .blog-card::before {
     height: 200px;
     overflow: hidden;
     position: relative;
+    border-radius: 22px 22px 0 0;
 }
 
 .blog-card-cover img {
@@ -577,16 +584,22 @@ html:not(.dark) .blog-card::before {
 /* 时间轴线 — 半透明玻璃 */
 .timeline-container .border-l-2 {
     border-left: 2px solid var(--bg-card-border) !important;
+    margin-left: 16px !important;
 }
 
 /* 时间节点 — 发光青点 */
 .timeline-container .absolute.-left-\[41px\] {
-    left: -33px !important;
-    width: 16px !important;
-    height: 16px !important;
+    left: -41px !important;
+    top: 6px !important;
+    width: 14px !important;
+    height: 14px !important;
     background: var(--bg-accent) !important;
-    box-shadow: 0 0 16px var(--bg-accent-glow) !important;
+    box-shadow: 0 0 12px var(--bg-accent-glow) !important;
     border: 3px solid rgba(6, 11, 24, 0.8);
+}
+
+html:not(.dark) .timeline-container .absolute.-left-\[41px\] {
+    border-color: rgba(255, 255, 255, 0.9);
 }
 
 /* 月份标题 */
@@ -602,33 +615,39 @@ html:not(.dark) .blog-card::before {
     color: var(--bg-accent) !important;
 }
 
+/* 时间轴月份分组间距 */
+.timeline-container .space-y-16>div {
+    margin-bottom: 48px;
+}
+
 /* 时间轴卡片 */
 .timeline-card {
     display: flex;
-    align-items: flex-start;
-    gap: 16px;
-    padding: 16px 20px;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 18px;
     background: var(--bg-card-bg);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     border: 1px solid var(--bg-card-border);
-    border-radius: 14px;
+    border-radius: 12px;
     transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    margin-bottom: 10px;
 }
 
 .timeline-card:hover {
     border-color: rgba(45, 212, 191, 0.2);
     background: var(--bg-card-hover-bg);
     transform: translateX(4px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
 }
 
 .timeline-day {
-    font-size: 1.5rem;
+    font-size: 1.25rem;
     font-weight: 700;
     color: var(--bg-accent);
     flex-shrink: 0;
-    width: 40px;
+    width: 36px;
     text-align: center;
     line-height: 1;
     font-variant-numeric: tabular-nums;
@@ -640,19 +659,22 @@ html:not(.dark) .blog-card::before {
 }
 
 .timeline-title {
-    font-size: 1rem;
+    font-size: 0.95rem;
     font-weight: 600;
     color: var(--bg-text-title);
-    margin-bottom: 4px;
+    margin-bottom: 2px;
     line-height: 1.4;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .timeline-excerpt {
-    font-size: 0.85rem;
+    font-size: 0.82rem;
     color: var(--bg-text-body);
     line-height: 1.5;
     display: -webkit-box;
-    -webkit-line-clamp: 2;
+    -webkit-line-clamp: 1;
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
@@ -788,14 +810,6 @@ html:not(.dark) .dir-folder summary:hover {
     font-variant-numeric: tabular-nums;
 }
 
-/* IDE 底栏 */
-.dir-container .bg-gradient-to-r {
-    background: linear-gradient(135deg, rgba(45, 212, 191, 0.15), rgba(99, 102, 241, 0.1)) !important;
-    color: var(--bg-text-title) !important;
-    border-top: 1px solid var(--bg-card-border);
-}
-
-
 /* ═══════════════════════════════════════════════════════
    TAGS VIEW — 液态玻璃标签云
    ═══════════════════════════════════════════════════════ */
@@ -850,8 +864,14 @@ html:not(.dark) .dir-folder summary:hover {
 
 /* 标签结果区 */
 #tag-results {
-    max-width: 780px;
+    max-width: 680px;
     margin: 0 auto;
+}
+
+.tag-results-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }
 
 .tag-results-placeholder {
@@ -875,12 +895,12 @@ html:not(.dark) .dir-folder summary:hover {
     display: flex;
     align-items: center;
     gap: 14px;
-    padding: 14px 20px;
+    padding: 12px 18px;
     background: var(--bg-card-bg);
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
     border: 1px solid var(--bg-card-border);
-    border-radius: 14px;
+    border-radius: 12px;
     transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     text-decoration: none;
     color: inherit;
@@ -894,11 +914,12 @@ html:not(.dark) .dir-folder summary:hover {
 }
 
 .tag-result-date {
-    font-size: 0.78rem;
-    color: var(--bg-text-dim);
+    font-size: 0.8rem;
+    color: var(--bg-accent);
     flex-shrink: 0;
     font-variant-numeric: tabular-nums;
-    width: 80px;
+    white-space: nowrap;
+    width: 85px;
 }
 
 .tag-result-title {
@@ -1038,7 +1059,7 @@ html:not(.dark) .dir-folder summary:hover {
 
 
 /* ═══════════════════════════════════════════════════════
-   FOOTER — 多栏玻璃页脚
+   FOOTER — 简洁单行玻璃页脚
    ═══════════════════════════════════════════════════════ */
 .blog-footer {
     margin-top: 100px;
@@ -1055,77 +1076,19 @@ html:not(.dark) .blog-footer {
 .footer-inner {
     max-width: 1152px;
     margin: 0 auto;
-    padding: 56px 24px 0;
-}
-
-.footer-top {
-    display: grid;
-    grid-template-columns: 2fr 1fr 1fr 1fr;
-    gap: 48px;
-    padding-bottom: 40px;
-}
-
-.footer-brand h3 {
-    font-size: 1.4rem;
-    font-weight: 700;
-    margin-bottom: 12px;
-    background: var(--bg-hero-gradient);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-}
-
-.footer-brand p {
-    font-size: 0.9rem;
-    line-height: 1.65;
-    color: var(--bg-text-body);
-    max-width: 300px;
-}
-
-.footer-links h4 {
-    font-size: 0.9rem;
-    font-weight: 600;
-    margin-bottom: 16px;
-    color: var(--bg-text-title);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    font-size: 0.78rem;
-}
-
-.footer-links ul {
-    list-style: none;
+    padding: 24px;
     display: flex;
-    flex-direction: column;
-    gap: 10px;
-    padding: 0;
-    margin: 0;
-}
-
-.footer-links a {
-    font-size: 0.88rem;
-    text-decoration: none;
-    color: var(--bg-text-dim);
-    transition: all 0.2s ease;
-    display: inline-flex;
     align-items: center;
-    gap: 4px;
-}
-
-.footer-links a:hover {
-    color: var(--bg-accent);
-    transform: translateX(2px);
-}
-
-.footer-bottom {
-    padding: 24px 0;
-    border-top: 1px solid var(--bg-card-border);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    justify-content: center;
+    gap: 8px;
     flex-wrap: wrap;
-    gap: 12px;
     font-size: 0.85rem;
     color: var(--bg-text-dim);
+}
+
+.footer-dot {
+    color: var(--bg-text-dim);
+    opacity: 0.4;
 }
 
 .visit-badge {
@@ -1270,17 +1233,6 @@ html:not(.dark) .blog-footer {
 /* ═══════════════════════════════════════════════════════
    RESPONSIVE
    ═══════════════════════════════════════════════════════ */
-@media(max-width:1024px) {
-    .footer-top {
-        grid-template-columns: 1fr 1fr;
-        gap: 32px;
-    }
-
-    .footer-brand {
-        grid-column: 1 / -1;
-    }
-}
-
 @media(max-width:768px) {
     .blog-hero {
         padding: 110px 16px 56px;
@@ -1306,7 +1258,7 @@ html:not(.dark) .blog-footer {
     }
 
     .view-switcher {
-        align-self: flex-end;
+        align-self: center;
     }
 
     #posts-container.posts-grid {
@@ -1319,23 +1271,8 @@ html:not(.dark) .blog-footer {
         margin-left: 8px;
     }
 
-    .timeline-card {
-        flex-direction: column;
-        gap: 8px;
-    }
-
     .dir-container>div {
         border-radius: 14px;
-    }
-
-    .footer-top {
-        grid-template-columns: 1fr 1fr;
-        gap: 28px;
-    }
-
-    .footer-bottom {
-        flex-direction: column;
-        text-align: center;
     }
 
     #back-to-top {
@@ -1365,11 +1302,6 @@ html:not(.dark) .blog-footer {
         font-size: 1.4rem;
     }
 
-    .footer-top {
-        grid-template-columns: 1fr;
-        gap: 24px;
-    }
-
     .search-wrapper kbd {
         display: none;
     }
@@ -1386,13 +1318,13 @@ html:not(.dark) .blog-footer {
         margin: 0;
     }
 
-    .tag-result-card {
-        flex-wrap: wrap;
-        gap: 8px;
+    .tag-result-date {
+        width: 75px;
+        font-size: 0.75rem;
     }
 
-    .tag-result-date {
-        width: auto;
+    .tag-result-title {
+        font-size: 0.85rem;
     }
 }
 
