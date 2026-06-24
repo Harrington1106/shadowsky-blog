@@ -19,7 +19,7 @@
     <!-- Liquid Glass System -->
     <link href="css/unified.css?v=20260626e" rel="stylesheet">
     <link href="css/liquid-ambient.css?v=20260624v5" rel="stylesheet">
-    <link href="css/liquid-rss.css?v=20260626e" rel="stylesheet">
+    <link href="css/liquid-rss.css?v=20260626f" rel="stylesheet">
 
     <!-- DOMPurify -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.8/purify.min.js"></script>
@@ -226,61 +226,108 @@
     <!-- ═══════ AI 设置弹窗 ═══════ -->
     <div id="ai-settings-modal" class="rs-modal-overlay hidden">
         <div class="rs-modal">
-            <h3>
-                <i data-lucide="bot"></i>
-                AI 翻译设置
-            </h3>
+            <!-- 头部渐变装饰线 -->
+            <div class="rs-modal-accent"></div>
 
-            <!-- Provider -->
+            <!-- 头部 -->
+            <div class="rs-modal-header">
+                <div class="rs-modal-title">
+                    <span class="rs-modal-title-icon"><i data-lucide="sparkles"></i></span>
+                    <span>AI 翻译设置</span>
+                </div>
+                <button id="close-settings-btn" class="rs-modal-close" aria-label="关闭">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+
+            <!-- 服务商卡片选择（隐藏 select 兼容 JS） -->
             <div class="rs-field">
-                <label for="ai-provider">AI 服务商</label>
-                <select id="ai-provider">
+                <label>AI 服务商</label>
+                <select id="ai-provider" style="display:none">
                     <option value="openai">OpenAI</option>
-                    <option value="deepseek">DeepSeek (深度求索)</option>
+                    <option value="deepseek">DeepSeek</option>
                     <option value="gemini">Google Gemini</option>
-                    <option value="doubao">豆包 (Volcengine)</option>
-                    <option value="custom">自定义 (Custom)</option>
+                    <option value="doubao">豆包</option>
+                    <option value="custom">自定义</option>
                 </select>
+                <div class="rs-provider-grid" id="provider-cards">
+                    <button class="rs-provider-card" data-provider="openai">
+                        <span class="rs-provider-icon rs-provider-icon--openai"><i data-lucide="cpu"></i></span>
+                        <span class="rs-provider-name">OpenAI</span>
+                    </button>
+                    <button class="rs-provider-card" data-provider="deepseek">
+                        <span class="rs-provider-icon rs-provider-icon--deepseek"><i data-lucide="cpu"></i></span>
+                        <span class="rs-provider-name">DeepSeek</span>
+                    </button>
+                    <button class="rs-provider-card" data-provider="gemini">
+                        <span class="rs-provider-icon rs-provider-icon--gemini"><i data-lucide="cpu"></i></span>
+                        <span class="rs-provider-name">Gemini</span>
+                    </button>
+                    <button class="rs-provider-card" data-provider="doubao">
+                        <span class="rs-provider-icon rs-provider-icon--doubao"><i data-lucide="cpu"></i></span>
+                        <span class="rs-provider-name">豆包</span>
+                    </button>
+                    <button class="rs-provider-card" data-provider="custom" style="grid-column:1/-1">
+                        <span class="rs-provider-icon rs-provider-icon--custom"><i data-lucide="settings"></i></span>
+                        <span class="rs-provider-name">自定义 API</span>
+                    </button>
+                </div>
             </div>
 
             <!-- Base URL -->
             <div class="rs-field">
                 <label for="ai-base-url">API Base URL</label>
-                <input type="text" id="ai-base-url" placeholder="https://api.openai.com/v1">
+                <div class="rs-input-wrap">
+                    <span class="rs-input-icon"><i data-lucide="link"></i></span>
+                    <input type="text" id="ai-base-url" placeholder="https://api.openai.com/v1">
+                </div>
             </div>
 
             <!-- API Key -->
             <div class="rs-field">
                 <label for="ai-api-key">API Key</label>
-                <input type="password" id="ai-api-key" placeholder="sk-...">
-                <p id="api-key-help" class="rs-field-help" style="display:none">豆包请填写 Access Key ID</p>
+                <div class="rs-input-wrap">
+                    <span class="rs-input-icon"><i data-lucide="key"></i></span>
+                    <input type="password" id="ai-api-key" placeholder="sk-...">
+                    <button id="toggle-key-vis" class="rs-input-eye" type="button" aria-label="切换明文" title="显示/隐藏">
+                        <i data-lucide="eye-off"></i>
+                    </button>
+                </div>
+                <p id="api-key-help" class="rs-field-help hidden">豆包请填写 Access Key ID</p>
             </div>
 
-            <!-- Model -->
+            <!-- Model + 快捷预设 -->
             <div class="rs-field">
-                <label for="ai-model">模型名称 (Model)</label>
-                <input type="text" id="ai-model" list="model-presets" placeholder="选择或输入模型名称">
-                <datalist id="model-presets">
-                    <!-- Populated by JS -->
-                </datalist>
+                <label for="ai-model">模型名称</label>
+                <div class="rs-input-wrap">
+                    <span class="rs-input-icon"><i data-lucide="box"></i></span>
+                    <input type="text" id="ai-model" list="model-presets" placeholder="输入或选择模型">
+                </div>
+                <datalist id="model-presets"><!-- JS 填充 --></datalist>
+                <div id="model-pills" class="rs-model-pills"></div>
                 <p id="model-help" class="rs-field-help"></p>
             </div>
 
             <!-- System Prompt -->
             <div class="rs-field">
-                <label for="ai-system-prompt">系统提示词 (System Prompt)</label>
-                <textarea id="ai-system-prompt" rows="3" placeholder="例如：你是一个专业的翻译助手..."></textarea>
-                <p class="rs-field-help">自定义 AI 的翻译风格或指令</p>
+                <label for="ai-system-prompt">
+                    系统提示词
+                    <span id="prompt-char-count" class="rs-char-count">0</span>
+                </label>
+                <textarea id="ai-system-prompt" rows="4" placeholder="你是一个专业的翻译助手，请将以下内容翻译成简体中文…" maxlength="2000"></textarea>
             </div>
 
             <!-- Actions -->
             <div class="rs-modal-actions">
-                <button id="test-connection-btn" class="rs-btn rs-btn--link">
+                <button id="test-connection-btn" class="rs-btn rs-btn--outline">
                     <i data-lucide="zap"></i>
                     测试连接
+                    <span class="rs-btn-status" id="test-status"></span>
                 </button>
-                <button id="close-settings-btn" class="rs-btn rs-btn--ghost">取消</button>
-                <button id="save-settings-btn" class="rs-btn rs-btn--primary">保存配置</button>
+                <button id="save-settings-btn" class="rs-btn rs-btn--primary">
+                    <i data-lucide="check"></i>
+                    保存配置
+                </button>
             </div>
         </div>
     </div>
@@ -294,7 +341,7 @@
     <script src="js/api.js?v=20260624v5"></script>
     <script src="js/main.js?v=20260626b"></script>
     <script src="js/navbar.js?v=20260626b"></script>
-    <script src="js/rss.js?v=20260626e"></script>
+    <script src="js/rss.js?v=20260626f"></script>
     <script src="js/click-effect.js?v=20260624v5"></script>
     <script src="js/context-menu.js?v=20260624v5"></script>
     <script>

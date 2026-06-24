@@ -324,6 +324,42 @@ function setupEventListeners() {
     if (testBtn) {
         testBtn.addEventListener('click', testAIConnection);
     }
+
+    // Provider card selection
+    document.querySelectorAll('.rs-provider-card').forEach(card => {
+        card.addEventListener('click', () => {
+            const provider = card.dataset.provider;
+            if (!provider) return;
+            document.querySelectorAll('.rs-provider-card').forEach(c => c.classList.remove('rs-provider-card--active'));
+            card.classList.add('rs-provider-card--active');
+            if (aiProviderSelect) {
+                aiProviderSelect.value = provider;
+                aiProviderSelect.dispatchEvent(new Event('change'));
+            }
+        });
+    });
+
+    // API Key eye toggle
+    const toggleKeyBtn = document.getElementById('toggle-key-vis');
+    const apiKeyInput = document.getElementById('ai-api-key');
+    if (toggleKeyBtn && apiKeyInput) {
+        toggleKeyBtn.addEventListener('click', () => {
+            const isPassword = apiKeyInput.type === 'password';
+            apiKeyInput.type = isPassword ? 'text' : 'password';
+            const icon = toggleKeyBtn.querySelector('i');
+            if (icon) icon.setAttribute('data-lucide', isPassword ? 'eye' : 'eye-off');
+            lucide.createIcons();
+        });
+    }
+
+    // System prompt character count
+    const promptInput = document.getElementById('ai-system-prompt');
+    const charCount = document.getElementById('prompt-char-count');
+    if (promptInput && charCount) {
+        const updateCount = () => { charCount.textContent = promptInput.value.length; };
+        promptInput.addEventListener('input', updateCount);
+        updateCount();
+    }
 }
 
 // ===========================================
@@ -1260,7 +1296,11 @@ function loadAISettings() {
     if (apiKeyInput) apiKeyInput.value = settings.apiKey || '';
     if (modelInput) modelInput.value = settings.model || 'gpt-4o-mini';
     if (systemPromptInput) systemPromptInput.value = settings.systemPrompt || '你是一个专业的翻译助手，请将以下内容翻译成简体中文，保持原文格式和语气。';
-    
+
+    // Update char count
+    const charCount = document.getElementById('prompt-char-count');
+    if (charCount && systemPromptInput) charCount.textContent = systemPromptInput.value.length;
+
     updateProviderDefaults();
 }
 
@@ -1269,34 +1309,51 @@ function updateProviderDefaults() {
     const baseUrlInput = document.getElementById('ai-base-url');
     const modelInput = document.getElementById('ai-model');
     const modelPresets = document.getElementById('model-presets');
+    const modelPills = document.getElementById('model-pills');
     const modelHelp = document.getElementById('model-help');
     const apiKeyHelp = document.getElementById('api-key-help');
-    
+
     if (!providerSelect) return;
-    
+
     const provider = AI_PROVIDERS[providerSelect.value];
     if (!provider) return;
-    
+
+    // Highlight correct provider card
+    document.querySelectorAll('.rs-provider-card').forEach(card => {
+        card.classList.toggle('rs-provider-card--active', card.dataset.provider === providerSelect.value);
+    });
+
     // Update base URL if not custom
     if (providerSelect.value !== 'custom' && baseUrlInput) {
         baseUrlInput.value = provider.baseUrl;
     }
-    
-    // Update model presets
+
+    // Update model datalist + pills
     if (modelPresets) {
         modelPresets.innerHTML = provider.models.map(m => `<option value="${m}">`).join('');
     }
-    
+    if (modelPills) {
+        modelPills.innerHTML = provider.models.map(m =>
+            `<button class="rs-model-pill" type="button" data-model="${m}">${m}</button>`
+        ).join('');
+        // Pill click → fill model input
+        modelPills.querySelectorAll('.rs-model-pill').forEach(pill => {
+            pill.addEventListener('click', () => {
+                if (modelInput) modelInput.value = pill.dataset.model;
+            });
+        });
+    }
+
     // Update help text
     if (modelHelp) {
         modelHelp.textContent = provider.help;
     }
-    
+
     // Show/hide doubao specific help
     if (apiKeyHelp) {
         apiKeyHelp.classList.toggle('hidden', providerSelect.value !== 'doubao');
     }
-    
+
     // Set default model if empty
     if (modelInput && !modelInput.value && provider.models.length > 0) {
         modelInput.value = provider.models[0];
