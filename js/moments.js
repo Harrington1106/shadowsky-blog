@@ -628,15 +628,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 lastYearMonth = yearMonth;
                 headerHtml = `
                     <div class="absolute -left-[41px] top-0 flex items-center animate-fade-in">
-                        <div class="h-5 w-5 rounded-full border-4 border-white dark:border-black bg-blue-500 shadow-md z-10"></div>
-                        <span class="ml-4 text-sm font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-3 py-1 rounded-full border border-blue-100 dark:border-blue-500/20 whitespace-nowrap">
+                        <div class="h-5 w-5 rounded-full border-[3px] border-white dark:border-[#060B18] bg-teal-400 dark:bg-teal-400 shadow-md z-10" style="box-shadow:0 0 10px rgba(45,212,191,.4);"></div>
+                        <span class="ml-4 text-sm font-bold text-teal-600 dark:text-teal-300 px-3 py-1 rounded-full border whitespace-nowrap" style="background:rgba(45,212,191,.08);border-color:rgba(45,212,191,.15);">
                             ${yearMonth}
                         </span>
                     </div>
                 `;
             } else {
                  headerHtml = `
-                    <div class="absolute -left-[37px] top-6 h-3 w-3 rounded-full bg-gray-200 dark:bg-gray-700 border-2 border-white dark:border-black z-10"></div>
+                    <div class="absolute -left-[37px] top-6 h-3 w-3 rounded-full z-10" style="background:rgba(45,212,191,.35);border:2px solid rgba(45,212,191,.15);"></div>
                 `;
             }
 

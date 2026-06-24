@@ -147,7 +147,7 @@
 /* ═══════ CHARTS 图表区 ═══════ */
 .mm-charts {
     display: grid;
-    grid-template-columns: 1fr 2fr;
+    grid-template-columns: 240px 1fr;
     gap: 16px;
     margin-bottom: 36px;
 }
@@ -159,13 +159,18 @@
     backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
     border-radius: 16px;
     box-shadow: 0 0 0 1px var(--mm-card-border);
-    padding: 18px 20px;
+    padding: 16px 18px;
     overflow: hidden;
     transition: box-shadow .3s;
 }
 
 .mm-chart-panel:hover {
     box-shadow: 0 0 0 1px var(--mm-card-border), 0 4px 20px rgba(0,0,0,.08);
+}
+
+/* 确保热力图填充面板宽度 */
+.mm-chart-panel #heatmap-container {
+    width: 100% !important;
 }
 
 .mm-chart-panel h3 {
@@ -259,27 +264,8 @@
     transition: all .3s ease;
 }
 
-/* 紧凑模式：收起标签行 */
-.mm-toolbar--compact {
-    padding: 8px 16px;
-    border-radius: 14px;
-    box-shadow: 0 0 0 1px var(--mm-card-border), 0 4px 20px rgba(0,0,0,.15);
-}
-.mm-toolbar--compact .mm-tags-row {
-    max-height: 0;
-    overflow: hidden;
-    opacity: 0;
-    pointer-events: none;
-    margin: 0;
-}
-.mm-toolbar--compact .mm-search input {
-    padding: 8px 14px 8px 34px;
-    font-size: .82rem;
-}
-
 .mm-tags-row {
     transition: max-height .3s ease, opacity .3s ease, margin .3s ease;
-    max-height: 60px;
 }
 
 .mm-search {
@@ -400,13 +386,14 @@
     border-radius: 10px;
     background: var(--mm-card-bg);
     border: 1px solid var(--mm-card-border);
-    color: rgba(15,23,42,.4);
+    color: rgba(15,23,42,.5);
     cursor: pointer;
     transition: all .2s ease;
 }
+html:not(.dark) .mm-action-btn { color: #475569; border-color: rgba(0,0,0,.1); }
 
-.dark .mm-action-btn { color: rgba(255,255,255,.35); }
-.mm-action-btn:hover { border-color: var(--mm-accent); color: var(--mm-accent); }
+.dark .mm-action-btn { color: rgba(255,255,255,.5); }
+.mm-action-btn:hover { border-color: var(--mm-accent); color: var(--mm-accent); background: rgba(45,212,191,.08); }
 .mm-action-btn i { width: 17px; height: 17px; }
 
 /* 视图切换器 */
@@ -564,19 +551,44 @@
     position: relative;
 }
 
-.mm-timeline .moment-card::before {
-    content: '';
-    position: absolute;
-    left: -29px; top: 24px;
-    width: 10px; height: 10px;
-    border-radius: 50%;
-    background: var(--mm-accent);
-    box-shadow: 0 0 12px var(--mm-accent-glow);
-    border: 2px solid rgba(6,11,24,.8);
+/* 时间轴容器 — 覆盖 moments.js 的 Tailwind 类 */
+#moments-grid.max-w-3xl {
+    max-width: 680px !important;
 }
 
-html:not(.dark) .mm-timeline .moment-card::before {
-    border-color: rgba(255,255,255,.9);
+/* 时间轴卡片 */
+#moments-grid .moment-card.ml-4 {
+    margin-left: 0 !important;
+    margin-top: 16px !important;
+    background: var(--mm-card-bg) !important;
+    backdrop-filter: blur(14px) !important;
+    -webkit-backdrop-filter: blur(14px) !important;
+    box-shadow: 0 0 0 1px var(--mm-card-border) !important;
+    border: none !important;
+    border-radius: 16px !important;
+}
+
+#moments-grid .moment-card.ml-4:hover {
+    box-shadow: 0 0 0 1px rgba(45,212,191,.15), 0 8px 28px rgba(0,0,0,.15) !important;
+}
+
+/* 时间轴线条 */
+#moments-grid.border-l-2 {
+    border-left: 2px solid var(--mm-card-border) !important;
+    border-color: var(--mm-card-border) !important;
+}
+
+/* 时间轴文字 */
+#moments-grid .moment-card p {
+    font-size: .93rem !important;
+    line-height: 1.6 !important;
+}
+
+/* 时间轴标签 */
+#moments-grid .moment-card .px-2.py-1 {
+    background: rgba(45,212,191,.06) !important;
+    color: var(--mm-accent) !important;
+    border-radius: 5px !important;
 }
 
 
