@@ -341,7 +341,7 @@ if (typeof document !== 'undefined') {
             // Show toast or tooltip? For now just console/simple feedback
             const btn = event.currentTarget;
             const originalHTML = btn.innerHTML;
-            btn.innerHTML = '<i data-lucide="check" class="w-4 h-4 text-green-500"></i>';
+            btn.innerHTML = '<i data-lucide="check" style="width:16px;height:16px;color:#22c55e"></i>';
             if (window.lucide) window.lucide.createIcons();
             
             setTimeout(() => {
@@ -416,6 +416,22 @@ async function fetchCategoriesData() {
     return response.json();
 }
 
+/**
+ * Update hero stats with loaded data
+ */
+function updateHeroStats() {
+    const totalEl = document.getElementById('bm-total-count');
+    const catEl = document.getElementById('bm-cat-count');
+
+    if (totalEl) {
+        totalEl.textContent = allBookmarks.length;
+    }
+    if (catEl) {
+        const uniqueCats = new Set(allBookmarks.map(b => b.category).filter(Boolean));
+        catEl.textContent = uniqueCats.size;
+    }
+}
+
 async function initBookmarksPage() {
     console.log('[Bookmarks] initBookmarksPage called, readyState:', document.readyState);
     
@@ -446,25 +462,28 @@ async function initBookmarksPage() {
     
     // Show skeleton loading
     listContainer.innerHTML = `
-        <div class="space-y-12">
-            <div>
-                <div class="h-8 w-48 bg-slate-200 dark:bg-slate-800 rounded-lg mb-8 animate-pulse"></div>
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                    ${Array(8).fill(0).map(() => `
-                        <div class="h-64 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 animate-pulse">
-                            <div class="flex items-center justify-between mb-4">
-                                <div class="w-12 h-12 rounded-xl bg-slate-200 dark:bg-slate-800"></div>
+        <div class="bm-cat-section">
+            <div class="bm-cat-header">
+                <div class="bm-skeleton-line bm-skeleton-line--title"></div>
+            </div>
+            <div class="bm-card-grid">
+                ${Array(8).fill(0).map((_, i) => `
+                    <div class="bm-card bm-skeleton">
+                        <div class="bm-card-link" style="padding-bottom:12px">
+                            <div class="bm-card-top">
+                                <div class="bm-skeleton-avatar"></div>
                             </div>
-                            <div class="h-6 bg-slate-200 dark:bg-slate-800 rounded w-3/4 mb-2"></div>
-                            <div class="h-4 bg-slate-200 dark:bg-slate-800 rounded w-full mb-2"></div>
-                            <div class="h-4 bg-slate-200 dark:bg-slate-800 rounded w-2/3 mb-4"></div>
-                            <div class="flex gap-2 mt-auto">
-                                <div class="h-6 w-16 bg-slate-200 dark:bg-slate-800 rounded"></div>
-                                <div class="h-6 w-16 bg-slate-200 dark:bg-slate-800 rounded"></div>
-                            </div>
+                            <div class="bm-skeleton-line bm-skeleton-line--lg"></div>
+                            <div class="bm-skeleton-line bm-skeleton-line--md"></div>
+                            <div class="bm-skeleton-line bm-skeleton-line--sm"></div>
                         </div>
-                    `).join('')}
-                </div>
+                        <div class="bm-skeleton-tags">
+                            <div class="bm-skeleton-tag"></div>
+                            <div class="bm-skeleton-tag"></div>
+                            <div class="bm-skeleton-tag bm-skeleton-tag--short"></div>
+                        </div>
+                    </div>
+                `).join('')}
             </div>
         </div>
     `;
@@ -511,14 +530,22 @@ async function initBookmarksPage() {
         // Always render after loading (regardless of source)
         if (allBookmarks.length === 0) {
             listContainer.innerHTML = `
-                <div class="text-center py-12 text-slate-400">
-                    <p>暂无书签数据</p>
+                <div class="bm-no-results">
+                    <div class="bm-no-results-icon">
+                        <i data-lucide="bookmark"></i>
+                    </div>
+                    <h3>暂无书签</h3>
+                    <p>收藏的网站和资源将在这里展示。</p>
                 </div>
             `;
+            if (window.lucide) window.lucide.createIcons();
         } else {
             renderPage();
         }
-        
+
+        // Update hero stats
+        updateHeroStats();
+
         // Setup Search
         const searchInput = document.getElementById('bookmark-search');
         if (searchInput) {
@@ -537,11 +564,16 @@ async function initBookmarksPage() {
         console.error('Bookmarks init error:', e);
         _bookmarksInitializing = false;
         listContainer.innerHTML = `
-            <div class="text-center py-12 text-red-500">
-                <p>加载失败: ${e.message}</p>
-                <button onclick="_bookmarksInitialized=false;initBookmarksPage()" class="text-blue-600 underline text-sm mt-2">重试</button>
+            <div class="bm-no-results">
+                <div class="bm-no-results-icon">
+                    <i data-lucide="alert-circle"></i>
+                </div>
+                <h3>加载失败</h3>
+                <p style="color:#ef4444;margin-bottom:12px">${e.message}</p>
+                <button onclick="_bookmarksInitialized=false;initBookmarksPage()" class="bm-clear-btn">重试</button>
             </div>
         `;
+        if (window.lucide) window.lucide.createIcons();
     }
 }
 
@@ -575,7 +607,7 @@ function renderPage(searchQuery = null) {
                 if (activeTag || searchQuery) {
                     p.innerHTML = `
                         没有找到与 "${searchQuery || '#' + activeTag}" 相关的书签。<br>
-                        <button onclick="clearAllFilters()" class="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-lg shadow-blue-500/30">
+                        <button onclick="clearAllFilters()" class="bm-clear-btn">
                             清除所有筛选
                         </button>
                     `;
@@ -615,7 +647,7 @@ function renderPage(searchQuery = null) {
     
     // "All" button
     const allBtn = document.createElement('button');
-    allBtn.className = `glass-pill px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-all ${activeCategory === 'all' && !searchQuery ? 'bg-blue-600 text-white shadow-md shadow-blue-500/30' : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'}`;
+    allBtn.className = `bm-cat-pill${activeCategory === 'all' && !searchQuery ? ' bm-cat-pill--active' : ''}`;
     allBtn.textContent = '全部';
     allBtn.onclick = () => {
         activeCategory = 'all';
@@ -630,11 +662,11 @@ function renderPage(searchQuery = null) {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
     navContainer.appendChild(allBtn);
-    
+
     sortedCats.forEach(catKey => {
         const catName = allCategories[catKey] ? allCategories[catKey].name : catKey;
         const btn = document.createElement('button');
-        btn.className = `glass-pill px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-all ${activeCategory === catKey && !searchQuery ? 'bg-blue-600 text-white shadow-md shadow-blue-500/30' : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'}`;
+        btn.className = `bm-cat-pill${activeCategory === catKey && !searchQuery ? ' bm-cat-pill--active' : ''}`;
         btn.textContent = catName;
         btn.onclick = () => {
             activeCategory = catKey;
@@ -654,12 +686,12 @@ function renderPage(searchQuery = null) {
     // Tag Filter Indicator
     if (activeTag) {
         const indicator = document.createElement('div');
-        indicator.className = 'flex justify-center mb-8 animate-fade-in-up';
+        indicator.className = 'bm-tag-filter-indicator animate-fade-in-up';
         indicator.innerHTML = `
-            <div class="glass-pill inline-flex items-center px-4 py-2 rounded-full bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-800 shadow-sm">
-                <span class="mr-2 text-sm">当前标签: <span class="font-bold">#${activeTag}</span></span>
-                <button onclick="filterByTag('${activeTag}')" class="p-1 hover:bg-blue-100 dark:hover:bg-blue-800 rounded-full transition-colors" title="清除筛选">
-                    <i data-lucide="x" class="w-4 h-4"></i>
+            <div class="bm-tag-filter-pill">
+                <span>当前标签: <span class="bm-tag-filter-name">#${activeTag}</span></span>
+                <button onclick="filterByTag('${activeTag}')" title="清除筛选">
+                    <i data-lucide="x"></i>
                 </button>
             </div>
         `;
@@ -675,21 +707,21 @@ function renderPage(searchQuery = null) {
         
         const section = document.createElement('div');
         section.id = `cat-${catKey}`;
-        section.className = 'scroll-mt-32 mb-12'; // Added spacing
+        section.className = 'bm-cat-section';
         
         // Primary Header
         let sectionHTML = `
-            <div class="flex items-center mb-6">
-                <div class="h-8 w-1 bg-blue-600 rounded-full mr-4"></div>
-                <h2 class="text-2xl font-bold text-slate-900 dark:text-white">${catName}</h2>
-                <span class="ml-3 px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-xs font-medium text-slate-500">${items.length}</span>
+            <div class="bm-cat-header">
+                <div class="bm-cat-accent-bar"></div>
+                <h2 class="bm-cat-name">${catName}</h2>
+                <span class="bm-cat-count">${items.length}</span>
             </div>
         `;
 
         // Group by Subcategory
         const subGrouped = {};
         const noSubItems = [];
-        
+
         items.forEach(item => {
             if (item.subcategory) {
                 if (!subGrouped[item.subcategory]) subGrouped[item.subcategory] = [];
@@ -701,7 +733,7 @@ function renderPage(searchQuery = null) {
 
         // Helper to render grid (Masonry Layout)
         const renderGrid = (cardItems) => `
-            <div class="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-6 mb-8">
+            <div class="bm-card-grid">
                 ${cardItems.map(renderCard).join('')}
             </div>
         `;
@@ -715,7 +747,7 @@ function renderPage(searchQuery = null) {
         const childrenConfig = catConfig && catConfig.children ? catConfig.children : [];
         const definedSubIds = childrenConfig.map(c => c.id);
         const usedSubIds = Object.keys(subGrouped);
-        
+
         // Sort: defined first, then alphabetical for unknown ones
         const sortedSubIds = usedSubIds.sort((a, b) => {
             const idxA = definedSubIds.indexOf(a);
@@ -730,13 +762,11 @@ function renderPage(searchQuery = null) {
             const subItems = subGrouped[subId];
             const subConfig = childrenConfig.find(c => c.id === subId);
             const subName = subConfig ? subConfig.name : subId;
-            
+
             sectionHTML += `
-                <div class="mb-4 mt-2 ml-1">
-                    <h3 class="text-lg font-semibold text-slate-700 dark:text-slate-300 flex items-center">
-                        <span class="w-1.5 h-1.5 rounded-full bg-slate-400 mr-2"></span>
-                        ${subName}
-                    </h3>
+                <div class="bm-subcat-header">
+                    <span class="bm-subcat-dot"></span>
+                    <h3 class="bm-subcat-name">${subName}</h3>
                 </div>
                 ${renderGrid(subItems)}
             `;
@@ -805,50 +835,38 @@ if (typeof module !== 'undefined' && module.exports) {
 
 function renderCard(bookmark) {
     const domain = getDomain(bookmark.url);
-    // Use 64px minimum size for clarity
     const favicon = getFaviconUrl(domain, 64);
-    
-    // Check if tags match active tag to highlight
-    const highlightClass = activeTag && (bookmark.tags || []).includes(activeTag) ? 'ring-2 ring-blue-500 ring-offset-2 dark:ring-offset-slate-900' : '';
-    const desc = bookmark.desc || bookmark.description;
-    
+    const desc = bookmark.desc || bookmark.description || '暂无描述';
+    const hasActiveTag = activeTag && (bookmark.tags || []).includes(activeTag);
+
     return `
-        <div class="bookmark-card glass-card break-inside-avoid mb-6 group relative flex flex-col bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl transition-all duration-300 hover:shadow-xl hover:-translate-y-1 overflow-hidden ${highlightClass}">
-            <div class="absolute inset-0 bg-gradient-to-br from-blue-50/50 to-indigo-50/50 dark:from-blue-900/10 dark:to-indigo-900/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
-            
-            <a href="${bookmark.url}" target="_blank" rel="noopener" class="flex-grow p-6 pb-2 flex flex-col z-10" title="${bookmark.title}">
-                <div class="relative flex items-center justify-between mb-4">
-                    <div class="relative w-12 h-12 rounded-xl bg-slate-50 dark:bg-slate-800 p-2 border border-slate-100 dark:border-slate-700 group-hover:scale-110 transition-transform duration-300">
-                        <img src="${favicon}" loading="lazy" alt="" class="w-full h-full object-contain" onerror="handleFaviconError(this, '${domain}')"/>
+        <div class="bm-card${hasActiveTag ? ' bm-card--highlight' : ''}">
+            <a href="${bookmark.url}" target="_blank" rel="noopener" class="bm-card-link" title="${bookmark.title}">
+                <div class="bm-card-top">
+                    <div class="bm-card-favicon">
+                        <img src="${favicon}" loading="lazy" alt=""
+                             onerror="handleFaviconError(this, '${domain}')" />
                     </div>
-                    <div class="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 translate-x-2 group-hover:translate-x-0">
-                        <button onclick="copyBookmarkLink('${bookmark.url}', event)" class="glass-pill p-2 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 bg-white/80 dark:bg-slate-800/80 rounded-lg backdrop-blur-sm transition-colors" title="复制链接">
-                            <i data-lucide="copy" class="w-4 h-4"></i>
+                    <div class="bm-card-actions">
+                        <button class="bm-card-copy" onclick="copyBookmarkLink('${bookmark.url}', event)" title="复制链接" aria-label="复制链接">
+                            <i data-lucide="copy"></i>
                         </button>
-                        <div class="p-2 text-slate-400">
-                            <i data-lucide="external-link" class="w-4 h-4"></i>
-                        </div>
+                        <span class="bm-card-ext">
+                            <i data-lucide="external-link"></i>
+                        </span>
                     </div>
                 </div>
-                
-                <h3 class="relative text-lg font-bold text-slate-900 dark:text-white mb-2 line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                    ${bookmark.title}
-                </h3>
-                
-                <p class="relative text-sm text-slate-500 dark:text-slate-400 line-clamp-3 mb-4 flex-grow" title="${bookmark.desc || bookmark.description || ''}">
-                    ${bookmark.desc || bookmark.description || '暂无描述'}
-                </p>
+                <h3 class="bm-card-title">${bookmark.title}</h3>
+                <p class="bm-card-desc" title="${desc}">${desc}</p>
             </a>
-            
-            <div class="relative px-6 pb-6 pt-0 mt-auto z-10 flex flex-wrap gap-2">
-                ${(bookmark.tags || []).slice(0, 3).map(tag => {
+            <div class="bm-card-tags">
+                ${(bookmark.tags || []).slice(0, 4).map(tag => {
                     const isActive = tag === activeTag;
-                    const activeClass = isActive ? 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:text-blue-600 dark:hover:text-blue-400';
-                    return `
-                    <button onclick="filterByTag('${tag}')" class="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium transition-colors ${activeClass}">
+                    return `<button class="bm-tag${isActive ? ' bm-tag--active' : ''}"
+                        onclick="filterByTag('${tag}')" aria-label="按标签 #${tag} 筛选">
                         #${tag}
-                    </button>
-                `}).join('')}
+                    </button>`;
+                }).join('')}
             </div>
         </div>
     `;

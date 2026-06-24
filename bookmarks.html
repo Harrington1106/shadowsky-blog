@@ -1,55 +1,37 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#0B1120" media="(prefers-color-scheme: dark)">
     <meta name="theme-color" content="#F5F7FA" media="(prefers-color-scheme: light)">
-    <title>网页收藏 - 夏日科技探索</title>
+    <title>网页收藏 - Shadow Quake</title>
     <link rel="icon" type="image/png" href="public/img/favicon256.png">
-    
+
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.loli.net">
     <link rel="preconnect" href="https://gstatic.loli.net" crossorigin>
     <link href="https://fonts.loli.net/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
 
-    <script src="https://cdn.tailwindcss.com"></script>
-        <link href="css/unified.css?v=20260624v5" rel="stylesheet">
+    <!-- Liquid Glass System -->
+    <link href="css/unified.css?v=20260624v5" rel="stylesheet">
     <link href="css/liquid-ambient.css?v=20260624v5" rel="stylesheet">
-    
+    <link href="css/liquid-bookmarks.css?v=20260625v2" rel="stylesheet">
+
     <!-- Lucide Icons -->
     <script src="js/vendor/lucide.min.js?v=20260624v5"></script>
-    
-    <style>
-        body {
-            font-family: 'Inter', 'Noto Sans SC', sans-serif;
-        }
-        html.lenis, html.lenis body {
-            height: auto;
-        }
-        .lenis.lenis-smooth {
-            scroll-behavior: auto !important;
-        }
-        .lenis.lenis-smooth [data-lenis-prevent] {
-            overscroll-behavior: contain;
-        }
-        .lenis.lenis-stopped {
-            overflow: hidden;
-        }
-        .lenis.lenis-scrolling iframe {
-            pointer-events: none;
-        }
-    </style>
 </head>
 <body class="font-sans">
+
     <!-- ═══════ 流体光斑层 ═══════ -->
-    <div class="liquid-ambient ambient-subtle" aria-hidden="true">
+    <div class="liquid-ambient ambient-gentle" aria-hidden="true">
         <div class="liquid-blob liquid-blob--1"></div>
         <div class="liquid-blob liquid-blob--2"></div>
         <div class="liquid-blob liquid-blob--3"></div>
+        <div class="liquid-blob liquid-blob--4"></div>
     </div>
 
-
+    <!-- ═══════ 导航栏 ═══════ -->
     <nav id="navbar" class="homepage-cover-nav-shell" data-ui-region="home-nav-shell">
         <div class="nav-inner">
             <div class="nav-left">
@@ -100,121 +82,100 @@
         </div>
     </div>
 
-    <!-- Main Content -->
-    <div class="min-h-screen pt-24 pb-12 px-4 sm:px-6 lg:px-8">
-        <div id="bookmarks-container" class="public-shell public-shell--floating-nav layout-safe-top animate-fade-in-up">
-            
-            <div class="text-center mb-12 sm:mb-16">
-                <h1 class="text-3xl font-black tracking-tight sm:text-5xl mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400">
-                    网页收藏
-                </h1>
-                <p class="text-base sm:text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-                    精心挑选的各领域优质资源，连接广阔宇宙与数字世界的传送门。
-                </p>
-            </div>
+    <!-- ═══════ 主内容区 ═══════ -->
+    <main class="bm-page">
+        <div id="bookmarks-container" class="bm-container animate-fade-in-up">
 
-            <!-- Search Section -->
-            <div class="max-w-2xl mx-auto mb-12 relative group z-30" data-ui-toolbar="bookmarks-search">
-                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                    <i data-lucide="search" class="w-5 h-5 text-slate-400 group-focus-within:text-blue-500 transition-colors"></i>
-                </div>
-                <input type="text" id="bookmark-search" 
-                    class="block w-full pl-12 pr-4 py-4 border border-slate-200 dark:border-gray-800 rounded-2xl leading-5 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 sm:text-base transition-all shadow-sm hover:shadow-md hover:border-blue-300 dark:hover:border-blue-700" 
-                    placeholder="搜索收藏的网站、工具或资源..."
-                >
-                <div class="absolute inset-y-0 right-0 pr-4 flex items-center">
-                    <kbd class="hidden sm:inline-block px-2 py-0.5 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-medium text-slate-400 dark:text-slate-500 bg-slate-50 dark:bg-slate-800">
-                        /
-                    </kbd>
-                </div>
-            </div>
-
-            <div id="gh-bookmarks-config" data-owner="Harrington1106" data-repo="blog-add" class="hidden"></div>
-
-            <section class="section-shell layout-flow-section mb-12" data-ui-section="bookmarks-curated">
-                <div class="utility-glass-bar rounded-[28px] p-4 sm:p-6" data-ui-toolbar="bookmarks-discovery">
-                    <span class="editorial-kicker">Curated Directory</span>
-                    <h2 class="mt-3 text-2xl font-bold text-slate-900 dark:text-white">先从这些精选入口开始</h2>
-                    <p class="mt-2 max-w-2xl text-sm text-slate-500 dark:text-slate-400">在正式浏览分类之前，先展示高频工具、知识入口与最近新增资源。</p>
-                    <div class="glass-summary-grid lg:grid-cols-3 mt-4">
-                        <div class="glass-card p-4">
-                            <p class="text-xs uppercase tracking-[0.18em] text-blue-600 dark:text-blue-400">高频工具</p>
-                            <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">优先放常用效率工具与在线服务。</p>
-                        </div>
-                        <div class="glass-card p-4">
-                            <p class="text-xs uppercase tracking-[0.18em] text-blue-600 dark:text-blue-400">知识入口</p>
-                            <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">整理文档、搜索与学习型站点。</p>
-                        </div>
-                        <div class="glass-card p-4">
-                            <p class="text-xs uppercase tracking-[0.18em] text-blue-600 dark:text-blue-400">最近新增</p>
-                            <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">保留近期补充的资源，方便再次回看。</p>
-                        </div>
+            <!-- Hero -->
+            <section class="bm-hero">
+                <h1>网页收藏</h1>
+                <p class="bm-hero-desc">精心挑选的各领域优质资源，连接广阔宇宙与数字世界的传送门。</p>
+                <div class="bm-hero-stats">
+                    <div class="bm-stat-pill">
+                        <i data-lucide="bookmark" class="bm-stat-icon"></i>
+                        <span class="bm-stat-value" id="bm-total-count">—</span>
+                        <span>个书签</span>
+                    </div>
+                    <div class="bm-stat-pill">
+                        <i data-lucide="folder-tree" class="bm-stat-icon"></i>
+                        <span class="bm-stat-value" id="bm-cat-count">—</span>
+                        <span>个分类</span>
                     </div>
                 </div>
             </section>
 
+            <!-- GitHub Bookmarks Config (hidden, for admin overlay) -->
+            <div id="gh-bookmarks-config" data-owner="Harrington1106" data-repo="blog-add" class="hidden"></div>
+
+            <!-- Search -->
+            <div class="bm-search-wrapper" data-ui-toolbar="bookmarks-search">
+                <i data-lucide="search" class="bm-search-icon"></i>
+                <input type="text" id="bookmark-search"
+                    class="bm-search-input"
+                    placeholder="搜索收藏的网站、工具或资源...">
+                <kbd class="bm-search-kbd">/</kbd>
+            </div>
+
             <!-- Category Navigation -->
-            <div class="glass-toolbar sticky top-16 z-40 mb-12 py-3 bg-slate-50/95 dark:bg-slate-950/95 backdrop-blur-md border-b sm:border border-slate-200 dark:border-gray-800 -mx-4 px-4 sm:mx-0 sm:rounded-2xl transition-all duration-300 shadow-sm" data-ui-panel="bookmarks-categories">
-                <div id="category-nav" class="flex overflow-x-auto pb-2 sm:pb-0 gap-2 sm:flex-wrap sm:justify-center no-scrollbar">
+            <div class="bm-cat-bar" data-ui-panel="bookmarks-categories">
+                <div id="category-nav" class="bm-cat-nav">
                     <!-- Dynamic categories injected by js/bookmarks.js -->
                 </div>
             </div>
 
-            <!-- Container for Dynamic Category Sections -->
-            <div id="category-list" class="space-y-24"></div>
+            <!-- Category Sections Container -->
+            <div id="category-list" class="bm-cat-list"></div>
 
-            <!-- Sections will be injected dynamically by js/bookmarks.js -->
-
-
-<div id="no-results" class="hidden text-center py-20">
-                <div class="inline-flex p-4 rounded-full bg-slate-100 dark:bg-slate-800 mb-4">
-                    <i data-lucide="search-x" class="w-8 h-8 text-slate-400"></i>
+            <!-- No Results -->
+            <div id="no-results" class="bm-no-results hidden">
+                <div class="bm-no-results-icon">
+                    <i data-lucide="search-x"></i>
                 </div>
-                <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2">未找到相关结果</h3>
-                <p class="text-slate-500 dark:text-slate-400">
-                    尝试更换关键词，或者浏览分类寻找灵感。
-                </p>
+                <h3>未找到相关结果</h3>
+                <p>尝试更换关键词，或者浏览分类寻找灵感。</p>
             </div>
 
         </div>
-    </div>
+    </main>
 
     <!-- Back to Top Button -->
-    <button id="back-to-top" class="fixed bottom-8 right-8 p-3 rounded-full bg-blue-600 text-white shadow-lg transition-all duration-300 opacity-0 translate-y-10 hover:bg-blue-700 hover:scale-110 z-50 focus:outline-none ring-2 ring-blue-500 ring-offset-2 dark:ring-offset-slate-950" aria-label="Back to top">
-        <i data-lucide="chevron-up" class="w-6 h-6"></i>
+    <button id="back-to-top" aria-label="Back to top">
+        <i data-lucide="chevron-up"></i>
     </button>
 
     <!-- Footer -->
-    <footer>
+    <footer class="bm-footer">
         <p>&copy; 2025 Shadow Quake. Built with care.</p>
-        <div class="inline-flex items-center gap-2 px-3 py-1 bg-gray-100 dark:bg-gray-800 rounded-full text-xs font-mono text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-700">
-            <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+        <span class="bm-footer-dot" aria-hidden="true">·</span>
+        <div class="bm-visit-count">
+            <span class="bm-pulse-dot"></span>
             <span id="visit-count">加载中…</span>
         </div>
     </footer>
 
     <!-- Custom Context Menu -->
-    <div id="context-menu" class="fixed z-50 hidden min-w-[180px] bg-white/90 dark:bg-gray-900/90 backdrop-blur-lg rounded-xl shadow-2xl border border-slate-200 dark:border-gray-800 py-1.5 transform scale-95 opacity-0 transition-all duration-200 origin-top-left ring-1 ring-black/5">
-        <button onclick="window.location.reload()" class="w-full text-left px-4 py-2.5 text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:text-blue-600 dark:hover:text-blue-400 flex items-center gap-3 transition-colors">
-            <i data-lucide="rotate-cw" class="w-4 h-4"></i>
+    <div id="context-menu" class="bm-context-menu hidden">
+        <button onclick="window.location.reload()" class="bm-context-menu-item">
+            <i data-lucide="rotate-cw"></i>
             刷新页面
         </button>
-        <button id="ctx-back-to-top" class="w-full text-left px-4 py-2.5 text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:text-blue-600 dark:hover:text-blue-400 flex items-center gap-3 transition-colors">
-            <i data-lucide="chevron-up" class="w-4 h-4"></i>
+        <button id="ctx-back-to-top" class="bm-context-menu-item">
+            <i data-lucide="chevron-up"></i>
             回到顶部
         </button>
-        <div class="h-px bg-slate-200 dark:bg-slate-800 my-1 mx-2"></div>
-        <button onclick="document.getElementById('bookmark-search').focus()" class="w-full text-left px-4 py-2.5 text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:text-blue-600 dark:hover:text-blue-400 flex items-center gap-3 transition-colors">
-            <i data-lucide="search" class="w-4 h-4"></i>
+        <div class="bm-context-menu-divider"></div>
+        <button onclick="document.getElementById('bookmark-search').focus()" class="bm-context-menu-item">
+            <i data-lucide="search"></i>
             快速搜索
         </button>
-        <div class="h-px bg-slate-200 dark:bg-slate-800 my-1 mx-2"></div>
-        <button onclick="window.location.href='index.html'" class="w-full text-left px-4 py-2.5 text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:text-blue-600 dark:hover:text-blue-400 flex items-center gap-3 transition-colors">
-            <i data-lucide="house" class="w-4 h-4"></i>
+        <div class="bm-context-menu-divider"></div>
+        <button onclick="window.location.href='index.html'" class="bm-context-menu-item">
+            <i data-lucide="house"></i>
             返回首页
         </button>
     </div>
 
+    <!-- Scripts -->
     <script src="js/api.js?v=20260624v5"></script>
     <script src="js/main.js?v=20260624v5"></script>
     <script src="js/navbar.js?v=20260624v5"></script>
@@ -225,7 +186,7 @@
 
         // Smooth Scroll (Lenis)
         const lenis = new Lenis({
-            duration: 0.5
+            duration: 0.5,
             easing: (t) => Math.min(1, 1.001 - Math.pow(2, -6 * t)),
             direction: 'vertical',
             gestureDirection: 'vertical',
@@ -251,41 +212,37 @@
                 rafId = requestAnimationFrame(raf);
             }
         });
-
     </script>
     <script src="js/back-to-top.js?v=20260624v5"></script>
     <script src="js/bookmarks.js?v=20260624v5"></script>
     <script src="js/bookmarks-admin.js?v=20260624v5"></script>
     <script>
-
         // Custom Context Menu Logic
         const contextMenu = document.getElementById('context-menu');
-        
+
         document.addEventListener('contextmenu', (e) => {
             e.preventDefault();
-            
+
             const { clientX: mouseX, clientY: mouseY } = e;
             const menuWidth = contextMenu.offsetWidth || 180;
             const menuHeight = contextMenu.offsetHeight || 200;
             const winWidth = window.innerWidth;
             const winHeight = window.innerHeight;
-            
+
             // Adjust position to keep menu within viewport
             let posX = mouseX;
             let posY = mouseY;
-            
+
             if (posX + menuWidth > winWidth) posX = winWidth - menuWidth - 10;
             if (posY + menuHeight > winHeight) posY = winHeight - menuHeight - 10;
-            
+
             contextMenu.style.left = `${posX}px`;
             contextMenu.style.top = `${posY}px`;
-            
+
             // Show menu
             contextMenu.classList.remove('hidden');
-            // Small delay to allow display:block to apply before opacity transition
             requestAnimationFrame(() => {
-                contextMenu.classList.remove('opacity-0', 'scale-95');
-                contextMenu.classList.add('opacity-100', 'scale-100');
+                contextMenu.classList.add('visible');
             });
         });
 
@@ -295,29 +252,30 @@
                 hideContextMenu();
             }
         });
-        
+
         // Close menu on scroll
         lenis.on('scroll', hideContextMenu);
-        
+
         function hideContextMenu() {
             if (contextMenu.classList.contains('hidden')) return;
-            
-            contextMenu.classList.remove('opacity-100', 'scale-100');
-            contextMenu.classList.add('opacity-0', 'scale-95');
-            
+            contextMenu.classList.remove('visible');
+
             setTimeout(() => {
                 contextMenu.classList.add('hidden');
             }, 200);
         }
     </script>
-<script src="js/tracker.js?v=20260624v5"></script>
-<style>
-    .dark .light-only { display: none !important; }
-    .dark .dark-only { display: inline !important; }
-    img.light-only, img.dark-only { display: none; }
-    .dark img.dark-only { display: inline; }
-    img.light-only { display: inline; }
-    .dark img.light-only { display: none; }
-</style>
+    <script src="js/tracker.js?v=20260624v5"></script>
+
+    <!-- Dark/Light icon toggle — must stay inline for FOUC prevention -->
+    <style>
+        .dark-only { display: none; }
+        .dark .dark-only { display: inline !important; }
+        .dark .light-only { display: none !important; }
+        img.light-only, img.dark-only { display: none; }
+        .dark img.dark-only { display: inline; }
+        img.light-only { display: inline; }
+        .dark img.light-only { display: none; }
+    </style>
 </body>
 </html>
