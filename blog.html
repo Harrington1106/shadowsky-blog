@@ -92,27 +92,21 @@
         </div>
     </div>
 
-    <!-- ═══════════ HERO ═══════════ -->
+    <!-- ═══════════ HERO — 全宽横幅 ═══════════ -->
     <section class="blog-hero">
-        <div class="blog-hero-panel">
-            <p class="hero-subtitle fade-in">Notes &amp; Thoughts</p>
-            <h1 class="fade-in stagger-1 animate-gradient">
-                星空笔记
-            </h1>
-            <p class="hero-desc fade-in stagger-2">
-                记录技术、天文与生活的点点滴滴
-            </p>
+        <div class="blog-hero-inner">
+            <p class="hero-kicker fade-in">Notes &amp; Thoughts</p>
+            <h1 class="fade-in stagger-1">星空笔记</h1>
+            <p class="hero-desc fade-in stagger-2">记录技术、天文与生活的点点滴滴</p>
             <div class="blog-hero-stats fade-in stagger-3">
                 <span class="blog-stat-pill">
                     <span class="stat-value" id="post-count">—</span>
                     <span>篇文章</span>
                 </span>
-                <span class="blog-stat-dot" aria-hidden="true"></span>
                 <span class="blog-stat-pill">
                     <span class="stat-value" id="tag-count">—</span>
                     <span>个标签</span>
                 </span>
-                <span class="blog-stat-dot" aria-hidden="true"></span>
                 <span class="blog-stat-pill">
                     <span class="stat-value" id="category-count">—</span>
                     <span>个分类</span>
@@ -125,32 +119,18 @@
     <div class="shell" style="padding-block:var(--sp-6);position:relative;z-index:1;">
 
         <!-- Search + View Switcher -->
-        <div style="margin-bottom:var(--sp-8);">
+        <div class="blog-toolbar">
             <div class="search-wrapper fade-in">
                 <i data-lucide="search" class="search-icon"></i>
                 <input type="text" id="search-input" placeholder="搜索笔记...">
                 <kbd>⌘K</kbd>
             </div>
 
-            <div style="display:flex;justify-content:center;margin-top:var(--sp-4);" class="fade-in stagger-1">
-                <div class="view-switcher" data-active="0">
-                    <button class="view-btn active" data-view="grid">
-                        <i data-lucide="grid-3x3"></i>
-                        <span>网格</span>
-                    </button>
-                    <button class="view-btn" data-view="timeline">
-                        <i data-lucide="clock"></i>
-                        <span>时间轴</span>
-                    </button>
-                    <button class="view-btn" data-view="directory">
-                        <i data-lucide="folder-tree"></i>
-                        <span>目录</span>
-                    </button>
-                    <button class="view-btn" data-view="tags">
-                        <i data-lucide="tags"></i>
-                        <span>标签</span>
-                    </button>
-                </div>
+            <div class="view-switcher" data-active="0">
+                <button class="view-btn active" data-view="grid"><i data-lucide="grid-3x3"></i><span>网格</span></button>
+                <button class="view-btn" data-view="timeline"><i data-lucide="clock"></i><span>时间轴</span></button>
+                <button class="view-btn" data-view="directory"><i data-lucide="folder-tree"></i><span>目录</span></button>
+                <button class="view-btn" data-view="tags"><i data-lucide="tags"></i><span>标签</span></button>
             </div>
         </div>
 
@@ -168,10 +148,11 @@
 
     <!-- ═══════════ FOOTER ═══════════ -->
     <footer class="blog-footer">
-        <p>&copy; 2025 Shadow Quake. Designed with care.</p>
-        <span id="visit-count" style="display:inline-flex;align-items:center;gap:6px;font-size:12px;font-family:monospace;margin-top:4px;">
+        <span>&copy; 2025 Shadow Quake</span>
+        <span class="footer-dot">·</span>
+        <span class="visit-count">
             <span class="pulse-dot"></span>
-            <span>—</span>
+            <span id="visit-count-text">—</span> 次浏览
         </span>
     </footer>
 
