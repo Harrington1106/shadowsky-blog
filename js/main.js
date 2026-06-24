@@ -125,6 +125,7 @@ function applyTheme(theme) {
     window.dispatchEvent(new CustomEvent('themeChange', {
         detail: { isDark }
     }));
+    window.dispatchEvent(new CustomEvent('themechange')); // 通知流体引擎 (navbar.js 原职责)
 
     if (window.lucide) {
         window.lucide.createIcons();
