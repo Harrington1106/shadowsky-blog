@@ -27,6 +27,24 @@ html:not(.dark) #navbar {
     border-color: rgba(0,0,0,.08) !important;
 }
 
+/* 主题图标 — 纯 CSS 显隐，不依赖 lucide */
+.theme-icon-sun, .theme-icon-moon { display: none; }
+html.dark .theme-icon-sun { display: block; }
+html:not(.dark) .theme-icon-moon { display: block; }
+
+#theme-toggle {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 34px !important; height: 34px !important;
+    border-radius: 9999px !important;
+    background: transparent !important;
+    border: none !important;
+    cursor: pointer !important;
+    color: rgba(226,232,240,.75) !important;
+}
+html:not(.dark) #theme-toggle { color: rgba(51,65,85,.6) !important; }
+
 /* ═══════ 页面容器 ═══════ */
 .mm-page {
     position: relative;
@@ -537,72 +555,82 @@ html:not(.dark) .mm-action-btn { color: #475569; border-color: rgba(0,0,0,.1); }
 
 
 /* ═══════ TIMELINE 时间轴视图 ═══════ */
-/* 容器 */
 #moments-grid.max-w-3xl {
     max-width: 680px !important;
     margin: 0 auto !important;
-    padding-left: 2rem !important;
+    padding-left: 2.5rem !important;
     border-left: 2px solid var(--mm-card-border) !important;
 }
 
-/* 时间轴卡片 — 覆盖 Tailwind */
-#moments-grid .moment-card.ml-4 {
-    margin-left: 0 !important;
-    margin-top: 0 !important;
-    margin-bottom: 20px !important;
+/* 时间轴每项容器 — 设为定位参考 */
+#moments-grid .relative.animate-fade-in {
+    position: relative !important;
+    margin-bottom: 12px !important;
+}
+
+/* 时间轴卡片 */
+#moments-grid .moment-card.ml-4,
+#moments-grid .moment-card {
+    margin: 0 0 16px 0 !important;
     background: var(--mm-card-bg) !important;
     backdrop-filter: blur(14px) !important;
     -webkit-backdrop-filter: blur(14px) !important;
     box-shadow: 0 0 0 1px var(--mm-card-border) !important;
     border: none !important;
     border-radius: 14px !important;
-    padding: 16px 18px !important;
+    padding: 14px 16px !important;
+    position: relative !important;
+    z-index: 1 !important;
 }
-
-#moments-grid .moment-card.ml-4:hover {
+#moments-grid .moment-card:hover {
     box-shadow: 0 0 0 1px rgba(45,212,191,.15), 0 6px 24px rgba(0,0,0,.15) !important;
-    transform: translateX(3px) !important;
 }
 
-/* 时间轴内部文字 */
-#moments-grid .moment-card .text-gray-700 { color: var(--bg-text-body, #0f172a) !important; }
-.dark #moments-grid .moment-card .text-gray-700 { color: #e2e8f0 !important; }
-#moments-grid .moment-card .text-xs { color: rgba(15,23,42,.4) !important; }
-.dark #moments-grid .moment-card .text-xs { color: rgba(255,255,255,.35) !important; }
-
-/* 时间轴卡片内的图片容器 */
-#moments-grid .moment-card .md\\:w-48 {
-    border-radius: 10px !important;
-    overflow: hidden !important;
+/* 时间轴圆点 — 全新 class */
+.tl-month-marker {
+    position: absolute; left: -31px; top: 2px;
+    display: flex; align-items: center; gap: 10px;
+    z-index: 5;
 }
+.tl-month-dot {
+    width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0;
+    background: #2dd4bf;
+    border: 2px solid rgba(6,11,24,.9);
+    box-shadow: 0 0 10px rgba(45,212,191,.4);
+}
+html:not(.dark) .tl-month-dot { border-color: #fff; }
+.tl-month-label {
+    font-size: .78rem; font-weight: 600;
+    padding: 2px 10px; border-radius: 9999px;
+    background: rgba(45,212,191,.08); color: #2dd4bf;
+    border: 1px solid rgba(45,212,191,.15);
+    white-space: nowrap;
+}
+html:not(.dark) .tl-month-label { color: #0d9488; }
+
+/* 普通小圆点 */
+.tl-item-dot {
+    position: absolute; left: -29px; top: 10px;
+    width: 8px; height: 8px; border-radius: 50%; z-index: 3;
+    background: rgba(45,212,191,.35);
+    border: 2px solid rgba(6,11,24,.8);
+}
+html:not(.dark) .tl-item-dot { border-color: #fff; }
+
+/* 时间轴内部文字颜色 */
+#moments-grid .text-gray-700 { color: #1e293b !important; }
+.dark #moments-grid .text-gray-700 { color: #e2e8f0 !important; }
+#moments-grid .text-xs { font-size: .7rem !important; }
 
 /* 标签 */
-#moments-grid .moment-card .px-2.py-1 {
+#moments-grid .px-2.py-1 {
     background: rgba(45,212,191,.06) !important;
-    color: var(--mm-accent) !important;
+    color: #2dd4bf !important;
     border-radius: 5px !important;
-    font-size: .68rem !important;
+    font-size: .66rem !important;
     padding: 2px 7px !important;
 }
-.dark #moments-grid .moment-card .px-2.py-1 { background: rgba(45,212,191,.1) !important; }
-
-/* 月份标题行 — 定位修正 */
-#moments-grid .absolute.-left-\\[41px\\] {
-    left: -33px !important;
-    top: -4px !important;
-    z-index: 5 !important;
-}
-
-/* 小圆点（非首月标记）— 半透明teal */
-#moments-grid .-left-\\[37px\\] {
-    left: -33px !important;
-    top: 8px !important;
-    z-index: 3 !important;
-}
-
-/* 时间轴间距 */
-#moments-grid .space-y-10 > * { margin-bottom: 0 !important; }
-#moments-grid .relative.animate-fade-in { margin-bottom: 4px !important; }
+html:not(.dark) #moments-grid .px-2.py-1 { color: #0d9488 !important; }
 
 
 /* ═══════ LIGHTBOX ═══════ */

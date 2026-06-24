@@ -627,16 +627,14 @@ document.addEventListener('DOMContentLoaded', () => {
             if (yearMonth !== lastYearMonth) {
                 lastYearMonth = yearMonth;
                 headerHtml = `
-                    <div class="absolute -left-[41px] top-0 flex items-center animate-fade-in">
-                        <div class="h-5 w-5 rounded-full border-[3px] border-white dark:border-[#060B18] bg-teal-400 dark:bg-teal-400 shadow-md z-10" style="box-shadow:0 0 10px rgba(45,212,191,.4);"></div>
-                        <span class="ml-4 text-sm font-bold text-teal-600 dark:text-teal-300 px-3 py-1 rounded-full border whitespace-nowrap" style="background:rgba(45,212,191,.08);border-color:rgba(45,212,191,.15);">
-                            ${yearMonth}
-                        </span>
+                    <div class="tl-month-marker">
+                        <div class="tl-month-dot"></div>
+                        <span class="tl-month-label">${yearMonth}</span>
                     </div>
                 `;
             } else {
                  headerHtml = `
-                    <div class="absolute -left-[37px] top-6 h-3 w-3 rounded-full z-10" style="background:rgba(45,212,191,.35);border:2px solid rgba(45,212,191,.15);"></div>
+                    <div class="tl-item-dot"></div>
                 `;
             }
 
