@@ -12,28 +12,25 @@
     <link rel="preconnect" href="https://gstatic.loli.net" crossorigin>
     <link href="https://fonts.loli.net/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&family=ZCOOL+KuaiLe&display=swap" rel="stylesheet">
 
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="css/unified.css?v=20260624v5" rel="stylesheet">
-    <link href="css/liquid-ambient.css?v=20260624v5" rel="stylesheet">
-    <link href="css/liquid-blog.css?v=20260624v5" rel="stylesheet">
+    <link href="css/unified.css?v=20260625b" rel="stylesheet">
+    <link href="css/liquid-ambient.css?v=20260625b" rel="stylesheet">
+    <link href="css/liquid-blog.css?v=20260625b" rel="stylesheet">
 
-    <script src="js/vendor/lucide.min.js?v=20260624v5"></script>
+    <script src="js/vendor/lucide.min.js?v=20260625b"></script>
 
     <style>
-        /* Light/dark visibility */
-        .dark .light-only { display: none !important; }
-        .dark .dark-only { display: inline !important; }
-        .light-only { display: inline; }
-        .dark-only { display: none; }
-        img.light-only, img.dark-only { display: none; }
-        .dark img.dark-only { display: inline; }
-        img.light-only { display: inline; }
-        .dark img.light-only { display: none; }
+        .dark .light-only{display:none!important}
+        .dark .dark-only{display:inline!important}
+        .light-only{display:inline}.dark-only{display:none}
+        img.light-only,img.dark-only{display:none}
+        .dark img.dark-only{display:inline}
+        img.light-only{display:inline}
+        .dark img.light-only{display:none}
     </style>
 </head>
 <body class="font-sans">
 
-    <!-- ═══════ 流体光斑层 ═══════ -->
+    <!-- 流体光斑层 -->
     <div class="liquid-ambient ambient-gentle" aria-hidden="true">
         <div class="liquid-blob liquid-blob--1"></div>
         <div class="liquid-blob liquid-blob--2"></div>
@@ -41,7 +38,7 @@
         <div class="liquid-blob liquid-blob--4"></div>
     </div>
 
-    <!-- ═══════════ NAVBAR ═══════════ -->
+    <!-- NAVBAR -->
     <nav id="navbar" class="homepage-cover-nav-shell" data-ui-region="home-nav-shell">
         <div class="nav-inner">
             <div class="nav-left">
@@ -73,13 +70,11 @@
         </div>
     </nav>
 
-    <!-- ═══════ 移动端菜单 ═══════ -->
+    <!-- 移动端菜单 -->
     <div id="mobile-menu" role="dialog" aria-label="导航菜单" aria-modal="true">
         <div class="mobile-menu-header">
             <span class="mobile-menu-brand">Shadow Quake</span>
-            <button class="mobile-menu-close" aria-label="关闭菜单">
-                <i data-lucide="x"></i>
-            </button>
+            <button class="mobile-menu-close" aria-label="关闭菜单"><i data-lucide="x"></i></button>
         </div>
         <div class="mobile-menu-links">
             <a href="index.html" class="mobile-nav-link homepage-mobile-menu-link"><i data-lucide="house"></i><span>首页</span></a>
@@ -92,94 +87,121 @@
         </div>
     </div>
 
-    <!-- ═══════════ HERO — 全宽横幅 ═══════════ -->
+    <!-- ═══════ HERO — 全宽沉浸式 ═══════ -->
     <section class="blog-hero">
-        <div class="blog-hero-inner">
-            <p class="hero-kicker fade-in">Notes &amp; Thoughts</p>
-            <h1 class="fade-in stagger-1">星空笔记</h1>
-            <p class="hero-desc fade-in stagger-2">记录技术、天文与生活的点点滴滴</p>
-            <div class="blog-hero-stats fade-in stagger-3">
-                <span class="blog-stat-pill">
-                    <span class="stat-value" id="post-count">—</span>
-                    <span>篇文章</span>
-                </span>
-                <span class="blog-stat-pill">
-                    <span class="stat-value" id="tag-count">—</span>
-                    <span>个标签</span>
-                </span>
-                <span class="blog-stat-pill">
-                    <span class="stat-value" id="category-count">—</span>
-                    <span>个分类</span>
-                </span>
+        <h1 class="fade-in">星空笔记</h1>
+        <p class="hero-desc fade-in stagger-1">记录技术、天文与生活的点点滴滴，分享所有有趣的思考与实践</p>
+        <div class="blog-hero-stats fade-in stagger-2">
+            <div class="blog-stat-pill">
+                <i data-lucide="file-text" class="stat-icon"></i>
+                <span class="stat-value" id="post-count">—</span>
+                <span>篇文章</span>
+            </div>
+            <div class="blog-stat-pill">
+                <i data-lucide="tags" class="stat-icon"></i>
+                <span class="stat-value" id="tag-count">—</span>
+                <span>个标签</span>
+            </div>
+            <div class="blog-stat-pill">
+                <i data-lucide="folder-tree" class="stat-icon"></i>
+                <span class="stat-value" id="category-count">—</span>
+                <span>个分类</span>
             </div>
         </div>
     </section>
 
-    <!-- ═══════════ CONTENT ═══════════ -->
-    <div class="shell" style="padding-block:var(--sp-6);position:relative;z-index:1;">
-
-        <!-- Search + View Switcher -->
-        <div class="blog-toolbar">
-            <div class="search-wrapper fade-in">
-                <i data-lucide="search" class="search-icon"></i>
-                <input type="text" id="search-input" placeholder="搜索笔记...">
-                <kbd>⌘K</kbd>
-            </div>
-
-            <div class="view-switcher" data-active="0">
-                <button class="view-btn active" data-view="grid"><i data-lucide="grid-3x3"></i><span>网格</span></button>
-                <button class="view-btn" data-view="timeline"><i data-lucide="clock"></i><span>时间轴</span></button>
-                <button class="view-btn" data-view="directory"><i data-lucide="folder-tree"></i><span>目录</span></button>
-                <button class="view-btn" data-view="tags"><i data-lucide="tags"></i><span>标签</span></button>
-            </div>
+    <!-- ═══════ TOOLBAR — 搜索 + 视图 ═══════ -->
+    <div class="blog-toolbar fade-in stagger-3">
+        <div class="search-wrapper">
+            <i data-lucide="search" class="search-icon"></i>
+            <input type="text" id="search-input" placeholder="搜索笔记...">
+            <kbd>⌘K</kbd>
         </div>
-
-        <!-- Posts Container -->
-        <div id="posts-container" class="fade-in stagger-2">
-            <div class="blog-loader">
-                <div class="loader-spinner"></div>
-                <p class="loader-text">正在加载星空笔记...</p>
-            </div>
+        <div class="view-switcher" data-active="0">
+            <button class="view-btn active" data-view="grid"><i data-lucide="grid-3x3"></i><span>网格</span></button>
+            <button class="view-btn" data-view="timeline"><i data-lucide="clock"></i><span>时间轴</span></button>
+            <button class="view-btn" data-view="directory"><i data-lucide="folder-tree"></i><span>目录</span></button>
+            <button class="view-btn" data-view="tags"><i data-lucide="tags"></i><span>标签</span></button>
         </div>
-
-        <!-- Pagination -->
-        <div id="pagination-container" style="margin-top:var(--sp-8);display:flex;justify-content:center;"></div>
     </div>
 
-    <!-- ═══════════ FOOTER ═══════════ -->
+    <!-- ═══════ 文章容器（JS 动态渲染）═══════ -->
+    <div id="posts-container" class="posts-grid fade-in stagger-4">
+        <div class="blog-loader">
+            <div class="loader-spinner"></div>
+            <p class="loader-text">正在加载星空笔记...</p>
+        </div>
+    </div>
+
+    <!-- Pagination -->
+    <div id="pagination-container" style="margin-top:40px;"></div>
+
+    <!-- ═══════ FOOTER ═══════ -->
     <footer class="blog-footer">
-        <span>&copy; 2025 Shadow Quake</span>
-        <span class="footer-dot">·</span>
-        <span class="visit-count">
-            <span class="pulse-dot"></span>
-            <span id="visit-count-text">—</span> 次浏览
-        </span>
+        <div class="footer-inner">
+            <div class="footer-top">
+                <div class="footer-brand">
+                    <h3>Shadow Quake</h3>
+                    <p>探索技术与星空的边界，记录每一个值得留存的瞬间。</p>
+                </div>
+                <div class="footer-links">
+                    <h4>导航</h4>
+                    <ul>
+                        <li><a href="index.html">首页</a></li>
+                        <li><a href="blog.html">笔记</a></li>
+                        <li><a href="moments.html">片刻</a></li>
+                        <li><a href="about.html">关于</a></li>
+                    </ul>
+                </div>
+                <div class="footer-links">
+                    <h4>资源</h4>
+                    <ul>
+                        <li><a href="bookmarks.html">收藏</a></li>
+                        <li><a href="rss.html">RSS 订阅</a></li>
+                        <li><a href="acg.html">ACG</a></li>
+                    </ul>
+                </div>
+                <div class="footer-links">
+                    <h4>联系</h4>
+                    <ul>
+                        <li><a href="https://github.com/Harrington1106">GitHub</a></li>
+                        <li><a href="mailto:contact@shadowquake.top">邮箱</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <span>&copy; 2026 Shadow Quake</span>
+                <div class="visit-badge">
+                    <span class="pulse-dot"></span>
+                    <span id="visit-count-text">—</span> 次浏览
+                </div>
+            </div>
+        </div>
     </footer>
 
+    <!-- Back to top -->
     <button id="back-to-top" aria-label="回到顶部">
-        <i data-lucide="chevron-up" style="width:20px;height:20px;"></i>
+        <i data-lucide="chevron-up" style="width:22px;height:22px;"></i>
     </button>
 
     <!-- Scripts -->
-    <script src="js/navbar.js?v=20260624v5"></script>
-    <script src="js/api.js?v=20260624v5"></script>
-    <script src="js/blog.js?v=20260624v5"></script>
-    <script src="js/click-effect.js?v=20260624v5"></script>
-    <script src="js/context-menu.js?v=20260624v5"></script>
-    <script src="js/tracker.js?v=20260624v5"></script>
+    <script src="js/navbar.js?v=20260625b"></script>
+    <script src="js/api.js?v=20260625b"></script>
+    <script src="js/blog.js?v=20260625b"></script>
+    <script src="js/click-effect.js?v=20260625b"></script>
+    <script src="js/context-menu.js?v=20260625b"></script>
+    <script src="js/tracker.js?v=20260625b"></script>
     <script src="https://unpkg.com/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
     <script>
         lucide.createIcons();
 
-        // Lenis smooth scrolling
+        // Lenis smooth scroll
         const lenis = new Lenis({
-            duration: 0.5,
-            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -6 * t)),
-            smooth: true,
-            smoothTouch: false,
-            touchMultiplier: 2,
+            duration: 0.6,
+            easing: t => Math.min(1, 1.001 - Math.pow(2, -6 * t)),
+            smooth: true, smoothTouch: false, touchMultiplier: 2,
         });
-        function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
+        function raf(time){lenis.raf(time);requestAnimationFrame(raf)}
         requestAnimationFrame(raf);
 
         // Back to top
@@ -187,28 +209,25 @@
         window.addEventListener('scroll', () => {
             btt.classList.toggle('visible', window.scrollY > 500);
         });
-        btt.addEventListener('click', () => { window.scrollTo({ top: 0, behavior: 'smooth' }); });
+        btt.addEventListener('click', () => { lenis.scrollTo(0); });
 
         // Search shortcut
-        document.addEventListener('keydown', (e) => {
+        document.addEventListener('keydown', e => {
             if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
                 e.preventDefault();
                 document.getElementById('search-input')?.focus();
             }
         });
 
-        // View switcher — update data-active for the sliding pill indicator
-        document.querySelectorAll('.view-btn').forEach((btn, idx) => {
-            btn.addEventListener('click', function() {
-                document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
-                const switcher = this.closest('.view-switcher');
-                if (switcher) {
-                    const btns = [...switcher.querySelectorAll('.view-btn')];
-                    switcher.setAttribute('data-active', btns.indexOf(this));
-                }
-            });
-        });
+        // Theme logo sync
+        const h = document.documentElement;
+        function syncLogos(){
+            const d = h.classList.contains('dark');
+            document.querySelectorAll('img.dark-only').forEach(i => i.style.display = d ? 'inline' : 'none');
+            document.querySelectorAll('img.light-only').forEach(i => i.style.display = d ? 'none' : 'inline');
+        }
+        window.addEventListener('themechange', syncLogos);
+        syncLogos();
     </script>
 </body>
 </html>
