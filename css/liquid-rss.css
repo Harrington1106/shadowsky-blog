@@ -1182,12 +1182,16 @@
     color: var(--rs-accent);
     padding: 1px 4px; border-radius: 3px;
 }
-/* 标签/徽章类元素（博客平台常用） */
-.rs-article-body span[style*="background"],
-.rs-article-body span[style*="color"],
-.rs-article-body .tag, .rs-article-body .badge, .rs-article-body .label,
-.rs-article-body [class*="tag"], .rs-article-body [class*="badge"], .rs-article-body [class*="pill"] {
-    border-radius: 6px !important;
+/* 通用圆角 — 给色块/标签类元素补圆角 */
+.rs-article-body [style*="background"],
+.rs-article-body [style*="background-color"],
+.rs-article-body [style*="border-radius:0"],
+.rs-article-body [class*="badge"], .rs-article-body [class*="tag"],
+.rs-article-body [class*="pill"], .rs-article-body [class*="chip"],
+.rs-article-body [class*="label"], .rs-article-body [class*="btn"],
+.rs-article-body [class*="button"], .rs-article-body [class*="rounded"],
+.rs-article-body span[style*="color"] {
+    border-radius: 6px;
 }
 /* 折叠面板 */
 .rs-article-body details {
