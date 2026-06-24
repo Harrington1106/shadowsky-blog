@@ -59,9 +59,10 @@
   }
 
   // ── Theme toggle ──
+  // 全站统一：用 onclick 属性（非 addEventListener），允许各页面覆盖
   const themeToggle = document.getElementById('theme-toggle');
   if (themeToggle) {
-    // Read saved preference
+    // Read saved preference (init)
     const saved = localStorage.getItem('theme');
     if (saved === 'light') {
       html.classList.remove('dark');
@@ -69,16 +70,20 @@
       html.classList.add('dark');
     } // else: respect OS preference (default)
 
-    themeToggle.addEventListener('click', () => {
-      // 优先调用 main.js 的完整实现（含图标切换），回退到简单 toggle
-      if (window.toggleTheme) {
-        window.toggleTheme();
+    // 用 onclick 属性 — 单处理器，可被页面脚本覆盖（如 moments.html）
+    themeToggle.onclick = function(e) {
+      e && e.preventDefault && e.preventDefault();
+      const isDark = !html.classList.contains('dark');
+      if (isDark) {
+        html.classList.add('dark');
       } else {
-        const isDark = html.classList.toggle('dark');
-        localStorage.setItem('theme', isDark ? 'dark' : 'light');
-        window.dispatchEvent(new CustomEvent('themechange'));
+        html.classList.remove('dark');
       }
-    });
+      localStorage.setItem('theme', isDark ? 'dark' : 'light');
+      window.dispatchEvent(new CustomEvent('themechange'));
+      window.dispatchEvent(new CustomEvent('themeChange', { detail: { isDark } }));
+      if (window.lucide) window.lucide.createIcons();
+    };
   }
 
   // ── Active link detection ──
