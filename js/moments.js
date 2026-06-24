@@ -484,15 +484,7 @@ document.addEventListener('DOMContentLoaded', () => {
             filterMoments();
 
             // Handle Deep Link
-            const params2 = new URLSearchParams(window.location.search);
-            const initialId = params2.get('id');
-            if (initialId) {
-                // Wait for rendering to finish
-                setTimeout(() => {
-                    const index = allMoments.findIndex(m => String(m.id) === initialId);
-                    if (index !== -1) openLightboxByIndex(index);
-                }, 500);
-            }
+            // 不再自动打开 lightbox——用户明确点击才打开
 
         } catch (error) {
             console.error('Error fetching moments:', error);
