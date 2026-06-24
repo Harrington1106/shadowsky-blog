@@ -118,7 +118,8 @@ async function loadFeedsWithCache() {
     if (!container) return;
     
     // Show loading immediately
-    container.innerHTML = '<div class="px-4 py-8 text-center text-slate-400 text-sm">正在加载订阅源...</div>';
+    container.innerHTML = '<div class="rs-empty-loading"><i data-lucide="loader-2"></i><p>正在加载订阅源…</p></div>';
+    lucide.createIcons();
     
     const swr = window.swrCache;
     
@@ -146,11 +147,15 @@ async function loadFeedsWithCache() {
     } catch (e) {
         console.error('[RSS] Failed to load feeds:', e);
         container.innerHTML = `
-            <div class="px-4 py-8 text-center">
-                <p class="text-red-500 text-sm mb-2">加载失败</p>
-                <button onclick="location.reload()" class="text-xs text-blue-600 underline">重试</button>
+            <div class="rs-empty-state">
+                <div class="rs-empty-icon">
+                    <i data-lucide="alert-circle"></i>
+                </div>
+                <h3>加载失败</h3>
+                <button onclick="location.reload()" class="rs-btn rs-btn--primary" style="margin-top:8px">重试</button>
             </div>
         `;
+        lucide.createIcons();
     }
 }
 
@@ -262,7 +267,8 @@ async function loadFeeds() {
     const container = document.getElementById('feed-list-items');
     if (!container) return;
 
-    container.innerHTML = '<div class="px-4 py-8 text-center text-slate-400 text-sm">正在加载订阅源...</div>';
+    container.innerHTML = '<div class="rs-empty-loading"><i data-lucide="loader-2"></i><p>正在加载订阅源…</p></div>';
+    lucide.createIcons();
 
     try {
         let feeds = [];
@@ -302,12 +308,16 @@ async function loadFeeds() {
 
     } catch (e) {
         console.error('[RSS] Failed to load feeds:', e);
-        container.innerHTML = `
-            <div class="px-4 py-8 text-center">
-                <p class="text-red-500 text-sm mb-2">加载失败</p>
-                <button onclick="location.reload()" class="text-xs text-blue-600 underline">重试</button>
-            </div>
-        `;
+            container.innerHTML = `
+                <div class="rs-empty-state">
+                    <div class="rs-empty-icon">
+                        <i data-lucide="alert-circle"></i>
+                    </div>
+                    <h3>加载失败</h3>
+                    <button onclick="location.reload()" class="rs-btn rs-btn--primary" style="margin-top:8px">重试</button>
+                </div>
+            `;
+            lucide.createIcons();
     }
 }
 
@@ -319,15 +329,17 @@ async function loadFeeds() {
 function renderFeedList(feeds) {
     const container = document.getElementById('feed-list-items');
     if (!container) return;
-    
+
     container.innerHTML = '';
-    
+
     if (feeds.length === 0) {
         container.innerHTML = `
-            <div class="px-4 py-12 text-center text-slate-400">
-                <i data-lucide="rss" class="w-8 h-8 mx-auto mb-2 opacity-50"></i>
-                <p class="text-sm">暂无订阅</p>
-                <p class="text-xs mt-1">请联系管理员添加订阅源</p>
+            <div class="rs-empty-state">
+                <div class="rs-empty-icon">
+                    <i data-lucide="rss"></i>
+                </div>
+                <h3>暂无订阅</h3>
+                <p>请联系管理员添加订阅源</p>
             </div>
         `;
         lucide.createIcons();
@@ -339,7 +351,7 @@ function renderFeedList(feeds) {
     feeds.forEach(feed => {
         // Normalize URL property (support both xmlUrl and url)
         feed.xmlUrl = feed.xmlUrl || feed.url;
-        
+
         const cat = feed.category || '未分类';
         if (!categories[cat]) categories[cat] = [];
         categories[cat].push(feed);
@@ -348,44 +360,33 @@ function renderFeedList(feeds) {
     // Render groups
     Object.keys(categories).sort().forEach(cat => {
         const groupEl = document.createElement('div');
-        groupEl.className = 'mb-4'; // Increased margin
-        
+
         const header = document.createElement('div');
-        header.className = 'px-4 py-2 text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center bg-slate-50/50 dark:bg-slate-900/50 backdrop-blur-sm sticky top-0 z-10';
-        header.innerHTML = `<span>${cat}</span>`;
+        header.className = 'rs-feed-cat-header';
+        header.textContent = cat;
         groupEl.appendChild(header);
 
-        const list = document.createElement('div');
-        list.className = 'space-y-2 px-3'; // Added padding and spacing
-        
         categories[cat].forEach(feed => {
             const item = document.createElement('button');
             const isActive = activeFeedUrl === feed.xmlUrl;
-            
-            // Card Style
-            item.className = `w-full text-left p-3 flex items-center space-x-3 rounded-xl transition-all duration-200 border ${isActive 
-                ? 'bg-white dark:bg-slate-800 border-blue-200 dark:border-blue-800 shadow-md scale-[1.02] ring-1 ring-blue-500/20' 
-                : 'bg-white dark:bg-slate-800/50 border-transparent hover:border-slate-200 dark:hover:border-slate-700 hover:shadow-sm hover:bg-white dark:hover:bg-slate-800'}`;
-            
+
+            item.className = 'rs-feed-item' + (isActive ? ' rs-feed-item--active' : '');
             item.onclick = () => loadFeedArticles(feed);
-            
+
             // Icon based on title first letter
             const letter = (feed.title || '?')[0].toUpperCase();
-            
+
             item.innerHTML = `
-                <div class="w-10 h-10 rounded-lg ${isActive ? 'bg-blue-600 text-white' : 'bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400'} flex items-center justify-center text-sm font-bold shrink-0 transition-colors duration-200 shadow-sm">
-                    ${letter}
+                <div class="rs-feed-icon">${letter}</div>
+                <div class="rs-feed-info">
+                    <div class="rs-feed-title">${feed.title}</div>
+                    <div class="rs-feed-url">${feed.xmlUrl}</div>
                 </div>
-                <div class="flex-1 min-w-0">
-                    <div class="text-sm font-bold ${isActive ? 'text-slate-900 dark:text-white' : 'text-slate-700 dark:text-slate-200'} truncate">${feed.title}</div>
-                    <div class="text-[10px] ${isActive ? 'text-blue-500 dark:text-blue-400' : 'text-slate-400'} truncate opacity-80">${feed.xmlUrl}</div>
-                </div>
-                ${isActive ? '<div class="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse"></div>' : ''}
+                <div class="rs-feed-dot"></div>
             `;
-            list.appendChild(item);
+            groupEl.appendChild(item);
         });
-        
-        groupEl.appendChild(list);
+
         container.appendChild(groupEl);
     });
 
@@ -415,6 +416,21 @@ function renderFeedList(feeds) {
 function updateStats() {
     const countEl = document.getElementById('sub-count');
     if (countEl) countEl.textContent = currentFeeds.length;
+
+    // Update category count
+    const catCountEl = document.getElementById('cat-count');
+    if (catCountEl) {
+        const categories = new Set(currentFeeds.map(f => f.category || '未分类'));
+        catCountEl.textContent = categories.size;
+    }
+
+    // Update last refreshed time
+    const lastUpdatedEl = document.getElementById('last-updated');
+    if (lastUpdatedEl) {
+        const now = new Date();
+        const timeStr = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        lastUpdatedEl.textContent = timeStr;
+    }
 }
 
 // ===========================================
@@ -427,25 +443,27 @@ async function loadFeedArticles(feed) {
     const container = document.getElementById('article-list');
     const contentArea = document.getElementById('article-content');
     
-    // Mobile view switch
-    const sidebar = document.getElementById('sidebar');
-    if (window.innerWidth < 1024) {
-        sidebar.classList.add('-translate-x-full'); // Hide sidebar
+    // Mobile: auto-switch to inbox panel
+    if (window.innerWidth <= 768 && window.rssMobile) {
+        window.rssMobile.showPanel('rss-inbox');
     }
 
     if (container) {
         container.innerHTML = `
-            <div class="flex flex-col items-center justify-center h-64 text-slate-400">
-                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mb-4"></div>
-                <p>正在获取文章...</p>
+            <div class="rs-empty-loading">
+                <i data-lucide="loader-2"></i>
+                <p>正在获取文章…</p>
             </div>
         `;
+        lucide.createIcons();
     }
-    
+
     if (contentArea) {
         contentArea.innerHTML = `
-            <div class="flex flex-col items-center justify-center h-full text-slate-400">
-                <i data-lucide="book-open" class="w-12 h-12 mb-4 opacity-20"></i>
+            <div class="rs-empty-state">
+                <div class="rs-empty-icon">
+                    <i data-lucide="book-open"></i>
+                </div>
                 <p>选择文章开始阅读</p>
             </div>
         `;
@@ -508,10 +526,12 @@ async function loadFeedArticles(feed) {
         console.error('[RSS] Failed to load articles:', e);
         if (container) {
             container.innerHTML = `
-                <div class="flex flex-col items-center justify-center h-64 text-red-500">
-                    <i data-lucide="alert-circle" class="w-8 h-8 mb-2"></i>
-                    <p>无法加载内容</p>
-                    <p class="text-xs text-slate-400 mt-1">${e.message}</p>
+                <div class="rs-empty-state">
+                    <div class="rs-empty-icon">
+                        <i data-lucide="alert-circle"></i>
+                    </div>
+                    <h3>无法加载内容</h3>
+                    <p>${e.message}</p>
                 </div>
             `;
             lucide.createIcons();
@@ -596,118 +616,140 @@ function cleanHtml(html) {
 function renderArticleList(articles, feedTitle) {
     const container = document.getElementById('article-list');
     if (!container) return;
-    
-    container.innerHTML = '';
-    
-    // Header
-    const header = document.createElement('div');
-    header.className = 'sticky top-0 z-10 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 p-4 shadow-sm';
-    header.innerHTML = `
-        <h2 class="text-lg font-bold text-slate-900 dark:text-white truncate tracking-tight">${feedTitle}</h2>
-        <div class="flex items-center text-xs text-slate-500 mt-1">
-            <span class="bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-full">${articles.length} 篇文章</span>
-        </div>
-    `;
-    container.appendChild(header);
 
-    const list = document.createElement('div');
-    list.className = 'p-2 space-y-2'; // Added spacing and padding
-    
+    container.innerHTML = '';
+
+    // Also update feed title in inbox header
+    const feedTitleEl = document.getElementById('feed-title');
+    if (feedTitleEl) feedTitleEl.textContent = feedTitle;
+
+    // Update article count badge
+    const countEl = document.getElementById('article-count');
+    if (countEl) {
+        countEl.textContent = articles.length + ' 篇';
+        countEl.style.display = 'inline-block';
+    }
+
     articles.forEach((article, index) => {
         const item = document.createElement('article');
-        // Changed to card style
-        item.className = 'p-4 bg-white dark:bg-slate-800/50 rounded-xl border border-transparent hover:border-slate-200 dark:hover:border-slate-700 hover:shadow-md cursor-pointer transition-all duration-200 group active:scale-[0.98]';
+        item.className = 'rs-card';
         item.onclick = () => openArticle(index);
-        
+
         const dateStr = article.pubDate.toLocaleDateString();
         const timeStr = article.pubDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-        
+        const sourceLabel = article.feedTitle || feedTitle;
+
         item.innerHTML = `
-            <div class="flex justify-between items-start mb-2">
-                <h3 class="font-bold text-slate-900 dark:text-slate-100 text-sm leading-snug group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2 flex-1 mr-2">${article.title}</h3>
-            </div>
-            <p class="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 mb-3 leading-relaxed">${article.description.substring(0, 120)}...</p>
-            <div class="flex items-center justify-between text-[10px] text-slate-400 font-medium">
-                <div class="flex items-center space-x-2">
-                    <span class="bg-slate-100 dark:bg-slate-700/50 px-1.5 py-0.5 rounded text-slate-500 dark:text-slate-400">${dateStr}</span>
-                    <span>${timeStr}</span>
-                </div>
-                ${article.author ? `<span class="truncate max-w-[80px]">${article.author}</span>` : ''}
+            <span class="rs-card-source">${sourceLabel}</span>
+            <h3 class="rs-card-title">${article.title}</h3>
+            <p class="rs-card-desc">${article.description ? article.description.substring(0, 120) + '…' : '暂无描述'}</p>
+            <div class="rs-card-meta">
+                <span class="rs-card-date">
+                    <i data-lucide="calendar" style="width:12px;height:12px"></i>
+                    ${dateStr} ${timeStr}
+                </span>
+                ${article.author ? `<span class="rs-card-author">${article.author}</span>` : ''}
             </div>
         `;
-        list.appendChild(item);
+        container.appendChild(item);
     });
-    
-    container.appendChild(list);
+
+    lucide.createIcons();
 }
 
 function openArticle(index) {
     const article = currentArticles[index];
     if (!article) return;
-    
+
     const container = document.getElementById('article-content');
     if (!container) return;
-    
-    // For mobile: show content layer if needed (depends on layout)
-    // Assuming simple layout for now
-    
+
+    // Mobile: auto-switch to reader panel
+    if (window.innerWidth <= 768 && window.rssMobile) {
+        window.rssMobile.showReader();
+    }
+
+    // Mark active card in list
+    const cards = document.querySelectorAll('.rs-card');
+    cards.forEach((c, i) => c.classList.toggle('rs-card--active', i === index));
+
     // Sanitize content if DOMPurify is available
     const safeContent = window.DOMPurify ? DOMPurify.sanitize(article.content) : article.content;
-    
     const dateStr = article.pubDate.toLocaleString();
-    
+
     container.innerHTML = `
-        <article class="max-w-4xl mx-auto px-6 py-10 sm:px-10 relative z-10">
-            <header class="mb-10 pb-8 border-b border-slate-100 dark:border-slate-800">
-                <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white mb-6 leading-tight tracking-tight">${article.title}</h1>
-                
-                <div class="flex flex-wrap items-center gap-4 text-sm text-slate-500">
-                    <div class="flex items-center px-3 py-1 bg-white dark:bg-slate-900 rounded-full border border-slate-200 dark:border-slate-700 shadow-sm">
-                        <i data-lucide="calendar" class="w-3.5 h-3.5 mr-2 text-blue-500"></i>
+        <article class="rs-article">
+            <header class="rs-article-header">
+                <h1>${article.title}</h1>
+
+                <div class="rs-article-meta">
+                    <span class="rs-meta-pill">
+                        <i data-lucide="calendar"></i>
                         ${dateStr}
-                    </div>
-                    
+                    </span>
+
                     ${article.author ? `
-                    <div class="flex items-center px-3 py-1 bg-white dark:bg-slate-900 rounded-full border border-slate-200 dark:border-slate-700 shadow-sm">
-                        <i data-lucide="user" class="w-3.5 h-3.5 mr-2 text-green-500"></i>
+                    <span class="rs-meta-pill">
+                        <i data-lucide="user"></i>
                         ${article.author}
-                    </div>` : ''}
-                    
-                    <a href="${article.link}" target="_blank" rel="noopener" class="flex items-center px-3 py-1 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-full hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors">
-                        <i data-lucide="external-link" class="w-3.5 h-3.5 mr-2"></i>
+                    </span>` : ''}
+
+                    <a href="${article.link}" target="_blank" rel="noopener" class="rs-meta-pill rs-meta-pill--link">
+                        <i data-lucide="external-link"></i>
                         原文
                     </a>
-                    
-                    <button id="translate-btn" class="flex items-center px-3 py-1 bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400 rounded-full hover:bg-purple-100 dark:hover:bg-purple-900/40 transition-colors ml-auto">
-                        <i data-lucide="languages" class="w-3.5 h-3.5 mr-2"></i>
+
+                    <button id="translate-btn" class="rs-meta-pill rs-meta-pill--action">
+                        <i data-lucide="languages"></i>
                         AI 翻译
                     </button>
                 </div>
             </header>
-            
-            <div class="prose prose-lg prose-slate dark:prose-invert max-w-none prose-headings:font-bold prose-a:text-blue-600 dark:prose-a:text-blue-400 hover:prose-a:underline prose-img:rounded-2xl prose-img:shadow-lg">
+
+            <div class="rs-article-body">
                 ${safeContent}
             </div>
-            
-            <div class="mt-16 pt-8 border-t border-slate-100 dark:border-slate-800 text-center text-slate-400 text-sm">
+
+            <div class="rs-article-end">
                 <p>— 完 —</p>
             </div>
         </article>
     `;
-    
+
     lucide.createIcons();
 
-    document.getElementById('translate-btn').addEventListener('click', async () => {
-        try {
-            const translated = await translateArticle(article.content);
-            if (translated) {
-                document.querySelector('.prose').innerHTML = translated;
+    // Translate button
+    const translateBtn = document.getElementById('translate-btn');
+    if (translateBtn) {
+        translateBtn.addEventListener('click', async () => {
+            try {
+                const translated = await translateArticle(article.content);
+                if (translated) {
+                    const body = container.querySelector('.rs-article-body');
+                    if (body) body.innerHTML = translated;
+                }
+            } catch (e) {
+                alert('翻译失败: ' + e.message);
             }
-        } catch (e) {
-            alert('翻译失败: ' + e.message);
-        }
-    });
-    
+        });
+    }
+
+    // Reading progress bar
+    const progressBar = document.getElementById('reading-progress');
+    if (progressBar) {
+        // Remove old listener by cloning
+        const newContainer = container;
+        newContainer._scrollHandler = () => {
+            const scrollTop = newContainer.scrollTop;
+            const scrollHeight = newContainer.scrollHeight - newContainer.clientHeight;
+            const progress = scrollHeight > 0 ? (scrollTop / scrollHeight) * 100 : 0;
+            progressBar.style.width = progress + '%';
+        };
+        newContainer.addEventListener('scroll', newContainer._scrollHandler, { passive: true });
+        // Reset progress
+        progressBar.style.width = '0%';
+    }
+
     // Scroll to top
     container.scrollTop = 0;
 }
@@ -788,24 +830,32 @@ async function loadAllFeedsArticles() {
     activeFeedUrl = 'all';
     renderFeedList(currentFeeds); // Re-render to highlight active
 
+    // Mobile: auto-switch to inbox panel
+    if (window.innerWidth <= 768 && window.rssMobile) {
+        window.rssMobile.showPanel('rss-inbox');
+    }
+
     const container = document.getElementById('article-list');
     const contentArea = document.getElementById('article-content');
-    
+
     // UI Setup (Loading state)
     if (container) {
         container.innerHTML = `
-            <div class="flex flex-col items-center justify-center h-64 text-slate-400">
-                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mb-4"></div>
-                <p>正在聚合所有文章...</p>
-                <p class="text-xs mt-2 text-slate-500" id="loading-progress">0/${currentFeeds.length}</p>
+            <div class="rs-empty-loading">
+                <i data-lucide="loader-2"></i>
+                <p>正在聚合所有文章…</p>
+                <p class="rs-loading-text" id="loading-progress">0/${currentFeeds.length}</p>
             </div>
         `;
+        lucide.createIcons();
     }
 
     if (contentArea) {
          contentArea.innerHTML = `
-            <div class="flex flex-col items-center justify-center h-full text-slate-400">
-                <i data-lucide="book-open" class="w-12 h-12 mb-4 opacity-20"></i>
+            <div class="rs-empty-state">
+                <div class="rs-empty-icon">
+                    <i data-lucide="book-open"></i>
+                </div>
                 <p>选择文章开始阅读</p>
             </div>
         `;

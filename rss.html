@@ -1,11 +1,11 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#0B1120" media="(prefers-color-scheme: dark)">
     <meta name="theme-color" content="#F5F7FA" media="(prefers-color-scheme: light)">
-    <title>RSS 订阅 - 夏日科技探索</title>
+    <title>RSS 订阅 — Shadow Quake</title>
     <link rel="icon" type="image/png" href="public/img/favicon256.png">
 
     <!-- Fonts -->
@@ -13,9 +13,10 @@
     <link rel="preconnect" href="https://gstatic.loli.net" crossorigin>
     <link href="https://fonts.loli.net/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
 
-    <script src="https://cdn.tailwindcss.com"></script>
-        <link href="css/unified.css?v=20260626a" rel="stylesheet">
+    <!-- Liquid Glass System -->
+    <link href="css/unified.css?v=20260626a" rel="stylesheet">
     <link href="css/liquid-ambient.css?v=20260624v5" rel="stylesheet">
+    <link href="css/liquid-rss.css?v=20260624v6" rel="stylesheet">
 
     <!-- DOMPurify -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.8/purify.min.js"></script>
@@ -23,29 +24,23 @@
     <!-- Lucide Icons -->
     <script src="js/vendor/lucide.min.js?v=20260624v5"></script>
 
+    <!-- Theme FOUC prevention -->
     <style>
-        body {
-            font-family: 'Inter', 'Noto Sans SC', sans-serif;
-        }
-        /* Custom Scrollbar for Feed List */
-        .scrollbar-hide::-webkit-scrollbar {
-            display: none;
-        }
-        .scrollbar-hide {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
+        html:not(.dark) .dark-only{display:none!important}
+        html.dark .light-only{display:none!important}
     </style>
 </head>
 <body class="font-sans">
+
     <!-- ═══════ 流体光斑层 ═══════ -->
     <div class="liquid-ambient ambient-subtle" aria-hidden="true">
         <div class="liquid-blob liquid-blob--1"></div>
         <div class="liquid-blob liquid-blob--2"></div>
         <div class="liquid-blob liquid-blob--3"></div>
+        <div class="liquid-blob liquid-blob--4"></div>
     </div>
 
-
+    <!-- ═══════ 导航栏 ═══════ -->
     <nav id="navbar" class="homepage-cover-nav-shell" data-ui-region="home-nav-shell">
         <div class="nav-inner">
             <div class="nav-left">
@@ -96,154 +91,205 @@
         </div>
     </div>
 
-    <!-- Main Content (RSS Reader Layout) -->
-    <div class="flex-1 flex pt-16 overflow-hidden relative animate-fade-in-up public-shell public-shell--floating-nav layout-safe-top layout-overflow-guard" data-ui-shell="rss-workbench">
+    <!-- ═══════ 主内容 ═══════ -->
+    <main class="rs-page">
+        <div class="rs-container">
 
-        <!-- Loading Spinner -->
-        <div id="loading-spinner" class="absolute inset-0 bg-white/50 dark:bg-slate-950/50 z-50 flex items-center justify-center hidden backdrop-blur-sm">
-            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-        </div>
+            <!-- Hero -->
+            <section class="rs-hero">
+                <h1>RSS 订阅</h1>
+                <p class="rs-hero-desc">聚合优质信息源，在信息洪流中保持专注。</p>
+                <div class="rs-hero-stats">
+                    <div class="rs-stat-pill">
+                        <i data-lucide="rss" class="rs-stat-icon"></i>
+                        <span class="rs-stat-value" id="sub-count">—</span>
+                        <span>订阅源</span>
+                    </div>
+                    <div class="rs-stat-pill">
+                        <i data-lucide="folder-tree" class="rs-stat-icon"></i>
+                        <span class="rs-stat-value" id="cat-count">—</span>
+                        <span>分类</span>
+                    </div>
+                    <div class="rs-stat-pill">
+                        <i data-lucide="clock" class="rs-stat-icon"></i>
+                        <span class="rs-stat-value" id="last-updated">—</span>
+                        <span>最近更新</span>
+                    </div>
+                </div>
+            </section>
 
-        <!-- Sidebar (Feeds) -->
-        <div class="glass-panel workbench-pane w-64 bg-slate-50 dark:bg-slate-900/50 border-r border-slate-200 dark:border-slate-800 flex flex-col hidden md:flex transition-all duration-300" data-ui-panel="rss-sources">
-            <div class="p-4">
-                <h2 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4 px-3">我的订阅</h2>
-                <div class="space-y-1">
-                    <button id="all-feeds-btn" class="w-full text-left px-3 py-2 rounded-xl bg-white dark:bg-slate-800 shadow-sm border border-slate-100 dark:border-slate-700/50 text-slate-700 dark:text-slate-200 text-sm font-medium flex items-center group transition-all hover:shadow-md hover:border-blue-200 dark:hover:border-blue-800">
-                        <div class="w-8 h-8 rounded-lg bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center mr-3 text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-transform">
-                            <i data-lucide="inbox" class="w-4 h-4"></i>
+            <!-- ═══ 三栏工作台 ═══ -->
+            <div class="rs-workbench" id="rss-workbench">
+
+                <!-- 加载遮罩 -->
+                <div id="loading-spinner" class="rs-loading-overlay" style="display:none">
+                    <div style="text-align:center">
+                        <div class="rs-spinner"></div>
+                        <p class="rs-loading-text">正在加载订阅源…</p>
+                    </div>
+                </div>
+
+                <!-- ═══ 侧栏：订阅源列表 ═══ -->
+                <aside class="rs-sidebar" id="rss-sidebar" data-ui-panel="rss-sources">
+                    <div class="rs-sidebar-header">订阅源</div>
+
+                    <!-- 全部文章 -->
+                    <button id="all-feeds-btn" class="rs-sidebar-all-btn">
+                        <span class="rs-sidebar-all-icon">
+                            <i data-lucide="inbox" style="width:16px;height:16px"></i>
+                        </span>
+                        全部文章
+                    </button>
+
+                    <!-- 动态订阅源列表 -->
+                    <div id="feed-list-items" class="rs-feed-list">
+                        <!-- Dynamic Feed Items rendered by js/rss.js -->
+                    </div>
+
+                    <!-- 底部设置 -->
+                    <div class="rs-sidebar-footer">
+                        <button id="settings-btn" class="rs-sidebar-footer-btn">
+                            <i data-lucide="settings" style="width:15px;height:15px"></i>
+                            AI 设置
+                        </button>
+                    </div>
+                </aside>
+
+                <!-- ═══ 中间：文章列表 ═══ -->
+                <section class="rs-inbox" id="rss-inbox" data-ui-panel="rss-inbox">
+                    <div class="rs-inbox-header">
+                        <h2 class="rs-inbox-title" id="feed-title">全部文章</h2>
+                        <div class="rs-inbox-meta">
+                            <span class="rs-inbox-count" id="article-count" style="display:none"></span>
+                            <button id="refresh-feeds-btn" class="rs-inbox-refresh" title="刷新">
+                                <i data-lucide="rotate-cw"></i>
+                            </button>
                         </div>
-                        <span class="flex-1">全部文章</span>
+                    </div>
+                    <div id="article-list" class="rs-article-list">
+                        <!-- Dynamic Articles rendered by js/rss.js -->
+                    </div>
+                </section>
+
+                <!-- ═══ 右侧：文章阅读器 ═══ -->
+                <section class="rs-reader" id="rss-reader" data-ui-panel="rss-reader">
+                    <!-- 阅读进度条 -->
+                    <div class="rs-progress-container">
+                        <div id="reading-progress" class="rs-progress-bar"></div>
+                    </div>
+
+                    <!-- 移动端返回按钮 -->
+                    <button class="rs-reader-back" id="reader-back-btn" onclick="closeReader()">
+                        <i data-lucide="chevron-left"></i>
+                        返回列表
                     </button>
-                </div>
+
+                    <div id="article-content" class="rs-reader-content">
+                        <!-- 默认空状态 -->
+                        <div class="rs-empty-state" data-ui-panel="rss-empty-state">
+                            <div class="rs-empty-icon">
+                                <i data-lucide="book-open"></i>
+                            </div>
+                            <h3>准备阅读</h3>
+                            <p>选择左侧的文章开始阅读，让知识在指尖流淌。</p>
+                        </div>
+                    </div>
+                </section>
             </div>
 
-            <div class="flex-1 overflow-y-auto px-4 pb-4">
-                <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 px-3 mt-4">订阅源</h3>
-                <div id="feed-list-items" class="space-y-1">
-                    <!-- Dynamic Feed Items -->
-                </div>
-            </div>
-
-            <div class="p-4 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
-                <button id="settings-btn" class="w-full flex items-center justify-center px-4 py-2.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors" title="AI 设置">
-                    <i data-lucide="settings" class="w-4 h-4 mr-2"></i>
-                    AI 设置
+            <!-- ═══ 移动端底部标签栏 ═══ -->
+            <nav class="rs-mobile-tabs" id="rs-mobile-tabs" aria-label="页面切换">
+                <button class="rs-mobile-tab rs-mobile-tab--active" data-panel="rss-sidebar">
+                    <i data-lucide="rss"></i>
+                    订阅源
                 </button>
-            </div>
+                <button class="rs-mobile-tab" data-panel="rss-inbox">
+                    <i data-lucide="list"></i>
+                    文章
+                </button>
+                <button class="rs-mobile-tab" data-panel="rss-reader">
+                    <i data-lucide="book-open"></i>
+                    阅读
+                </button>
+            </nav>
         </div>
+    </main>
 
-        <!-- Feed List -->
-        <div class="glass-panel workbench-pane w-full md:w-80 lg:w-96 bg-white/80 dark:bg-slate-900/80 border-r border-slate-200 dark:border-slate-800 flex flex-col z-10 shadow-xl shadow-slate-200/50 dark:shadow-none backdrop-blur-md transition-colors duration-300" data-ui-panel="rss-inbox">
-            <div class="p-4 border-b border-slate-100 dark:border-slate-800/50 sticky top-0 bg-white/90 dark:bg-slate-900/90 z-20 backdrop-blur-md">
-                <div class="flex justify-between items-center">
-                    <h1 id="feed-title" class="font-bold text-lg text-slate-800 dark:text-white truncate pr-4">全部文章</h1>
-                    <button id="refresh-feeds-btn" class="p-2 rounded-xl text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all duration-200 active:scale-95">
-                        <i data-lucide="rotate-cw" class="w-4 h-4"></i>
-                    </button>
-                </div>
-            </div>
-
-            <div id="article-list" class="flex-1 overflow-y-auto scroll-smooth px-2 py-2 space-y-2">
-                <!-- Dynamic Articles -->
-            </div>
-        </div>
-
-        <!-- Article Content -->
-        <div id="article-content" class="glass-panel workbench-pane flex-1 bg-slate-50/50 dark:bg-slate-950/50 overflow-y-auto hidden lg:block scroll-smooth relative" data-ui-panel="rss-reader">
-            <!-- Background Decoration -->
-            <div class="absolute inset-0 overflow-hidden pointer-events-none z-0">
-                <div class="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-100/20 dark:bg-blue-900/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
-                <div class="absolute bottom-0 left-0 w-[500px] h-[500px] bg-purple-100/20 dark:bg-purple-900/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2"></div>
-            </div>
-
-            <div class="h-full flex flex-col items-center justify-center text-slate-400 p-8 text-center relative z-10" data-ui-panel="rss-empty-state">
-                <div class="w-32 h-32 bg-white dark:bg-slate-900 rounded-full flex items-center justify-center mb-6 shadow-sm border border-slate-100 dark:border-slate-800 animate-fade-in-up">
-                    <i data-lucide="book-open" class="w-12 h-12 opacity-50 text-blue-500"></i>
-                </div>
-                <h3 class="text-xl font-semibold text-slate-700 dark:text-slate-200 mb-3 animate-fade-in-up" style="animation-delay: 0.1s">准备阅读</h3>
-                <p class="max-w-xs text-sm text-slate-500 dark:text-slate-400 animate-fade-in-up" style="animation-delay: 0.2s">选择左侧的文章开始阅读，让知识在指尖流淌。</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- AI Settings Modal -->
-    <div id="ai-settings-modal" class="fixed inset-0 bg-black/50 z-[100] hidden flex items-center justify-center backdrop-blur-sm">
-        <div class="bg-white dark:bg-slate-900 rounded-xl shadow-2xl w-full max-w-md p-6 m-4 border border-slate-200 dark:border-slate-800">
-            <h3 class="text-lg font-bold mb-4 dark:text-white flex items-center">
-                <i data-lucide="bot" class="w-5 h-5 mr-2 text-purple-600"></i>
+    <!-- ═══════ AI 设置弹窗 ═══════ -->
+    <div id="ai-settings-modal" class="rs-modal-overlay" style="display:none">
+        <div class="rs-modal">
+            <h3>
+                <i data-lucide="bot"></i>
                 AI 翻译设置
             </h3>
 
-            <div class="space-y-4 mb-6">
-                <!-- Provider Selection -->
-                <div>
-                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">AI 服务商</label>
-                    <select id="ai-provider" class="w-full px-3 py-2 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 dark:bg-slate-800 dark:text-white text-sm">
-                        <option value="openai">OpenAI</option>
-                        <option value="deepseek">DeepSeek (深度求索)</option>
-                        <option value="gemini">Google Gemini</option>
-                        <option value="doubao">豆包 (Volcengine)</option>
-                        <option value="custom">自定义 (Custom)</option>
-                    </select>
-                </div>
-
-                <!-- Base URL -->
-                <div>
-                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">API Base URL</label>
-                    <input type="text" id="ai-base-url" class="w-full px-3 py-2 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 dark:bg-slate-800 dark:text-white text-sm">
-                </div>
-
-                <!-- API Key -->
-                <div>
-                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">API Key</label>
-                    <input type="password" id="ai-api-key" placeholder="sk-..." class="w-full px-3 py-2 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 dark:bg-slate-800 dark:text-white text-sm">
-                    <p id="api-key-help" class="text-xs text-slate-500 mt-1 hidden">豆包请填写 Access Key ID</p>
-                </div>
-
-                <!-- Model Selection -->
-                <div>
-                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">模型名称 (Model)</label>
-                    <div class="relative">
-                        <input type="text" id="ai-model" list="model-presets" class="w-full px-3 py-2 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 dark:bg-slate-800 dark:text-white text-sm" placeholder="选择或输入模型名称">
-                        <datalist id="model-presets">
-                            <!-- Populated by JS -->
-                        </datalist>
-                    </div>
-                    <p id="model-help" class="text-xs text-slate-500 mt-1"></p>
-                </div>
-
-                <!-- System Prompt -->
-                <div>
-                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">系统提示词 (System Prompt)</label>
-                    <textarea id="ai-system-prompt" rows="3" class="w-full px-3 py-2 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 dark:bg-slate-800 dark:text-white text-sm placeholder-slate-400" placeholder="例如：你是一个专业的翻译助手..."></textarea>
-                    <p class="text-xs text-slate-500 mt-1">自定义 AI 的翻译风格或指令</p>
-                </div>
+            <!-- Provider -->
+            <div class="rs-field">
+                <label for="ai-provider">AI 服务商</label>
+                <select id="ai-provider">
+                    <option value="openai">OpenAI</option>
+                    <option value="deepseek">DeepSeek (深度求索)</option>
+                    <option value="gemini">Google Gemini</option>
+                    <option value="doubao">豆包 (Volcengine)</option>
+                    <option value="custom">自定义 (Custom)</option>
+                </select>
             </div>
 
-            <div class="flex justify-end space-x-3 items-center">
-                <button id="test-connection-btn" class="mr-auto px-4 py-2 text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/30 rounded-lg transition-colors flex items-center">
-                    <i data-lucide="zap" class="w-4 h-4 mr-1.5"></i>
+            <!-- Base URL -->
+            <div class="rs-field">
+                <label for="ai-base-url">API Base URL</label>
+                <input type="text" id="ai-base-url" placeholder="https://api.openai.com/v1">
+            </div>
+
+            <!-- API Key -->
+            <div class="rs-field">
+                <label for="ai-api-key">API Key</label>
+                <input type="password" id="ai-api-key" placeholder="sk-...">
+                <p id="api-key-help" class="rs-field-help" style="display:none">豆包请填写 Access Key ID</p>
+            </div>
+
+            <!-- Model -->
+            <div class="rs-field">
+                <label for="ai-model">模型名称 (Model)</label>
+                <input type="text" id="ai-model" list="model-presets" placeholder="选择或输入模型名称">
+                <datalist id="model-presets">
+                    <!-- Populated by JS -->
+                </datalist>
+                <p id="model-help" class="rs-field-help"></p>
+            </div>
+
+            <!-- System Prompt -->
+            <div class="rs-field">
+                <label for="ai-system-prompt">系统提示词 (System Prompt)</label>
+                <textarea id="ai-system-prompt" rows="3" placeholder="例如：你是一个专业的翻译助手..."></textarea>
+                <p class="rs-field-help">自定义 AI 的翻译风格或指令</p>
+            </div>
+
+            <!-- Actions -->
+            <div class="rs-modal-actions">
+                <button id="test-connection-btn" class="rs-btn rs-btn--link">
+                    <i data-lucide="zap"></i>
                     测试连接
                 </button>
-                <button id="close-settings-btn" class="px-4 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors">取消</button>
-                <button id="save-settings-btn" class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">保存配置</button>
+                <button id="close-settings-btn" class="rs-btn rs-btn--ghost">取消</button>
+                <button id="save-settings-btn" class="rs-btn rs-btn--primary">保存配置</button>
             </div>
         </div>
     </div>
 
-    <!-- Footer -->
+    <!-- ═══════ 页脚 ═══════ -->
     <footer class="site-footer">
         <span class="visit-count"><span class="pulse-dot"></span><span id="visit-count">—</span> 次浏览</span>
         <span class="footer-dot">·</span>
         <span>&copy; 2026 Shadow Quake</span>
     </footer>
 
-    <!-- Back to Top Button -->
+    <!-- ═══════ 回到顶部 ═══════ -->
     <button id="back-to-top" class="fixed bottom-8 right-8 p-3 rounded-full bg-blue-600 text-white shadow-lg transition-all duration-300 opacity-0 translate-y-10 hover:bg-blue-700 hover:scale-110 z-50 focus:outline-none ring-2 ring-blue-500 ring-offset-2 dark:ring-offset-slate-950" aria-label="Back to top">
         <i data-lucide="rocket" class="w-6 h-6"></i>
     </button>
 
+    <!-- ═══════ Scripts ═══════ -->
     <script src="js/api.js?v=20260624v5"></script>
     <script src="js/main.js?v=20260624v5"></script>
     <script src="js/navbar.js?v=20260624v5"></script>
@@ -252,17 +298,77 @@
     <script src="js/context-menu.js?v=20260624v5"></script>
     <script>
         lucide.createIcons();
-
     </script>
     <script src="js/back-to-top.js?v=20260624v5"></script>
-<script src="js/tracker.js?v=20260624v5"></script>
-<style>
-    .dark .light-only { display: none !important; }
-    .dark .dark-only { display: inline !important; }
-    img.light-only, img.dark-only { display: none; }
-    .dark img.dark-only { display: inline; }
-    img.light-only { display: inline; }
-    .dark img.light-only { display: none; }
-</style>
+    <script src="js/tracker.js?v=20260624v5"></script>
+
+    <!-- ═══════ 移动端标签切换 ═══════ -->
+    <script>
+    (function() {
+        const tabs = document.querySelectorAll('.rs-mobile-tab');
+        const panels = {
+            'rss-sidebar': document.getElementById('rss-sidebar'),
+            'rss-inbox': document.getElementById('rss-inbox'),
+            'rss-reader': document.getElementById('rss-reader')
+        };
+
+        function showPanel(panelName) {
+            // 隐藏所有面板
+            Object.values(panels).forEach(p => {
+                if (p) p.classList.add('rs-panel-hidden');
+            });
+            // 显示目标面板
+            const target = panels[panelName];
+            if (target) {
+                target.classList.remove('rs-panel-hidden');
+                if (panelName === 'rss-reader') {
+                    target.classList.add('rs-reader--open');
+                } else {
+                    target.classList.remove('rs-reader--open');
+                }
+            }
+            // 更新标签状态
+            tabs.forEach(t => {
+                t.classList.toggle('rs-mobile-tab--active', t.dataset.panel === panelName);
+            });
+        }
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                showPanel(tab.dataset.panel);
+            });
+        });
+
+        // 默认显示订阅源面板（移动端）
+        if (window.innerWidth <= 768) {
+            showPanel('rss-sidebar');
+        }
+
+        // 导出供 RSS JS 使用
+        window.rssMobile = {
+            showPanel: showPanel,
+            showReader: function() {
+                showPanel('rss-reader');
+            }
+        };
+
+        // 关闭阅读器（返回列表）
+        window.closeReader = function() {
+            if (window.innerWidth <= 768) {
+                showPanel('rss-inbox');
+            }
+        };
+    })();
+    </script>
+
+    <!-- ═══════ 主题显示切换 ═══════ -->
+    <style>
+        .dark .light-only { display: none !important; }
+        .dark .dark-only { display: inline !important; }
+        img.light-only, img.dark-only { display: none; }
+        .dark img.dark-only { display: inline; }
+        img.light-only { display: inline; }
+        .dark img.light-only { display: none; }
+    </style>
 </body>
 </html>
