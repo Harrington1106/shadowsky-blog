@@ -19,7 +19,7 @@
     <!-- Liquid Glass System -->
     <link href="css/unified.css?v=20260626e" rel="stylesheet">
     <link href="css/liquid-ambient.css?v=20260624v5" rel="stylesheet">
-    <link href="css/liquid-rss.css?v=20260626f" rel="stylesheet">
+    <link href="css/liquid-rss.css?v=20260626g" rel="stylesheet">
 
     <!-- DOMPurify -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.8/purify.min.js"></script>
@@ -253,23 +253,23 @@
                 <div class="rs-provider-grid" id="provider-cards">
                     <button class="rs-provider-card" data-provider="openai">
                         <span class="rs-provider-icon rs-provider-icon--openai"><i data-lucide="cpu"></i></span>
-                        <span class="rs-provider-name">OpenAI</span>
+                        <span class="rs-provider-info"><span class="rs-provider-name">OpenAI</span><span class="rs-provider-desc">GPT-4o · o3</span></span>
                     </button>
                     <button class="rs-provider-card" data-provider="deepseek">
                         <span class="rs-provider-icon rs-provider-icon--deepseek"><i data-lucide="cpu"></i></span>
-                        <span class="rs-provider-name">DeepSeek</span>
+                        <span class="rs-provider-info"><span class="rs-provider-name">DeepSeek</span><span class="rs-provider-desc">V3 · R1 · 国产性价比</span></span>
                     </button>
                     <button class="rs-provider-card" data-provider="gemini">
                         <span class="rs-provider-icon rs-provider-icon--gemini"><i data-lucide="cpu"></i></span>
-                        <span class="rs-provider-name">Gemini</span>
+                        <span class="rs-provider-info"><span class="rs-provider-name">Gemini</span><span class="rs-provider-desc">2.0 Flash · Pro · 免费额度</span></span>
                     </button>
                     <button class="rs-provider-card" data-provider="doubao">
                         <span class="rs-provider-icon rs-provider-icon--doubao"><i data-lucide="cpu"></i></span>
-                        <span class="rs-provider-name">豆包</span>
+                        <span class="rs-provider-info"><span class="rs-provider-name">豆包</span><span class="rs-provider-desc">字节跳动 · Pro/Lite</span></span>
                     </button>
                     <button class="rs-provider-card" data-provider="custom" style="grid-column:1/-1">
                         <span class="rs-provider-icon rs-provider-icon--custom"><i data-lucide="settings"></i></span>
-                        <span class="rs-provider-name">自定义 API</span>
+                        <span class="rs-provider-info"><span class="rs-provider-name">自定义 API</span><span class="rs-provider-desc">兼容 OpenAI 接口的任意服务</span></span>
                     </button>
                 </div>
             </div>
@@ -293,7 +293,12 @@
                         <i data-lucide="eye-off"></i>
                     </button>
                 </div>
-                <p id="api-key-help" class="rs-field-help hidden">豆包请填写 Access Key ID</p>
+                <div class="rs-field-meta">
+                    <a id="api-key-url" class="rs-get-key-link" href="https://platform.openai.com/api-keys" target="_blank" rel="noopener">
+                        <i data-lucide="external-link"></i> 获取 API Key
+                    </a>
+                    <span id="api-key-help" class="rs-field-help hidden">豆包请填写 Access Key ID</span>
+                </div>
             </div>
 
             <!-- Model + 快捷预设 -->
@@ -304,8 +309,8 @@
                     <input type="text" id="ai-model" list="model-presets" placeholder="输入或选择模型">
                 </div>
                 <datalist id="model-presets"><!-- JS 填充 --></datalist>
-                <div id="model-pills" class="rs-model-pills"></div>
                 <p id="model-help" class="rs-field-help"></p>
+                <div id="model-pills" class="rs-model-pills"></div>
             </div>
 
             <!-- System Prompt -->
@@ -341,7 +346,7 @@
     <script src="js/api.js?v=20260624v5"></script>
     <script src="js/main.js?v=20260626b"></script>
     <script src="js/navbar.js?v=20260626b"></script>
-    <script src="js/rss.js?v=20260626f"></script>
+    <script src="js/rss.js?v=20260626g"></script>
     <script src="js/click-effect.js?v=20260624v5"></script>
     <script src="js/context-menu.js?v=20260624v5"></script>
     <script>

@@ -1253,32 +1253,37 @@ const AI_PROVIDERS = {
     openai: {
         name: 'OpenAI',
         baseUrl: 'https://api.openai.com/v1',
-        models: ['gpt-4o', 'gpt-4o-mini', 'gpt-4-turbo', 'gpt-3.5-turbo'],
-        help: '使用 OpenAI 官方 API'
+        models: ['gpt-4o', 'gpt-4o-mini', 'gpt-4.1', 'o3-mini', 'gpt-4-turbo', 'gpt-3.5-turbo'],
+        help: '业界领先的大模型，翻译质量最佳',
+        apiKeyUrl: 'https://platform.openai.com/api-keys'
     },
     deepseek: {
         name: 'DeepSeek',
         baseUrl: 'https://api.deepseek.com/v1',
-        models: ['deepseek-chat', 'deepseek-coder'],
-        help: '国产大模型，性价比高'
+        models: ['deepseek-chat', 'deepseek-chat-v3', 'deepseek-reasoner', 'deepseek-coder'],
+        help: '国产大模型，中文翻译优异，性价比极高',
+        apiKeyUrl: 'https://platform.deepseek.com/api_keys'
     },
     gemini: {
         name: 'Google Gemini',
         baseUrl: 'https://generativelanguage.googleapis.com/v1beta',
-        models: ['gemini-pro', 'gemini-1.5-pro', 'gemini-1.5-flash'],
-        help: '使用 Google AI Studio API Key'
+        models: ['gemini-2.0-flash', 'gemini-2.0-flash-lite', 'gemini-1.5-pro', 'gemini-1.5-flash'],
+        help: 'Google 模型，每月免费额度，多语言能力强',
+        apiKeyUrl: 'https://aistudio.google.com/apikey'
     },
     doubao: {
         name: '豆包',
         baseUrl: 'https://ark.cn-beijing.volces.com/api/v3',
-        models: ['doubao-pro-32k', 'doubao-lite-32k'],
-        help: '字节跳动豆包大模型'
+        models: ['doubao-pro-32k', 'doubao-pro-128k', 'doubao-lite-32k', 'doubao-lite-128k'],
+        help: '字节跳动豆包大模型，需填写 Access Key ID 而非 API Key',
+        apiKeyUrl: 'https://console.volcengine.com/ark/region:ark+cn-beijing/apiKey'
     },
     custom: {
         name: '自定义',
         baseUrl: '',
         models: [],
-        help: '填写兼容 OpenAI API 的服务地址'
+        help: '填写兼容 OpenAI API 格式的任意服务地址',
+        apiKeyUrl: ''
     }
 };
 
@@ -1347,6 +1352,15 @@ function updateProviderDefaults() {
     // Update help text
     if (modelHelp) {
         modelHelp.textContent = provider.help;
+    }
+
+    // Update API Key获取链接
+    const apiKeyUrl = document.getElementById('api-key-url');
+    if (apiKeyUrl && provider.apiKeyUrl) {
+        apiKeyUrl.href = provider.apiKeyUrl;
+        apiKeyUrl.style.display = '';
+    } else if (apiKeyUrl) {
+        apiKeyUrl.style.display = 'none';
     }
 
     // Show/hide doubao specific help
