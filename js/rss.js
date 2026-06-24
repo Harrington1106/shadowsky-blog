@@ -1199,56 +1199,51 @@ async function loadAllFeedsArticles() {
 async function fetchFeedXml(url) {
     let xmlText = '';
 
-    // 代理链路：PHP → allorigins → CF Worker → 直连
+    // 代理链路：CF Worker → PHP → 直连（CF 优先，破 GFW 最快）
     let needProxy = true;
 
-    // 1. PHP 代理
+    // 1. Cloudflare Worker（最快，能破 GFW）
     try {
-        const proxyUrl = `/api/rss-proxy.php?url=${encodeURIComponent(url)}`;
-        const response = await fetch(proxyUrl);
-        if (response.ok) {
-            const text = await response.text();
-            if (!text.includes('<?php') && !text.trim().startsWith('<?=')) {
-                xmlText = text;
-                needProxy = false;
-            }
+        const cfUrl = `https://bangumi.shadowquake.top/fetch?url=${encodeURIComponent(url)}`;
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), 10000);
+        const cfResp = await fetch(cfUrl, { signal: controller.signal });
+        clearTimeout(timer);
+        if (cfResp.ok) {
+            xmlText = await cfResp.text();
+            needProxy = false;
         }
-    } catch (_) {
-        // PHP 不可用或超时，继续回退
-    }
+    } catch (_) {}
 
-    // 2. allorigins 公共 CORS 代理
+    // 2. PHP 代理
     if (needProxy) {
         try {
-            const ppUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
-            const ppResp = await fetch(ppUrl);
-            if (ppResp.ok) {
-                xmlText = await ppResp.text();
-                needProxy = false;
+            const proxyUrl = `/api/rss-proxy.php?url=${encodeURIComponent(url)}`;
+            const controller = new AbortController();
+            const timer = setTimeout(() => controller.abort(), 8000);
+            const response = await fetch(proxyUrl, { signal: controller.signal });
+            clearTimeout(timer);
+            if (response.ok) {
+                const text = await response.text();
+                if (!text.includes('<?php') && !text.trim().startsWith('<?=')) {
+                    xmlText = text;
+                    needProxy = false;
+                }
             }
         } catch (_) {}
     }
 
-    // 3. Cloudflare Worker（突破 GFW）
+    // 3. 直连兜底
     if (needProxy) {
         try {
-            const cfUrl = `https://bangumi.shadowquake.top/fetch?url=${encodeURIComponent(url)}`;
-            const cfResp = await fetch(cfUrl);
-            if (cfResp.ok) {
-                xmlText = await cfResp.text();
-                needProxy = false;
-            }
-        } catch (_) {}
-    }
-
-    // 4. 直连兜底
-    if (needProxy) {
-        try {
-            const directResp = await fetch(url);
+            const controller = new AbortController();
+            const timer = setTimeout(() => controller.abort(), 8000);
+            const directResp = await fetch(url, { signal: controller.signal });
+            clearTimeout(timer);
             if (!directResp.ok) throw new Error(`HTTP ${directResp.status}`);
             xmlText = await directResp.text();
         } catch (e) {
-            throw new Error(`所有加载方式均失败: ${e.message}`);
+            throw new Error(`加载失败: ${e.message}`);
         }
     }
 
