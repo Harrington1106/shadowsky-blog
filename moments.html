@@ -16,10 +16,10 @@
     <link rel="preconnect" href="https://gstatic.loli.net" crossorigin>
     <link href="https://fonts.loli.net/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&family=Noto+Serif+SC:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="css/unified.css?v=20260626i" rel="stylesheet">
-    <link href="css/liquid-ambient.css?v=20260626i" rel="stylesheet">
-    <link href="css/liquid-moments.css?v=20260626i" rel="stylesheet">
-    <script src="js/vendor/lucide.min.js?v=20260626i"></script>
+    <link href="css/unified.css?v=20260626j" rel="stylesheet">
+    <link href="css/liquid-ambient.css?v=20260626j" rel="stylesheet">
+    <link href="css/liquid-moments.css?v=20260626j" rel="stylesheet">
+    <script src="js/vendor/lucide.min.js?v=20260626j"></script>
     <style>
         html:not(.dark) .dark-only{display:none!important}
         html.dark .light-only{display:none!important}
@@ -130,7 +130,7 @@
     <button id="back-to-top" class="mm-btt" aria-label="回到顶部"><i data-lucide="chevron-up"></i></button>
 
     <!-- LIGHTBOX -->
-    <div id="lightbox">
+    <div id="lightbox" class="hidden opacity-0">
         <div class="lb-top">
             <button id="lightbox-share"><i data-lucide="share-2"></i></button>
             <button id="lightbox-close"><i data-lucide="x"></i></button>
@@ -161,15 +161,15 @@
         </div>
     </div>
 
-    <script src="js/api.js?v=20260626i"></script>
-    <script src="js/main.js?v=20260626i"></script>
-    <script src="js/navbar.js?v=20260626i"></script>
-    <script src="js/activity_chart.js?v=20260626i"></script>
-    <script src="js/heatmap.js?v=20260626i"></script>
-    <script src="js/moments.js?v=20260626i"></script>
-    <script src="js/click-effect.js?v=20260626i"></script>
+    <script src="js/api.js?v=20260626j"></script>
+    <script src="js/main.js?v=20260626j"></script>
+    <script src="js/navbar.js?v=20260626j"></script>
+    <script src="js/activity_chart.js?v=20260626j"></script>
+    <script src="js/heatmap.js?v=20260626j"></script>
+    <script src="js/moments.js?v=20260626j"></script>
+    <script src="js/click-effect.js?v=20260626j"></script>
     <script src="https://unpkg.com/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
-    <script src="js/context-menu.js?v=20260626i"></script>
+    <script src="js/context-menu.js?v=20260626j"></script>
     <script>
         lucide.createIcons();
         const lenis = new Lenis({duration:.5,easing:t=>Math.min(1,1.001-Math.pow(2,-6*t)),smooth:true,smoothTouch:false,touchMultiplier:2});
@@ -213,7 +213,7 @@
         // Tags drag scroll
         document.addEventListener('DOMContentLoaded',function(){setTimeout(function(){var r=document.getElementById('tag-filters');if(!r)return;var d=false,sx,sl;r.addEventListener('mousedown',function(e){d=true;sx=e.pageX-r.offsetLeft;sl=r.scrollLeft});r.addEventListener('mouseleave',function(){d=false});r.addEventListener('mouseup',function(){d=false});r.addEventListener('mousemove',function(e){if(!d)return;e.preventDefault();r.scrollLeft=sl-(e.pageX-r.offsetLeft-sx)*1.5})},800)});
     </script>
-    <script src="js/back-to-top.js?v=20260626i"></script>
-    <script src="js/tracker.js?v=20260626i"></script>
+    <script src="js/back-to-top.js?v=20260626j"></script>
+    <script src="js/tracker.js?v=20260626j"></script>
 </body>
 </html>
