@@ -27,11 +27,6 @@ html:not(.dark) #navbar {
     border-color: rgba(0,0,0,.08) !important;
 }
 
-/* 主题图标 — 纯 CSS 显隐 */
-.theme-icon-sun, .theme-icon-moon { display: none; }
-html.dark .theme-icon-sun { display: block; }
-html:not(.dark) .theme-icon-moon { display: block; }
-
 /* ═══════ 页面容器 ═══════ */
 .mm-page {
     position: relative;
@@ -274,7 +269,6 @@ html:not(.dark) .theme-icon-moon { display: block; }
     gap: 10px;
     align-items: center;
     transition: all .3s ease;
-    overflow: hidden;
 }
 
 @media(max-width:768px) {
@@ -558,14 +552,14 @@ html:not(.dark) .mm-action-btn { color: #475569; border-color: rgba(0,0,0,.1); }
 #moments-grid.max-w-3xl {
     max-width: 680px !important;
     margin: 0 auto !important;
-    padding-left: 3.5rem !important;
+    padding-left: 4.5rem !important;
     border-left: 2px solid var(--mm-card-border) !important;
 }
 
 /* 每项容器 */
 #moments-grid .relative.animate-fade-in {
     position: relative !important;
-    margin-bottom: 20px !important;
+    margin-bottom: 24px !important;
     padding-top: 0 !important;
 }
 
@@ -589,7 +583,7 @@ html:not(.dark) .mm-action-btn { color: #475569; border-color: rgba(0,0,0,.1); }
 
 /* 时间轴圆点 */
 .tl-month-marker {
-    position: absolute; left: -45px; top: 0;
+    position: absolute; left: -52px; top: 4px;
     display: flex; align-items: center; gap: 8px;
     z-index: 5; pointer-events: none;
 }
@@ -610,7 +604,7 @@ html:not(.dark) .tl-month-dot { border-color: #fff; }
 html:not(.dark) .tl-month-label { color: #0d9488; }
 
 .tl-item-dot {
-    position: absolute; left: -41px; top: 12px;
+    position: absolute; left: -48px; top: 12px;
     width: 8px; height: 8px; border-radius: 50%; z-index: 3;
     background: rgba(45,212,191,.35);
     border: 2px solid rgba(6,11,24,.8);
