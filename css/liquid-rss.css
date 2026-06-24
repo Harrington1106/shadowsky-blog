@@ -993,7 +993,7 @@
 
 /* 正文字体族优化：中文优先 */
 .rs-article-body {
-    font-family: 'Noto Sans SC', 'Inter', 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif;
+    font-family: 'MiSans', 'Noto Sans SC', 'Inter', 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif;
 }
 
 /* 标题字体 */
@@ -1009,7 +1009,7 @@
     margin-bottom: 0.7em;
     line-height: 1.4;
     letter-spacing: -0.015em;
-    font-family: 'Inter', 'Noto Sans SC', sans-serif;
+    font-family: 'MiSans', 'Inter', 'Noto Sans SC', sans-serif;
 }
 
 .rs-article-body h1 { font-size: 1.8em; }
