@@ -1284,9 +1284,9 @@ const AI_PROVIDERS = {
     },
     gemini: {
         name: 'Google Gemini',
-        baseUrl: 'https://generativelanguage.googleapis.com/v1beta',
+        baseUrl: 'https://generativelanguage.googleapis.com/v1beta/openai',
         models: ['gemini-3-flash', 'gemini-2.5-pro', 'gemini-2.5-flash'],
-        help: '每月免费额度充裕，多语言顶尖',
+        help: '需用 OpenAI 兼容端点，每月免费额度充裕',
         apiKeyUrl: 'https://aistudio.google.com/apikey'
     },
     grok: {
