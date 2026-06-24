@@ -1003,8 +1003,8 @@ function openArticle(index) {
         const lenis = new Lenis({
             wrapper: container,
             content: container.firstElementChild,
-            duration: 0.6,
-            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -6 * t)),
+            duration: 0.25,
+            lerp: 0.08,
             smoothTouch: false,
             touchMultiplier: 2,
         });
