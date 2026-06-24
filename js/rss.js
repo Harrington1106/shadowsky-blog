@@ -920,6 +920,10 @@ function openArticle(index) {
         } else {
             workbench.classList.remove('rs-workbench--focus');
         }
+        // 浮动退出按钮 — 直接用 class 控制
+        if (focusExitBtn) {
+            focusExitBtn.classList.toggle('rs-focus-exit--visible', on);
+        }
         if (focusToggle) {
             focusToggle.querySelector('span').textContent = on ? '退出' : '专注';
         }
