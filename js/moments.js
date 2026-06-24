@@ -331,12 +331,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function renderSkeleton() {
         momentsContainer.className = "columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6";
+        // 半透明骨架 — 亮暗模式自适应，不再写死 dark:bg-gray-800
+        const sk = (h) => `<div style="height:${h};background:rgba(128,128,128,.12);border-radius:8px;animation:skPulse 1.5s ease-in-out infinite"></div>`;
         momentsContainer.innerHTML = Array(6).fill(0).map((_, i) => `
-            <div class="glass-card break-inside-avoid bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 overflow-hidden h-full animate-pulse mb-6">
-                <div class="h-64 bg-gray-200 dark:bg-gray-800"></div>
-                <div class="p-6 space-y-4">
-                    <div class="h-4 w-24 bg-gray-200 dark:bg-gray-800 rounded"></div>
-                    <div class="h-6 w-3/4 bg-gray-200 dark:bg-gray-800 rounded"></div>
+            <div class="break-inside-avoid mb-6" style="background:rgba(128,128,128,.04);border-radius:16px;box-shadow:0 0 0 1px rgba(128,128,128,.06);overflow:hidden">
+                ${sk('180px')}
+                <div style="padding:16px;display:flex;flex-direction:column;gap:10px">
+                    ${sk('14px')}
+                    ${sk('18px')}
                 </div>
             </div>
         `).join('');
