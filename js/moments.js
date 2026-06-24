@@ -621,19 +621,13 @@ document.addEventListener('DOMContentLoaded', () => {
         momentsContainer.innerHTML = moments.map((moment, index) => {
             const dateObj = safeDate(moment.date);
             const yearMonth = dateObj.toLocaleDateString('zh-CN', { year: 'numeric', month: 'long' });
-            const dateStr = dateObj.toLocaleDateString('zh-CN', { day: 'numeric', hour: '2-digit', minute: '2-digit' });
+            const day = dateObj.getDate();
+            const timeStr = dateObj.toLocaleDateString('zh-CN', { hour:'2-digit', minute:'2-digit' }).split(' ').pop() || '';
 
-            let headerHtml = '';
+            let monthLabel = '';
             if (yearMonth !== lastYearMonth) {
                 lastYearMonth = yearMonth;
-                headerHtml = `
-                    <div class="tl-month">
-                        <div class="tl-month-dot"></div>
-                        <span class="tl-month-label">${yearMonth}</span>
-                    </div>
-                `;
-            } else {
-                 headerHtml = `<div class="tl-dot"></div>`;
+                monthLabel = `<div class="tl-month"><div class="tl-month-dot"></div><span class="tl-month-label">${yearMonth}</span></div>`;
             }
 
             const imageHtml = moment.image ? `
@@ -644,16 +638,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
             return `
             <div class="tl-item" style="animation-delay:${index * 0.05}s">
-                ${headerHtml}
+                ${monthLabel}
                 <div class="tl-card">
+                    <div class="tl-day"><span>${day}</span></div>
                     ${imageHtml}
-                    <div class="tl-card-body">
-                        <div class="tl-card-meta">
-                            <i data-lucide="clock"></i> ${dateStr}
-                            ${moment.location ? `<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(moment.location)}" target="_blank" class="tl-location" onclick="event.stopPropagation()"><i data-lucide="map-pin"></i> ${moment.location}</a>` : ''}
+                    <div class="tl-body">
+                        <p class="tl-text">${moment.content}</p>
+                        <div class="tl-foot">
+                            <span class="tl-time">${timeStr}</span>
+                            ${moment.location ? `<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(moment.location)}" target="_blank" class="tl-loc" onclick="event.stopPropagation()"><i data-lucide="map-pin"></i>${moment.location}</a>` : ''}
+                            ${moment.tags ? `<span class="tl-tags">${moment.tags.map(t => `#${t}`).join(' ')}</span>` : ''}
                         </div>
-                        <p class="tl-card-text">${moment.content}</p>
-                        ${moment.tags ? `<div class="tl-card-tags">${moment.tags.map(tag => `<span>#${tag}</span>`).join('')}</div>` : ''}
                     </div>
                 </div>
             </div>

@@ -16,10 +16,10 @@
     <link rel="preconnect" href="https://gstatic.loli.net" crossorigin>
     <link href="https://fonts.loli.net/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&family=Noto+Serif+SC:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="css/unified.css?v=20260626b" rel="stylesheet">
-    <link href="css/liquid-ambient.css?v=20260626b" rel="stylesheet">
-    <link href="css/liquid-moments.css?v=20260626b" rel="stylesheet">
-    <script src="js/vendor/lucide.min.js?v=20260626b"></script>
+    <link href="css/unified.css?v=20260626c" rel="stylesheet">
+    <link href="css/liquid-ambient.css?v=20260626c" rel="stylesheet">
+    <link href="css/liquid-moments.css?v=20260626c" rel="stylesheet">
+    <script src="js/vendor/lucide.min.js?v=20260626c"></script>
     <style>
         html:not(.dark) .dark-only{display:none!important}
         html.dark .light-only{display:none!important}
@@ -157,15 +157,15 @@
         </div>
     </div>
 
-    <script src="js/api.js?v=20260626b"></script>
-    <script src="js/main.js?v=20260626b"></script>
-    <script src="js/navbar.js?v=20260626b"></script>
-    <script src="js/activity_chart.js?v=20260626b"></script>
-    <script src="js/heatmap.js?v=20260626b"></script>
-    <script src="js/moments.js?v=20260626b"></script>
-    <script src="js/click-effect.js?v=20260626b"></script>
+    <script src="js/api.js?v=20260626c"></script>
+    <script src="js/main.js?v=20260626c"></script>
+    <script src="js/navbar.js?v=20260626c"></script>
+    <script src="js/activity_chart.js?v=20260626c"></script>
+    <script src="js/heatmap.js?v=20260626c"></script>
+    <script src="js/moments.js?v=20260626c"></script>
+    <script src="js/click-effect.js?v=20260626c"></script>
     <script src="https://unpkg.com/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
-    <script src="js/context-menu.js?v=20260626b"></script>
+    <script src="js/context-menu.js?v=20260626c"></script>
     <script>
         lucide.createIcons();
         const lenis = new Lenis({duration:.5,easing:t=>Math.min(1,1.001-Math.pow(2,-6*t)),smooth:true,smoothTouch:false,touchMultiplier:2});
@@ -179,29 +179,25 @@
         // Theme — pure JS, no lucide
         const SUN='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>';
         const MOON='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>';
+        // 主题：navbar.js 负责切换，这里只负责更新图标+Logo+Meta
         const themeBtn=document.getElementById('theme-toggle');
-        if(themeBtn){
-            themeBtn.innerHTML=document.documentElement.classList.contains('dark')?SUN:MOON;
-            themeBtn.onclick=function(){
-                const h=document.documentElement;
-                const d=!h.classList.contains('dark');
-                if(d)h.classList.add('dark');else h.classList.remove('dark');
-                localStorage.setItem('theme',d?'dark':'light');
-                themeBtn.innerHTML=d?SUN:MOON;
-                document.querySelectorAll('img.dark-only').forEach(i=>i.style.display=d?'':'none');
-                document.querySelectorAll('img.light-only').forEach(i=>i.style.display=d?'none':'');
-                const m=document.querySelector('meta[name="theme-color"]');
-                if(m)m.content=d?'#0B1120':'#F5F7FA';
-                window.dispatchEvent(new CustomEvent('themechange'));
-            };
+        function refreshThemeUI(){
+            var d=document.documentElement.classList.contains('dark');
+            if(themeBtn)themeBtn.innerHTML=d?SUN:MOON;
+            document.querySelectorAll('img.dark-only').forEach(i=>i.style.display=d?'':'none');
+            document.querySelectorAll('img.light-only').forEach(i=>i.style.display=d?'none':'');
+            var m=document.querySelector('meta[name="theme-color"]');
+            if(m)m.content=d?'#0B1120':'#F5F7FA';
         }
-        window.toggleTheme=function(){if(themeBtn)themeBtn.onclick();};
+        if(themeBtn)themeBtn.innerHTML=document.documentElement.classList.contains('dark')?SUN:MOON;
+        window.addEventListener('themechange',refreshThemeUI);
+        window.toggleTheme=function(){if(themeBtn)themeBtn.click();};
         (function(){var d=document.documentElement.classList.contains('dark');document.querySelectorAll('img.dark-only').forEach(i=>i.style.display=d?'':'none');document.querySelectorAll('img.light-only').forEach(i=>i.style.display=d?'none':'')})();
 
         // Tags drag scroll
         document.addEventListener('DOMContentLoaded',function(){setTimeout(function(){var r=document.getElementById('tag-filters');if(!r)return;var d=false,sx,sl;r.addEventListener('mousedown',function(e){d=true;sx=e.pageX-r.offsetLeft;sl=r.scrollLeft});r.addEventListener('mouseleave',function(){d=false});r.addEventListener('mouseup',function(){d=false});r.addEventListener('mousemove',function(e){if(!d)return;e.preventDefault();r.scrollLeft=sl-(e.pageX-r.offsetLeft-sx)*1.5})},800)});
     </script>
-    <script src="js/back-to-top.js?v=20260626b"></script>
-    <script src="js/tracker.js?v=20260626b"></script>
+    <script src="js/back-to-top.js?v=20260626c"></script>
+    <script src="js/tracker.js?v=20260626c"></script>
 </body>
 </html>
