@@ -196,14 +196,7 @@ html:not(.dark) .lb-exif-row span:first-child{color:rgba(0,0,0,.3)}
 .lb-exif-row span:last-child{color:rgba(255,255,255,.85);font-family:'JetBrains Mono',monospace}
 html:not(.dark) .lb-exif-row span:last-child{color:#334155}
 
-/* ═══════ FOOTER + BTT ═══════ */
-.mm-footer{display:flex;align-items:center;justify-content:center;gap:8px;padding:12px 24px;font-size:.72rem;flex-shrink:0;z-index:1;white-space:nowrap;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);margin-top:60px;flex-wrap:wrap;transition:all .5s ease;border-top:1px solid rgba(20,184,166,.1);color:rgba(255,255,255,.65)}
-html:not(.dark) .mm-footer{border-top-color:rgba(20,184,166,.12);color:rgba(15,23,42,.7)}
-.mm-footer .footer-dot{opacity:.35}
-.mm-visit{display:inline-flex;align-items:center;gap:6px;font-weight:600;font-size:.8rem}
-.dark .mm-visit{color:rgba(255,255,255,.9)}
-html:not(.dark) .mm-visit{color:rgba(15,23,42,.85)}
-.mm-pulse{width:6px;height:6px;border-radius:50%;background:#22c55e}
+/* ═══════ FOOTER — 使用 unified.css .site-footer 统一底栏 ═══════ */
 .dark .mm-pulse{box-shadow:0 0 8px rgba(34,197,94,.6)}html:not(.dark) .mm-pulse{box-shadow:0 0 6px rgba(34,197,94,.4)}
 @media(prefers-reduced-motion:no-preference){.mm-pulse{animation:pulse 2s ease-in-out infinite}}
 @keyframes pulse{0%,100%{opacity:.7;transform:scale(1)}50%{opacity:1;transform:scale(1.3)}}

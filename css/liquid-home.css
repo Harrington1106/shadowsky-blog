@@ -343,65 +343,9 @@ html:not(.dark) .tag-pill:hover {
 
 @keyframes tagPop { to { opacity: 1; transform: translateY(0); } }
 
-/* ── 底栏（玻璃磨砂）── */
-.home-footer {
-  display: flex; align-items: center; justify-content: center;
-  gap: 8px; padding: 6px var(--sp-4);
-  font-size: 0.72rem;
-  flex-shrink: 0; z-index: 1;
-  white-space: nowrap;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-}
-.footer-dot { opacity: 0.35; }
-.dark .footer-dot { color: rgba(255,255,255,.3); }
-html:not(.dark) .footer-dot { color: rgba(0,0,0,.2); }
-
-.dark .home-footer {
-  color: rgba(255,255,255,.65);
-  border-top: 1px solid rgba(20,184,166,.1);
-}
-html:not(.dark) .home-footer {
-  color: rgba(15,23,42,.7);
-  border-top: 1px solid rgba(20,184,166,.12);
-}
-.home-footer { transition: all 0.5s ease; }
-
-.visit-count {
-  display: inline-flex; align-items: center; gap: 6px;
-  font-weight: var(--weight-semibold, 600);
-  font-size: 0.8rem;
-}
-.dark .visit-count { color: rgba(255,255,255,.9); }
-html:not(.dark) .visit-count { color: rgba(15,23,42,.85); }
-
-.visit-count .pulse-dot {
-  width: 6px; height: 6px; border-radius: 50%;
-  background: #22c55e;
-}
-.dark .visit-count .pulse-dot { box-shadow: 0 0 8px rgba(34,197,94,.6); }
-html:not(.dark) .visit-count .pulse-dot { box-shadow: 0 0 6px rgba(34,197,94,.4); }
-
-@media (prefers-reduced-motion: no-preference) {
-  .visit-count .pulse-dot { animation: pulse 2s ease-in-out infinite; }
-}
-@keyframes pulse {
-  0%,100% { opacity: 0.7; transform: scale(1); }
-  50%    { opacity: 1; transform: scale(1.3); }
-}
-
-/* ── 响应式断点 ── */
+/* ── 底栏 — 使用 unified.css .site-footer 统一底栏 ── */
+.home-footer { padding: 6px var(--sp-4); }
 @media (max-width: 640px) {
-  .home-stage { padding-top: 50px; }
-  .home-focus {
-    gap: clamp(4px, 0.8vh, 8px);
-    padding: var(--sp-1) var(--sp-3);
-  }
-  .home-footer {
-    padding: 4px var(--sp-2);
-    font-size: 0.65rem;
-    gap: 6px;
-  }
   .tag-pills {
     gap: 4px;
     max-width: 94vw;
