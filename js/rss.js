@@ -1264,29 +1264,29 @@ const AI_PROVIDERS = {
     openai: {
         name: 'OpenAI',
         baseUrl: 'https://api.openai.com/v1',
-        models: ['gpt-4o', 'gpt-4o-mini', 'gpt-4.1', 'o3-mini', 'gpt-4-turbo', 'gpt-3.5-turbo'],
-        help: '业界领先的大模型，翻译质量最佳',
+        models: ['gpt-5.5', 'gpt-5', 'gpt-4.1', 'o4-mini', 'gpt-4o-mini'],
+        help: '行业标杆，翻译质量最高',
         apiKeyUrl: 'https://platform.openai.com/api-keys'
     },
     deepseek: {
         name: 'DeepSeek',
         baseUrl: 'https://api.deepseek.com/v1',
-        models: ['deepseek-chat', 'deepseek-chat-v3', 'deepseek-reasoner', 'deepseek-coder'],
-        help: '国产大模型，中文翻译优异，性价比极高',
+        models: ['deepseek-chat-v4', 'deepseek-reasoner', 'deepseek-chat-v3'],
+        help: '国产最强，百万上下文，翻译性价比之王',
         apiKeyUrl: 'https://platform.deepseek.com/api_keys'
     },
     gemini: {
         name: 'Google Gemini',
         baseUrl: 'https://generativelanguage.googleapis.com/v1beta',
-        models: ['gemini-2.0-flash', 'gemini-2.0-flash-lite', 'gemini-1.5-pro', 'gemini-1.5-flash'],
-        help: 'Google 模型，每月免费额度，多语言能力强',
+        models: ['gemini-3-flash', 'gemini-2.5-pro', 'gemini-2.5-flash'],
+        help: '免费额度充裕，多语言能力顶尖',
         apiKeyUrl: 'https://aistudio.google.com/apikey'
     },
     doubao: {
         name: '豆包',
         baseUrl: 'https://ark.cn-beijing.volces.com/api/v3',
-        models: ['doubao-pro-32k', 'doubao-pro-128k', 'doubao-lite-32k', 'doubao-lite-128k'],
-        help: '字节跳动豆包大模型，需填写 Access Key ID 而非 API Key',
+        models: ['doubao-seed-2.0', 'doubao-pro-1.5', 'doubao-lite-1.5'],
+        help: '字节跳动，Seed 2.0 综合能力接近 GPT-5.5',
         apiKeyUrl: 'https://console.volcengine.com/ark/region:ark+cn-beijing/apiKey'
     },
     custom: {
