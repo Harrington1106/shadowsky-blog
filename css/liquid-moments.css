@@ -249,6 +249,8 @@
     flex: 1;
     min-width: 200px;
     position: relative;
+    display: flex;
+    align-items: center;
 }
 
 .mm-search input {
