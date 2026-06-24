@@ -597,87 +597,33 @@
     function generateTOC() {
         const tocMobile = document.getElementById('toc-mobile');
         const tocDesktop = document.getElementById('toc-desktop');
-        
         const headers = postContent.querySelectorAll('h1, h2, h3');
-        
+
         if (headers.length === 0) {
-            const emptyState = '<div class="flex flex-col items-center justify-center py-6 text-gray-400"><i data-lucide="file-x" class="w-8 h-8 mb-2 opacity-50"></i><p class="text-xs">暂无目录</p></div>';
-            if (tocMobile) tocMobile.innerHTML = emptyState;
-            if (tocDesktop) tocDesktop.innerHTML = emptyState;
+            const empty = '<div style="text-align:center;padding:24px 0;color:var(--rs-text-dim);font-size:.8rem"><i data-lucide="file-text"></i><p style="margin-top:6px">暂无目录</p></div>';
+            if (tocMobile) tocMobile.innerHTML = empty;
+            if (tocDesktop) tocDesktop.innerHTML = empty;
             return;
         }
 
-        // Helper to build TOC structure
-        function buildTOCList() {
-            const rootUl = document.createElement('ul');
-            rootUl.className = 'toc-list space-y-1 relative'; // Added relative for line positioning
-            
-            // Add vertical line track
-            const track = document.createElement('div');
-            track.className = 'absolute left-0 top-0 bottom-0 w-px bg-gray-200 dark:bg-gray-800 hidden';
-            rootUl.appendChild(track);
-            
-            const stack = [{level: 0, element: rootUl}];
-            let lastLi = null;
-
-            headers.forEach((header, index) => {
-                if (!header.id) {
-                    header.id = `heading-${index}`;
-                }
-                
+        function buildHTML() {
+            let html = '<ul class="toc-list">';
+            let prevLevel = 1;
+            headers.forEach((header, i) => {
+                if (!header.id) header.id = 'heading-' + i;
                 const level = parseInt(header.tagName.substring(1));
-                
-                while (stack.length > 1 && stack[stack.length - 1].level >= level) {
-                    stack.pop();
-                }
-                
-                if (level > stack[stack.length - 1].level) {
-                    if (lastLi) {
-                        const subUl = document.createElement('ul');
-                        // Hide H3+ by default (level > 2)
-                        const shouldHide = level > 2;
-                        
-                        // Refined sublist styling: no border-l, cleaner spacing
-                        subUl.className = `toc-sublist sublist-level-${level} ${shouldHide ? 'hidden' : ''} pl-4 mt-1 space-y-1 relative`;
-                        lastLi.appendChild(subUl);
-                        
-                        stack.push({level: level, element: subUl});
-                    } else {
-                        stack[stack.length - 1].level = level;
-                    }
-                }
-                
-                const currentUl = stack[stack.length - 1].element;
-                
-                const li = document.createElement('li');
-                li.className = 'toc-item relative';
-                
-                // Refined link styling
-                // Use border-l-2 transparent for active state indicator instead of full background
-                li.innerHTML = `
-                    <a href="#${header.id}" 
-                       class="toc-link block py-1.5 px-3 text-sm text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200 border-l-2 border-transparent hover:border-gray-300 dark:hover:border-gray-700 whitespace-normal break-words leading-snug"
-                       title="${header.textContent}"
-                       data-target="${header.id}">
-                        ${header.textContent}
-                    </a>
-                `;
-                
-                currentUl.appendChild(li);
-                lastLi = li;
+                if (level > prevLevel) html += '<ul class="toc-sublist">';
+                if (level < prevLevel) html += '</ul>'.repeat(prevLevel - level);
+                html += `<li class="toc-item"><a href="#${header.id}" class="toc-link" data-target="${header.id}">${header.textContent}</a></li>`;
+                prevLevel = level;
             });
-            return rootUl;
+            html += '</ul>'.repeat(prevLevel);
+            return html;
         }
 
-        if (tocMobile) {
-            tocMobile.innerHTML = '';
-            tocMobile.appendChild(buildTOCList());
-        }
-        
-        if (tocDesktop) {
-            tocDesktop.innerHTML = '';
-            tocDesktop.appendChild(buildTOCList());
-        }
+        const html = buildHTML();
+        if (tocMobile) tocMobile.innerHTML = html;
+        if (tocDesktop) tocDesktop.innerHTML = html;
     }
 
     function setupScrollSpy() {
@@ -693,47 +639,12 @@
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
-                    // 1. Reset all active states
-                    document.querySelectorAll('.toc-item').forEach(item => item.classList.remove('active'));
-                    document.querySelectorAll('.toc-link').forEach(link => {
-                        link.classList.remove('text-blue-600', 'dark:text-blue-400', 'border-blue-500', 'font-medium');
-                        link.classList.add('text-gray-500', 'dark:text-gray-400', 'border-transparent');
-                    });
-
-                    // 2. Collapse deep levels (keep H1/H2 visible)
-                    document.querySelectorAll('.toc-sublist').forEach(list => {
-                        const isBigTitle = list.classList.contains('sublist-level-1') || list.classList.contains('sublist-level-2');
-                        if (!isBigTitle) {
-                            list.classList.add('hidden');
-                        }
-                    });
-
-                    // 3. Activate current link
-                    const activeLinks = document.querySelectorAll(`.toc-link[data-target="${entry.target.id}"]`);
-                    activeLinks.forEach(activeLink => {
-                        activeLink.classList.remove('text-gray-500', 'dark:text-gray-400', 'border-transparent');
-                        activeLink.classList.add('text-blue-600', 'dark:text-blue-400', 'border-blue-500', 'font-medium');
-                        
-                        // 4. Expand parents
-                        let parent = activeLink.parentElement; // li.toc-item
-                        if (parent) {
-                            // If this LI has a child UL (sublist), expand it
-                            const childUl = parent.querySelector('ul.toc-sublist');
-                            if (childUl) {
-                                childUl.classList.remove('hidden');
-                            }
-                        }
-
-                        // Traverse up to expand all parent lists
-                        let curr = parent;
-                        while (curr) {
-                            if (curr.classList.contains('toc-sublist')) {
-                                curr.classList.remove('hidden');
-                            }
-                            curr = curr.parentElement;
-                        }
-                    });
+                    document.querySelectorAll('.toc-link').forEach(l => l.classList.remove('active'));
+                    const links = document.querySelectorAll(`.toc-link[data-target="${entry.target.id}"]`);
+                    links.forEach(l => l.classList.add('active'));
                 }
+            });
+        });
             });
         }, observerOptions);
 

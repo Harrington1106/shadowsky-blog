@@ -30,7 +30,7 @@
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
 
-    <link href="css/liquid-post.css?v=2606250900" rel="stylesheet">
+    <link href="css/liquid-post.css?v=2606251000" rel="stylesheet">
 </head>
 <body class="font-sans" data-force-scrolled-nav>
     <!-- ═══════ 流体光斑层 ═══════ -->
@@ -170,7 +170,7 @@
     <script src="js/navbar.js?v=2606250600"></script>
     <script src="js/api.js?v=20260624v5"></script>
     <script src="js/main.js?v=2606250600"></script>
-    <script src="js/post-viewer.js?v=20260624v5"></script>
+    <script src="js/post-viewer.js?v=2606251000"></script>
     <script src="js/click-effect.js?v=20260624v5"></script>
     <script src="https://unpkg.com/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
     <script src="js/context-menu.js?v=20260624v5"></script>
@@ -189,9 +189,19 @@
         }
 
         requestAnimationFrame(raf);
-        
-        // Make lenis global for context menu usage
         window.lenis = lenis;
+
+        // BTT — Lenis 驱动，精确可控
+        const btt = document.getElementById('back-to-top');
+        if (btt) {
+            function updateBTT(scroll) {
+                btt.style.opacity = scroll > 400 ? '1' : '0';
+                btt.style.transform = scroll > 400 ? 'translateY(0)' : 'translateY(12px)';
+                btt.style.pointerEvents = scroll > 400 ? 'auto' : 'none';
+            }
+            lenis.on('scroll', ({ scroll }) => updateBTT(scroll));
+            btt.addEventListener('click', () => lenis.scrollTo(0, { duration: 0.8 }));
+        }
 
     </script>
     <script src="js/back-to-top.js?v=20260624v5"></script>
