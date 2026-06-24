@@ -1003,29 +1003,29 @@ function openArticle(index) {
         el._smoothEnabled = true;
 
         let target = el.scrollTop;
-        let animating = false;
-        const ease = 0.13;
-        const threshold = 0.3;
+        let lastWheel = 0;
+        let frameId = null;
+        const ease = 0.28;
+        const threshold = 0.4;
 
         el.addEventListener('wheel', function(e) {
             e.preventDefault();
             target += e.deltaY;
             target = Math.max(0, Math.min(target, el.scrollHeight - el.clientHeight));
-            if (!animating) {
-                animating = true;
-                requestAnimationFrame(tick);
-            }
+            lastWheel = performance.now();
+            if (!frameId) frameId = requestAnimationFrame(tick);
         }, { passive: false });
 
         function tick() {
-            const diff = target - el.scrollTop;
-            if (Math.abs(diff) < threshold) {
+            const dt = performance.now() - lastWheel;
+            // 鼠标停下超过 80ms 就立即停止
+            if (dt > 80 && Math.abs(target - el.scrollTop) < 3) {
                 el.scrollTop = target;
-                animating = false;
+                frameId = null;
                 return;
             }
-            el.scrollTop += diff * ease;
-            requestAnimationFrame(tick);
+            el.scrollTop += (target - el.scrollTop) * ease;
+            frameId = requestAnimationFrame(tick);
         }
     }
     enableSmoothScroll(container);
