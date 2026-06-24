@@ -1706,6 +1706,17 @@ html:not(.dark) .rs-modal {
 .rs-btn svg { width: 14px; height: 14px; }
 .rs-btn-status { font-weight: 400; font-size: .65rem; opacity: .6; }
 
+/* 按钮 loading 旋转动画 */
+.rs-btn--loading { opacity: .7; pointer-events: none; }
+.rs-btn-spinner {
+    width: 14px; height: 14px;
+    border: 2px solid var(--rs-text-dim);
+    border-top-color: currentColor;
+    border-radius: 50%;
+    animation: rs-spin .6s linear infinite;
+    display: inline-block; vertical-align: middle;
+}
+
 .rs-modal::-webkit-scrollbar { width: 4px; }
 .rs-modal::-webkit-scrollbar-thumb { background: var(--rs-text-dim); border-radius: 2px; }
 

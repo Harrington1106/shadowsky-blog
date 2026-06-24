@@ -946,22 +946,51 @@ function openArticle(index) {
     }
 
     // --- Translate button ---
+    // ── 翻译按钮（含中文检测 + 原文/翻译切换）──
+    let originalHtml = '';
+    let translatedHtml = '';
     const translateBtn = document.getElementById('translate-btn');
     if (translateBtn) {
         translateBtn.addEventListener('click', async () => {
-            try {
-                translateBtn.innerHTML = '<i data-lucide="loader-2"></i> 翻译中…';
-                translateBtn.disabled = true;
+            const body = container.querySelector('.rs-article-body');
+            if (!body) return;
+
+            // 切换回原文
+            if (translatedHtml && body.innerHTML === translatedHtml) {
+                body.innerHTML = originalHtml;
+                translateBtn.innerHTML = '<i data-lucide="languages"></i> 翻译';
                 lucide.createIcons();
-                const translated = await translateArticle(article.content);
-                if (translated) {
-                    const body = container.querySelector('.rs-article-body');
-                    if (body) body.innerHTML = translated;
+                return;
+            }
+
+            // 检测中文比例
+            const text = body.textContent || '';
+            const cjkCount = (text.match(/[一-鿿㐀-䶿]/g) || []).length;
+            const cjkRatio = text.length > 0 ? cjkCount / text.length : 0;
+
+            if (cjkRatio > 0.3) {
+                if (!confirm(`文章已有 ${Math.round(cjkRatio * 100)}% 中文字符，可能已是中文。仍需翻译吗？`)) return;
+            }
+
+            // 开始翻译
+            originalHtml = body.innerHTML;
+            translatedHtml = '';
+            translateBtn.innerHTML = '<span class="rs-btn-spinner"></span> 翻译中';
+            translateBtn.classList.add('rs-btn--loading');
+            translateBtn.disabled = true;
+            lucide.createIcons();
+
+            try {
+                translatedHtml = await translateArticle(article.content);
+                if (translatedHtml) {
+                    body.innerHTML = translatedHtml;
+                    translateBtn.innerHTML = '<i data-lucide="undo-2"></i> 显示原文';
                 }
             } catch (e) {
                 alert('翻译失败: ' + e.message);
-            } finally {
                 translateBtn.innerHTML = '<i data-lucide="languages"></i> 翻译';
+            } finally {
+                translateBtn.classList.remove('rs-btn--loading');
                 translateBtn.disabled = false;
                 lucide.createIcons();
             }
