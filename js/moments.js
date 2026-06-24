@@ -614,7 +614,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function renderTimeline(moments) {
-        momentsContainer.className = "max-w-3xl mx-auto pl-8 border-l-2 border-blue-100 dark:border-gray-800 space-y-10";
+        momentsContainer.className = "tl-container";
 
         let lastYearMonth = '';
 
@@ -627,59 +627,33 @@ document.addEventListener('DOMContentLoaded', () => {
             if (yearMonth !== lastYearMonth) {
                 lastYearMonth = yearMonth;
                 headerHtml = `
-                    <div class="tl-month-marker">
+                    <div class="tl-month">
                         <div class="tl-month-dot"></div>
                         <span class="tl-month-label">${yearMonth}</span>
                     </div>
                 `;
             } else {
-                 headerHtml = `
-                    <div class="tl-item-dot"></div>
-                `;
+                 headerHtml = `<div class="tl-dot"></div>`;
             }
 
             const imageHtml = moment.image ? `
-                <div class="relative w-full md:w-48 h-48 md:h-auto shrink-0 overflow-hidden rounded-xl cursor-zoom-in" onclick="openLightbox('${moment.id}')">
-                    <img
-                        src="${optimizeGithubImage(moment.image)}"
-                        alt="Moment"
-                        loading="lazy"
-                        class="w-full h-full object-cover transition-transform duration-700 hover:scale-110"
-                    />
+                <div class="tl-thumb" onclick="openLightbox('${moment.id}')">
+                    <img src="${optimizeGithubImage(moment.image)}" alt="" loading="lazy" />
                 </div>
             ` : '';
 
             return `
-            <div class="relative animate-fade-in" style="animation-delay: ${index * 0.05}s">
+            <div class="tl-item" style="animation-delay:${index * 0.05}s">
                 ${headerHtml}
-
-                <div class="moment-card glass-card ml-4 mt-8 bg-white dark:bg-neutral-900 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-800 hover:shadow-md transition-shadow flex flex-col md:flex-row gap-6">
+                <div class="tl-card">
                     ${imageHtml}
-
-                    <div class="flex-1">
-                        <div class="flex items-center text-xs text-gray-400 mb-3">
-                            <i data-lucide="clock" class="w-3 h-3 mr-1.5"></i>
-                            ${dateStr}
-                            ${moment.location ? `
-                                <span class="mx-2 text-gray-300 dark:text-gray-700">|</span>
-                                <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(moment.location)}" target="_blank" class="flex items-center hover:text-blue-500 transition-colors" onclick="event.stopPropagation()">
-                                    <i data-lucide="map-pin" class="w-3 h-3 mr-1.5"></i>
-                                    ${moment.location}
-                                </a>
-                            ` : ''}
+                    <div class="tl-card-body">
+                        <div class="tl-card-meta">
+                            <i data-lucide="clock"></i> ${dateStr}
+                            ${moment.location ? `<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(moment.location)}" target="_blank" class="tl-location" onclick="event.stopPropagation()"><i data-lucide="map-pin"></i> ${moment.location}</a>` : ''}
                         </div>
-
-                        <p class="text-gray-700 dark:text-gray-300 leading-relaxed font-serif text-lg mb-4">
-                            ${moment.content}
-                        </p>
-
-                        ${moment.tags ? `
-                            <div class="flex flex-wrap gap-2">
-                                ${moment.tags.map(tag => `
-                                    <span class="px-2 py-1 bg-gray-50 dark:bg-gray-800/50 text-xs text-gray-500 dark:text-gray-400 rounded-md">#${tag}</span>
-                                `).join('')}
-                            </div>
-                        ` : ''}
+                        <p class="tl-card-text">${moment.content}</p>
+                        ${moment.tags ? `<div class="tl-card-tags">${moment.tags.map(tag => `<span>#${tag}</span>`).join('')}</div>` : ''}
                     </div>
                 </div>
             </div>
