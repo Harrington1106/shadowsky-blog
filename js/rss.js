@@ -1265,77 +1265,56 @@ const AI_PROVIDERS = {
         name: 'OpenAI',
         baseUrl: 'https://api.openai.com/v1',
         models: ['gpt-5.5', 'gpt-5', 'gpt-4.1', 'o4-mini', 'gpt-4o-mini'],
-        help: '行业标杆，翻译质量最高',
+        help: '行业标杆，翻译质量最高，生态最成熟',
         apiKeyUrl: 'https://platform.openai.com/api-keys'
     },
     anthropic: {
         name: 'Anthropic',
         baseUrl: 'https://api.anthropic.com/v1',
         models: ['claude-opus-4-8', 'claude-sonnet-4-6', 'claude-haiku-4-5'],
-        help: '长文翻译细腻，文学感最佳',
+        help: '长文翻译细腻流畅，文学翻译首选',
         apiKeyUrl: 'https://console.anthropic.com/keys'
     },
     deepseek: {
         name: 'DeepSeek',
         baseUrl: 'https://api.deepseek.com/v1',
         models: ['deepseek-chat-v4', 'deepseek-reasoner', 'deepseek-chat-v3'],
-        help: '国产最强，百万上下文，翻译性价比之王',
+        help: '国产最强，百万上下文，性价比之王',
         apiKeyUrl: 'https://platform.deepseek.com/api_keys'
     },
     gemini: {
         name: 'Google Gemini',
         baseUrl: 'https://generativelanguage.googleapis.com/v1beta',
         models: ['gemini-3-flash', 'gemini-2.5-pro', 'gemini-2.5-flash'],
-        help: '免费额度充裕，多语言能力顶尖',
+        help: '每月免费额度充裕，多语言顶尖',
         apiKeyUrl: 'https://aistudio.google.com/apikey'
     },
     grok: {
         name: 'Grok',
         baseUrl: 'https://api.x.ai/v1',
         models: ['grok-4.3', 'grok-4.2', 'grok-4-mini'],
-        help: 'xAI 模型，多语言流畅，价格实惠',
+        help: 'xAI 模型，价格实惠，多语言流畅',
         apiKeyUrl: 'https://console.x.ai/api-keys'
     },
     qwen: {
         name: '通义千问',
         baseUrl: 'https://dashscope.aliyuncs.com/compatible-mode/v1',
         models: ['qwen3.7-max', 'qwen3.5-plus', 'qwen3.5-turbo'],
-        help: '阿里云，代码+翻译均衡，中文语感好',
+        help: '阿里云，中文语感最佳，生态完善',
         apiKeyUrl: 'https://bailian.console.aliyun.com/#/api-key'
-    },
-    kimi: {
-        name: 'Kimi',
-        baseUrl: 'https://api.moonshot.cn/v1',
-        models: ['kimi-k2.7', 'kimi-k2.6', 'kimi-k2-mini'],
-        help: '月之暗面，长文理解力强',
-        apiKeyUrl: 'https://platform.moonshot.cn/console/api-keys'
-    },
-    glm: {
-        name: '智谱 GLM',
-        baseUrl: 'https://open.bigmodel.cn/api/paas/v4',
-        models: ['glm-5.2', 'glm-5.1', 'glm-5-flash'],
-        help: '清华系，国产老牌，综合均衡',
-        apiKeyUrl: 'https://open.bigmodel.cn/usercenter/apikeys'
     },
     doubao: {
         name: '豆包',
         baseUrl: 'https://ark.cn-beijing.volces.com/api/v3',
         models: ['doubao-seed-2.0', 'doubao-pro-1.5', 'doubao-lite-1.5'],
-        help: '字节跳动，Seed 2.0 综合能力接近 GPT-5.5',
+        help: '字节跳动，Seed 2.0 综合能力强',
         apiKeyUrl: 'https://console.volcengine.com/ark/region:ark+cn-beijing/apiKey'
-    },
-    mistral: {
-        name: 'Mistral',
-        baseUrl: 'https://api.mistral.ai/v1',
-        models: ['mistral-large-3', 'mistral-medium-3', 'mistral-small-3'],
-        help: '欧洲最强，多语言翻译自然',
-        apiKeyUrl: 'https://console.mistral.ai/api-keys'
     },
     custom: {
         name: '自定义',
         baseUrl: '',
         models: [],
-        help: '填写兼容 OpenAI API 格式的任意服务地址',
+        help: '兼容 OpenAI API 格式的任意服务地址',
         apiKeyUrl: ''
     }
 };
