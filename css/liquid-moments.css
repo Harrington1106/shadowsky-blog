@@ -160,40 +160,41 @@ html:not(.dark) .lb-arrow{background:rgba(0,0,0,.03);border-color:rgba(0,0,0,.06
 .lb-arrow i{width:22px;height:22px}
 .lb-prev{left:16px}.lb-next{right:16px}
 
-/* 侧栏 */
-.lb-side{width:100%;padding:0 24px 32px;overflow-y:auto;display:flex;flex-direction:column;gap:18px}
-@media(min-width:768px){.lb-side{width:360px;padding:48px 32px 40px;border-left:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.02)}}
+/* 侧栏 — 卡片式布局 */
+.lb-side{width:100%;padding:16px 20px 32px;overflow-y:auto;display:flex;flex-direction:column;gap:12px}
+@media(min-width:768px){.lb-side{width:360px;padding:40px 24px 32px;border-left:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.02)}}
 html:not(.dark) .lb-side{border-color:rgba(0,0,0,.05);background:rgba(0,0,0,.01)}
 
-/* 日期 */
-.lb-meta{display:flex;align-items:center;gap:8px;font-size:.8rem;color:#2dd4bf;font-weight:500;padding-bottom:4px}
+/* 侧栏卡片 */
+.lb-card{padding:16px 18px;border-radius:14px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.04)}
+html:not(.dark) .lb-card{background:rgba(0,0,0,.015);border-color:rgba(0,0,0,.04)}
+
+/* 正文卡片 */
+.lb-card--main{background:transparent;border:none;padding:0 4px 8px}
+.lb-meta{display:flex;align-items:center;gap:8px;font-size:.78rem;color:#2dd4bf;font-weight:500;margin-bottom:12px}
 html:not(.dark) .lb-meta{color:#0d9488}
 .lb-meta i{width:14px;height:14px;opacity:.7}
-
-/* 正文 */
 .lb-side p{font-size:1.15rem;line-height:1.85;color:#e2e8f0;font-family:'Noto Serif SC',Georgia,serif;margin:0;letter-spacing:.01em}
 html:not(.dark) .lb-side p{color:#1e293b}
 
-/* 位置 */
-#lightbox-location-container{display:flex;align-items:center;gap:6px;font-size:.78rem;color:rgba(255,255,255,.4);cursor:pointer;transition:color .2s;padding:6px 0}
+/* 信息卡片 */
+.lb-card--info{display:flex;flex-direction:column;gap:10px}
+#lightbox-location-container{display:flex;align-items:center;gap:6px;font-size:.76rem;color:rgba(255,255,255,.4);cursor:pointer;transition:color .2s}
 html:not(.dark) #lightbox-location-container{color:rgba(0,0,0,.35)}
 #lightbox-location-container:hover{color:var(--mm-a)}
 #lightbox-location-container i{width:14px;height:14px}
 #lightbox-location{border-bottom:1px dashed rgba(255,255,255,.15)}
-html:not(.dark) #lightbox-location{border-bottom-color:rgba(0,0,0,.15)}
-
-/* 标签 */
-#lightbox-tags{display:flex;flex-wrap:wrap;gap:6px;padding:4px 0}
+#lightbox-tags{display:flex;flex-wrap:wrap;gap:6px}
 #lightbox-tags span{padding:4px 11px;font-size:.7rem;border-radius:6px;background:rgba(45,212,191,.08);color:#2dd4bf;font-weight:500}
-html:not(.dark) #lightbox-tags span{color:#0d9488}
 
-/* EXIF */
-#lightbox-exif{display:none;grid-template-columns:auto 1fr;gap:7px 24px;font-size:.78rem;padding:16px 18px;border-radius:12px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.04);margin-top:4px}
-html:not(.dark) #lightbox-exif{background:rgba(0,0,0,.02);border-color:rgba(0,0,0,.04)}
-#lightbox-exif>:nth-child(odd){color:rgba(255,255,255,.25);font-size:.72rem;font-weight:500}
-html:not(.dark) #lightbox-exif>:nth-child(odd){color:rgba(0,0,0,.3)}
-#lightbox-exif>:nth-child(even){color:rgba(255,255,255,.85);font-family:'JetBrains Mono',monospace;text-align:right;font-size:.76rem}
-html:not(.dark) #lightbox-exif>:nth-child(even){color:#334155}
+/* EXIF 卡片 */
+#lightbox-exif{display:none;flex-direction:column;gap:6px}
+#lightbox-exif:not(.hidden){display:flex!important}
+.lb-exif-row{display:flex;justify-content:space-between;align-items:center;font-size:.76rem}
+.lb-exif-row span:first-child{color:rgba(255,255,255,.25);font-weight:500;font-size:.7rem}
+html:not(.dark) .lb-exif-row span:first-child{color:rgba(0,0,0,.3)}
+.lb-exif-row span:last-child{color:rgba(255,255,255,.85);font-family:'JetBrains Mono',monospace}
+html:not(.dark) .lb-exif-row span:last-child{color:#334155}
 
 /* ═══════ FOOTER + BTT ═══════ */
 .mm-footer{display:flex;align-items:center;justify-content:center;gap:8px;padding:12px 24px;font-size:.72rem;flex-shrink:0;z-index:1;white-space:nowrap;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);margin-top:60px;flex-wrap:wrap;transition:all .5s ease;border-top:1px solid rgba(20,184,166,.1);color:rgba(255,255,255,.65)}

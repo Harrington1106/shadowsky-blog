@@ -16,10 +16,10 @@
     <link rel="preconnect" href="https://gstatic.loli.net" crossorigin>
     <link href="https://fonts.loli.net/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&family=Noto+Serif+SC:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="css/unified.css?v=20260626h" rel="stylesheet">
-    <link href="css/liquid-ambient.css?v=20260626h" rel="stylesheet">
-    <link href="css/liquid-moments.css?v=20260626h" rel="stylesheet">
-    <script src="js/vendor/lucide.min.js?v=20260626h"></script>
+    <link href="css/unified.css?v=20260626i" rel="stylesheet">
+    <link href="css/liquid-ambient.css?v=20260626i" rel="stylesheet">
+    <link href="css/liquid-moments.css?v=20260626i" rel="stylesheet">
+    <script src="js/vendor/lucide.min.js?v=20260626i"></script>
     <style>
         html:not(.dark) .dark-only{display:none!important}
         html.dark .light-only{display:none!important}
@@ -142,30 +142,34 @@
                 <button id="lightbox-next" class="lb-arrow lb-next"><i data-lucide="chevron-right"></i></button>
             </div>
             <div class="lb-side">
-                <div class="lb-meta"><i data-lucide="calendar"></i><span id="lightbox-date"></span></div>
-                <p id="lightbox-content"></p>
-                <div id="lightbox-location-container"><i data-lucide="map-pin"></i><span id="lightbox-location"></span></div>
-                <div id="lightbox-tags"></div>
-                <div id="lightbox-exif">
-                    <div>Camera</div><div id="exif-camera">--</div>
-                    <div>Lens</div><div id="exif-lens">--</div>
-                    <div>ISO</div><div id="exif-iso">--</div>
-                    <div>Aperture</div><div id="exif-aperture">--</div>
-                    <div>Shutter</div><div id="exif-shutter">--</div>
+                <div class="lb-card lb-card--main">
+                    <div class="lb-meta"><i data-lucide="calendar"></i><span id="lightbox-date"></span></div>
+                    <p id="lightbox-content"></p>
+                </div>
+                <div class="lb-card lb-card--info">
+                    <div id="lightbox-location-container"><i data-lucide="map-pin"></i><span id="lightbox-location"></span></div>
+                    <div id="lightbox-tags"></div>
+                </div>
+                <div class="lb-card lb-card--exif" id="lightbox-exif">
+                    <div class="lb-exif-row"><span>Camera</span><span id="exif-camera">--</span></div>
+                    <div class="lb-exif-row"><span>Lens</span><span id="exif-lens">--</span></div>
+                    <div class="lb-exif-row"><span>ISO</span><span id="exif-iso">--</span></div>
+                    <div class="lb-exif-row"><span>Aperture</span><span id="exif-aperture">--</span></div>
+                    <div class="lb-exif-row"><span>Shutter</span><span id="exif-shutter">--</span></div>
                 </div>
             </div>
         </div>
     </div>
 
-    <script src="js/api.js?v=20260626h"></script>
-    <script src="js/main.js?v=20260626h"></script>
-    <script src="js/navbar.js?v=20260626h"></script>
-    <script src="js/activity_chart.js?v=20260626h"></script>
-    <script src="js/heatmap.js?v=20260626h"></script>
-    <script src="js/moments.js?v=20260626h"></script>
-    <script src="js/click-effect.js?v=20260626h"></script>
+    <script src="js/api.js?v=20260626i"></script>
+    <script src="js/main.js?v=20260626i"></script>
+    <script src="js/navbar.js?v=20260626i"></script>
+    <script src="js/activity_chart.js?v=20260626i"></script>
+    <script src="js/heatmap.js?v=20260626i"></script>
+    <script src="js/moments.js?v=20260626i"></script>
+    <script src="js/click-effect.js?v=20260626i"></script>
     <script src="https://unpkg.com/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
-    <script src="js/context-menu.js?v=20260626h"></script>
+    <script src="js/context-menu.js?v=20260626i"></script>
     <script>
         lucide.createIcons();
         const lenis = new Lenis({duration:.5,easing:t=>Math.min(1,1.001-Math.pow(2,-6*t)),smooth:true,smoothTouch:false,touchMultiplier:2});
@@ -209,7 +213,7 @@
         // Tags drag scroll
         document.addEventListener('DOMContentLoaded',function(){setTimeout(function(){var r=document.getElementById('tag-filters');if(!r)return;var d=false,sx,sl;r.addEventListener('mousedown',function(e){d=true;sx=e.pageX-r.offsetLeft;sl=r.scrollLeft});r.addEventListener('mouseleave',function(){d=false});r.addEventListener('mouseup',function(){d=false});r.addEventListener('mousemove',function(e){if(!d)return;e.preventDefault();r.scrollLeft=sl-(e.pageX-r.offsetLeft-sx)*1.5})},800)});
     </script>
-    <script src="js/back-to-top.js?v=20260626h"></script>
-    <script src="js/tracker.js?v=20260626h"></script>
+    <script src="js/back-to-top.js?v=20260626i"></script>
+    <script src="js/tracker.js?v=20260626i"></script>
 </body>
 </html>

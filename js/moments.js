@@ -484,7 +484,12 @@ document.addEventListener('DOMContentLoaded', () => {
             filterMoments();
 
             // Handle Deep Link
-            // 不再自动打开 lightbox——用户明确点击才打开
+            // 清除 URL 残留的 id 参数，不自动打开 lightbox
+            if (window.location.search.includes('id=')) {
+                const u = new URL(window.location);
+                u.searchParams.delete('id');
+                window.history.replaceState({}, '', u);
+            }
 
         } catch (error) {
             console.error('Error fetching moments:', error);
