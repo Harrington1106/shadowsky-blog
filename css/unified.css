@@ -484,7 +484,9 @@ html:not(.dark) #navbar .nav-link.active{
 }
 
 #navbar .nav-link i{width:18px;height:18px;transition:all 0.25s var(--ease-out);}
+#navbar .nav-link svg{width:18px;height:18px;transition:all 0.25s var(--ease-out);}
 #navbar .nav-link.active i{filter:drop-shadow(0 0 4px currentColor);}
+#navbar .nav-link.active svg{filter:drop-shadow(0 0 4px currentColor);}
 
 /* 桌面端隐藏文字 */
 #navbar .nav-text{display:none;}
@@ -505,6 +507,7 @@ html:not(.dark) #navbar .nav-link.active{
 html:not(.dark) #theme-toggle.theme-toggle{color:rgba(51,65,85,.6);}
 .dark #theme-toggle.theme-toggle:hover{color:#fff;background:rgba(255,255,255,.06);}
 html:not(.dark) #theme-toggle.theme-toggle:hover{color:rgba(15,23,42,.9);background:rgba(0,0,0,.03);}
+#theme-toggle svg,#theme-toggle i{width:18px;height:18px;pointer-events:none;}
 
 /* ── 汉堡按钮 ── */
 #nav-hamburger.nav-hamburger{
@@ -517,6 +520,7 @@ html:not(.dark) #theme-toggle.theme-toggle:hover{color:rgba(15,23,42,.9);backgro
 html:not(.dark) #nav-hamburger.nav-hamburger{color:rgba(51,65,85,.6);}
 .dark #nav-hamburger.nav-hamburger:hover{color:#fff;background:rgba(255,255,255,.06);}
 html:not(.dark) #nav-hamburger.nav-hamburger:hover{color:rgba(15,23,42,.9);background:rgba(0,0,0,.03);}
+#nav-hamburger svg,#nav-hamburger i{width:20px;height:20px;pointer-events:none;}
 
 
 /* ═══════════════════════════════════════════════════════
@@ -608,8 +612,11 @@ html:not(.dark) .mobile-nav-link.active{
 }
 
 .mobile-nav-link i{width:18px;height:18px;flex-shrink:0;opacity:0.55;transition:all 0.2s;}
+.mobile-nav-link svg{width:18px;height:18px;flex-shrink:0;opacity:0.55;transition:all 0.2s;}
 .mobile-nav-link:hover i{opacity:0.8;}
+.mobile-nav-link:hover svg{opacity:0.8;}
 .mobile-nav-link.active i{opacity:1;filter:drop-shadow(0 0 3px currentColor);}
+.mobile-nav-link.active svg{opacity:1;filter:drop-shadow(0 0 3px currentColor);}
 .mobile-nav-link span{white-space:nowrap;}
 
 /* 兼容旧页面 */
