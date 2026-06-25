@@ -379,12 +379,19 @@
                 init();
             }
 
+            /* ── 变换参数（resize 和 getGrid 共用）── */
+            let txScale = 1, txOffX = 20, txOffY = 20;
+
             function resize() {
-                const w = canvas.parentElement.clientWidth;
-                canvas.width = w; canvas.height = w;
+                const pw = canvas.parentElement.clientWidth;
+                const ph = canvas.parentElement.clientHeight;
+                canvas.width = pw; canvas.height = ph;
                 const cw = GRID * (R*2 + GAP) + R;
-                const s = canvas.width / (cw + 40);
-                ctx.setTransform(s, 0, 0, s, 20, 20);
+                const ch = GRID * (R*2 + GAP) * 0.866 + R;
+                txScale = Math.min((pw - 30) / cw, (ph - 30) / ch);
+                txOffX = (pw - cw * txScale) / 2;
+                txOffY = (ph - ch * txScale) / 2;
+                ctx.setTransform(txScale, 0, 0, txScale, txOffX, txOffY);
             }
 
             function draw() {
@@ -432,9 +439,8 @@
             }
 
             function getGrid(px, py) {
-                const cw = GRID*(R*2+GAP)+R;
-                const s = canvas.width/(cw+40);
-                const rx = (px-20)/s, ry = (py-20)/s;
+                const rx = (px - txOffX) / txScale;
+                const ry = (py - txOffY) / txScale;
                 let best = null, min = Infinity;
                 for (let y=0;y<GRID;y++) for (let x=0;x<GRID;x++) {
                     const p = pos(x,y);
