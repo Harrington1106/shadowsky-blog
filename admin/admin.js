@@ -971,54 +971,81 @@ const BookmarksManager = {
         const list = document.getElementById('bookmarks-list');
         list.innerHTML = '';
         const itemsToRender = data || this.data;
+
+        // 更新计数
+        const countEl = document.getElementById('bm-count');
+        if (countEl) countEl.textContent = itemsToRender.length;
+
         if (itemsToRender.length === 0) {
-            list.innerHTML = '<div class="text-center py-12 text-slate-500">暂无收藏</div>';
+            list.innerHTML = `<div style="text-align:center;padding:48px 24px;color:#94a3b8">
+                <i data-lucide="bookmark" style="width:40px;height:40px;opacity:0.3;margin-bottom:12px"></i>
+                <p style="font-size:.95rem">暂无收藏</p>
+                <p style="font-size:.8rem;margin-top:4px">在左侧添加你的第一个收藏链接</p>
+            </div>`;
+            if (typeof lucide !== 'undefined') lucide.createIcons();
             return;
         }
-        
+
+        const tagColors = ['#EC4899','#8B5CF6','#3B82F6','#10B981','#F59E0B','#EF4444','#06B6D4','#F97316'];
         itemsToRender.forEach(item => {
             const el = document.createElement('div');
-            el.className = 'bg-white p-4 rounded-xl border border-slate-200 flex justify-between items-start hover:shadow-md transition-shadow bookmark-item';
+            el.className = 'admin-list-item';
+            el.style.cssText = 'display:flex;align-items:flex-start;gap:14px;padding:14px 16px';
+
+            // 状态 + favicon
             const status = this.accessStatus[item.id];
+            const domain = (() => { try { return new URL(item.url).hostname; } catch { return ''; } })();
+            const favicon = domain ? `https://www.google.com/s2/favicons?domain=${domain}&sz=32` : '';
+
+            // 分类路径
+            const catName = this.categories[item.category]?.name || item.category || '';
+            const subName = item.subcategory ? (this.categories[item.category]?.children?.find(c => c.id === item.subcategory)?.name || item.subcategory) : '';
+            const catPath = [catName, subName].filter(Boolean).join(' › ');
+
+            // 标签药丸
+            const tagsHtml = (item.tags && item.tags.length)
+                ? item.tags.map((t, i) => `<span style="display:inline-block;padding:2px 8px;border-radius:9999px;font-size:.68rem;background:${tagColors[i%tagColors.length]}15;color:${tagColors[i%tagColors.length]};border:1px solid ${tagColors[i%tagColors.length]}30">${t}</span>`).join('')
+                : '';
+
+            // 状态徽章
             let statusHtml = '';
             if (status) {
-                if (status.status === 'ok') {
-                    statusHtml = `<span class="bg-green-100 text-green-600 px-2 py-0.5 rounded text-xs border border-green-200 ml-2 flex items-center gap-1"><i data-lucide="check" class="w-3 h-3"></i> 正常</span>`;
-                } else {
-                    statusHtml = `<span class="bg-red-100 text-red-600 px-2 py-0.5 rounded text-xs border border-red-200 ml-2 flex items-center gap-1"><i data-lucide="x-circle" class="w-3 h-3"></i> 异常 (${status.code})</span>`;
-                }
+                statusHtml = status.status === 'ok'
+                    ? `<span class="admin-badge admin-badge-ok" style="font-size:.65rem"><i data-lucide="check" style="width:11px;height:11px"></i></span>`
+                    : `<span class="admin-badge admin-badge-err" style="font-size:.65rem"><i data-lucide="x-circle" style="width:11px;height:11px"></i> ${status.code}</span>`;
             }
 
             el.innerHTML = `
-                <div class="flex items-start gap-3 flex-1">
-                    <div class="flex-1">
-                        <h3 class="font-semibold text-slate-800 flex items-center gap-2">
-                            ${item.title}
-                            ${statusHtml}
-                        </h3>
-                        <a href="${item.url}" target="_blank" class="text-sm text-blue-500 hover:underline truncate block max-w-md">${item.url}</a>
-                        <div class="mt-1 text-xs text-slate-400 flex flex-wrap gap-2 items-center">
-                            <span class="bg-slate-100 px-2 py-0.5 rounded text-slate-600">
-                                ${this.categories[item.category] ? this.categories[item.category].name : (item.category || 'others')}
-                                ${item.subcategory ? `<span class="text-slate-400 mx-1">/</span>${this.categories[item.category]?.children?.find(c => c.id === item.subcategory)?.name || item.subcategory}` : ''}
-                            </span>
-                            ${item.tags && item.tags.length ? item.tags.map(t => `<span class="bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded border border-blue-100">#${t}</span>`).join('') : ''}
-                            ${item.addedAt ? `<span>• ${new Date(item.addedAt).toLocaleDateString()}</span>` : ''}
-                        </div>
-                    </div>
+                <div style="flex-shrink:0;width:28px;height:28px;border-radius:6px;overflow:hidden;background:rgba(255,255,255,.04);display:flex;align-items:center;justify-content:center;margin-top:2px">
+                    ${favicon ? `<img src="${favicon}" style="width:18px;height:18px" onerror="this.style.display='none'" alt="">` : `<i data-lucide="link-2" style="width:14px;height:14px;opacity:.4"></i>`}
                 </div>
-                <div class="flex items-center gap-2">
-                        <a href="${item.url}" target="_blank" class="p-2 text-slate-400 hover:text-blue-600" title="访问链接">
-                            <i data-lucide="external-link" class="w-4 h-4"></i>
-                        </a>
-                        <button onclick="BookmarksManager.edit('${item.id}')" class="p-2 text-slate-400 hover:text-blue-600" title="编辑">
-                            <i data-lucide="edit-2" class="w-4 h-4"></i>
-                        </button>
-                        <button onclick="BookmarksManager.delete('${item.id || item.url}')" class="p-2 text-slate-400 hover:text-red-500" title="删除">
-                            <i data-lucide="trash-2" class="w-4 h-4"></i>
-                        </button>
+                <div style="flex:1;min-width:0">
+                    <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">
+                        <span style="font-weight:600;font-size:.88rem;color:inherit;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${item.title || '无标题'}</span>
+                        ${statusHtml}
                     </div>
-            `;
+                    <a href="${item.url}" target="_blank" style="font-size:.78rem;color:#64748b;text-decoration:none;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block;max-width:420px" title="${item.url}">${item.url}</a>
+                    <div style="display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:5px;font-size:.72rem;color:#94a3b8">
+                        ${catPath ? `<span style="background:rgba(255,255,255,.03);padding:2px 8px;border-radius:4px">${catPath}</span>` : ''}
+                        ${tagsHtml}
+                        ${item.addedAt ? `<span>${new Date(item.addedAt).toLocaleDateString('zh-CN')}</span>` : ''}
+                    </div>
+                    ${item.description ? `<p style="font-size:.75rem;color:#64748b;margin-top:4px;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${item.description}</p>` : ''}
+                </div>
+                <div style="display:flex;align-items:center;gap:4px;flex-shrink:0">
+                    <button onclick="navigator.clipboard.writeText('${item.url.replace(/'/g, "\\'")}');showToast('链接已复制','success')" style="background:none;border:none;cursor:pointer;padding:6px;border-radius:8px;color:#94a3b8" title="复制链接">
+                        <i data-lucide="copy" style="width:15px;height:15px"></i>
+                    </button>
+                    <a href="${item.url}" target="_blank" style="padding:6px;border-radius:8px;color:#94a3b8;text-decoration:none" title="打开链接">
+                        <i data-lucide="external-link" style="width:15px;height:15px"></i>
+                    </a>
+                    <button onclick="BookmarksManager.edit('${item.id}')" style="background:none;border:none;cursor:pointer;padding:6px;border-radius:8px;color:#94a3b8" title="编辑">
+                        <i data-lucide="edit-2" style="width:15px;height:15px"></i>
+                    </button>
+                    <button onclick="BookmarksManager.delete('${item.id || item.url}')" style="background:none;border:none;cursor:pointer;padding:6px;border-radius:8px;color:#94a3b8" title="删除">
+                        <i data-lucide="trash-2" style="width:15px;height:15px"></i>
+                    </button>
+                </div>`;
             list.appendChild(el);
         });
         if (typeof lucide !== 'undefined') lucide.createIcons();
@@ -1178,12 +1205,23 @@ const BookmarksManager = {
             return;
         }
         const lower = query.toLowerCase();
-        const filtered = this.data.filter(b => 
-            (b.title && b.title.toLowerCase().includes(lower)) || 
+        const filtered = this.data.filter(b =>
+            (b.title && b.title.toLowerCase().includes(lower)) ||
             (b.url && b.url.toLowerCase().includes(lower)) ||
             (b.category && b.category.toLowerCase().includes(lower))
         );
         this.render(filtered);
+    },
+    sort(mode) {
+        const items = [...this.data];
+        switch(mode) {
+            case 'newest': items.sort((a,b) => new Date(b.addedAt||0) - new Date(a.addedAt||0)); break;
+            case 'oldest': items.sort((a,b) => new Date(a.addedAt||0) - new Date(b.addedAt||0)); break;
+            case 'title': items.sort((a,b) => (a.title||'').localeCompare(b.title||'')); break;
+            case 'category': items.sort((a,b) => (a.category||'').localeCompare(b.category||'') || (a.subcategory||'').localeCompare(b.subcategory||'')); break;
+        }
+        this.data = items; bookmarks = items;
+        this.render();
     },
     async autoFetchTitle() {
         const urlInput = document.getElementById('bm-url');

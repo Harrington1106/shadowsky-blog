@@ -339,13 +339,22 @@
                     </div>
                     <div class="lg:col-span-2">
                         <div class="admin-card overflow-hidden">
-                            <div class="p-4 flex justify-between items-center" style="border-bottom:1px solid rgba(255,255,255,.05);background:rgba(255,255,255,.02)">
-                                <h3 class="font-semibold" style="color:inherit">收藏列表</h3>
+                            <div class="p-4 flex justify-between items-center flex-wrap gap-3" style="border-bottom:1px solid rgba(255,255,255,.05);background:rgba(255,255,255,.02)">
+                                <div class="flex items-center gap-3">
+                                    <h3 class="font-semibold" style="color:inherit">收藏列表</h3>
+                                    <span id="bm-count" style="font-size:.75rem;color:#94a3b8;background:rgba(255,255,255,.04);padding:2px 10px;border-radius:9999px">0</span>
+                                </div>
                                 <div class="flex gap-2 items-center">
-                                    <input type="text" placeholder="搜索..." oninput="BookmarksManager.filter(this.value)" class="admin-input w-44 py-1.5">
+                                    <select onchange="BookmarksManager.sort(this.value)" class="admin-input w-auto py-1.5" style="width:auto;font-size:.75rem" aria-label="排序方式">
+                                        <option value="newest">最新</option>
+                                        <option value="oldest">最早</option>
+                                        <option value="title">标题 A-Z</option>
+                                        <option value="category">分类</option>
+                                    </select>
+                                    <input type="text" placeholder="搜索标题/链接..." oninput="BookmarksManager.filter(this.value)" class="admin-input w-44 py-1.5" style="font-size:.8rem">
                                     <button onclick="BookmarksManager.fetch()" class="admin-btn admin-btn-secondary admin-btn-sm" title="刷新"><i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i></button>
-                                    <button onclick="BookmarksManager.checkAccessibility()" id="btn-check-access" class="admin-btn admin-btn-secondary admin-btn-sm" title="测试访问性"><i data-lucide="activity" class="w-3.5 h-3.5"></i></button>
-                                    <button onclick="BookmarksManager.deleteInvalid()" id="btn-delete-invalid" class="admin-btn admin-btn-danger admin-btn-sm" disabled title="删除无效"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+                                    <button onclick="BookmarksManager.checkAccessibility()" id="btn-check-access" class="admin-btn admin-btn-secondary admin-btn-sm" title="检测可访问性"><i data-lucide="activity" class="w-3.5 h-3.5"></i></button>
+                                    <button onclick="BookmarksManager.deleteInvalid()" id="btn-delete-invalid" class="admin-btn admin-btn-danger admin-btn-sm" disabled title="删除无效书签"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
                                 </div>
                             </div>
                             <div id="check-progress-container" class="hidden px-4 py-2" style="border-bottom:1px solid rgba(255,255,255,.05);background:rgba(255,255,255,.02)">
