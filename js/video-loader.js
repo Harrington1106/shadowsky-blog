@@ -217,7 +217,7 @@ class VideoLoader {
                  data-loader-id="${this.containerId}">
                 <div class="relative aspect-video bg-gray-900 rounded-xl overflow-hidden mb-4 border border-gray-200 dark:border-gray-800 group-hover:border-pink-500 dark:group-hover:border-pink-500 transition-all duration-500 shadow-md group-hover:shadow-xl group-hover:shadow-pink-500/20 group-hover:-translate-y-1 transform">
                     <img
-                        src="${thumbnailUrl}"
+                        src="/api/image-proxy.php?url=${encodeURIComponent(thumbnailUrl)}"
                         alt="${video.title}"
                         class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-90 group-hover:opacity-100"
                         loading="lazy"
