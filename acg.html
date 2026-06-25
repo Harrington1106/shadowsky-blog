@@ -17,7 +17,7 @@
     <!-- Design System -->
     <link href="css/unified.css?v=20260626e" rel="stylesheet">
     <link href="css/liquid-ambient.css?v=20260624v5" rel="stylesheet">
-    <link href="css/liquid-acg.css?v=2606251310" rel="stylesheet">
+    <link href="css/liquid-acg.css?v=2606260000" rel="stylesheet">
 
     <!-- Lucide Icons -->
     <script src="js/vendor/lucide.min.js?v=20260624v5"></script>
@@ -87,40 +87,36 @@
     <main class="acg-page">
 
         <header class="acg-hero">
-            <div class="acg-hero-kicker">✦ Anime · Manga · Video</div>
-            <h1>二次元<em>SPACE</em></h1>
-            <p>追番、漫画与我的 MAD/AMV 剪辑作品</p>
+            <div class="acg-hero-inner">
+                <div class="acg-hero-icon">🎬</div>
+                <h1>二次元 <em>SPACE</em></h1>
+                <p>追番、漫画与我的剪辑作品</p>
+                <div class="acg-hero-stats">
+                    <div class="acg-hero-stat"><div class="acg-hero-stat-num" id="stat-anime">—</div><div class="acg-hero-stat-lbl">追番</div></div>
+                    <div class="acg-hero-stat"><div class="acg-hero-stat-num" id="stat-manga">—</div><div class="acg-hero-stat-lbl">漫画</div></div>
+                    <div class="acg-hero-stat"><div class="acg-hero-stat-num" id="stat-videos">—</div><div class="acg-hero-stat-lbl">视频</div></div>
+                </div>
+            </div>
         </header>
 
         <section class="acg-section">
-            <div class="acg-sec-head">
-                <h2><span class="acg-sec-dot pink"></span>我的追番</h2>
-                <a href="anime.html" class="acg-sec-more">全部 <i data-lucide="arrow-right"></i></a>
-            </div>
-            <div id="home-anime-grid" class="acg-grid"><div class="acg-load"><div class="acg-spin"></div></div></div>
+            <div class="acg-sec-head"><h2><span class="acg-sec-dot pink"></span>我的追番</h2><a href="anime.html" class="acg-sec-more">全部 <i data-lucide="chevron-right"></i></a></div>
+            <div class="acg-row-wrap"><div id="home-anime-grid" class="acg-row"><div class="acg-load"><div class="acg-spin"></div></div></div></div>
         </section>
 
         <section class="acg-section">
-            <div class="acg-sec-head">
-                <h2><span class="acg-sec-dot orange"></span>我的漫画</h2>
-                <a href="manga.html" class="acg-sec-more">全部 <i data-lucide="arrow-right"></i></a>
-            </div>
-            <div id="home-manga-grid" class="acg-grid"><div class="acg-load"><div class="acg-spin"></div></div></div>
+            <div class="acg-sec-head"><h2><span class="acg-sec-dot orange"></span>我的漫画</h2><a href="manga.html" class="acg-sec-more">全部 <i data-lucide="chevron-right"></i></a></div>
+            <div id="home-manga-grid" class="acg-grid-full"><div class="acg-load"><div class="acg-spin"></div></div></div>
         </section>
 
         <section class="acg-section">
-            <div class="acg-sec-head">
-                <h2><span class="acg-sec-dot red"></span>最新剪辑</h2>
-                <a href="edits.html" class="acg-sec-more">全部 <i data-lucide="arrow-right"></i></a>
-            </div>
-            <div id="video-grid" data-limit="6" class="acg-video-grid"><div class="acg-load"><div class="acg-spin"></div></div></div>
+            <div class="acg-sec-head"><h2><span class="acg-sec-dot red"></span>最新剪辑</h2><a href="edits.html" class="acg-sec-more">全部 <i data-lucide="chevron-right"></i></a></div>
+            <div class="acg-row-wrap"><div id="video-grid" data-limit="6" class="acg-row"><div class="acg-load"><div class="acg-spin"></div></div></div></div>
         </section>
 
         <section class="acg-section">
-            <div class="acg-sec-head">
-                <h2><span class="acg-sec-dot purple"></span>收藏视频</h2>
-            </div>
-            <div id="favorite-video-grid" class="acg-video-grid"><div class="acg-load"><div class="acg-spin"></div></div></div>
+            <div class="acg-sec-head"><h2><span class="acg-sec-dot purple"></span>收藏视频</h2></div>
+            <div class="acg-row-wrap"><div id="favorite-video-grid" class="acg-row"><div class="acg-load"><div class="acg-spin"></div></div></div></div>
         </section>
 
     </main>
