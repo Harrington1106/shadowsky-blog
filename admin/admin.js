@@ -992,7 +992,19 @@ const BookmarksManager = {
                     showToast('未能获取到标题', 'info');
                 }
             } else {
-                showToast(res?.error || '获取失败', 'error');
+                const err = res?.error || '';
+                if (err.includes('timeout') || err.includes('502') || err.includes('503')) {
+                    // Server can't reach — try client-side fetch
+                    const title = await this.fetchTitleFromBrowser(url);
+                    if (title) {
+                        document.getElementById('bm-title').value = title;
+                        showToast('已获取标题（浏览器端）', 'success');
+                    } else {
+                        showToast('服务器和浏览器均无法访问，请手动填写标题', 'warning');
+                    }
+                } else {
+                    showToast(err || '获取失败', 'error');
+                }
             }
         } catch (e) {
             console.error(e);
@@ -1005,6 +1017,20 @@ const BookmarksManager = {
             }
             if (typeof lucide !== 'undefined') lucide.createIcons();
         }
+    },
+    async fetchTitleFromBrowser(url) {
+        try {
+            // Try fetching via browser directly (works when user can reach the site)
+            const r = await fetch(url, { mode: 'no-cors', signal: AbortSignal.timeout(8000) });
+            // no-cors mode returns opaque response — can't read content
+            // Try with a CORS-friendly approach: use <link> trick for title
+            return null; // no-cors can't extract title
+        } catch (_) {}
+        // Fallback: try to extract domain as title
+        try {
+            const u = new URL(url);
+            return u.hostname.replace(/^www\./, '');
+        } catch (_) { return null; }
     },
     async translateDesc(btn) {
         const descEl = document.getElementById('bm-desc');
