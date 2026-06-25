@@ -70,9 +70,10 @@ a.nav-link:hover::after,a.nav-link.active::after{width:60%}
 /* ═══════ RESET ═══════ */
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 html{
-  -webkit-text-size-adjust:100%;text-size-adjust:100%;font-size:16px;scroll-behavior:auto;
+  -webkit-text-size-adjust:100%;text-size-adjust:100%;font-size:16px;scroll-behavior:auto;height:100%;
   scrollbar-width:none;-ms-overflow-style:none;
 }
+body{min-height:100dvh;display:flex;flex-direction:column}
 html::-webkit-scrollbar{display:none;}
 body{
   font-family:var(--pr-font-sans) !important;
@@ -726,11 +727,12 @@ html:not(.dark) #navbar .nav-links .theme-toggle{color:rgba(51,65,85,.6);}
    ═══════════════════════════════════════════════════════ */
 footer, .site-footer{
   display:flex;align-items:center;justify-content:center;
-  gap:14px;padding:14px 24px;font-size:.72rem;flex-shrink:0;z-index:1;
+  gap:14px;padding:14px 24px;font-size:.72rem;flex-shrink:0;z-index:5;position:relative;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  background:var(--glass-bg, rgba(255,255,255,.55));
   backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
   border-top:1px solid var(--glass-border, rgba(0,0,0,.06));
-  margin-top:60px;transition:all .5s ease;
+  margin-top:auto;transition:all .5s ease;
 }
 .dark footer, .dark .site-footer{color:rgba(255,255,255,.45);border-top-color:rgba(255,255,255,.06)}
 html:not(.dark) footer, html:not(.dark) .site-footer{color:rgba(15,23,42,.4);border-top-color:rgba(0,0,0,.05)}
