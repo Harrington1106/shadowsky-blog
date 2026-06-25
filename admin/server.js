@@ -1474,9 +1474,15 @@ app.get('/api/debug/token', (req, res) => {
 
 // Serve static files
 app.use(express.static(path.join(__dirname, '..'), {
-    setHeaders: (res, path) => {
-        if (path.endsWith('.js')) {
+    setHeaders: (res, filePath) => {
+        if (filePath.endsWith('.js')) {
             res.setHeader('Content-Type', 'application/javascript');
+        }
+        // Prevent caching of admin HTML/JS to avoid stale code
+        if (filePath.endsWith('.html') || filePath.includes('/admin/')) {
+            res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+            res.setHeader('Pragma', 'no-cache');
+            res.setHeader('Expires', '0');
         }
     }
 }));
