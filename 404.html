@@ -478,6 +478,12 @@
 
             function edge(p) { return p.x===0||p.x===GRID-1||p.y===0||p.y===GRID-1; }
 
+            /* ── 检查猫是否被围困（无路可达边缘）── */
+            function checkTrapped() {
+                if (!bfs(catPos)) { end('catcher_win'); return true; }
+                return false;
+            }
+
             /* ── BFS 寻路：返回最短路径（到最近边缘）── */
             function bfs(start) {
                 const q = [{x:start.x,y:start.y,path:[]}];
@@ -540,7 +546,8 @@
                 }
                 moveCount++;
                 updateRoleUI();
-                draw(); isAiTurn = false;
+                draw();
+                if (!checkTrapped()) isAiTurn = false;
             }
 
             /* ── 拦截 AI：1-ply 前瞻，选最优拦截点 ── */
@@ -582,10 +589,11 @@
 
                 if (tgt && !dots[tgt.y][tgt.x].blocked) {
                     dots[tgt.y][tgt.x].blocked = true;
-                    if (!getNb(catPos.x,catPos.y).filter(n=>!dots[n.y][n.x].blocked).length) end('catcher_win');
                 }
                 updateRoleUI();
-                draw(); isAiTurn = false;
+                draw();
+                if (!checkTrapped() && !getNb(catPos.x,catPos.y).filter(n=>!dots[n.y][n.x].blocked).length) end('catcher_win');
+                if (gameState === 'playing') isAiTurn = false;
             }
 
             function end(result) {
@@ -618,14 +626,16 @@
                     const d = dots[gp.y][gp.x];
                     if (!d.blocked && (gp.x!==catPos.x||gp.y!==catPos.y)) {
                         d.blocked = true; draw();
-                        if (!getNb(catPos.x,catPos.y).filter(n=>!dots[n.y][n.x].blocked).length) end('catcher_win');
-                        else { isAiTurn = true; setTimeout(aiCat, 180); }
+                        if (!checkTrapped()) {
+                            if (!getNb(catPos.x,catPos.y).filter(n=>!dots[n.y][n.x].blocked).length) end('catcher_win');
+                            else { isAiTurn = true; setTimeout(aiCat, 180); }
+                        }
                     }
                 } else {
                     if (getNb(catPos.x, catPos.y).some(n=>n.x===gp.x&&n.y===gp.y) && !dots[gp.y][gp.x].blocked) {
                         catPos = gp; moveCount++; updateRoleUI(); draw();
                         if (edge(catPos)) end('cat_win');
-                        else { isAiTurn = true; setTimeout(aiBlock, 180); }
+                        else if (!checkTrapped()) { isAiTurn = true; setTimeout(aiBlock, 180); }
                     }
                 }
             });
