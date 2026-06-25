@@ -58,7 +58,7 @@ body{margin:0;background:var(--bg);color:var(--tx);font-family:'Inter','Noto San
 .about-social a{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;
   color:var(--t3);transition:all .15s;text-decoration:none}
 .about-social a:hover{background:var(--glass);color:var(--accent)}
-.about-social svg{width:18px;height:18px}
+.about-social svg{width:20px;height:20px}
 
 /* ═══ Closing ═══ */
 .about-closing{text-align:center;font-size:.85rem;color:var(--t3);line-height:1.7;margin-bottom:8px}
