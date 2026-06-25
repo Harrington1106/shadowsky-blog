@@ -33,21 +33,25 @@ body{margin:0;background:var(--bg);color:var(--tx);font-family:'Inter','Noto San
 @media(min-width:768px){.acg-vgrid{grid-template-columns:repeat(2,1fr)}}
 @media(min-width:1100px){.acg-vgrid{grid-template-columns:repeat(3,1fr);gap:24px}}
 
-/* ── 强制圆角 — 命中 JS 生成的所有元素 ── */
-.acg-grid *, .acg-vgrid *,
-#home-anime-grid *, #home-manga-grid *, #video-grid *, #favorite-video-grid * {
+/* ── 强制圆角 — 只命中容器和图片 ── */
+.acg-grid .media-item,
+.acg-grid .glass-card,
+.acg-grid [class*="rounded"],
+.acg-grid img:not(.rounded-full),
+.acg-vgrid .glass-card,
+.acg-vgrid [class*="rounded"],
+.acg-vgrid img:not(.rounded-full),
+#home-anime-grid .media-item,
+#home-anime-grid .glass-card,
+#home-anime-grid img,
+#home-manga-grid .media-item,
+#home-manga-grid .glass-card,
+#home-manga-grid img,
+#video-grid .glass-card,
+#video-grid img,
+#favorite-video-grid .glass-card,
+#favorite-video-grid img {
   border-radius:10px !important;
-}
-/* 圆形保持 */
-.acg-grid .rounded-full, .acg-vgrid .rounded-full,
-#home-anime-grid .rounded-full, #home-manga-grid .rounded-full,
-#video-grid .rounded-full, #favorite-video-grid .rounded-full {
-  border-radius:9999px !important;
-}
-/* 小元素 */
-.acg-grid .text-xs, .acg-grid .text-\[10px\], .acg-vgrid .text-xs,
-.acg-grid [class*="px-2"], .acg-vgrid [class*="px-"] {
-  border-radius:6px !important;
 }
 
 /* ── Loading ── */
