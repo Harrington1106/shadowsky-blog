@@ -349,7 +349,7 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             await new Promise(resolve => setTimeout(resolve, 600));
 
-            // 1. Fetch Local Data - DISABLED to prioritize real-time GitHub Issues
+            // 1. Fetch Local Data — admin 管理的主要数据源
             let localMoments = [];
 
             try {
@@ -362,92 +362,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
 
-            // 2. Fetch GitHub Issues (Primary Source)
-            const GITHUB_USERNAME = 'Harrington1106';
-            const GITHUB_REPO = 'blog-add';
-
-            let githubMoments = [];
-
-            // Always fetch from API for real-time updates
-            if (GITHUB_USERNAME !== 'your-username') {
-                try {
-                    const githubResponse = await fetch(`https://api.github.com/repos/${GITHUB_USERNAME}/${GITHUB_REPO}/issues?labels=moment&state=open&sort=created&direction=desc&per_page=100`);
-                    if (githubResponse.ok) {
-                        const issues = await githubResponse.json();
-                        githubMoments = issues.map(issue => {
-                            let image = null;
-
-                            // 1) 优先解析 Markdown 图片语法
-                            let imgMatch = issue.body.match(/!\[.*?\]\((.*?)\)/);
-
-                            // 2) 其次解析 HTML <img> 标签
-                            if (!imgMatch) {
-                                const htmlImgMatch = issue.body.match(/<img[^>]*src=["'](.*?)["'][^>]*>/i);
-                                if (htmlImgMatch) {
-                                    imgMatch = htmlImgMatch;
-                                }
-                            }
-
-                            // 3) 再尝试匹配正文中的裸露图片链接（带常见图片扩展名）
-                            if (!imgMatch) {
-                                const urlImgMatch = issue.body.match(/https?:\/\/[^\s)"'>]+\.(?:png|jpe?g|gif|webp)/i);
-                                if (urlImgMatch) {
-                                    imgMatch = urlImgMatch;
-                                }
-                            }
-
-                            // 4) 特判 GitHub user-attachments 资源（没有扩展名）
-                            if (!imgMatch) {
-                                const attachMatch = issue.body.match(/https?:\/\/github\.com\/user-attachments\/assets\/[0-9a-f-]+/i);
-                                if (attachMatch) {
-                                    imgMatch = attachMatch;
-                                }
-                            }
-
-                            if (imgMatch) {
-                                image = imgMatch[1] || imgMatch[0];
-                            }
-
-                            // Remove image-related syntax from content to avoid duplication
-                            let content = issue.body
-                                .replace(/!\[.*?\]\(.*?\)/g, '')
-                                .replace(/<img.*?>/g, '')
-                                .trim();
-
-                            if (image) {
-                                content = content.replace(image, '');
-                            }
-
-                            // Parse tags (lines starting with # or words starting with #)
-                            const tags = [];
-                            const tagMatches = content.match(/#[\w\u4e00-\u9fa5]+/g);
-                            if (tagMatches) {
-                                tags.push(...tagMatches.map(t => t.substring(1)));
-                                content = content.replace(/#[\w\u4e00-\u9fa5]+/g, '');
-                            }
-
-                            return {
-                                id: `gh-${issue.number}`,
-                                date: issue.created_at,
-                                content: content,
-                                image: image,
-                                location: issue.title,
-                                tags: tags,
-                                fromGithub: true
-                            };
-                        });
-                    }
-                } catch (ghError) {
-                    console.warn('Failed to fetch GitHub moments:', ghError);
-                }
-            }
-
-            // 3. Merge and Sort
-            // Filter out duplicates if both sources are used (based on ID or content)
-            const localIds = new Set(localMoments.map(m => m.id));
-            const newGithubMoments = githubMoments.filter(m => !localIds.has(m.id));
-
-            allMoments = [...newGithubMoments, ...localMoments];
+                        // 2. 本地数据为唯一数据源（与 admin 同一来源，增删即时生效）
+            allMoments = Array.isArray(localMoments) ? [...localMoments] : [];
 
             // Sort by date descending
             allMoments.sort((a, b) => safeDate(b.date) - safeDate(a.date));
