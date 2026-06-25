@@ -742,9 +742,7 @@ footer a:hover, .site-footer a:hover{color:var(--color-primary)}
 footer .footer-dot, .site-footer .footer-dot{opacity:.3;margin:0 2px;flex-shrink:0}
 footer .visit-count, .site-footer .visit-count{display:inline-flex;align-items:center;gap:6px;font-weight:600;font-size:.75rem;color:inherit;flex-shrink:0}
 footer .pulse-dot, .site-footer .pulse-dot{width:6px;height:6px;border-radius:50%;background:#22c55e;animation:pulse 2s ease-in-out infinite;flex-shrink:0}
-footer .footer-heart, .site-footer .footer-heart{color:#ef4444;margin:0 2px;display:inline-block;animation:pulse 1.5s ease-in-out infinite}
-  background:#22c55e;flex-shrink:0;
-}
+footer .footer-heart, .site-footer .footer-heart{color:#ef4444;margin:0 2px;display:inline-block;animation:pulse 1.5s ease-in-out infinite;flex-shrink:0}
 .dark footer .pulse-dot, .dark .site-footer .pulse-dot{box-shadow:0 0 8px rgba(34,197,94,.6)}
 html:not(.dark) footer .pulse-dot, html:not(.dark) .site-footer .pulse-dot{box-shadow:0 0 6px rgba(34,197,94,.4)}
 @media(prefers-reduced-motion:no-preference){

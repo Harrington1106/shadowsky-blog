@@ -343,7 +343,20 @@ html:not(.dark) .tag-pill:hover {
 
 @keyframes tagPop { to { opacity: 1; transform: translateY(0); } }
 
-/* ── 底栏 — 使用 unified.css .site-footer 统一底栏 ── */
+/* ── 底栏 — 位于 .home-stage 内部底部，覆写 unified.css 的 margin-top:auto ── */
+.home-stage > .site-footer {
+    margin-top: 0;
+    flex-shrink: 0;
+}
+/* 兜底：若 footer 是 body 直接子元素（旧结构），固定于视口底部 */
+.homepage-cover-page > .site-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin-top: 0;
+    z-index: 10;
+}
 .home-footer { padding: 6px var(--sp-4); }
 @media (max-width: 640px) {
   .tag-pills {
