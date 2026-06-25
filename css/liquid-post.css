@@ -79,9 +79,13 @@ body { background: var(--bg); color: var(--rs-text-body); }
 .post-hero-back { display: inline-flex; align-items: center; gap: 6px; font-size: .8rem; color: rgba(255,255,255,.7); text-decoration: none; padding: 6px 14px; border-radius: 20px; background: rgba(255,255,255,.08); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,.1); margin-bottom: 20px; transition: all .2s; }
 .post-hero-back:hover { background: rgba(255,255,255,.15); color: #fff; }
 .post-hero-back svg { width: 15px; height: 15px; }
-.post-hero-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; font-size: .8rem; color: rgba(255,255,255,.6); margin-bottom: 14px; }
+.post-hero-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-size: .78rem; color: rgba(255,255,255,.6); margin-bottom: 14px; }
 .post-hero-meta-item { display: inline-flex; align-items: center; gap: 4px; }
-.post-hero-meta-item svg { width: 14px; height: 14px; opacity: .7; }
+.post-hero-meta-item svg { width: 13px; height: 13px; opacity: .6; }
+.post-hero-meta-item a { color: rgba(255,255,255,.6); text-decoration: none; transition: color .15s; }
+.post-hero-meta-item a:hover { color: #fff; }
+.post-hero-meta-item + .post-hero-meta-item::before { content: '·'; margin-right: 6px; opacity: .4; }
+.post-hero-meta-sep { color: rgba(255,255,255,.3); margin: 0 2px; }
 .post-hero-title { font-size: clamp(1.6rem, 4vw, 2.6rem); font-weight: 800; color: #fff; line-height: 1.2; letter-spacing: -.01em; margin-bottom: 16px; }
 .post-hero-tags { display: flex; flex-wrap: wrap; gap: 8px; }
 .post-tag { font-size: .72rem; padding: 4px 12px; border-radius: 20px; background: rgba(255,255,255,.12); color: rgba(255,255,255,.8); border: 1px solid rgba(255,255,255,.1); backdrop-filter: blur(4px); }

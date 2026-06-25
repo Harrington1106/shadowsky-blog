@@ -416,16 +416,10 @@
             }
 
             postMeta.innerHTML = `
-                <span class="flex items-center"><i data-lucide="calendar" class="w-4 h-4 mr-1"></i> ${dateLinkHtml}</span>
-                <span class="mx-2 text-gray-400">•</span>
-                <span class="flex items-center"><i data-lucide="folder" class="w-4 h-4 mr-1"></i> ${category}</span>
-                <span class="mx-2 text-gray-400">•</span>
-                <span class="flex items-center"><i data-lucide="clock" class="w-4 h-4 mr-1"></i> ${readingTime} 分钟阅读</span>
-                <span class="mx-2 text-gray-400">•</span>
-                <span class="flex items-center" title="阅读量">
-                    <i data-lucide="eye" class="w-4 h-4 mr-1"></i> 
-                    <span id="post-visit-count" class="min-w-[1rem] text-center inline-block">...</span>
-                </span>
+                <span class="post-hero-meta-item"><i data-lucide="calendar"></i> ${dateLinkHtml}</span>
+                <span class="post-hero-meta-item"><i data-lucide="folder"></i> ${category}</span>
+                <span class="post-hero-meta-item"><i data-lucide="clock"></i> ${readingTime} 分钟阅读</span>
+                <span class="post-hero-meta-item" title="阅读量"><i data-lucide="eye"></i> <span id="post-visit-count">...</span></span>
             `;
 
             // Fetch visit count asynchronously
@@ -474,11 +468,7 @@
                     tags = cleaned.split(/,\s*/).filter(t => t);
                 }
                 
-                postTags.innerHTML = tags.map(tag => `
-                    <span class="px-2 py-1 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 text-xs rounded-full">
-                        #${tag}
-                    </span>
-                `).join('');
+                postTags.innerHTML = tags.map(tag => `<span class="post-tag">#${tag}</span>`).join('');
             }
 
             // Render Image
