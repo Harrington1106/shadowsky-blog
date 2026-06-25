@@ -17,7 +17,7 @@
     <!-- Design System -->
     <link href="css/unified.css?v=20260626e" rel="stylesheet">
     <link href="css/liquid-ambient.css?v=20260624v5" rel="stylesheet">
-    <link href="css/liquid-acg.css?v=2606251100" rel="stylesheet">
+    <link href="css/liquid-acg.css?v=2606251200" rel="stylesheet">
 
     <!-- Lucide Icons -->
     <script src="js/vendor/lucide.min.js?v=20260624v5"></script>
@@ -84,55 +84,43 @@
 
     <!-- ═══════════ MAIN CONTENT ═══════════ -->
     <!-- ═══════════ MAIN ═══════════ -->
-    <main class="acg-shell">
+    <main class="acg-page">
 
-        <div class="acg-hero">
-            <div class="acg-hero-label">ACG Hub</div>
-            <h1 class="acg-hero-title">ACG <span>SPACE</span></h1>
-            <p class="acg-hero-desc">追番、漫画与我的剪辑作品</p>
-        </div>
+        <header class="acg-hero">
+            <div class="acg-hero-kicker">✦ Anime · Manga · Video</div>
+            <h1>二次元<em>SPACE</em></h1>
+            <p>追番、漫画与我的 MAD/AMV 剪辑作品</p>
+        </header>
 
-        <!-- 追番 -->
         <section class="acg-section">
-            <div class="acg-section-header">
-                <h2><span class="acg-accent-bar pink"></span>我的追番</h2>
-                <a href="anime.html" class="acg-view-all">查看全部 <i data-lucide="chevron-right"></i></a>
+            <div class="acg-sec-head">
+                <h2><span class="acg-sec-dot pink"></span>我的追番</h2>
+                <a href="anime.html" class="acg-sec-more">全部 <i data-lucide="arrow-right"></i></a>
             </div>
-            <div id="home-anime-grid" class="acg-media-grid">
-                <div class="acg-loading"><div class="acg-spinner"></div></div>
-            </div>
+            <div id="home-anime-grid" class="acg-grid"><div class="acg-load"><div class="acg-spin"></div></div></div>
         </section>
 
-        <!-- 漫画 -->
         <section class="acg-section">
-            <div class="acg-section-header">
-                <h2><span class="acg-accent-bar orange"></span>我的漫画</h2>
-                <a href="manga.html" class="acg-view-all">查看全部 <i data-lucide="chevron-right"></i></a>
+            <div class="acg-sec-head">
+                <h2><span class="acg-sec-dot orange"></span>我的漫画</h2>
+                <a href="manga.html" class="acg-sec-more">全部 <i data-lucide="arrow-right"></i></a>
             </div>
-            <div id="home-manga-grid" class="acg-media-grid">
-                <div class="acg-loading"><div class="acg-spinner"></div></div>
-            </div>
+            <div id="home-manga-grid" class="acg-grid"><div class="acg-load"><div class="acg-spin"></div></div></div>
         </section>
 
-        <!-- 最新发布 -->
         <section class="acg-section">
-            <div class="acg-section-header">
-                <h2><span class="acg-accent-bar red"></span>最新发布</h2>
-                <a href="edits.html" class="acg-view-all">查看全部 <i data-lucide="chevron-right"></i></a>
+            <div class="acg-sec-head">
+                <h2><span class="acg-sec-dot red"></span>最新剪辑</h2>
+                <a href="edits.html" class="acg-sec-more">全部 <i data-lucide="arrow-right"></i></a>
             </div>
-            <div id="video-grid" data-limit="6" class="acg-video-grid">
-                <div class="acg-loading"><div class="acg-spinner"></div></div>
-            </div>
+            <div id="video-grid" data-limit="6" class="acg-video-grid"><div class="acg-load"><div class="acg-spin"></div></div></div>
         </section>
 
-        <!-- 收藏视频 -->
         <section class="acg-section">
-            <div class="acg-section-header">
-                <h2><span class="acg-accent-bar purple"></span>我的收藏视频</h2>
+            <div class="acg-sec-head">
+                <h2><span class="acg-sec-dot purple"></span>收藏视频</h2>
             </div>
-            <div id="favorite-video-grid" class="acg-video-grid">
-                <div class="acg-loading"><div class="acg-spinner"></div></div>
-            </div>
+            <div id="favorite-video-grid" class="acg-video-grid"><div class="acg-load"><div class="acg-spin"></div></div></div>
         </section>
 
     </main>
