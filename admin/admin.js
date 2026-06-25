@@ -1263,6 +1263,34 @@ const BookmarksManager = {
             if (typeof lucide !== 'undefined') lucide.createIcons();
         }
     },
+    async translateDesc() {
+        const descEl = document.getElementById('bm-desc');
+        const text = descEl.value.trim();
+        if (!text) return showToast('请先获取或输入描述内容', 'warning');
+        const cjk = (text.match(/[一-鿿]/g)||[]).length;
+        if (cjk / text.length > 0.5) return showToast('描述似乎已是中文', 'info');
+
+        const btn = event.target.closest('button');
+        const orig = btn.innerHTML; btn.innerHTML = '<i data-lucide="loader-2" style="width:12px;height:12px;animation:spin 1s linear infinite"></i>';
+        btn.disabled = true; if (typeof lucide !== 'undefined') lucide.createIcons();
+
+        try {
+            const s = JSON.parse(localStorage.getItem('ai_settings')||'{}');
+            if (!s.apiKey) throw new Error('请在RSS页面配置AI翻译 (设置→AI翻译)');
+            const r = await fetch(`${s.baseUrl||'https://api.deepseek.com/v1'}/chat/completions`, {
+                method:'POST', headers:{'Authorization':`Bearer ${s.apiKey}`,'Content-Type':'application/json'},
+                body:JSON.stringify({model:s.model||'deepseek-chat',messages:[
+                    {role:'system',content:'将以下内容翻译成简体中文，只返回译文。'},
+                    {role:'user',content:text}
+                ],temperature:0.3})
+            });
+            if (!r.ok) throw new Error(`HTTP ${r.status}`);
+            descEl.value = (await r.json()).choices[0].message.content.trim();
+            showToast('翻译完成', 'success');
+        } catch(e) { showToast('翻译失败: '+e.message, 'error'); }
+        btn.innerHTML = orig; btn.disabled = false;
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+    },
     async checkAccessibility() {
         const btn = document.getElementById('btn-check-access');
         const delBtn = document.getElementById('btn-delete-invalid');
