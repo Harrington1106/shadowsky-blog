@@ -82,13 +82,13 @@
 
         /* 游戏卡片 */
         .error-game-card {
-            max-width: 440px;
+            max-width: 500px;
             width: 100%;
             margin-left: auto;
             margin-right: auto;
-            padding: 16px 16px 12px;
+            padding: 14px 14px 10px;
             border-radius: var(--radius-xl, 24px);
-            margin-bottom: 36px;
+            margin-bottom: 0;
         }
         .error-game-card::after {
             opacity: 0.35;
@@ -195,37 +195,6 @@
         }
         .error-game-msg.show span {
             transform: scale(1);
-        }
-
-        /* CTA 按钮 */
-        .error-cta {
-            margin-top: 0;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 12px 28px;
-            border-radius: var(--radius-full, 9999px);
-            background: var(--color-primary, #0D9488);
-            color: #fff;
-            font-size: var(--text-base, 1rem);
-            font-weight: 600;
-            text-decoration: none;
-            cursor: pointer;
-            transition: all 0.25s ease;
-            box-shadow: 0 4px 20px rgba(20,184,166,.3);
-        }
-        .error-cta:hover {
-            background: var(--color-primary-hover, #0F766E);
-            box-shadow: 0 8px 30px rgba(20,184,166,.45);
-            transform: translateY(-1px);
-            color: #fff;
-        }
-        .error-cta i, .error-cta svg {
-            width: 18px; height: 18px;
-            transition: transform 0.25s ease;
-        }
-        .error-cta:hover i, .error-cta:hover svg {
-            transform: translateX(-3px);
         }
 
         /* ── Responsive ── */
@@ -341,11 +310,6 @@
             </div>
         </div>
 
-        <!-- 返回首页 CTA -->
-        <a href="index.html" class="error-cta fade-in stagger-4">
-            <i data-lucide="arrow-left"></i>
-            返回首页
-        </a>
     </main>
 
     <!-- ═══════ FOOTER ═══════ -->
