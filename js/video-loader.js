@@ -222,7 +222,7 @@ class VideoLoader {
                         class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-90 group-hover:opacity-100"
                         loading="lazy"
                         referrerpolicy="no-referrer"
-                        onerror="this.onerror=null; this.src='/img/default-book.jpg';"
+                        onerror="this.onerror=null; this.style.display='none';"
                     >
                     <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity duration-300"></div>
 
