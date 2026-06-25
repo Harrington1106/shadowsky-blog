@@ -557,20 +557,24 @@ async function initBookmarksPage() {
         
         // ── 分类栏 & 标签行 鼠标拖拽滚动 ──
         let dragState = null;
+        const DRAG_THRESHOLD = 5;
         document.addEventListener('mousedown', (e) => {
             const scrollEl = e.target.closest('.bm-cat-nav, .bm-card-tags');
-            if (!scrollEl || scrollEl.scrollWidth <= scrollEl.clientWidth + 2) return;
+            if (!scrollEl) return;
             dragState = {
                 el: scrollEl,
                 startX: e.clientX,
-                scrollStart: scrollEl.scrollLeft
+                scrollStart: scrollEl.scrollLeft,
+                moved: false
             };
-            scrollEl.classList.add('dragging');
         });
         document.addEventListener('mousemove', (e) => {
             if (!dragState) return;
-            const dx = e.clientX - dragState.startX;
-            dragState.el.scrollLeft = dragState.scrollStart - dx;
+            const dx = Math.abs(e.clientX - dragState.startX);
+            if (dx < DRAG_THRESHOLD) return;
+            dragState.moved = true;
+            dragState.el.classList.add('dragging');
+            dragState.el.scrollLeft = dragState.scrollStart - (e.clientX - dragState.startX);
         });
         document.addEventListener('mouseup', () => {
             if (dragState) {
