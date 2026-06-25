@@ -133,7 +133,7 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
 .w-3{width:12px}.h-3{height:12px}.w-3\.5{width:14px}.h-3\.5{height:14px}.w-4{width:16px}.h-4{height:16px}.w-5{width:20px}.h-5{height:20px}.w-6{width:24px}.h-6{height:24px}.w-8{width:32px}.h-8{height:32px}.w-12{width:48px}.h-12{height:48px}
 .relative{position:relative}.absolute{position:absolute}.fixed{position:fixed}.inset-0{inset:0}.top-2{top:8px}.right-2{right:8px}.bottom-0{bottom:0}.bottom-3{bottom:12px}.left-0{left:0}.left-3{left:12px}.right-3{right:12px}
 .object-cover{object-fit:cover}.overflow-hidden{overflow:hidden}
-.z-10{z-index:10}.z-20{z-index:20}.z-40{z-index:40}.z-50{z-index:50}
+.z-10{z-index:10}.z-20{z-index:20}.z-40{z-index:40}.z-50{z-index:50}.z-\[100\]{z-index:100}
 .transition{transition:all .2s}.transition-all{transition:all .2s}.transition-colors{transition:color .15s,background .15s}.transition-transform{transition:transform .2s}
 .duration-200{transition-duration:.2s}.duration-300{transition-duration:.3s}.duration-500{transition-duration:.5s}.duration-700{transition-duration:.7s}
 .opacity-0{opacity:0}.opacity-50{opacity:.5}.opacity-60{opacity:.6}.opacity-100{opacity:1}
