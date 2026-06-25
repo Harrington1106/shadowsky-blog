@@ -29,11 +29,11 @@
         /* 404 数字 — 等宽字体 + 渐变 + 光晕 */
         .error-code {
             font-family: 'JetBrains Mono', var(--pr-font-mono);
-            font-size: clamp(6rem, 18vw, 12rem);
+            font-size: clamp(3.5rem, 10vw, 7rem);
             font-weight: 700;
-            letter-spacing: -0.04em;
-            line-height: 0.9;
-            margin-bottom: var(--sp-2, 8px);
+            letter-spacing: -0.03em;
+            line-height: 1;
+            margin-bottom: 4px;
             background: linear-gradient(135deg, var(--pr-aqua-400, #2DD4BF), var(--pr-cyan-400, #22D3EE));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -47,47 +47,47 @@
         .error-kicker {
             display: inline-flex;
             align-items: center;
-            gap: 0.5rem;
-            padding: 0.35rem 0.9rem;
+            gap: 0.4rem;
+            padding: 0.25rem 0.7rem;
             border-radius: var(--radius-full, 9999px);
             border: 1px solid var(--glass-depth-2-border, rgba(255,255,255,.07));
             background: var(--glass-depth-2-bg, rgba(15,23,42,.55));
             backdrop-filter: blur(20px) saturate(1.3);
             -webkit-backdrop-filter: blur(20px) saturate(1.3);
             color: var(--color-text-muted, #94A3B8);
-            font-size: 0.68rem;
+            font-size: 0.62rem;
             font-weight: 600;
-            letter-spacing: 0.18em;
+            letter-spacing: 0.15em;
             text-transform: uppercase;
-            margin-bottom: var(--sp-6, 24px);
+            margin-bottom: 12px;
         }
 
         /* 描述文字 */
         .error-desc {
-            max-width: 460px;
+            max-width: 420px;
             width: 100%;
             margin-left: auto;
             margin-right: auto;
             text-align: center;
             color: var(--color-text-secondary, #94A3B8);
-            font-size: var(--text-lg, 1.125rem);
-            line-height: var(--leading-relaxed, 1.625);
-            margin-bottom: var(--sp-2, 8px);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-bottom: 2px;
         }
         .error-hint {
             color: var(--color-text-muted, #64748B);
-            font-size: var(--text-sm, 0.875rem);
-            margin-bottom: var(--sp-10, 40px);
+            font-size: 0.78rem;
+            margin-bottom: 18px;
         }
 
         /* 游戏卡片 */
         .error-game-card {
-            max-width: 500px;
+            max-width: 400px;
             width: 100%;
             margin-left: auto;
             margin-right: auto;
-            padding: 14px 14px 10px;
-            border-radius: var(--radius-xl, 24px);
+            padding: 10px 12px 8px;
+            border-radius: var(--radius-lg, 16px);
             margin-bottom: 0;
         }
         .error-game-card::after {
@@ -99,25 +99,25 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 6px;
+            margin-bottom: 3px;
             flex-wrap: wrap;
-            gap: var(--sp-2, 8px);
+            gap: 4px;
         }
         .error-game-role {
-            font-size: var(--text-xs, 0.75rem);
+            font-size: 0.68rem;
             color: var(--color-text-muted, #94A3B8);
             font-weight: 500;
         }
         .error-game-pill {
             display: inline-flex;
             align-items: center;
-            gap: 4px;
-            padding: 5px 12px;
+            gap: 3px;
+            padding: 3px 10px;
             border-radius: var(--radius-full, 9999px);
             border: 1px solid var(--color-border, rgba(255,255,255,.08));
             background: var(--glass-depth-3-bg, rgba(17,24,39,.65));
             color: var(--color-text-secondary, #94A3B8);
-            font-size: var(--text-xs, 0.75rem);
+            font-size: 0.68rem;
             font-weight: 500;
             cursor: pointer;
             transition: all 0.2s ease;
@@ -142,9 +142,9 @@
         .error-game-instruction {
             text-align: center;
             color: var(--color-text-secondary, #94A3B8);
-            font-size: var(--text-sm, 0.875rem);
+            font-size: 0.72rem;
             font-weight: 500;
-            margin-bottom: 8px;
+            margin-bottom: 4px;
         }
 
         /* 画布容器 */
@@ -199,12 +199,10 @@
 
         /* ── Responsive ── */
         @media (max-width: 640px) {
-            .error-code { font-size: clamp(3.5rem, 22vw, 5.5rem); }
-            .error-desc { font-size: var(--text-base, 1rem); max-width: 320px; }
-            .error-game-card { padding: var(--sp-4, 16px); max-width: calc(100vw - 32px); }
-            .error-links { gap: 6px; }
-            .error-link { padding: 6px 12px; font-size: 0.8rem; }
-            .error-kicker { font-size: 0.6rem; padding: 0.3rem 0.7rem; }
+            .error-code { font-size: clamp(3rem, 18vw, 5rem); }
+            .error-desc { font-size: 0.82rem; max-width: 300px; }
+            .error-game-card { padding: 8px 10px 6px; max-width: calc(100vw - 24px); }
+            .error-kicker { font-size: 0.56rem; padding: 0.2rem 0.55rem; }
         }
 
         /* ── Reduced Motion ── */
@@ -275,7 +273,7 @@
     </div>
 
     <!-- ═══════ 主内容 ═══════ -->
-    <main data-ui-shell="error-playground" role="main" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:90px 16px 80px;text-align:center;width:100%;position:relative;z-index:10">
+    <main data-ui-shell="error-playground" role="main" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:70px 16px 60px;text-align:center;width:100%;position:relative;z-index:10">
 
         <!-- Kicker 徽章 -->
         <div class="error-kicker fade-in" aria-hidden="true">404 · NOT FOUND</div>
