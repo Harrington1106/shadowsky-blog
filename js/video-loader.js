@@ -198,14 +198,7 @@ class VideoLoader {
 
         const cardId = `video-card-${this.containerId}-${video.id}`;
 
-        // Proxy Bilibili images to bypass 403
-        const getProxyUrl = (url) => {
-            if (url && (url.includes('hdslb.com') || url.includes('bilibili.com'))) {
-                return `${encodeURIComponent(url)}`;
-            }
-            return url;
-        };
-        const thumbnailUrl = getProxyUrl(video.thumbnail);
+        const thumbnailUrl = video.thumbnail || '';
 
         return `
             <div class="group cursor-pointer video-item glass-card p-4 perspective-1000"
