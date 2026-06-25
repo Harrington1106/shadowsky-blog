@@ -989,7 +989,14 @@ const BookmarksManager = {
                     }
                     showToast('标题和描述获取成功', 'success');
                 } else {
-                    showToast('未能获取到标题', 'info');
+                    // No title found (likely SPA) — fallback to domain
+                    try {
+                        const u = new URL(url);
+                        document.getElementById('bm-title').value = u.hostname.replace(/^www\./, '');
+                        showToast('未提取到标题，已填入域名', 'warning');
+                    } catch (_) {
+                        showToast('未能获取到标题', 'info');
+                    }
                 }
             } else {
                 // Server unreachable — auto-fill domain as title
