@@ -16,74 +16,23 @@
         // 1. Inject CSS
         const style = document.createElement('style');
         style.textContent = `
-            #custom-context-menu {
-                position: fixed;
-                z-index: 10000;
-                width: 220px;
-                background: rgba(255, 255, 255, 0.85);
-                backdrop-filter: blur(24px) saturate(1.2);
-                -webkit-backdrop-filter: blur(24px) saturate(1.2);
-                border-radius: 14px;
-                box-shadow: 0 12px 40px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.06);
-                padding: 6px;
-                display: flex;
-                flex-direction: column;
-                opacity: 0;
-                transform: scale(0.92);
-                visibility: hidden;
-                transition: opacity 0.2s ease, transform 0.2s cubic-bezier(0.16,1,0.3,1), visibility 0.2s;
-                font-family: 'Inter', 'Noto Sans SC', sans-serif;
-            }
-
-            html.dark #custom-context-menu {
-                background: rgba(17, 24, 39, 0.88);
-                box-shadow: 0 12px 40px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.08);
-            }
-
-            #custom-context-menu.visible {
-                visibility: visible;
-                opacity: 1;
-                transform: scale(1);
-            }
-
-            .ctx-item {
-                display: flex;
-                align-items: center;
-                padding: 8px 12px;
-                font-size: 13px;
-                color: #374151;
-                cursor: pointer;
-                border-radius: 8px;
-                transition: all 0.15s ease;
-                user-select: none;
-                font-weight: 450;
-            }
-
-            html.dark .ctx-item {
-                color: #d1d5db;
-            }
-
-            .ctx-item:hover {
-                background-color: rgba(20, 184, 166, 0.1);
-                color: #0d9488;
-            }
-
-            html.dark .ctx-item:hover {
-                background-color: rgba(45, 212, 191, 0.12);
-                color: #2dd4bf;
-            }
-
-            .ctx-icon {
-                margin-right: 10px;
-                width: 16px;
-                height: 16px;
-                opacity: 0.65;
-            }
-
-            .ctx-divider {
-                height: 1px;
-                background-color: #e5e7eb;
-                margin: 4px 8px;
+            #custom-context-menu{position:fixed;z-index:10000;width:210px;background:rgba(255,255,255,.82);
+              backdrop-filter:blur(20px) saturate(1.1);-webkit-backdrop-filter:blur(20px) saturate(1.1);
+              border-radius:14px;box-shadow:0 8px 32px rgba(0,0,0,.1),0 0 0 1px rgba(0,0,0,.05);
+              padding:6px;display:flex;flex-direction:column;opacity:0;transform:scale(.94);
+              visibility:hidden;transition:opacity .15s ease,transform .15s ease,visibility .15s;
+              font-family:'Inter','Noto Sans SC',sans-serif}
+            html.dark #custom-context-menu{background:rgba(15,23,42,.88);box-shadow:0 8px 32px rgba(0,0,0,.4),0 0 0 1px rgba(255,255,255,.06)}
+            #custom-context-menu.visible{visibility:visible;opacity:1;transform:scale(1)}
+            .ctx-item{display:flex;align-items:center;padding:7px 12px;font-size:.8rem;color:#374151;cursor:pointer;
+              border-radius:8px;transition:all .12s ease;user-select:none;font-weight:500;gap:10px}
+            html.dark .ctx-item{color:#d1d5db}
+            .ctx-item:hover{background:rgba(20,184,166,.08);color:#0d9488}
+            html.dark .ctx-item:hover{background:rgba(45,212,191,.1);color:#2dd4bf}
+            .ctx-icon{width:16px;height:16px;opacity:.55;flex-shrink:0}
+            .ctx-shortcut{margin-left:auto;font-size:.65rem;opacity:.35;font-weight:400}
+            .ctx-divider{height:1px;background:#e5e7eb;margin:3px 8px}
+            html.dark .ctx-divider{background:rgba(255,255,255,.08)}
             }
 
             html.dark .ctx-divider {
@@ -255,93 +204,84 @@
 
         // Page Contexts: Page-specific items (shown if no element context matched, or we can choose to merge)
         const pageContexts = [
-            {
-                // Blog List Page
-                check: () => window.location.pathname.includes('blog.html') || document.getElementById('posts-container'),
-                getItems: () => {
-                    const items = [
-                        { label: '搜索笔记', icon: 'search', action: () => {
-                            const input = document.getElementById('search-input');
-                            if (input) { input.focus(); input.scrollIntoView({ behavior: 'smooth' }); }
-                        }, shortcut: '⌘K' },
-                        { type: 'divider' },
-                        { label: '网格视图', icon: 'grid-3x3', action: () => { if (window.switchView) window.switchView('grid'); } },
-                        { label: '时间轴视图', icon: 'clock', action: () => { if (window.switchView) window.switchView('timeline'); } },
-                        { label: '目录视图', icon: 'folder-tree', action: () => { if (window.switchView) window.switchView('directory'); } },
-                        { label: '标签视图', icon: 'tags', action: () => { if (window.switchView) window.switchView('tags'); } },
-                        { type: 'divider' },
-                        { label: '刷新列表', icon: 'rotate-cw', action: () => window.location.reload(), shortcut: 'F5' },
-                    ];
-                    return items;
-                }
+            {   // 首页
+                check: () => window.location.pathname === '/' || window.location.pathname.endsWith('index.html'),
+                getItems: () => [
+                    { label: '星空笔记', icon: 'file-text', action: () => window.location.href = 'blog.html' },
+                    { label: 'RSS 订阅', icon: 'rss', action: () => window.location.href = 'rss.html' },
+                    { label: 'ACG 空间', icon: 'film', action: () => window.location.href = 'acg.html' },
+                ]
             },
-            {
-                // Post Page
+            {   // 博客列表
+                check: () => document.getElementById('posts-container') || window.location.pathname.includes('blog.html'),
+                getItems: () => [
+                    { label: '搜索笔记', icon: 'search', action: () => { const i=document.getElementById('search-input');if(i){i.focus();i.scrollIntoView({behavior:'smooth'})} }, shortcut: '⌘K' },
+                    { type: 'divider' },
+                    { label: '网格视图', icon: 'grid-3x3', action: () => { if(window.switchView) window.switchView('grid') } },
+                    { label: '时间轴', icon: 'clock', action: () => { if(window.switchView) window.switchView('timeline') } },
+                    { label: '目录', icon: 'folder-tree', action: () => { if(window.switchView) window.switchView('directory') } },
+                    { label: '标签', icon: 'tags', action: () => { if(window.switchView) window.switchView('tags') } },
+                ]
+            },
+            {   // 文章详情
                 check: () => document.getElementById('post-title') || window.location.pathname.includes('post.html'),
                 getItems: () => {
                     const title = document.getElementById('post-title')?.textContent.trim() || document.title;
                     const link = window.location.href;
-                    const items = [];
-                    
-                    items.push(
-                        { label: '复制文章链接', icon: 'link', action: () => { navigator.clipboard.writeText(link); alert('文章链接已复制'); } },
-                        { label: '分享到 Twitter', icon: 'share-2', action: () => {
-                             const text = `Read "${title}" on ShadowSky Blog`;
-                             const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(link)}`;
-                             window.open(url, '_blank');
-                        }},
-                        { label: '返回文章列表', icon: 'chevron-left', action: () => window.location.href = 'blog.html' }
-                    );
-                    return items;
+                    return [
+                        { label: '复制链接', icon: 'link', action: () => { navigator.clipboard.writeText(link); alert('已复制') } },
+                        { label: '返回列表', icon: 'chevron-left', action: () => window.location.href = 'blog.html' },
+                    ];
                 }
             },
-            {
-                // About Page
-                check: () => document.getElementById('wave-btn'),
-                getItems: () => [
-                    { label: '打个招呼', icon: 'hand', action: () => document.getElementById('wave-btn').click() },
-                    { label: '发送邮件', icon: 'mail', action: () => window.location.href = 'mailto:contact@shadowsky.com' },
-                    { label: '访问 GitHub', icon: 'github', action: () => window.open('https://github.com/shadowsky', '_blank') }
-                ]
-            },
-            {
-                // Video Page Global (Only if videoLoader is present and we are on video page)
-                check: () => window.videoLoader && document.querySelector('#video-grid'),
-                getItems: () => [
-                    { label: '随机播放', icon: 'shuffle', action: () => {
-                        const videos = document.querySelectorAll('.video-item');
-                        if (videos.length) videos[Math.floor(Math.random() * videos.length)].click();
-                    }},
-                    { label: '刷新视频列表', icon: 'rotate-cw', action: () => window.videoLoader?.init() },
-                    { label: '番剧索引', icon: 'search', action: () => window.open('https://bgm.tv/', '_blank') }
-                ]
-            },
-            {
-                // RSS Page
+            {   // RSS
                 check: () => window.location.pathname.includes('rss.html'),
                 getItems: () => [
                     { label: '刷新订阅', icon: 'rotate-cw', action: () => document.getElementById('refresh-feeds-btn')?.click() },
-                    { label: 'AI 设置', icon: 'settings', action: () => document.getElementById('settings-btn')?.click() }
+                    { label: 'AI 翻译设置', icon: 'bot', action: () => document.getElementById('settings-btn')?.click() },
+                    { label: '专注模式', icon: 'scan-eye', action: () => document.getElementById('focus-toggle')?.click() },
                 ]
-            }
+            },
+            {   // ACG
+                check: () => window.location.pathname.includes('acg.html'),
+                getItems: () => [
+                    { label: '我的追番', icon: 'tv', action: () => window.location.href = 'anime.html' },
+                    { label: '我的漫画', icon: 'book-open', action: () => window.location.href = 'manga.html' },
+                    { label: '全部剪辑', icon: 'clapperboard', action: () => window.location.href = 'edits.html' },
+                ]
+            },
+            {   // 收藏
+                check: () => window.location.pathname.includes('bookmarks.html'),
+                getItems: () => [
+                    { label: '搜索收藏', icon: 'search', action: () => { const i=document.getElementById('search-input');if(i)i.focus() } },
+                    { label: '随机打开', icon: 'shuffle', action: () => { const links=document.querySelectorAll('.bookmark-card a');if(links.length)window.open(links[Math.floor(Math.random()*links.length)].href,'_blank') } },
+                ]
+            },
+            {   // 片刻
+                check: () => window.location.pathname.includes('moments.html'),
+                getItems: () => [
+                    { label: '随机一张', icon: 'shuffle', action: () => { const imgs=document.querySelectorAll('.moment-card img');if(imgs.length)imgs[Math.floor(Math.random()*imgs.length)].scrollIntoView({behavior:'smooth'}) } },
+                ]
+            },
+            {   // 关于
+                check: () => window.location.pathname.includes('about.html'),
+                getItems: () => [
+                    { label: '打个招呼', icon: 'hand', action: () => document.getElementById('wave-btn')?.click() },
+                    { label: '发送邮件', icon: 'mail', action: () => window.location.href = 'mailto:contact@shadowsky.com' },
+                ]
+            },
         ];
 
         // Static Items (Global)
         // We use a function because some items might change (like theme icon)
         // But for efficiency we can just update the DOM elements in showMenu
         const staticItems = [
-            { label: '返回', icon: 'chevron-left', action: () => window.history.back(), shortcut: 'Alt+←' },
-            { label: '前进', icon: 'chevron-right', action: () => window.history.forward(), shortcut: 'Alt+→' },
-            { label: '刷新', icon: 'rotate-cw', action: () => window.location.reload(), shortcut: 'F5' },
+            { label: '返回', icon: 'chevron-left', action: () => window.history.back(), shortcut: '⌫' },
+            { label: '刷新', icon: 'rotate-cw', action: () => window.location.reload(), shortcut: '⌘R' },
             { type: 'divider' },
-            { label: '复制', icon: 'copy', action: () => {
-                const s = window.getSelection().toString();
-                if(s) navigator.clipboard.writeText(s);
-            }, id: 'ctx-copy' }, // Hidden by default if no selection
-            { type: 'divider' },
-            { label: '切换主题', icon: 'sun', action: () => window.toggleTheme && window.toggleTheme(), id: 'ctx-theme' },
+            { label: '切换主题', icon: 'sun', action: () => window.toggleTheme?.(), id: 'ctx-theme' },
             { label: '回到顶部', icon: 'chevron-up', action: handleBackToTop },
-            { label: '首页', icon: 'house', action: () => window.location.href = 'index.html' }
+            { label: '首页', icon: 'house', action: () => window.location.href = 'index.html' },
         ];
 
         // Ensure body exists before appending
@@ -397,21 +337,6 @@
                                 break; // Only first matching page context
                             }
                         }
-                    }
-                }
-
-                // 4. Update Static Items Visibility/State
-                
-                // Copy Button Visibility
-                const copyBtn = document.getElementById('ctx-copy');
-                if (copyBtn) {
-                    const selection = window.getSelection().toString();
-                    copyBtn.style.display = selection ? 'flex' : 'none';
-                    // Also hide the divider before it if copy is hidden?
-                    // The divider is the previous sibling.
-                    const prev = copyBtn.previousElementSibling;
-                    if (prev && prev.classList.contains('ctx-divider')) {
-                        prev.style.display = selection ? 'block' : 'none';
                     }
                 }
 

@@ -59,56 +59,54 @@
 .blog-hero {
     position: relative;
     z-index: 1;
-    padding: 140px 24px 72px;
+    padding: 100px 24px 40px;
     text-align: center;
     overflow: hidden;
 }
 
-/* 标题后光晕 */
 .blog-hero::after {
     content: '';
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 600px;
-    height: 200px;
+    width: 400px;
+    height: 120px;
     background: radial-gradient(ellipse, var(--bg-accent-glow), transparent 70%);
     pointer-events: none;
     z-index: -1;
-    opacity: 0.6;
+    opacity: 0.4;
 }
 
 .blog-hero h1 {
-    font-size: clamp(2.8rem, 7vw, 5rem);
+    font-size: clamp(2rem, 4vw, 2.8rem);
     font-weight: 700;
-    letter-spacing: -0.03em;
-    margin-bottom: 20px;
+    letter-spacing: -0.02em;
+    margin-bottom: 12px;
     background: var(--bg-hero-gradient);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    line-height: 1.15;
+    line-height: 1.2;
     position: relative;
 }
 
-/* 标题下装饰线 */
 .blog-hero h1::after {
     content: '';
     display: block;
-    width: 80px;
-    height: 3px;
-    margin: 20px auto 0;
-    border-radius: 3px;
+    width: 50px;
+    height: 2px;
+    margin: 14px auto 0;
+    border-radius: 2px;
     background: linear-gradient(90deg, transparent, var(--bg-accent), transparent);
-    opacity: 0.6;
+    opacity: 0.5;
 }
 
 .blog-hero .hero-desc {
-    font-size: 1.15rem;
-    max-width: 560px;
-    margin: 0 auto 48px;
-    line-height: 1.7;
+    font-size: .95rem;
+    max-width: 480px;
+    margin: 0 auto 32px;
+    line-height: 1.6;
     color: var(--bg-text-body);
 }
 
