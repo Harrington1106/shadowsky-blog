@@ -992,7 +992,14 @@ const BookmarksManager = {
                     showToast('未能获取到标题', 'info');
                 }
             } else {
-                showToast(res?.error || '获取失败', 'error');
+                // Server unreachable — auto-fill domain as title
+                try {
+                    const u = new URL(url);
+                    document.getElementById('bm-title').value = u.hostname.replace(/^www\./, '');
+                    showToast('服务器无法访问，已自动填入域名', 'warning');
+                } catch (_) {
+                    showToast('获取失败，请手动填写', 'warning');
+                }
             }
         } catch (e) {
             const msg = e.message || '';
