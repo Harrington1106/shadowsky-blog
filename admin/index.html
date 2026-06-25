@@ -308,7 +308,10 @@
                                     <input type="text" id="bm-title" class="admin-input" placeholder="网站标题">
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-semibold uppercase tracking-wider mb-1.5" style="color:#94a3b8">描述 <button type="button" onclick="BookmarksManager.translateDesc(this)" class="admin-btn admin-btn-sm" style="background:rgba(139,92,246,.12);color:#A78BFA;border:1px solid rgba(139,92,246,.2);margin-left:8px;font-size:.7rem" title="AI翻译为中文"><i data-lucide="languages" style="width:12px;height:12px"></i> 翻译</button></label>
+                                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+                                        <label class="text-xs font-semibold uppercase tracking-wider" style="color:#94a3b8">描述</label>
+                                        <button type="button" id="btn-translate-desc" class="admin-btn admin-btn-sm" style="background:rgba(139,92,246,.12);color:#A78BFA;border:1px solid rgba(139,92,246,.2);font-size:.68rem" title="AI翻译为中文"><i data-lucide="languages" style="width:12px;height:12px"></i> 翻译</button>
+                                    </div>
                                     <textarea id="bm-desc" class="admin-input" rows="3" placeholder="网站描述..."></textarea>
                                 </div>
                                 <div>

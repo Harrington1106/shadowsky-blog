@@ -1270,7 +1270,7 @@ const BookmarksManager = {
         const cjk = (text.match(/[一-鿿]/g)||[]).length;
         if (cjk / text.length > 0.5) return showToast('描述似乎已是中文', 'info');
 
-        if (!btn) btn = document.querySelector('#bm-desc + button, [onclick*="translateDesc"]');
+        if (!btn) btn = document.getElementById('btn-translate-desc');
         const orig = btn.innerHTML; btn.innerHTML = '<i data-lucide="loader-2" style="width:12px;height:12px;animation:spin 1s linear infinite"></i>';
         btn.disabled = true; if (typeof lucide !== 'undefined') lucide.createIcons();
 
@@ -2867,6 +2867,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         sendTokenBtn.innerHTML = origHTML;
         if (typeof lucide !== 'undefined') lucide.createIcons();
     });
+
+    // 翻译描述按钮
+    const translateBtn = document.getElementById('btn-translate-desc');
+    if (translateBtn) translateBtn.addEventListener('click', () => BookmarksManager.translateDesc(translateBtn));
 
     // Sync Settings Token Input
     const settingsTokenInput = document.getElementById('setting-admin-token');
