@@ -644,8 +644,6 @@
                     links.forEach(l => l.classList.add('active'));
                 }
             });
-        });
-            });
         }, observerOptions);
 
         headers.forEach(header => observer.observe(header));
