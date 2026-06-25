@@ -303,7 +303,12 @@ html:not(.dark) .bm-search-kbd {
     padding: 0 12px;
     scrollbar-width: none;
     -ms-overflow-style: none;
+    cursor: grab;
+    -webkit-user-select: none;
+    user-select: none;
 }
+.bm-cat-nav:active { cursor: grabbing; }
+.bm-cat-nav.dragging { cursor: grabbing; }
 
 .bm-cat-nav::-webkit-scrollbar {
     display: none;

@@ -555,17 +555,17 @@ async function initBookmarksPage() {
             });
         }
         
-        // ── 标签行鼠标拖拽滚动 ──
+        // ── 分类栏 & 标签行 鼠标拖拽滚动 ──
         let dragState = null;
         document.addEventListener('mousedown', (e) => {
-            const tagsEl = e.target.closest('.bm-card-tags');
-            if (!tagsEl || tagsEl.scrollWidth <= tagsEl.clientWidth + 2) return;
+            const scrollEl = e.target.closest('.bm-cat-nav, .bm-card-tags');
+            if (!scrollEl || scrollEl.scrollWidth <= scrollEl.clientWidth + 2) return;
             dragState = {
-                el: tagsEl,
+                el: scrollEl,
                 startX: e.clientX,
-                scrollStart: tagsEl.scrollLeft
+                scrollStart: scrollEl.scrollLeft
             };
-            tagsEl.classList.add('dragging');
+            scrollEl.classList.add('dragging');
         });
         document.addEventListener('mousemove', (e) => {
             if (!dragState) return;
