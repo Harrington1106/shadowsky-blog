@@ -29,7 +29,7 @@
         /* 404 数字 — 等宽字体 + 渐变 + 光晕 */
         .error-code {
             font-family: 'JetBrains Mono', var(--pr-font-mono);
-            font-size: clamp(3.5rem, 10vw, 7rem);
+            font-size: clamp(4.5rem, 13vw, 9rem);
             font-weight: 700;
             letter-spacing: -0.03em;
             line-height: 1;
@@ -48,46 +48,46 @@
             display: inline-flex;
             align-items: center;
             gap: 0.4rem;
-            padding: 0.25rem 0.7rem;
+            padding: 0.3rem 0.8rem;
             border-radius: var(--radius-full, 9999px);
             border: 1px solid var(--glass-depth-2-border, rgba(255,255,255,.07));
             background: var(--glass-depth-2-bg, rgba(15,23,42,.55));
             backdrop-filter: blur(20px) saturate(1.3);
             -webkit-backdrop-filter: blur(20px) saturate(1.3);
             color: var(--color-text-muted, #94A3B8);
-            font-size: 0.62rem;
+            font-size: 0.66rem;
             font-weight: 600;
-            letter-spacing: 0.15em;
+            letter-spacing: 0.16em;
             text-transform: uppercase;
-            margin-bottom: 12px;
+            margin-bottom: 16px;
         }
 
         /* 描述文字 */
         .error-desc {
-            max-width: 420px;
+            max-width: 440px;
             width: 100%;
             margin-left: auto;
             margin-right: auto;
             text-align: center;
             color: var(--color-text-secondary, #94A3B8);
-            font-size: 0.9rem;
-            line-height: 1.5;
+            font-size: 1rem;
+            line-height: 1.55;
             margin-bottom: 2px;
         }
         .error-hint {
             color: var(--color-text-muted, #64748B);
-            font-size: 0.78rem;
-            margin-bottom: 18px;
+            font-size: 0.82rem;
+            margin-bottom: 22px;
         }
 
         /* 游戏卡片 */
         .error-game-card {
-            max-width: 400px;
+            max-width: 440px;
             width: 100%;
             margin-left: auto;
             margin-right: auto;
-            padding: 10px 12px 8px;
-            border-radius: var(--radius-lg, 16px);
+            padding: 12px 14px 10px;
+            border-radius: var(--radius-xl, 24px);
             margin-bottom: 0;
         }
         .error-game-card::after {
@@ -99,25 +99,25 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 3px;
+            margin-bottom: 5px;
             flex-wrap: wrap;
-            gap: 4px;
+            gap: 6px;
         }
         .error-game-role {
-            font-size: 0.68rem;
+            font-size: 0.72rem;
             color: var(--color-text-muted, #94A3B8);
             font-weight: 500;
         }
         .error-game-pill {
             display: inline-flex;
             align-items: center;
-            gap: 3px;
-            padding: 3px 10px;
+            gap: 4px;
+            padding: 4px 12px;
             border-radius: var(--radius-full, 9999px);
             border: 1px solid var(--color-border, rgba(255,255,255,.08));
             background: var(--glass-depth-3-bg, rgba(17,24,39,.65));
             color: var(--color-text-secondary, #94A3B8);
-            font-size: 0.68rem;
+            font-size: 0.72rem;
             font-weight: 500;
             cursor: pointer;
             transition: all 0.2s ease;
@@ -142,9 +142,9 @@
         .error-game-instruction {
             text-align: center;
             color: var(--color-text-secondary, #94A3B8);
-            font-size: 0.72rem;
+            font-size: 0.8rem;
             font-weight: 500;
-            margin-bottom: 4px;
+            margin-bottom: 6px;
         }
 
         /* 画布容器 */
@@ -273,7 +273,7 @@
     </div>
 
     <!-- ═══════ 主内容 ═══════ -->
-    <main data-ui-shell="error-playground" role="main" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:70px 16px 60px;text-align:center;width:100%;position:relative;z-index:10">
+    <main data-ui-shell="error-playground" role="main" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px 16px 70px;text-align:center;width:100%;position:relative;z-index:10">
 
         <!-- Kicker 徽章 -->
         <div class="error-kicker fade-in" aria-hidden="true">404 · NOT FOUND</div>
