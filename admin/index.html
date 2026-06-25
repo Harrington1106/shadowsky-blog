@@ -115,6 +115,7 @@
         /* ===== 暗/亮模式可见性 ===== */
         .dark .light-only{display:none!important}
         html:not(.dark) .dark-only{display:none!important}
+        @keyframes spin{to{transform:rotate(360deg)}}
     </style>
 </head>
 <body class="font-sans">
@@ -258,8 +259,11 @@
                     </span>
                     <span id="api-base-text" class="hidden md:inline-flex text-xs" style="color:#64748b">API: -</span>
                     <div class="flex items-center gap-2">
-                        <input id="admin-token-input" type="password" placeholder="管理员令牌" class="admin-input w-44">
-                        <button id="admin-token-save" class="admin-btn admin-btn-primary admin-btn-sm">登录</button>
+                        <button id="btn-send-token" class="admin-btn admin-btn-sm" style="background:rgba(59,130,246,.12);color:#60A5FA;border:1px solid rgba(59,130,246,.2)" title="发送验证码到邮箱">
+                            <i data-lucide="mail" class="w-3.5 h-3.5"></i> 获取验证码
+                        </button>
+                        <input id="admin-token-input" type="text" placeholder="输入验证码" class="admin-input" style="width:160px;font-family:'JetBrains Mono',monospace;letter-spacing:2px">
+                        <button id="admin-token-save" class="admin-btn admin-btn-primary admin-btn-sm">验证</button>
                         <button id="admin-token-clear" class="admin-btn admin-btn-secondary admin-btn-sm">退出</button>
                     </div>
                 </div>

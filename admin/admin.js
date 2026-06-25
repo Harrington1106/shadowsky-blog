@@ -2778,7 +2778,30 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
     const clearTokenBtn = document.getElementById('admin-token-clear');
     if (clearTokenBtn) clearTokenBtn.addEventListener('click', () => setAdminToken(''));
-    
+
+    // 发送验证码到邮箱
+    const sendTokenBtn = document.getElementById('btn-send-token');
+    if (sendTokenBtn) sendTokenBtn.addEventListener('click', async () => {
+        sendTokenBtn.disabled = true;
+        const origHTML = sendTokenBtn.innerHTML;
+        sendTokenBtn.innerHTML = '<i data-lucide="loader-2" class="w-3.5 h-3.5" style="animation:spin 1s linear infinite"></i> 发送中...';
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+        try {
+            const res = await fetch(API_BASE + '/api/auth/send-token', { method: 'POST' });
+            const data = await res.json();
+            if (res.ok) {
+                showToast(data.message || '验证码已发送', 'success');
+            } else {
+                showToast(data.error || '发送失败', 'error');
+            }
+        } catch (e) {
+            showToast('请求失败: ' + e.message, 'error');
+        }
+        sendTokenBtn.disabled = false;
+        sendTokenBtn.innerHTML = origHTML;
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+    });
+
     // Sync Settings Token Input
     const settingsTokenInput = document.getElementById('setting-admin-token');
     if (settingsTokenInput) {

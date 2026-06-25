@@ -6,7 +6,8 @@ const cheerio = require('cheerio');
 const dns = require('dns').promises;
 const net = require('net');
 const crypto = require('crypto');
-const https = require('https'); // Added for ignoring SSL errors in checks
+const https = require('https');
+const nodemailer = require('nodemailer');
 const app = express();
 const port = process.env.PORT ? Number(process.env.PORT) : 3000;
 const host = process.env.HOST || '127.0.0.1';
@@ -302,55 +303,89 @@ function rateLimit(windowMs, max) {
   };
 }
 
-// ── 时效令牌：基于 HMAC(时间窗口, 主密钥) 每30分钟自动更换 ──
+// ═══════════════════════════════════════════════
+// 安全工具：输入净化 + 时效令牌 + 邮箱发送
+// ═══════════════════════════════════════════════
+
+// ── 输入净化：防 XSS/注入 ──
+function sanitize(str) {
+    if (typeof str !== 'string') return '';
+    return str.replace(/[<>&"']/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&#39;'})[c]);
+}
+function sanitizeObject(obj) {
+    if (typeof obj === 'string') return sanitize(obj);
+    if (Array.isArray(obj)) return obj.map(sanitizeObject);
+    if (obj && typeof obj === 'object') {
+        const cleaned = {};
+        for (const [k, v] of Object.entries(obj)) {
+            cleaned[sanitize(k)] = sanitizeObject(v);
+        }
+        return cleaned;
+    }
+    return obj;
+}
+
+// ── 邮箱发送器 ──
+let mailTransporter = null;
+function getMailTransporter() {
+    if (mailTransporter) return mailTransporter;
+    const host = readEnvVar('SMTP_HOST');
+    const port = parseInt(readEnvVar('SMTP_PORT')) || 465;
+    const user = readEnvVar('SMTP_USER');
+    const pass = readEnvVar('SMTP_PASS');
+    if (!host || !user || !pass) return null;
+    mailTransporter = nodemailer.createTransport({ host, port, secure: port === 465, auth: { user, pass } });
+    return mailTransporter;
+}
+
+async function sendTokenEmail(token, expiresMinutes) {
+    const transporter = getMailTransporter();
+    if (!transporter) throw new Error('邮件服务未配置 (SMTP_HOST/USER/PASS)');
+    const adminEmail = readEnvVar('ADMIN_EMAIL') || readEnvVar('SMTP_USER');
+    await transporter.sendMail({
+        from: `"ShadowQuake Admin" <${readEnvVar('SMTP_USER')}>`,
+        to: adminEmail,
+        subject: `管理后台验证码 (${new Date().toLocaleString('zh-CN')})`,
+        text: `你的管理后台验证码: ${token}\n有效期: ${expiresMinutes} 分钟\n过期时间: ${new Date(Date.now() + expiresMinutes*60*1000).toLocaleString('zh-CN')}`,
+        html: `<div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:24px;background:#f8fafc;border-radius:12px">
+            <h2 style="color:#0F172A">ShadowQuake 管理后台</h2>
+            <p style="color:#475569">你的验证码：</p>
+            <div style="background:#0F172A;color:#5EEAD4;font:bold 28px 'JetBrains Mono',monospace;padding:16px 24px;border-radius:8px;text-align:center;letter-spacing:4px">${token}</div>
+            <p style="color:#94A3B8;font-size:13px;margin-top:16px">有效期 ${expiresMinutes} 分钟 · 过期时间 ${new Date(Date.now() + expiresMinutes*60*1000).toLocaleString('zh-CN')}</p>
+        </div>`
+    });
+}
+
+// ── 时效令牌：HMAC(时间窗口, 主密钥) 每30分钟更换 ──
 const TOKEN_WINDOW_MINUTES = 30;
 function generateTimeToken(masterKey, timestamp = Date.now()) {
     const windowMs = TOKEN_WINDOW_MINUTES * 60 * 1000;
     const windowId = Math.floor(timestamp / windowMs);
-    const hmac = crypto.createHmac('sha256', masterKey);
-    hmac.update(String(windowId));
-    return hmac.digest('hex').substring(0, 16); // 16字符 hex
-}
-function getCurrentTimeToken() {
-    const masterKey = readEnvVar('MASTER_KEY') || ADMIN_TOKEN;
-    return generateTimeToken(masterKey);
+    return crypto.createHmac('sha256', masterKey).update(String(windowId)).digest('hex').substring(0, 16);
 }
 
 function requireAdminToken(req, res, next) {
-  if (!ADMIN_TOKEN) return res.status(401).json({ error: 'Admin token not configured' });
+    const masterKey = readEnvVar('MASTER_KEY');
+    if (!masterKey) return res.status(500).json({ error: 'MASTER_KEY not configured in .env' });
 
-  let token = req.headers['x-admin-token'] || req.headers['x-adminkey'] || '';
+    let token = req.headers['x-admin-token'] || req.headers['x-adminkey'] || '';
+    if (Array.isArray(token)) token = token[0] || '';
+    if (typeof token !== 'string' || token.length > 128) return res.status(401).json({ error: 'Unauthorized' });
 
-  // Handle case where header is an array (duplicate headers)
-  if (Array.isArray(token)) {
-      token = token[0] || '';
-  }
+    // 仅检查时效令牌（当前 + 上一个窗口）
+    const now = Date.now();
+    const current = generateTimeToken(masterKey, now);
+    const previous = generateTimeToken(masterKey, now - TOKEN_WINDOW_MINUTES * 60 * 1000);
 
-  // 1. 检查静态令牌
-  let match = false;
-  try {
-      const bufA = Buffer.from(token);
-      const bufB = Buffer.from(ADMIN_TOKEN);
-      if (bufA.length === bufB.length) {
-          match = crypto.timingSafeEqual(bufA, bufB);
-      }
-  } catch (e) { match = false; }
+    let match = false;
+    try {
+        const bufA = Buffer.from(token);
+        match = crypto.timingSafeEqual(bufA, Buffer.from(current)) ||
+                crypto.timingSafeEqual(bufA, Buffer.from(previous));
+    } catch (e) { match = false; }
 
-  // 2. 检查时效令牌（当前窗口 + 上一个窗口，容忍时钟偏差）
-  if (!match) {
-      const masterKey = readEnvVar('MASTER_KEY') || ADMIN_TOKEN;
-      const now = Date.now();
-      const currentToken = generateTimeToken(masterKey, now);
-      const previousToken = generateTimeToken(masterKey, now - TOKEN_WINDOW_MINUTES * 60 * 1000);
-      try {
-          const bufA = Buffer.from(token);
-          match = crypto.timingSafeEqual(bufA, Buffer.from(currentToken)) ||
-                  crypto.timingSafeEqual(bufA, Buffer.from(previousToken));
-      } catch (e) { match = false; }
-  }
-
-  if (!match) return res.status(401).json({ error: 'Unauthorized' });
-  next();
+    if (!match) return res.status(401).json({ error: 'Unauthorized' });
+    next();
 }
 
 function originAllowed(req) {
@@ -1383,28 +1418,58 @@ app.post('/api/bookmarks/check', requireAdminToken, rateLimit(60_000, 100), asyn
     }
 });
 
-// ── 时效令牌查询：仅限本地访问，返回当前30分钟窗口的时效令牌 ──
+// ── 时效令牌查询（仅本地）──
 app.get('/api/auth/current-token', (req, res) => {
     let ip = req.ip || req.connection?.remoteAddress || '';
     if (typeof ip === 'string' && ip.startsWith('::ffff:')) ip = ip.replace('::ffff:', '');
-    if (ip !== '127.0.0.1' && ip !== '::1' && ip !== 'localhost') {
+    if (ip !== '127.0.0.1' && ip !== '::1' && ip !== 'localhost')
         return res.status(403).json({ error: 'Forbidden' });
-    }
-    const token = getCurrentTimeToken();
-    const remaining = TOKEN_WINDOW_MINUTES * 60 - (Math.floor(Date.now() / 1000) % (TOKEN_WINDOW_MINUTES * 60));
-    res.json({ token, expiresInSeconds: remaining, windowMinutes: TOKEN_WINDOW_MINUTES });
+    const masterKey = readEnvVar('MASTER_KEY');
+    if (!masterKey) return res.status(500).json({ error: 'MASTER_KEY not set' });
+    const token = generateTimeToken(masterKey);
+    const remaining = TOKEN_WINDOW_MINUTES * 60 - (Math.floor(Date.now()/1000) % (TOKEN_WINDOW_MINUTES*60));
+    res.json({ token, expiresInSeconds: remaining });
 });
 
-// Debug token discovery - 仅限本地回环地址访问
+// ── 发送验证码到邮箱（严格限速：每IP每5分钟1次）──
+const sendTokenLimit = new Map();
+app.post('/api/auth/send-token', (req, res) => {
+    const masterKey = readEnvVar('MASTER_KEY');
+    if (!masterKey) return res.status(500).json({ error: 'MASTER_KEY not configured' });
+    const adminEmail = readEnvVar('ADMIN_EMAIL') || readEnvVar('SMTP_USER');
+    if (!adminEmail) return res.status(500).json({ error: 'ADMIN_EMAIL not configured' });
+
+    // IP 限速
+    let ip = req.ip || req.connection?.remoteAddress || '';
+    if (typeof ip === 'string' && ip.startsWith('::ffff:')) ip = ip.replace('::ffff:', '');
+    const now = Date.now();
+    const lastSend = sendTokenLimit.get(ip) || 0;
+    if (now - lastSend < 5 * 60 * 1000) {
+        const waitSec = Math.ceil((5*60*1000 - (now - lastSend)) / 1000);
+        return res.status(429).json({ error: `请等待 ${waitSec} 秒后再试` });
+    }
+    sendTokenLimit.set(ip, now);
+
+    const token = generateTimeToken(masterKey);
+    sendTokenEmail(token, TOKEN_WINDOW_MINUTES)
+        .then(() => {
+            const masked = adminEmail.replace(/(.{2}).*(@.*)/, '$1***$2');
+            res.json({ success: true, message: `验证码已发送至 ${masked}`, expiresInMinutes: TOKEN_WINDOW_MINUTES });
+        })
+        .catch(e => {
+            console.error('Send email error:', e.message);
+            sendTokenLimit.delete(ip);
+            res.status(500).json({ error: '邮件发送失败，请检查SMTP配置' });
+        });
+});
+
+// Debug token - 仅限本地
 app.get('/api/debug/token', (req, res) => {
     let ip = req.ip || req.connection?.remoteAddress || '';
-    if (typeof ip === 'string' && ip.startsWith('::ffff:')) {
-        ip = ip.replace('::ffff:', '');
-    }
-    if (ip !== '127.0.0.1' && ip !== '::1' && ip !== 'localhost') {
+    if (typeof ip === 'string' && ip.startsWith('::ffff:')) ip = ip.replace('::ffff:', '');
+    if (ip !== '127.0.0.1' && ip !== '::1' && ip !== 'localhost')
         return res.status(403).json({ error: 'Forbidden' });
-    }
-    return res.json({ token: ADMIN_TOKEN });
+    return res.json({ token: readEnvVar('ADMIN_TOKEN') || '(not set)' });
 });
 
 // Serve static files
