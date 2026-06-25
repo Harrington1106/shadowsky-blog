@@ -86,6 +86,41 @@
             color: #0f172a;
         }
 
+        /* ===== 自定义下拉框 ===== */
+        .custom-select { position: relative; }
+        .custom-select-trigger {
+            display: flex; align-items: center; justify-content: space-between;
+            text-align: left; cursor: pointer; user-select: none;
+        }
+        .custom-select-trigger .custom-select-label { color: inherit; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .custom-select-trigger .custom-select-label.is-placeholder { color: rgba(148,163,184,.5); }
+        .custom-select-arrow { transition: transform .2s ease; flex-shrink: 0; opacity: .5; }
+        .custom-select-trigger:disabled { opacity: .35; cursor: not-allowed; }
+        .custom-select.open .custom-select-arrow { transform: rotate(180deg); }
+        .custom-select-dropdown {
+            position: absolute; top: calc(100% + 4px); left: 0; right: 0; z-index: 50;
+            max-height: 240px; overflow-y: auto;
+            background: #0f172a; border: 1px solid rgba(255,255,255,.1);
+            border-radius: 10px; padding: 4px;
+            animation: dropdownIn .15s ease;
+        }
+        html:not(.dark) .custom-select-dropdown {
+            background: #fff; border: 1px solid #e2e8f0;
+            box-shadow: 0 10px 25px rgba(0,0,0,.1);
+        }
+        .custom-select-option {
+            display: block; width: 100%; text-align: left;
+            padding: 8px 12px; border-radius: 6px; font-size: .85rem;
+            cursor: pointer; transition: all .1s ease;
+            color: #cbd5e1; background: transparent; border: none;
+        }
+        html:not(.dark) .custom-select-option { color: #334155; }
+        .custom-select-option:hover { background: rgba(20,184,166,.12); color: #14B8A6; }
+        html:not(.dark) .custom-select-option:hover { background: rgba(20,184,166,.08); color: #0F766E; }
+        .custom-select-option.selected { background: rgba(20,184,166,.15); color: #14B8A6; font-weight: 500; }
+        html:not(.dark) .custom-select-option.selected { background: rgba(20,184,166,.1); color: #0F766E; }
+        @keyframes dropdownIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
+
         /* ===== 按钮 ===== */
         .admin-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 18px;border-radius:9999px;font-size:.85rem;font-weight:500;cursor:pointer;transition:all .2s ease;border:none;font-family:inherit;text-decoration:none}
         .admin-btn-primary{background:var(--color-primary,#0D9488);color:#fff;box-shadow:0 4px 16px rgba(20,184,166,.25)}
@@ -340,12 +375,20 @@
                                 <div>
                                     <label class="block text-xs font-semibold uppercase tracking-wider mb-1.5" style="color:#94a3b8">分类</label>
                                     <div class="grid grid-cols-2 gap-2">
-                                        <select id="bm-category-select" class="admin-input" aria-label="Primary Category">
-                                            <option value="">选择一级分类...</option>
-                                        </select>
-                                        <select id="bm-subcategory-select" class="admin-input" aria-label="Secondary Category">
-                                            <option value="">选择二级分类...</option>
-                                        </select>
+                                        <div class="custom-select" id="bm-category-select">
+                                            <button type="button" class="custom-select-trigger admin-input" data-placeholder="选择一级分类...">
+                                                <span class="custom-select-label is-placeholder">选择一级分类...</span>
+                                                <i data-lucide="chevron-down" class="custom-select-arrow w-4 h-4"></i>
+                                            </button>
+                                            <div class="custom-select-dropdown hidden"></div>
+                                        </div>
+                                        <div class="custom-select" id="bm-subcategory-select">
+                                            <button type="button" class="custom-select-trigger admin-input" data-placeholder="选择二级分类..." disabled>
+                                                <span class="custom-select-label is-placeholder">选择二级分类...</span>
+                                                <i data-lucide="chevron-down" class="custom-select-arrow w-4 h-4"></i>
+                                            </button>
+                                            <div class="custom-select-dropdown hidden"></div>
+                                        </div>
                                     </div>
                                     <input type="hidden" id="bm-category">
                                     <input type="hidden" id="bm-subcategory">

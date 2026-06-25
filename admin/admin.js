@@ -899,11 +899,15 @@ const BookmarksManager = {
         // Reset category fields
         document.getElementById('bm-category').value = '';
         document.getElementById('bm-subcategory').value = '';
-        const secondarySelect = document.getElementById('bm-subcategory-select');
-        if (secondarySelect) {
-            secondarySelect.innerHTML = '<option value="">选择二级分类...</option>';
-            secondarySelect.disabled = true;
+        // Reset primary dropdown
+        const primaryContainer = document.getElementById('bm-category-select');
+        if (primaryContainer) {
+            const label = primaryContainer.querySelector('.custom-select-label');
+            if (label) { label.textContent = '选择一级分类...'; label.classList.add('is-placeholder'); }
+            primaryContainer.querySelectorAll('.custom-select-option').forEach(o => o.classList.remove('selected'));
         }
+        // Reset secondary dropdown
+        BookmarksManager.updateSecondaryOptions('');
 
         const submitBtn = document.getElementById('bm-submit');
         submitBtn.innerHTML = '<i data-lucide="plus" class="w-4 h-4"></i><span>添加收藏</span>';
@@ -996,7 +1000,7 @@ const BookmarksManager = {
         } finally {
             if (btn) {
                 // Restore original icon or default to search icon
-                btn.innerHTML = '<i data-lucide="search" class="w-4 h-4"></i>';
+                btn.innerHTML = '<i data-lucide="wand-2" class="w-3.5 h-3.5"></i>';
                 btn.disabled = false;
             }
             if (typeof lucide !== 'undefined') lucide.createIcons();
@@ -1172,79 +1176,116 @@ const BookmarksManager = {
         });
     },
     updateSecondaryOptions(categoryKey) {
-        const secondarySelect = document.getElementById('bm-subcategory-select');
-        if (!secondarySelect) return;
-        
-        secondarySelect.innerHTML = '<option value="">选择二级分类...</option>';
-        
+        const container = document.getElementById('bm-subcategory-select');
+        if (!container) return;
+        const trigger = container.querySelector('.custom-select-trigger');
+        const dropdown = container.querySelector('.custom-select-dropdown');
+        const label = trigger.querySelector('.custom-select-label');
+
+        dropdown.innerHTML = '';
+
         if (categoryKey && this.categories[categoryKey] && this.categories[categoryKey].children) {
-            secondarySelect.disabled = false;
-            this.categories[categoryKey].children.forEach(sub => {
-                const option = document.createElement('option');
-                option.value = sub.id;
-                option.textContent = sub.name;
-                secondarySelect.appendChild(option);
+            trigger.disabled = false;
+            trigger.style.opacity = '1';
+            const children = this.categories[categoryKey].children;
+            children.forEach(sub => {
+                const opt = document.createElement('button');
+                opt.type = 'button';
+                opt.className = 'custom-select-option';
+                opt.dataset.value = sub.id;
+                opt.textContent = sub.name;
+                opt.addEventListener('click', () => {
+                    label.textContent = sub.name;
+                    label.classList.remove('is-placeholder');
+                    document.getElementById('bm-subcategory').value = sub.id;
+                    // Update selected state
+                    dropdown.querySelectorAll('.custom-select-option').forEach(o => o.classList.remove('selected'));
+                    opt.classList.add('selected');
+                    closeDropdown(container);
+                });
+                dropdown.appendChild(opt);
             });
         } else {
-            secondarySelect.disabled = true;
+            trigger.disabled = true;
+            trigger.style.opacity = '0.4';
+            label.textContent = trigger.dataset.placeholder || '选择二级分类...';
+            label.classList.add('is-placeholder');
+            document.getElementById('bm-subcategory').value = '';
         }
     },
     populateCategories() {
-        const primarySelect = document.getElementById('bm-category-select');
-        const secondarySelect = document.getElementById('bm-subcategory-select');
-        
-        if (!primarySelect || !secondarySelect) return;
+        const primaryContainer = document.getElementById('bm-category-select');
+        const secondaryContainer = document.getElementById('bm-subcategory-select');
+        if (!primaryContainer || !secondaryContainer) return;
 
-        // Clear existing options
-        primarySelect.innerHTML = '<option value="">选择一级分类...</option>';
-        secondarySelect.innerHTML = '<option value="">选择二级分类...</option>';
-        secondarySelect.disabled = true;
+        // Build primary dropdown
+        const primaryTrigger = primaryContainer.querySelector('.custom-select-trigger');
+        const primaryDropdown = primaryContainer.querySelector('.custom-select-dropdown');
+        const primaryLabel = primaryTrigger.querySelector('.custom-select-label');
+
+        primaryDropdown.innerHTML = '';
 
         if (!this.categories || typeof this.categories !== 'object') return;
 
-        // Sort categories by order
         const sortedCategories = Object.entries(this.categories)
             .sort(([, a], [, b]) => (a.order || 999) - (b.order || 999));
 
-        // Populate Primary
         sortedCategories.forEach(([key, cat]) => {
-            const option = document.createElement('option');
-            option.value = key;
-            option.textContent = cat.name || key;
-            primarySelect.appendChild(option);
+            const opt = document.createElement('button');
+            opt.type = 'button';
+            opt.className = 'custom-select-option';
+            opt.dataset.value = key;
+            opt.textContent = cat.name || key;
+            opt.addEventListener('click', () => {
+                primaryLabel.textContent = cat.name || key;
+                primaryLabel.classList.remove('is-placeholder');
+                document.getElementById('bm-category').value = key;
+                document.getElementById('bm-subcategory').value = '';
+                primaryDropdown.querySelectorAll('.custom-select-option').forEach(o => o.classList.remove('selected'));
+                opt.classList.add('selected');
+                this.updateSecondaryOptions(key);
+                closeDropdown(primaryContainer);
+            });
+            primaryDropdown.appendChild(opt);
         });
 
-        // Event Listener for Primary Change
-        primarySelect.onchange = () => {
-            const selectedKey = primarySelect.value;
-            this.updateSecondaryOptions(selectedKey);
-            
-            // Update hidden fields
-            document.getElementById('bm-category').value = selectedKey || '';
-            document.getElementById('bm-subcategory').value = ''; // Reset sub on primary change
-        };
-
-        // Event Listener for Secondary Change
-        secondarySelect.onchange = () => {
-            document.getElementById('bm-subcategory').value = secondarySelect.value;
-        };
+        // Reset secondary
+        this.updateSecondaryOptions('');
     },
     syncCategoryUI() {
-        const primarySelect = document.getElementById('bm-category-select');
-        const secondarySelect = document.getElementById('bm-subcategory-select');
+        const primaryContainer = document.getElementById('bm-category-select');
+        const secondaryContainer = document.getElementById('bm-subcategory-select');
         const categoryInput = document.getElementById('bm-category');
         const subcategoryInput = document.getElementById('bm-subcategory');
-        
-        if (!primarySelect || !secondarySelect) return;
-        
+
+        if (!primaryContainer || !secondaryContainer) return;
+
         const currentPrimary = categoryInput.value;
         if (currentPrimary) {
-            primarySelect.value = currentPrimary;
+            const primaryTrigger = primaryContainer.querySelector('.custom-select-trigger');
+            const primaryLabel = primaryTrigger.querySelector('.custom-select-label');
+            const catName = this.categories[currentPrimary]?.name || currentPrimary;
+            primaryLabel.textContent = catName;
+            primaryLabel.classList.remove('is-placeholder');
+            // Update selected state
+            primaryContainer.querySelectorAll('.custom-select-option').forEach(o => {
+                o.classList.toggle('selected', o.dataset.value === currentPrimary);
+            });
+
             this.updateSecondaryOptions(currentPrimary);
-            
+
             const currentSecondary = subcategoryInput.value;
             if (currentSecondary) {
-                secondarySelect.value = currentSecondary;
+                const secTrigger = secondaryContainer.querySelector('.custom-select-trigger');
+                const secLabel = secTrigger.querySelector('.custom-select-label');
+                const child = this.categories[currentPrimary]?.children?.find(c => c.id === currentSecondary);
+                if (child) {
+                    secLabel.textContent = child.name;
+                    secLabel.classList.remove('is-placeholder');
+                }
+                secondaryContainer.querySelectorAll('.custom-select-option').forEach(o => {
+                    o.classList.toggle('selected', o.dataset.value === currentSecondary);
+                });
             }
         }
     }
@@ -2568,6 +2609,43 @@ document.addEventListener('DOMContentLoaded', async () => {
     bindListener('settings-form', handleSaveSettings);
     const noticeSave = document.getElementById('notice-save');
     if (noticeSave) noticeSave.addEventListener('click', () => NoticeManager.save());
+
+    // ── 自定义下拉框初始化 ──
+    window.closeDropdown = function(container) {
+        container.classList.remove('open');
+        container.querySelector('.custom-select-dropdown').classList.add('hidden');
+    };
+    window.toggleDropdown = function(trigger) {
+        const container = trigger.closest('.custom-select');
+        if (!container) return;
+        const isOpen = container.classList.contains('open');
+        // Close all other dropdowns first
+        document.querySelectorAll('.custom-select.open').forEach(c => {
+            if (c !== container) closeDropdown(c);
+        });
+        if (isOpen) {
+            closeDropdown(container);
+        } else {
+            container.classList.add('open');
+            container.querySelector('.custom-select-dropdown').classList.remove('hidden');
+        }
+    };
+
+    // Bind trigger clicks
+    document.querySelectorAll('.custom-select-trigger').forEach(trigger => {
+        trigger.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            toggleDropdown(trigger);
+        });
+    });
+
+    // Close dropdowns on outside click
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.custom-select')) {
+            document.querySelectorAll('.custom-select.open').forEach(c => closeDropdown(c));
+        }
+    });
 
     const saveTokenBtn = document.getElementById('admin-token-save');
     if (saveTokenBtn) saveTokenBtn.addEventListener('click', () => {
