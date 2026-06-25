@@ -343,11 +343,19 @@ html:not(.dark) .tag-pill:hover {
 
 @keyframes tagPop { to { opacity: 1; transform: translateY(0); } }
 
-/* ── 底栏 — 位于 .home-stage 内部底部，覆写 unified.css 的 margin-top:auto ── */
+/* ── 底栏 — 位于 .home-stage 内部底部，覆写 unified.css，透明融入流体背景 ── */
 .home-stage > .site-footer {
     margin-top: 0;
     flex-shrink: 0;
+    background: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border-top: 1px solid rgba(255,255,255,.08);
+    padding: 16px 24px;
+    font-size: .75rem;
 }
+.dark .home-stage > .site-footer { color: rgba(255,255,255,.5); }
+html:not(.dark) .home-stage > .site-footer { color: rgba(15,23,42,.45); }
 /* 兜底：若 footer 是 body 直接子元素（旧结构），固定于视口底部 */
 .homepage-cover-page > .site-footer {
     position: fixed;

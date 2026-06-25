@@ -70,7 +70,7 @@ a.nav-link:hover::after,a.nav-link.active::after{width:60%}
 /* ═══════ RESET ═══════ */
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 html{
-  -webkit-text-size-adjust:100%;text-size-adjust:100%;font-size:16px;scroll-behavior:auto;height:100%;
+  -webkit-text-size-adjust:100%;text-size-adjust:100%;font-size:16px;scroll-behavior:auto;
   scrollbar-width:none;-ms-overflow-style:none;
 }
 body{min-height:100dvh;display:flex;flex-direction:column}
