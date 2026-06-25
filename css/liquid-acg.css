@@ -8,13 +8,24 @@ body{margin:0;background:var(--bg);color:var(--tx);font-family:'Inter','Noto San
 .hidden{display:none!important}
 
 /* ── Layout ── */
-.acg-shell{max-width:1240px;margin:0 auto;padding:100px 20px 60px}
-.acg-hero{margin-bottom:44px;padding:40px 32px;border-radius:16px;background:var(--cbg);border:1px solid var(--cbr)}
-.acg-hero-label{font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--pink);margin-bottom:8px}
+.acg-shell{max-width:1240px;margin:0 auto;padding:100px 20px 80px}
+.acg-hero{position:relative;margin-bottom:48px;padding:44px 36px;border-radius:18px;background:var(--cbg);border:1px solid var(--cbr);overflow:hidden}
+.acg-hero::before{content:'';position:absolute;top:-30%;right:-10%;width:280px;height:280px;background:radial-gradient(circle,rgba(236,72,153,.12),transparent 70%);pointer-events:none}
+.acg-hero::after{content:'';position:absolute;bottom:-20%;left:-5%;width:200px;height:200px;background:radial-gradient(circle,rgba(139,92,246,.1),transparent 70%);pointer-events:none}
+.acg-hero>*{position:relative;z-index:1}
+.acg-hero-label{font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--pink);margin-bottom:10px}
 .acg-hero h1{font-size:2rem;font-weight:900;margin:0 0 4px}
 .acg-hero h1 em{font-style:normal;background:linear-gradient(135deg,var(--pink),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.acg-hero p{font-size:.9rem;color:var(--t2);margin:0}
+.acg-hero p{font-size:.88rem;color:var(--t2);margin:0}
 
+/* ── Card hover glow ── */
+.acg-grid .media-item, .acg-vgrid .glass-card {
+  transition:transform .2s ease, box-shadow .2s ease;
+}
+.acg-grid .media-item:hover, .acg-vgrid .glass-card:hover {
+  transform:translateY(-4px);
+  box-shadow:0 12px 32px rgba(236,72,153,.15) !important;
+}
 /* ── Section ── */
 .acg-sec{margin-bottom:40px}
 .acg-sec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
@@ -33,26 +44,63 @@ body{margin:0;background:var(--bg);color:var(--tx);font-family:'Inter','Noto San
 @media(min-width:768px){.acg-vgrid{grid-template-columns:repeat(2,1fr)}}
 @media(min-width:1100px){.acg-vgrid{grid-template-columns:repeat(3,1fr);gap:24px}}
 
-/* ── 强制圆角 — 只命中容器和图片 ── */
-.acg-grid .media-item,
-.acg-grid .glass-card,
-.acg-grid [class*="rounded"],
-.acg-grid img:not(.rounded-full),
-.acg-vgrid .glass-card,
-.acg-vgrid [class*="rounded"],
-.acg-vgrid img:not(.rounded-full),
-#home-anime-grid .media-item,
-#home-anime-grid .glass-card,
-#home-anime-grid img,
-#home-manga-grid .media-item,
-#home-manga-grid .glass-card,
-#home-manga-grid img,
-#video-grid .glass-card,
-#video-grid img,
-#favorite-video-grid .glass-card,
-#favorite-video-grid img {
+/* ── 圆角 — 卡片容器和图片 ── */
+.acg-grid .media-item, .acg-grid .glass-card,
+.acg-grid [class*="rounded"], .acg-grid img,
+.acg-vgrid .glass-card, .acg-vgrid [class*="rounded"], .acg-vgrid img,
+#home-anime-grid .media-item, #home-anime-grid img,
+#home-manga-grid .media-item, #home-manga-grid img,
+#video-grid img, #favorite-video-grid img {
   border-radius:10px !important;
 }
+
+/* ── 封面全幅 + 文字浮于图上 ── */
+.acg-grid .media-item, #home-anime-grid .media-item, #home-manga-grid .media-item {
+  position:relative; overflow:hidden; padding:0 !important;
+  display:flex; flex-direction:column; justify-content:flex-end;
+  aspect-ratio:2/3; border-radius:10px !important;
+  background:var(--cbg);
+}
+.acg-grid .media-item > div:first-child,  /* 图片容器 */
+#home-anime-grid .media-item > div:first-child,
+#home-manga-grid .media-item > div:first-child {
+  position:absolute !important; inset:0 !important; margin:0 !important;
+  border-radius:10px !important; overflow:hidden;
+}
+.acg-grid .media-item img, #home-anime-grid .media-item img, #home-manga-grid .media-item img {
+  width:100% !important; height:100% !important; object-fit:cover !important;
+  aspect-ratio:auto !important; border-radius:10px !important;
+}
+/* 渐变遮罩 + 文字层 */
+.acg-grid .media-item > div:first-child::after,
+#home-anime-grid .media-item > div:first-child::after,
+#home-manga-grid .media-item > div:first-child::after {
+  content:''; position:absolute; inset:0;
+  background:linear-gradient(to top, rgba(0,0,0,.85) 0%, rgba(0,0,0,.2) 40%, transparent 70%);
+  pointer-events:none; z-index:1;
+}
+/* 文字提到上层 */
+.acg-grid .media-item h3, #home-anime-grid .media-item h3, #home-manga-grid .media-item h3 {
+  position:relative; z-index:2; color:#fff !important; font-size:.78rem;
+  padding:0 10px; margin:0 0 4px; line-height:1.25;
+}
+.acg-grid .media-item p, .acg-grid .media-item .text-xs,
+.acg-grid .media-item .text-gray-500,
+#home-anime-grid .media-item p, #home-anime-grid .media-item .text-xs,
+#home-anime-grid .media-item .text-gray-500,
+#home-manga-grid .media-item p, #home-manga-grid .media-item .text-xs,
+#home-manga-grid .media-item .text-gray-500 {
+  position:relative; z-index:2; color:rgba(255,255,255,.7) !important;
+  padding:0 10px 12px; margin:0; font-size:.65rem;
+}
+/* 隐藏进度条（图上不好放）*/
+.acg-grid .media-item [class*="bottom-3"],
+#home-anime-grid .media-item [class*="bottom-3"],
+#home-manga-grid .media-item [class*="bottom-3"] { display:none; }
+/* 徽章保留 */
+.acg-grid .media-item [class*="top-2"],
+#home-anime-grid .media-item [class*="top-2"],
+#home-manga-grid .media-item [class*="top-2"] { z-index:3; }
 
 /* ── Loading ── */
 .acg-load{grid-column:1/-1;display:flex;justify-content:center;padding:60px 0}
