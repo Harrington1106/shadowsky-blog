@@ -77,44 +77,8 @@
         .error-hint {
             color: var(--color-text-muted, #64748B);
             font-size: var(--text-sm, 0.875rem);
-            margin-bottom: var(--sp-8, 32px);
+            margin-bottom: var(--sp-10, 40px);
         }
-
-        /* 快捷导航行 */
-        .error-links {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: var(--sp-2, 8px);
-            margin-bottom: var(--sp-8, 32px);
-        }
-        .error-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 7px 16px;
-            border-radius: var(--radius-full, 9999px);
-            background: transparent;
-            border: 1px solid var(--color-border, rgba(255,255,255,.08));
-            color: var(--color-text-secondary, #94A3B8);
-            font-size: var(--text-sm, 0.875rem);
-            font-weight: 500;
-            text-decoration: none;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-        .error-link:hover {
-            background: var(--glass-depth-2-bg, rgba(15,23,42,.55));
-            color: var(--color-primary, #14B8A6);
-            border-color: rgba(20,184,166,.3);
-        }
-        .error-link i, .error-link svg {
-            width: 15px; height: 15px;
-            flex-shrink: 0;
-            opacity: 0.6;
-            transition: opacity 0.2s;
-        }
-        .error-link:hover i, .error-link:hover svg { opacity: 1; }
 
         /* 游戏卡片 */
         .error-game-card {
@@ -124,7 +88,7 @@
             margin-right: auto;
             padding: var(--sp-5, 20px);
             border-radius: var(--radius-xl, 24px);
-            margin-bottom: var(--sp-8, 32px);
+            margin-bottom: var(--sp-10, 40px);
         }
         .error-game-card::after {
             opacity: 0.35;
@@ -342,7 +306,7 @@
     </div>
 
     <!-- ═══════ 主内容 ═══════ -->
-    <main class="flex-grow flex flex-col items-center justify-center px-4 pb-10 relative z-10 w-full" data-ui-shell="error-playground" role="main" style="text-align:center">
+    <main class="flex-grow flex flex-col items-center justify-center px-4 pb-20 pt-8 relative z-10 w-full" data-ui-shell="error-playground" role="main" style="text-align:center">
 
         <!-- Kicker 徽章 -->
         <div class="error-kicker fade-in" aria-hidden="true">404 · NOT FOUND</div>
@@ -352,19 +316,10 @@
 
         <!-- 描述 -->
         <p class="error-desc fade-in stagger-1">你寻找的页面已星间蒸发，或是从未存在过。</p>
-        <p class="error-hint fade-in stagger-2">试试下面的链接，或者玩一局围猫游戏放松一下。</p>
-
-        <!-- 快捷导航 -->
-        <nav class="error-links fade-in stagger-3" role="navigation" aria-label="快速导航">
-            <a href="index.html" class="error-link"><i data-lucide="house"></i>首页</a>
-            <a href="blog.html" class="error-link"><i data-lucide="file-text"></i>笔记</a>
-            <a href="acg.html" class="error-link"><i data-lucide="film"></i>ACG</a>
-            <a href="bookmarks.html" class="error-link"><i data-lucide="bookmark"></i>收藏</a>
-            <a href="about.html" class="error-link"><i data-lucide="user-circle"></i>关于</a>
-        </nav>
+        <p class="error-hint fade-in stagger-2">来玩一局围猫游戏放松一下吧。</p>
 
         <!-- 围猫游戏卡片 -->
-        <div class="glass-card glass-edge-glow error-game-card fade-in stagger-4" data-ui-panel="error-game">
+        <div class="glass-card glass-edge-glow error-game-card fade-in stagger-3" data-ui-panel="error-game">
             <!-- 控制栏 -->
             <div class="error-game-bar">
                 <span id="role-text" class="error-game-role">切换: 扮演小猫</span>
@@ -387,7 +342,7 @@
         </div>
 
         <!-- 返回首页 CTA -->
-        <a href="index.html" class="error-cta fade-in stagger-5">
+        <a href="index.html" class="error-cta fade-in stagger-4">
             <i data-lucide="arrow-left"></i>
             返回首页
         </a>
