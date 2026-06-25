@@ -1280,7 +1280,7 @@ const BookmarksManager = {
             const r = await fetch(`${s.baseUrl||'https://api.deepseek.com/v1'}/chat/completions`, {
                 method:'POST', headers:{'Authorization':`Bearer ${s.apiKey}`,'Content-Type':'application/json'},
                 body:JSON.stringify({model:s.model||'deepseek-chat',messages:[
-                    {role:'system',content:'将以下内容翻译成简体中文，只返回译文。'},
+                    {role:'system',content:'你是一个网站简介翻译专家。将以下英文网站描述翻译成自然流畅的简体中文简介，像「您可以查看XX的最新资讯、作品、动态等内容」这样地道的中文表达。只返回译文，不要解释。'},
                     {role:'user',content:text}
                 ],temperature:0.3})
             });
