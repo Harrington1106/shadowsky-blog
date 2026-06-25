@@ -685,9 +685,9 @@
 
             // Copy Button
             const button = document.createElement('button');
-            button.className = 'p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors text-gray-500 dark:text-gray-400';
-            button.innerHTML = '<i data-lucide="copy" class="w-3.5 h-3.5"></i>';
-            button.title = '复制';
+            button.className = 'code-copy-btn';
+            button.innerHTML = '<i data-lucide="copy"></i><span>复制</span>';
+            button.title = '复制代码';
             
             button.addEventListener('click', async () => {
                 if (!code) return;
@@ -775,19 +775,9 @@
             if (scoredPosts.length === 0) return;
 
             const renderList = (items) => items.map(item => `
-                <a href="post.html?file=${item.post.file}" class="block p-3 rounded-xl bg-gray-50 dark:bg-gray-800 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all group border border-transparent hover:border-blue-100 dark:hover:border-blue-800">
-                    <h4 class="text-sm font-medium text-gray-800 dark:text-gray-200 group-hover:text-blue-600 dark:group-hover:text-blue-400 line-clamp-2 mb-2">
-                        ${item.post.title}
-                    </h4>
-                    <div class="flex items-center gap-2">
-                        <span class="px-2 py-0.5 rounded text-[10px] bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center">
-                            <i data-lucide="tag" class="w-3 h-3 mr-1"></i>
-                            匹配 ${item.score} 个标签
-                        </span>
-                        <span class="text-[10px] text-gray-400">
-                            ${new Date(item.post.date).toLocaleDateString()}
-                        </span>
-                    </div>
+                <a href="post.html?file=${item.post.file}" class="post-reco-item">
+                    <span class="post-reco-title">${item.post.title}</span>
+                    <span class="post-reco-meta">${new Date(item.post.date).toLocaleDateString()} · 匹配${item.score}标签</span>
                 </a>
             `).join('');
 
