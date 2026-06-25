@@ -180,8 +180,9 @@
         </div>
     </div>
 
-    <div class="flex min-h-screen font-sans">
-        <!-- ═══════ SIDEBAR ═══════ -->
+    <div style="display:flex;flex-direction:column;min-height:100vh">
+        <!-- ═══════ SIDEBAR + MAIN ═══════ -->
+        <div style="display:flex;flex:1">
         <aside id="sidebar" class="fixed inset-y-0 left-0 w-64 z-50 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 flex flex-col" role="navigation" aria-label="主导航菜单">
             <!-- Logo -->
             <div class="p-5 flex items-center gap-3" style="border-bottom:1px solid rgba(255,255,255,.06)">
@@ -235,7 +236,7 @@
         </aside>
 
         <!-- ═══════ MAIN CONTENT ═══════ -->
-        <main class="flex-1 lg:ml-64 p-4 lg:p-8 overflow-y-auto h-screen w-full admin-scroll" style="padding-top:90px">
+        <main class="flex-1 lg:ml-64 p-4 lg:p-8 overflow-y-auto w-full admin-scroll" style="padding-top:90px;min-height:0">
             <!-- Toast Container -->
             <div id="toast-container" class="fixed top-6 right-6 z-50 flex flex-col gap-3 pointer-events-none" style="transition:all .3s ease"></div>
 
@@ -554,11 +555,11 @@
                 </div>
             </section>
 
-            <!-- Footer -->
-            <footer class="py-8 text-center text-sm" style="color:#64748b">
-                <p>&copy; <span id="year"></span> ShadowQuake. All rights reserved.</p>
-            </footer>
         </main>
+        </div><!-- end sidebar+main row -->
+
+        <!-- Footer -->
+        <footer class="site-footer"><span>&copy; <span id="year"></span> ShadowQuake</span></footer>
     </div>
 
     <!-- Scripts -->
