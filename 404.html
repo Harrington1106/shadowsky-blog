@@ -339,7 +339,7 @@
 
             const GRID = 11;
             const R = 14, GAP = 5;
-            let dots, catPos, gameState, playerRole, isAiTurn;
+            let dots, catPos, gameState, playerRole, isAiTurn, moveCount;
 
             /* ── 主题感知颜色 ── */
             function isDark() { return document.documentElement.classList.contains('dark'); }
@@ -349,27 +349,43 @@
             function init() {
                 dots = [];
                 catPos = { x: Math.floor(GRID/2), y: Math.floor(GRID/2) };
-                gameState = 'playing'; isAiTurn = false;
+                gameState = 'playing'; isAiTurn = false; moveCount = 0;
                 hideMsg();
+
+                /* 生成初始障碍：避开猫及其邻格 */
                 for (let y = 0; y < GRID; y++) {
                     let row = [];
                     for (let x = 0; x < GRID; x++) {
-                        let blocked = (Math.random() < 0.12) && (x !== catPos.x || y !== catPos.y);
+                        let blocked = false;
+                        if (Math.random() < 0.12) {
+                            const dist = Math.abs(x - catPos.x) + Math.abs(y - catPos.y);
+                            if (dist > 1) blocked = true; /* 不在猫旁边 */
+                        }
                         row.push({ x, y, blocked });
                     }
                     dots.push(row);
                 }
+
+                /* 确保猫至少有一条路径到达边缘 */
+                if (!bfs(catPos)) {
+                    /* 清除猫周围一圈的障碍 */
+                    getNb(catPos.x, catPos.y).forEach(n => { dots[n.y][n.x].blocked = false; });
+                    dots[catPos.y][catPos.x].blocked = false;
+                }
+
                 updateRoleUI();
                 resize();
                 requestAnimationFrame(draw);
             }
 
             function updateRoleUI() {
+                const dist = bfsDist(catPos);
+                const distStr = dist ? ` · 距边缘 ${dist} 步` : ' · 已被围困！';
                 if (playerRole === 'catcher') {
-                    instruction.textContent = '点击背景围住小猫，别让它跑掉！';
+                    instruction.textContent = `点击背景围住小猫，别让它跑掉！${distStr}`;
                     roleText.textContent = '切换: 扮演小猫';
                 } else {
-                    instruction.textContent = '点击相邻格子移动小猫，逃离抓捕！';
+                    instruction.textContent = `点击相邻格子移动小猫，逃离抓捕！${distStr}`;
                     roleText.textContent = '切换: 扮演抓捕者';
                 }
             }
@@ -402,6 +418,7 @@
                 const dc = dotColor(), bc = blockedColor();
                 const catCol = playerRole === 'cat' ? '#ec4899' : '#ef4444';
 
+                /* 绘制格子 */
                 for (let y = 0; y < GRID; y++)
                     for (let x = 0; x < GRID; x++) {
                         const d = dots[y][x];
@@ -412,6 +429,7 @@
                         ctx.fill();
                     }
 
+                /* 高亮玩家猫的可移动格 */
                 if (playerRole === 'cat' && gameState === 'playing' && !isAiTurn) {
                     getNb(catPos.x, catPos.y).forEach(n => {
                         if (!dots[n.y][n.x].blocked) {
@@ -424,9 +442,11 @@
                     });
                 }
 
+                /* 绘制猫 */
                 const cp = pos(catPos.x, catPos.y);
                 ctx.beginPath(); ctx.arc(cp.x, cp.y, R*.8, 0, Math.PI*2);
                 ctx.fillStyle = catCol; ctx.fill();
+                /* 猫脸 */
                 ctx.fillStyle = '#fff';
                 ctx.beginPath(); ctx.arc(cp.x-4, cp.y-2, 2.5, 0, Math.PI*2); ctx.fill();
                 ctx.beginPath(); ctx.arc(cp.x+4, cp.y-2, 2.5, 0, Math.PI*2); ctx.fill();
@@ -456,12 +476,15 @@
                 return dirs.map(d=>({x:x+d[0],y:y+d[1]})).filter(n=>n.x>=0&&n.x<GRID&&n.y>=0&&n.y<GRID);
             }
 
+            function edge(p) { return p.x===0||p.x===GRID-1||p.y===0||p.y===GRID-1; }
+
+            /* ── BFS 寻路：返回最短路径（到最近边缘）── */
             function bfs(start) {
                 const q = [{x:start.x,y:start.y,path:[]}];
                 const v = new Set([`${start.x},${start.y}`]);
                 while (q.length) {
                     const {x,y,path} = q.shift();
-                    if (x===0||x===GRID-1||y===0||y===GRID-1) return path;
+                    if (edge({x,y})) return path;
                     for (const n of getNb(x,y))
                         if (!dots[n.y][n.x].blocked && !v.has(`${n.x},${n.y}`))
                             { v.add(`${n.x},${n.y}`); q.push({x:n.x,y:n.y,path:[...path,{x:n.x,y:n.y}]}); }
@@ -469,41 +492,107 @@
                 return null;
             }
 
-            function edge(p) { return p.x===0||p.x===GRID-1||p.y===0||p.y===GRID-1; }
+            /* ── BFS 距离（步数，不返回路径）── */
+            function bfsDist(start) {
+                const q = [{x:start.x,y:start.y,d:0}];
+                const v = new Set([`${start.x},${start.y}`]);
+                while (q.length) {
+                    const {x,y,d} = q.shift();
+                    if (edge({x,y})) return d;
+                    for (const n of getNb(x,y))
+                        if (!dots[n.y][n.x].blocked && !v.has(`${n.x},${n.y}`))
+                            { v.add(`${n.x},${n.y}`); q.push({x:n.x,y:n.y,d:d+1}); }
+                }
+                return null;
+            }
 
+            /* ── 猫 AI：取最短路径，多解时随机选 ── */
             function aiCat() {
                 const path = bfs(catPos);
                 if (path && path.length) {
-                    catPos = path[0];
+                    /* 收集所有等长最优路径的第一步 */
+                    const bestLen = path.length;
+                    const candidates = [];
+                    for (const n of getNb(catPos.x, catPos.y)) {
+                        if (dots[n.y][n.x].blocked) continue;
+                        /* 临时移动，测距 */
+                        const oldCat = catPos;
+                        catPos = n;
+                        const p = bfs(catPos);
+                        catPos = oldCat;
+                        if (p && p.length === bestLen - 1) candidates.push(n);
+                    }
+                    catPos = candidates.length ? candidates[Math.floor(Math.random()*candidates.length)] : path[0];
                     if (edge(catPos)) end('cat_win');
                 } else {
+                    /* 无路可逃 → 尽量活久一点 */
                     const nb = getNb(catPos.x, catPos.y).filter(n=>!dots[n.y][n.x].blocked);
                     if (!nb.length) end('catcher_win');
-                    else catPos = nb[Math.floor(Math.random()*nb.length)];
+                    else {
+                        /* 选移动后剩余可选格子最多的 */
+                        let best = nb[0], bestOpen = -1;
+                        for (const n of nb) {
+                            const open = getNb(n.x, n.y).filter(m=>!dots[m.y][m.x].blocked).length;
+                            if (open > bestOpen) { bestOpen = open; best = n; }
+                        }
+                        catPos = best;
+                    }
                 }
+                moveCount++;
+                updateRoleUI();
                 draw(); isAiTurn = false;
             }
 
+            /* ── 拦截 AI：1-ply 前瞻，选最优拦截点 ── */
             function aiBlock() {
                 const path = bfs(catPos);
-                let tgt = null;
-                if (path && path.length) tgt = path[0];
-                else {
+                let tgt = null, bestScore = -Infinity;
+
+                /* 候选：猫下一步能走的格子 + 猫当前位置的邻格 */
+                const candidates = new Set();
+                if (path && path.length) {
+                    candidates.add(`${path[0].x},${path[0].y}`);
+                    /* 也考虑拦截猫第2步 */
+                    if (path.length > 1) candidates.add(`${path[1].x},${path[1].y}`);
+                }
+                /* 猫周围可走格 */
+                getNb(catPos.x, catPos.y).filter(n=>!dots[n.y][n.x].blocked).forEach(n=>candidates.add(`${n.x},${n.y}`));
+
+                for (const key of candidates) {
+                    const [cx, cy] = key.split(',').map(Number);
+                    if (dots[cy][cx].blocked) continue;
+                    if (cx === catPos.x && cy === catPos.y) continue;
+
+                    /* 模拟拦截后测距 */
+                    dots[cy][cx].blocked = true;
+                    const newDist = bfsDist(catPos);
+                    dots[cy][cx].blocked = false;
+
+                    let score;
+                    if (newDist === null) score = 999; /* 直接围死 */
+                    else score = newDist * 10 - Math.abs(cx - GRID/2) * 0.1; /* 越远越好，偏中心 */
+                    if (score > bestScore) { bestScore = score; tgt = {x:cx, y:cy}; }
+                }
+
+                if (!tgt) {
+                    /* fallback：随机拦一个邻格 */
                     const nb = getNb(catPos.x, catPos.y).filter(n=>!dots[n.y][n.x].blocked);
                     if (nb.length) tgt = nb[Math.floor(Math.random()*nb.length)];
                 }
+
                 if (tgt && !dots[tgt.y][tgt.x].blocked) {
                     dots[tgt.y][tgt.x].blocked = true;
                     if (!getNb(catPos.x,catPos.y).filter(n=>!dots[n.y][n.x].blocked).length) end('catcher_win');
                 }
+                updateRoleUI();
                 draw(); isAiTurn = false;
             }
 
             function end(result) {
                 if (playerRole === 'catcher')
-                    result === 'cat_win' ? showMsg('小猫跑掉了！', '#ef4444') : showMsg('你抓住了小猫！', '#10B981');
+                    result === 'cat_win' ? showMsg(`小猫跑掉了！(${moveCount}步)`, '#ef4444') : showMsg(`你抓住了小猫！(${moveCount}步)`, '#10B981');
                 else
-                    result === 'cat_win' ? showMsg('你逃脱了！', '#10B981') : showMsg('你被抓住了！', '#ef4444');
+                    result === 'cat_win' ? showMsg(`你逃脱了！(${moveCount}步)`, '#10B981') : showMsg(`你被抓住了！(${moveCount}步)`, '#ef4444');
                 gameState = 'over';
             }
 
@@ -534,7 +623,7 @@
                     }
                 } else {
                     if (getNb(catPos.x, catPos.y).some(n=>n.x===gp.x&&n.y===gp.y) && !dots[gp.y][gp.x].blocked) {
-                        catPos = gp; draw();
+                        catPos = gp; moveCount++; updateRoleUI(); draw();
                         if (edge(catPos)) end('cat_win');
                         else { isAiTurn = true; setTimeout(aiBlock, 180); }
                     }
