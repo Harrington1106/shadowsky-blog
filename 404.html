@@ -1,37 +1,283 @@
-﻿<!DOCTYPE html>
-<html lang="zh-CN" class="dark">
+<!DOCTYPE html>
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#060B18" media="(prefers-color-scheme: dark)">
+    <meta name="theme-color" content="#E8ECF1" media="(prefers-color-scheme: light)">
     <title>404 - 页面未找到 | 夏日科技探索</title>
     <link rel="icon" type="image/png" href="public/img/favicon256.png">
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.loli.net">
     <link rel="preconnect" href="https://gstatic.loli.net" crossorigin>
-    <link href="https://fonts.loli.net/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.loli.net/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 
     <!-- Unified CSS -->
-        <link href="css/unified.css?v=2606270700" rel="stylesheet">
+    <link href="css/unified.css?v=2606270700" rel="stylesheet">
     <link href="css/liquid-ambient.css?v=20260624v5" rel="stylesheet">
 
     <!-- Lucide Icons -->
     <script src="js/vendor/lucide.min.js?v=20260624v5"></script>
 
     <style>
-        body {
-            font-family: 'Inter', 'Noto Sans SC', sans-serif;
+        /* ═══════════════════════════════════════════════
+           404 Error Page — Exaggerated Minimalism
+           巨大数字 + 液态玻璃 + 呼吸光晕
+           ═══════════════════════════════════════════════ */
+
+        /* 404 数字 — 等宽字体 + 渐变 + 光晕 */
+        .error-code {
+            font-family: 'JetBrains Mono', var(--pr-font-mono);
+            font-size: clamp(6rem, 18vw, 12rem);
+            font-weight: 700;
+            letter-spacing: -0.04em;
+            line-height: 0.9;
+            margin-bottom: var(--sp-2, 8px);
+            background: linear-gradient(135deg, var(--pr-aqua-400, #2DD4BF), var(--pr-cyan-400, #22D3EE));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            background-size: 200% auto;
+            animation: gradientShift 4s ease infinite;
+            user-select: none;
         }
-        /* Dark/Light visibility */
-        .dark .light-only { display: none !important; }
-        .dark .dark-only { display: inline !important; }
-        img.light-only, img.dark-only { display: none; }
-        .dark img.dark-only { display: inline; }
-        img.light-only { display: inline; }
-        .dark img.light-only { display: none; }
+
+        /* Kicker 徽章 — 玻璃药丸 */
+        .error-kicker {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.35rem 0.9rem;
+            border-radius: var(--radius-full, 9999px);
+            border: 1px solid var(--glass-depth-2-border, rgba(255,255,255,.07));
+            background: var(--glass-depth-2-bg, rgba(15,23,42,.55));
+            backdrop-filter: blur(20px) saturate(1.3);
+            -webkit-backdrop-filter: blur(20px) saturate(1.3);
+            color: var(--color-text-muted, #94A3B8);
+            font-size: 0.68rem;
+            font-weight: 600;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            margin-bottom: var(--sp-6, 24px);
+        }
+
+        /* 描述文字 */
+        .error-desc {
+            max-width: 460px;
+            text-align: center;
+            color: var(--color-text-secondary, #94A3B8);
+            font-size: var(--text-lg, 1.125rem);
+            line-height: var(--leading-relaxed, 1.625);
+            margin-bottom: var(--sp-2, 8px);
+        }
+        .error-hint {
+            color: var(--color-text-muted, #64748B);
+            font-size: var(--text-sm, 0.875rem);
+            margin-bottom: var(--sp-8, 32px);
+        }
+
+        /* 快捷导航行 */
+        .error-links {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: var(--sp-2, 8px);
+            margin-bottom: var(--sp-8, 32px);
+        }
+        .error-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 7px 16px;
+            border-radius: var(--radius-full, 9999px);
+            background: transparent;
+            border: 1px solid var(--color-border, rgba(255,255,255,.08));
+            color: var(--color-text-secondary, #94A3B8);
+            font-size: var(--text-sm, 0.875rem);
+            font-weight: 500;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .error-link:hover {
+            background: var(--glass-depth-2-bg, rgba(15,23,42,.55));
+            color: var(--color-primary, #14B8A6);
+            border-color: rgba(20,184,166,.3);
+        }
+        .error-link i, .error-link svg {
+            width: 15px; height: 15px;
+            flex-shrink: 0;
+            opacity: 0.6;
+            transition: opacity 0.2s;
+        }
+        .error-link:hover i, .error-link:hover svg { opacity: 1; }
+
+        /* 游戏卡片 */
+        .error-game-card {
+            max-width: 480px;
+            width: 100%;
+            padding: var(--sp-5, 20px);
+            border-radius: var(--radius-xl, 24px);
+            margin-bottom: var(--sp-8, 32px);
+        }
+        .error-game-card::after {
+            opacity: 0.35;
+        }
+
+        /* 游戏控制栏 */
+        .error-game-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--sp-3, 12px);
+            flex-wrap: wrap;
+            gap: var(--sp-2, 8px);
+        }
+        .error-game-role {
+            font-size: var(--text-xs, 0.75rem);
+            color: var(--color-text-muted, #94A3B8);
+            font-weight: 500;
+        }
+        .error-game-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 5px 12px;
+            border-radius: var(--radius-full, 9999px);
+            border: 1px solid var(--color-border, rgba(255,255,255,.08));
+            background: var(--glass-depth-3-bg, rgba(17,24,39,.65));
+            color: var(--color-text-secondary, #94A3B8);
+            font-size: var(--text-xs, 0.75rem);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+        .error-game-pill:hover {
+            background: var(--glass-depth-4-bg);
+            border-color: rgba(20,184,166,.25);
+            color: var(--color-primary, #14B8A6);
+        }
+        .error-game-pill--accent {
+            color: var(--pr-purple-400, #C084FC);
+            border-color: rgba(168,85,247,.2);
+        }
+        .error-game-pill--accent:hover {
+            color: var(--pr-purple-300, #A78BFA);
+            border-color: rgba(168,85,247,.4);
+            background: rgba(168,85,247,.1);
+        }
+
+        /* 游戏说明 */
+        .error-game-instruction {
+            text-align: center;
+            color: var(--color-text-secondary, #94A3B8);
+            font-size: var(--text-sm, 0.875rem);
+            font-weight: 500;
+            margin-bottom: var(--sp-3, 12px);
+        }
+
+        /* 画布容器 */
+        .error-game-canvas-wrap {
+            position: relative;
+            aspect-ratio: 1;
+            width: 100%;
+            border-radius: var(--radius-lg, 16px);
+            overflow: hidden;
+            cursor: pointer;
+            touch-action: none;
+            user-select: none;
+            background: var(--pr-gray-100, #F1F5F9);
+            border: 1px solid var(--color-border, rgba(255,255,255,.06));
+        }
+        .dark .error-game-canvas-wrap {
+            background: var(--pr-dark-850, #0F172A);
+        }
+        .error-game-canvas-wrap canvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* 游戏消息覆盖层 */
+        .error-game-msg {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 10;
+        }
+        .error-game-msg.show {
+            opacity: 1;
+        }
+        .error-game-msg span {
+            color: white;
+            font-weight: 700;
+            font-size: var(--text-xl, 1.25rem);
+            padding: 10px 24px;
+            border-radius: var(--radius-full, 9999px);
+            box-shadow: 0 8px 32px rgba(0,0,0,.3);
+            transform: scale(0);
+            transition: transform 0.3s ease;
+        }
+        .error-game-msg.show span {
+            transform: scale(1);
+        }
+
+        /* CTA 按钮 */
+        .error-cta {
+            margin-top: 0;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 28px;
+            border-radius: var(--radius-full, 9999px);
+            background: var(--color-primary, #0D9488);
+            color: #fff;
+            font-size: var(--text-base, 1rem);
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            box-shadow: 0 4px 20px rgba(20,184,166,.3);
+        }
+        .error-cta:hover {
+            background: var(--color-primary-hover, #0F766E);
+            box-shadow: 0 8px 30px rgba(20,184,166,.45);
+            transform: translateY(-1px);
+            color: #fff;
+        }
+        .error-cta i, .error-cta svg {
+            width: 18px; height: 18px;
+            transition: transform 0.25s ease;
+        }
+        .error-cta:hover i, .error-cta:hover svg {
+            transform: translateX(-3px);
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 640px) {
+            .error-code { font-size: clamp(3.5rem, 22vw, 5.5rem); }
+            .error-desc { font-size: var(--text-base, 1rem); max-width: 320px; }
+            .error-game-card { padding: var(--sp-4, 16px); max-width: calc(100vw - 32px); }
+            .error-links { gap: 6px; }
+            .error-link { padding: 6px 12px; font-size: 0.8rem; }
+            .error-kicker { font-size: 0.6rem; padding: 0.3rem 0.7rem; }
+        }
+
+        /* ── Reduced Motion ── */
+        @media (prefers-reduced-motion: reduce) {
+            .error-code { animation: none !important; }
+            .error-game-msg, .error-game-msg span { transition: none !important; }
+        }
     </style>
 </head>
-<body class="font-sans flex flex-col min-h-screen">
+<body class="font-sans flex flex-col min-h-screen" data-page="error" data-ui-shell="error-playground">
+
     <!-- ═══════ 流体光斑层 ═══════ -->
     <div class="liquid-ambient ambient-subtle" aria-hidden="true">
         <div class="liquid-blob liquid-blob--1"></div>
@@ -39,8 +285,7 @@
         <div class="liquid-blob liquid-blob--3"></div>
     </div>
 
-
-    <!-- Navbar -->
+    <!-- ═══════ NAVBAR ═══════ -->
     <nav id="navbar" class="homepage-cover-nav-shell" data-ui-region="home-nav-shell">
         <div class="nav-inner">
             <div class="nav-left">
@@ -51,7 +296,7 @@
                 </a>
                 <span class="nav-divider" aria-hidden="true"></span>
                 <div class="nav-links homepage-cover-nav-actions" role="navigation" aria-label="Main">
-                    <a href="index.html" class="nav-link active" aria-current="page" title="首页"><i data-lucide="house"></i><span class="nav-text">首页</span></a>
+                    <a href="index.html" class="nav-link" title="首页"><i data-lucide="house"></i><span class="nav-text">首页</span></a>
                     <a href="blog.html" class="nav-link" title="笔记"><i data-lucide="file-text"></i><span class="nav-text">笔记</span></a>
                     <a href="moments.html" class="nav-link" title="片刻"><i data-lucide="camera"></i><span class="nav-text">片刻</span></a>
                     <a href="bookmarks.html" class="nav-link" title="收藏"><i data-lucide="bookmark"></i><span class="nav-text">收藏</span></a>
@@ -81,7 +326,7 @@
             </button>
         </div>
         <div class="mobile-menu-links">
-            <a href="index.html" class="mobile-nav-link active homepage-mobile-menu-link"><i data-lucide="house"></i><span>首页</span></a>
+            <a href="index.html" class="mobile-nav-link homepage-mobile-menu-link"><i data-lucide="house"></i><span>首页</span></a>
             <a href="blog.html" class="mobile-nav-link homepage-mobile-menu-link"><i data-lucide="file-text"></i><span>笔记</span></a>
             <a href="moments.html" class="mobile-nav-link homepage-mobile-menu-link"><i data-lucide="camera"></i><span>片刻</span></a>
             <a href="bookmarks.html" class="mobile-nav-link homepage-mobile-menu-link"><i data-lucide="bookmark"></i><span>收藏</span></a>
@@ -91,406 +336,291 @@
         </div>
     </div>
 
-    <!-- Main Content -->
-    <main class="public-shell public-shell--floating-nav layout-safe-top flex-grow flex flex-col items-center justify-center px-4 pb-12 relative z-10" data-ui-shell="error-playground">
-        <span class="editorial-kicker mb-4">Page Recovery</span>
-        <h1 class="text-8xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 mb-2">404</h1>
-        <p class="text-xl text-gray-600 dark:text-gray-400 mb-8 font-serif italic">你要找的页面暂时迷失在星图之外，先玩一局小游戏再回到主航道。</p>
+    <!-- ═══════ 主内容 ═══════ -->
+    <main class="flex-grow flex flex-col items-center justify-center px-4 pb-10 relative z-10" data-ui-shell="error-playground" role="main">
 
-        <!-- Game Container -->
-        <div class="glass-card relative bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 max-w-lg w-full border border-gray-100 dark:border-gray-700" data-ui-panel="error-game">
-             <div class="flex justify-between items-center mb-4">
-                 <span id="role-text" class="text-sm font-medium text-gray-500 dark:text-gray-400">切换: 扮演小猫</span>
-                 <div class="flex space-x-2">
-                     <button id="switch-role" class="glass-pill px-3 py-1 text-xs sm:text-sm rounded-full bg-purple-50 text-purple-600 font-medium transition-colors hover:bg-purple-100">切换角色</button>
-                     <button id="reset-game" class="glass-pill px-3 py-1 text-xs sm:text-sm rounded-full bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300 font-medium transition-colors hover:bg-gray-200 dark:hover:bg-gray-600">重新开始</button>
-                 </div>
-             </div>
+        <!-- Kicker 徽章 -->
+        <div class="error-kicker fade-in" aria-hidden="true">404 · NOT FOUND</div>
 
-             <p id="game-instruction" class="text-center text-gray-700 dark:text-gray-300 font-medium mb-4 text-sm sm:text-base">点击背景围住小猫，别让它跑掉！</p>
+        <!-- 巨大 404 -->
+        <h1 class="error-code breath-glow" aria-label="404 页面未找到">404</h1>
 
-             <div class="relative aspect-square w-full bg-gray-50 dark:bg-gray-900 rounded-xl overflow-hidden cursor-pointer touch-none select-none">
-                  <canvas id="cat-game" class="w-full h-full"></canvas>
+        <!-- 描述 -->
+        <p class="error-desc fade-in stagger-1">你寻找的页面已星间蒸发，或是从未存在过。</p>
+        <p class="error-hint fade-in stagger-2">试试下面的链接，或者玩一局围猫游戏放松一下。</p>
 
-                  <!-- Message Overlay -->
-                  <div id="game-message" class="absolute inset-0 flex items-center justify-center pointer-events-none opacity-0 transition-opacity duration-300 z-10">
-                      <span class="text-white font-bold text-xl px-6 py-3 rounded-full shadow-lg transform scale-0 transition-transform duration-300"></span>
-                  </div>
-             </div>
+        <!-- 快捷导航 -->
+        <nav class="error-links fade-in stagger-3" role="navigation" aria-label="快速导航">
+            <a href="index.html" class="error-link"><i data-lucide="house"></i>首页</a>
+            <a href="blog.html" class="error-link"><i data-lucide="file-text"></i>笔记</a>
+            <a href="acg.html" class="error-link"><i data-lucide="film"></i>ACG</a>
+            <a href="bookmarks.html" class="error-link"><i data-lucide="bookmark"></i>收藏</a>
+            <a href="about.html" class="error-link"><i data-lucide="user-circle"></i>关于</a>
+        </nav>
+
+        <!-- 围猫游戏卡片 -->
+        <div class="glass-card glass-edge-glow error-game-card fade-in stagger-4" data-ui-panel="error-game">
+            <!-- 控制栏 -->
+            <div class="error-game-bar">
+                <span id="role-text" class="error-game-role">切换: 扮演小猫</span>
+                <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                    <button id="switch-role" class="error-game-pill error-game-pill--accent">切换角色</button>
+                    <button id="reset-game" class="error-game-pill">重新开始</button>
+                </div>
+            </div>
+
+            <!-- 说明 -->
+            <p id="game-instruction" class="error-game-instruction">点击背景围住小猫，别让它跑掉！</p>
+
+            <!-- 画布 -->
+            <div class="error-game-canvas-wrap">
+                <canvas id="cat-game"></canvas>
+                <div id="game-message" class="error-game-msg" role="alert">
+                    <span></span>
+                </div>
+            </div>
         </div>
 
-        <div class="section-shell" data-ui-panel="error-actions">
-            <a href="index.html" class="public-cta mt-8 px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-full font-medium transition-all shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50 flex items-center group">
-                <i data-lucide="arrow-left" class="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform"></i>
-                返回首页
-            </a>
-        </div>
+        <!-- 返回首页 CTA -->
+        <a href="index.html" class="error-cta fade-in stagger-5">
+            <i data-lucide="arrow-left"></i>
+            返回首页
+        </a>
     </main>
 
-    <!-- Footer -->
-<footer class="site-footer"><span class="visit-count"><span class="pulse-dot"></span><span id="visit-count">—</span> 次浏览</span><span class="footer-dot">·</span><span>&copy; 2026 夏日科技探索 — Designed with <span class="footer-heart">❤️</span></span></footer>
+    <!-- ═══════ FOOTER ═══════ -->
+    <footer class="site-footer"><span class="visit-count"><span class="pulse-dot"></span><span id="visit-count">—</span> 次浏览</span><span class="footer-dot">·</span><span>&copy; 2026 夏日科技探索 — Designed with <span class="footer-heart">❤️</span></span></footer>
 
-    <!-- Scripts -->
-    <script src="js/api.js?v=20260624v5"></script>
+    <!-- ═══════ Scripts ═══════ -->
     <script src="js/navbar.js?v=20260626b"></script>
+    <script src="js/api.js?v=20260624v5"></script>
     <script>
-        // Initialize Icons
         lucide.createIcons();
 
-        // Dynamic Year
-        document.getElementById('year').textContent = new Date().getFullYear();
-
-        // --- Circle the Cat Game Logic ---
+        /* ═══════════════════════════════════════════════
+           围住小猫 · Circle the Cat Game
+           核心逻辑保留，画布颜色主题感知
+           ═══════════════════════════════════════════════ */
         (function() {
             const canvas = document.getElementById('cat-game');
             if (!canvas) return;
 
             const ctx = canvas.getContext('2d');
-            const resetButton = document.getElementById('reset-game');
-            const switchRoleButton = document.getElementById('switch-role');
+            const resetBtn = document.getElementById('reset-game');
+            const switchBtn = document.getElementById('switch-role');
             const roleText = document.getElementById('role-text');
-            const instructionText = document.getElementById('game-instruction');
-            const messageEl = document.getElementById('game-message');
-            const messageText = messageEl.querySelector('span');
+            const instruction = document.getElementById('game-instruction');
+            const msgEl = document.getElementById('game-message');
+            const msgText = msgEl.querySelector('span');
 
-            const GRID_SIZE = 11;
-            const RADIUS = 14;
-            const GAP = 5;
-            let dots = [];
-            let catPos = { x: 5, y: 5 };
-            let gameState = 'playing'; // playing, win, lose
-            let playerRole = 'catcher'; // 'catcher' | 'cat'
-            let isAiTurn = false;
+            const GRID = 11;
+            const R = 14, GAP = 5;
+            let dots, catPos, gameState, playerRole, isAiTurn;
 
-            // Initialize Game
-            function initGame() {
+            /* ── 主题感知颜色 ── */
+            function isDark() { return document.documentElement.classList.contains('dark'); }
+            function dotColor() { return isDark() ? '#334155' : '#CBD5E1'; }
+            function blockedColor() { return isDark() ? '#64748B' : '#94A3B8'; }
+
+            function init() {
                 dots = [];
-                catPos = { x: Math.floor(GRID_SIZE / 2), y: Math.floor(GRID_SIZE / 2) };
-                gameState = 'playing';
-                isAiTurn = false;
-                hideMessage();
-
-                // Create grid
-                for (let y = 0; y < GRID_SIZE; y++) {
+                catPos = { x: Math.floor(GRID/2), y: Math.floor(GRID/2) };
+                gameState = 'playing'; isAiTurn = false;
+                hideMsg();
+                for (let y = 0; y < GRID; y++) {
                     let row = [];
-                    for (let x = 0; x < GRID_SIZE; x++) {
-                        // Random blocks (10-15%)
-                        const isBlocked = (Math.random() < 0.12) && (x !== catPos.x || y !== catPos.y);
-                        row.push({ x, y, blocked: isBlocked });
+                    for (let x = 0; x < GRID; x++) {
+                        let blocked = (Math.random() < 0.12) && (x !== catPos.x || y !== catPos.y);
+                        row.push({ x, y, blocked });
                     }
                     dots.push(row);
                 }
-
-                updateUI();
+                updateRoleUI();
                 resize();
                 requestAnimationFrame(draw);
             }
 
-            function updateUI() {
+            function updateRoleUI() {
                 if (playerRole === 'catcher') {
-                    instructionText.textContent = "点击背景围住小猫，别让它跑掉！";
-                    roleText.textContent = "切换: 扮演小猫";
-                    switchRoleButton.className = switchRoleButton.className.replace('text-pink-600', 'text-purple-600').replace('bg-pink-50', 'bg-purple-50');
+                    instruction.textContent = '点击背景围住小猫，别让它跑掉！';
+                    roleText.textContent = '切换: 扮演小猫';
                 } else {
-                    instructionText.textContent = "点击相邻格子移动小猫，逃离抓捕！";
-                    roleText.textContent = "切换: 扮演抓捕者";
-                    switchRoleButton.className = switchRoleButton.className.replace('text-purple-600', 'text-pink-600').replace('bg-purple-50', 'bg-pink-50');
+                    instruction.textContent = '点击相邻格子移动小猫，逃离抓捕！';
+                    roleText.textContent = '切换: 扮演抓捕者';
                 }
             }
 
             function switchRole() {
                 playerRole = playerRole === 'catcher' ? 'cat' : 'catcher';
-                initGame();
+                init();
             }
 
             function resize() {
-                const container = canvas.parentElement;
-                canvas.width = container.clientWidth;
-                canvas.height = container.clientHeight;
-
-                const contentWidth = GRID_SIZE * (RADIUS * 2 + GAP) + RADIUS;
-                const scale = canvas.width / (contentWidth + 40);
-
-                ctx.setTransform(scale, 0, 0, scale, 20, 20);
+                const w = canvas.parentElement.clientWidth;
+                canvas.width = w; canvas.height = w;
+                const cw = GRID * (R*2 + GAP) + R;
+                const s = canvas.width / (cw + 40);
+                ctx.setTransform(s, 0, 0, s, 20, 20);
             }
 
             function draw() {
-                ctx.save();
-                ctx.setTransform(1, 0, 0, 1, 0, 0);
+                ctx.save(); ctx.setTransform(1,0,0,1,0,0);
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 ctx.restore();
 
-                const isDark = document.documentElement.classList.contains('dark');
-                const dotColor = isDark ? '#374151' : '#e5e7eb';
-                const blockedColor = isDark ? '#9ca3af' : '#6b7280';
-                const catColor = playerRole === 'cat' ? '#ec4899' : '#ef4444'; // Pink if player is cat, Red otherwise
+                const dc = dotColor(), bc = blockedColor();
+                const catCol = playerRole === 'cat' ? '#ec4899' : '#ef4444';
 
-                // Draw Dots
-                for (let y = 0; y < GRID_SIZE; y++) {
-                    for (let x = 0; x < GRID_SIZE; x++) {
-                        const dot = dots[y][x];
-                        const px = getPixelPos(x, y);
-
+                for (let y = 0; y < GRID; y++)
+                    for (let x = 0; x < GRID; x++) {
+                        const d = dots[y][x];
+                        const p = pos(x, y);
                         ctx.beginPath();
-                        ctx.arc(px.x, px.y, RADIUS, 0, Math.PI * 2);
-                        ctx.fillStyle = dot.blocked ? blockedColor : dotColor;
+                        ctx.arc(p.x, p.y, R, 0, Math.PI*2);
+                        ctx.fillStyle = d.blocked ? bc : dc;
                         ctx.fill();
-                        ctx.closePath();
                     }
-                }
 
-                // Highlight valid moves for Player Cat
                 if (playerRole === 'cat' && gameState === 'playing' && !isAiTurn) {
-                    const neighbors = getNeighbors(catPos.x, catPos.y);
-                    for (let n of neighbors) {
+                    getNb(catPos.x, catPos.y).forEach(n => {
                         if (!dots[n.y][n.x].blocked) {
-                            const px = getPixelPos(n.x, n.y);
+                            const p = pos(n.x, n.y);
                             ctx.beginPath();
-                            ctx.arc(px.x, px.y, RADIUS, 0, Math.PI * 2);
-                            ctx.fillStyle = 'rgba(236, 72, 153, 0.4)'; // Pink Highlight
+                            ctx.arc(p.x, p.y, R, 0, Math.PI*2);
+                            ctx.fillStyle = 'rgba(236,72,153,.35)';
                             ctx.fill();
                         }
-                    }
+                    });
                 }
 
-                // Draw Cat
-                const catPx = getPixelPos(catPos.x, catPos.y);
-                ctx.beginPath();
-                ctx.arc(catPx.x, catPx.y, RADIUS * 0.8, 0, Math.PI * 2);
-                ctx.fillStyle = catColor;
-                ctx.fill();
-
-                // Draw Cat Face
-                ctx.fillStyle = 'white';
-                ctx.beginPath(); ctx.arc(catPx.x - 4, catPx.y - 2, 2.5, 0, Math.PI * 2); ctx.fill();
-                ctx.beginPath(); ctx.arc(catPx.x + 4, catPx.y - 2, 2.5, 0, Math.PI * 2); ctx.fill();
-                ctx.beginPath(); ctx.arc(catPx.x, catPx.y + 2, 1.5, 0, Math.PI * 2); ctx.fill();
+                const cp = pos(catPos.x, catPos.y);
+                ctx.beginPath(); ctx.arc(cp.x, cp.y, R*.8, 0, Math.PI*2);
+                ctx.fillStyle = catCol; ctx.fill();
+                ctx.fillStyle = '#fff';
+                ctx.beginPath(); ctx.arc(cp.x-4, cp.y-2, 2.5, 0, Math.PI*2); ctx.fill();
+                ctx.beginPath(); ctx.arc(cp.x+4, cp.y-2, 2.5, 0, Math.PI*2); ctx.fill();
+                ctx.beginPath(); ctx.arc(cp.x, cp.y+2, 1.5, 0, Math.PI*2); ctx.fill();
             }
 
-            function getPixelPos(x, y) {
-                const offsetX = (y % 2) * (RADIUS + GAP / 2);
-                const px = x * (RADIUS * 2 + GAP) + offsetX;
-                const py = y * (RADIUS * 2 + GAP) * 0.866;
-                return { x: px, y: py };
+            function pos(x, y) {
+                const ox = (y%2) * (R+GAP/2);
+                return { x: x*(R*2+GAP)+ox, y: y*(R*2+GAP)*.866 };
             }
 
-            function getGridPos(clickX, clickY) {
-                const contentWidth = GRID_SIZE * (RADIUS * 2 + GAP) + RADIUS;
-                const scale = canvas.width / (contentWidth + 40);
-
-                const relativeX = (clickX - 20) / scale;
-                const relativeY = (clickY - 20) / scale;
-
-                let minDist = Infinity;
-                let closest = null;
-
-                for (let y = 0; y < GRID_SIZE; y++) {
-                    for (let x = 0; x < GRID_SIZE; x++) {
-                        const px = getPixelPos(x, y);
-                        const dist = Math.sqrt((px.x - relativeX) ** 2 + (px.y - relativeY) ** 2);
-                        if (dist < RADIUS + 2 && dist < minDist) {
-                            minDist = dist;
-                            closest = { x, y };
-                        }
-                    }
+            function getGrid(px, py) {
+                const cw = GRID*(R*2+GAP)+R;
+                const s = canvas.width/(cw+40);
+                const rx = (px-20)/s, ry = (py-20)/s;
+                let best = null, min = Infinity;
+                for (let y=0;y<GRID;y++) for (let x=0;x<GRID;x++) {
+                    const p = pos(x,y);
+                    const d = Math.sqrt((p.x-rx)**2+(p.y-ry)**2);
+                    if (d<R+2 && d<min) { min=d; best={x,y}; }
                 }
-                return closest;
+                return best;
             }
 
-            function getNeighbors(x, y) {
-                const neighbors = [];
-                const isOdd = y % 2 !== 0;
-                const directions = isOdd ?
-                    [[0, -1], [1, -1], [-1, 0], [1, 0], [0, 1], [1, 1]] :
-                    [[-1, -1], [0, -1], [-1, 0], [1, 0], [-1, 1], [0, 1]];
-
-                for (let dir of directions) {
-                    const nx = x + dir[0];
-                    const ny = y + dir[1];
-                    if (nx >= 0 && nx < GRID_SIZE && ny >= 0 && ny < GRID_SIZE) {
-                        neighbors.push({ x: nx, y: ny });
-                    }
-                }
-                return neighbors;
+            function getNb(x, y) {
+                const odd = y%2!==0;
+                const dirs = odd ? [[0,-1],[1,-1],[-1,0],[1,0],[0,1],[1,1]] : [[-1,-1],[0,-1],[-1,0],[1,0],[-1,1],[0,1]];
+                return dirs.map(d=>({x:x+d[0],y:y+d[1]})).filter(n=>n.x>=0&&n.x<GRID&&n.y>=0&&n.y<GRID);
             }
 
-            function findShortestPath(start) {
-                const queue = [{ x: start.x, y: start.y, path: [] }];
-                const visited = new Set();
-                visited.add(`${start.x},${start.y}`);
-
-                while (queue.length > 0) {
-                    const { x, y, path } = queue.shift();
-
-                    if (x === 0 || x === GRID_SIZE - 1 || y === 0 || y === GRID_SIZE - 1) {
-                        return path;
-                    }
-
-                    const neighbors = getNeighbors(x, y);
-                    for (let n of neighbors) {
-                        if (!dots[n.y][n.x].blocked && !visited.has(`${n.x},${n.y}`)) {
-                            visited.add(`${n.x},${n.y}`);
-                            queue.push({ x: n.x, y: n.y, path: [...path, { x: n.x, y: n.y }] });
-                        }
-                    }
+            function bfs(start) {
+                const q = [{x:start.x,y:start.y,path:[]}];
+                const v = new Set([`${start.x},${start.y}`]);
+                while (q.length) {
+                    const {x,y,path} = q.shift();
+                    if (x===0||x===GRID-1||y===0||y===GRID-1) return path;
+                    for (const n of getNb(x,y))
+                        if (!dots[n.y][n.x].blocked && !v.has(`${n.x},${n.y}`))
+                            { v.add(`${n.x},${n.y}`); q.push({x:n.x,y:n.y,path:[...path,{x:n.x,y:n.y}]}); }
                 }
                 return null;
             }
 
-            // --- AI Logic ---
+            function edge(p) { return p.x===0||p.x===GRID-1||p.y===0||p.y===GRID-1; }
 
-            function aiMoveCat() {
-                const path = findShortestPath(catPos);
-
-                if (path && path.length > 0) {
+            function aiCat() {
+                const path = bfs(catPos);
+                if (path && path.length) {
                     catPos = path[0];
-                    if (isEdge(catPos)) {
-                        endGame('cat_win');
-                    }
+                    if (edge(catPos)) end('cat_win');
                 } else {
-                    // No path to edge, move randomly to prolong
-                    const neighbors = getNeighbors(catPos.x, catPos.y);
-                    const available = neighbors.filter(n => !dots[n.y][n.x].blocked);
-
-                    if (available.length === 0) {
-                        endGame('catcher_win');
-                    } else {
-                        const randomMove = available[Math.floor(Math.random() * available.length)];
-                        catPos = randomMove;
-                    }
+                    const nb = getNb(catPos.x, catPos.y).filter(n=>!dots[n.y][n.x].blocked);
+                    if (!nb.length) end('catcher_win');
+                    else catPos = nb[Math.floor(Math.random()*nb.length)];
                 }
-                draw();
-                isAiTurn = false;
+                draw(); isAiTurn = false;
             }
 
-            function aiPlaceBlock() {
-                const path = findShortestPath(catPos);
-                let blockTarget = null;
-
-                if (path && path.length > 0) {
-                    // Smart Block: Block the immediate next step
-                    blockTarget = path[0];
-                } else {
-                    // Cat is trapped, just fill random available spots to finish it
-                    const neighbors = getNeighbors(catPos.x, catPos.y);
-                    const available = neighbors.filter(n => !dots[n.y][n.x].blocked);
-                    if (available.length > 0) {
-                        blockTarget = available[Math.floor(Math.random() * available.length)];
-                    }
+            function aiBlock() {
+                const path = bfs(catPos);
+                let tgt = null;
+                if (path && path.length) tgt = path[0];
+                else {
+                    const nb = getNb(catPos.x, catPos.y).filter(n=>!dots[n.y][n.x].blocked);
+                    if (nb.length) tgt = nb[Math.floor(Math.random()*nb.length)];
                 }
-
-                if (blockTarget && !dots[blockTarget.y][blockTarget.x].blocked) {
-                    dots[blockTarget.y][blockTarget.x].blocked = true;
-                    // Check if cat is now completely trapped (no moves)
-                    const neighbors = getNeighbors(catPos.x, catPos.y);
-                    const available = neighbors.filter(n => !dots[n.y][n.x].blocked);
-                    if (available.length === 0) {
-                        endGame('catcher_win');
-                    }
+                if (tgt && !dots[tgt.y][tgt.x].blocked) {
+                    dots[tgt.y][tgt.x].blocked = true;
+                    if (!getNb(catPos.x,catPos.y).filter(n=>!dots[n.y][n.x].blocked).length) end('catcher_win');
                 }
-                draw();
-                isAiTurn = false;
+                draw(); isAiTurn = false;
             }
 
-            function isEdge(pos) {
-                return pos.x === 0 || pos.x === GRID_SIZE - 1 || pos.y === 0 || pos.y === GRID_SIZE - 1;
+            function end(result) {
+                if (playerRole === 'catcher')
+                    result === 'cat_win' ? showMsg('小猫跑掉了！', '#ef4444') : showMsg('你抓住了小猫！', '#10B981');
+                else
+                    result === 'cat_win' ? showMsg('你逃脱了！', '#10B981') : showMsg('你被抓住了！', '#ef4444');
+                gameState = 'over';
             }
 
-            function endGame(result) {
-                gameState = result === 'cat_win' ? 'lose' : 'win'; // Default perspective (Catcher)
-
-                if (playerRole === 'catcher') {
-                    if (result === 'cat_win') {
-                        showMessage('小猫跑掉了！', 'bg-red-500');
-                        gameState = 'lose';
-                    } else {
-                        showMessage('你抓住了小猫！', 'bg-green-500');
-                        gameState = 'win';
-                    }
-                } else {
-                    // Player is Cat
-                    if (result === 'cat_win') {
-                        showMessage('你逃脱了！', 'bg-green-500');
-                        gameState = 'win';
-                    } else {
-                        showMessage('你被抓住了！', 'bg-red-500');
-                        gameState = 'lose';
-                    }
-                }
+            function showMsg(text, bg) {
+                msgText.textContent = text;
+                msgText.style.background = bg;
+                msgEl.classList.add('show');
+                msgText.style.transform = 'scale(1)';
+            }
+            function hideMsg() {
+                msgEl.classList.remove('show');
+                msgText.style.transform = 'scale(0)';
             }
 
-            function showMessage(text, colorClass) {
-                messageText.textContent = text;
-                // Reset classes
-                messageText.className = `text-white font-bold text-xl px-6 py-3 rounded-full shadow-lg transform transition-transform duration-300 ${colorClass}`;
-                messageEl.classList.remove('opacity-0', 'pointer-events-none');
-                messageEl.querySelector('span').classList.remove('scale-0');
-                messageEl.querySelector('span').classList.add('scale-100');
-            }
-
-            function hideMessage() {
-                messageEl.classList.add('opacity-0', 'pointer-events-none');
-                messageEl.querySelector('span').classList.add('scale-0');
-                messageEl.querySelector('span').classList.remove('scale-100');
-            }
-
-            // Input Handling
-            canvas.addEventListener('click', (e) => {
+            /* ── 事件 ── */
+            canvas.addEventListener('click', e => {
                 if (gameState !== 'playing' || isAiTurn) return;
-
                 const rect = canvas.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-
-                const gridPos = getGridPos(x, y);
-                if (!gridPos) return;
+                const gp = getGrid(e.clientX-rect.left, e.clientY-rect.top);
+                if (!gp) return;
 
                 if (playerRole === 'catcher') {
-                    const dot = dots[gridPos.y][gridPos.x];
-                    if (!dot.blocked && (gridPos.x !== catPos.x || gridPos.y !== catPos.y)) {
-                        dot.blocked = true;
-                        draw();
-
-                        // Check if blocking caused instant win (rare but possible)
-                        const neighbors = getNeighbors(catPos.x, catPos.y);
-                        const available = neighbors.filter(n => !dots[n.y][n.x].blocked);
-                        if (available.length === 0) {
-                            endGame('catcher_win');
-                        } else {
-                            isAiTurn = true;
-                            setTimeout(aiMoveCat, 200);
-                        }
+                    const d = dots[gp.y][gp.x];
+                    if (!d.blocked && (gp.x!==catPos.x||gp.y!==catPos.y)) {
+                        d.blocked = true; draw();
+                        if (!getNb(catPos.x,catPos.y).filter(n=>!dots[n.y][n.x].blocked).length) end('catcher_win');
+                        else { isAiTurn = true; setTimeout(aiCat, 180); }
                     }
                 } else {
-                    // Player is Cat
-                    const neighbors = getNeighbors(catPos.x, catPos.y);
-                    const isNeighbor = neighbors.some(n => n.x === gridPos.x && n.y === gridPos.y);
-                    const dot = dots[gridPos.y][gridPos.x];
-
-                    if (isNeighbor && !dot.blocked) {
-                        catPos = gridPos;
-                        draw();
-
-                        if (isEdge(catPos)) {
-                            endGame('cat_win');
-                        } else {
-                            isAiTurn = true;
-                            setTimeout(aiPlaceBlock, 200);
-                        }
+                    if (getNb(catPos.x, catPos.y).some(n=>n.x===gp.x&&n.y===gp.y) && !dots[gp.y][gp.x].blocked) {
+                        catPos = gp; draw();
+                        if (edge(catPos)) end('cat_win');
+                        else { isAiTurn = true; setTimeout(aiBlock, 180); }
                     }
                 }
             });
 
-            resetButton.addEventListener('click', initGame);
-            switchRoleButton.addEventListener('click', switchRole);
+            resetBtn.addEventListener('click', init);
+            switchBtn.addEventListener('click', switchRole);
+            window.addEventListener('resize', ()=>{ resize(); draw(); });
 
-            window.addEventListener('resize', () => {
-                resize();
-                draw();
-            });
+            /* 主题切换时重绘 */
+            new MutationObserver(() => { draw(); }).observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
 
-            // Start
-            initGame();
+            /* 启动 */
+            playerRole = 'catcher';
+            init();
         })();
     </script>
 </body>
