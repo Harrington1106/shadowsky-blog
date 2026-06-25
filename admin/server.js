@@ -302,28 +302,51 @@ function rateLimit(windowMs, max) {
   };
 }
 
+// ── 时效令牌：基于 HMAC(时间窗口, 主密钥) 每30分钟自动更换 ──
+const TOKEN_WINDOW_MINUTES = 30;
+function generateTimeToken(masterKey, timestamp = Date.now()) {
+    const windowMs = TOKEN_WINDOW_MINUTES * 60 * 1000;
+    const windowId = Math.floor(timestamp / windowMs);
+    const hmac = crypto.createHmac('sha256', masterKey);
+    hmac.update(String(windowId));
+    return hmac.digest('hex').substring(0, 16); // 16字符 hex
+}
+function getCurrentTimeToken() {
+    const masterKey = readEnvVar('MASTER_KEY') || ADMIN_TOKEN;
+    return generateTimeToken(masterKey);
+}
+
 function requireAdminToken(req, res, next) {
   if (!ADMIN_TOKEN) return res.status(401).json({ error: 'Admin token not configured' });
-  
+
   let token = req.headers['x-admin-token'] || req.headers['x-adminkey'] || '';
-  
+
   // Handle case where header is an array (duplicate headers)
   if (Array.isArray(token)) {
       token = token[0] || '';
   }
-  
+
+  // 1. 检查静态令牌
   let match = false;
   try {
       const bufA = Buffer.from(token);
       const bufB = Buffer.from(ADMIN_TOKEN);
-      
       if (bufA.length === bufB.length) {
           match = crypto.timingSafeEqual(bufA, bufB);
       }
-  } catch (e) { 
-      // Buffer.from might throw if token is not a string/buffer
-      // or other crypto errors
-      match = false; 
+  } catch (e) { match = false; }
+
+  // 2. 检查时效令牌（当前窗口 + 上一个窗口，容忍时钟偏差）
+  if (!match) {
+      const masterKey = readEnvVar('MASTER_KEY') || ADMIN_TOKEN;
+      const now = Date.now();
+      const currentToken = generateTimeToken(masterKey, now);
+      const previousToken = generateTimeToken(masterKey, now - TOKEN_WINDOW_MINUTES * 60 * 1000);
+      try {
+          const bufA = Buffer.from(token);
+          match = crypto.timingSafeEqual(bufA, Buffer.from(currentToken)) ||
+                  crypto.timingSafeEqual(bufA, Buffer.from(previousToken));
+      } catch (e) { match = false; }
   }
 
   if (!match) return res.status(401).json({ error: 'Unauthorized' });
@@ -1358,6 +1381,18 @@ app.post('/api/bookmarks/check', requireAdminToken, rateLimit(60_000, 100), asyn
         console.error('Check bookmarks error:', e);
         res.status(500).json({ error: 'Check failed' });
     }
+});
+
+// ── 时效令牌查询：仅限本地访问，返回当前30分钟窗口的时效令牌 ──
+app.get('/api/auth/current-token', (req, res) => {
+    let ip = req.ip || req.connection?.remoteAddress || '';
+    if (typeof ip === 'string' && ip.startsWith('::ffff:')) ip = ip.replace('::ffff:', '');
+    if (ip !== '127.0.0.1' && ip !== '::1' && ip !== 'localhost') {
+        return res.status(403).json({ error: 'Forbidden' });
+    }
+    const token = getCurrentTimeToken();
+    const remaining = TOKEN_WINDOW_MINUTES * 60 - (Math.floor(Date.now() / 1000) % (TOKEN_WINDOW_MINUTES * 60));
+    res.json({ token, expiresInSeconds: remaining, windowMinutes: TOKEN_WINDOW_MINUTES });
 });
 
 // Debug token discovery - 仅限本地回环地址访问
