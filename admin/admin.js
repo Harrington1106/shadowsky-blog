@@ -26,40 +26,26 @@ function showToast(msg, type = 'info') {
         return;
     }
 
+    const typeClass = type === 'success' ? 'toast-success' : (type === 'error' ? 'toast-error' : (type === 'warning' ? 'toast-warn' : 'toast-info'));
     const el = document.createElement('div');
-    el.className = 'toast-item bg-slate-800 text-white px-6 py-3 rounded-xl shadow-xl flex items-center gap-3 transform transition-all duration-300 translate-y-10 opacity-0';
+    el.className = 'admin-toast ' + typeClass;
     if (msg.includes('静态预览模式')) {
         el.classList.add('toast-static-mode');
         type = 'warning';
     }
-    
-    // Icon based on type
+
     let icon = 'info';
     if (type === 'success') icon = 'check-circle';
     if (type === 'error') icon = 'alert-circle';
     if (type === 'warning') icon = 'alert-triangle';
-    
-    el.innerHTML = `
-        <i data-lucide="${icon}" class="w-5 h-5 ${type === 'error' ? 'text-red-400' : (type === 'success' ? 'text-green-400' : (type === 'warning' ? 'text-yellow-400' : 'text-blue-400'))}"></i>
-        <span class="font-medium text-sm">${msg}</span>
-    `;
-    
+
+    const iconColors = {error:'#EF4444',success:'#10B981',warning:'#F59E0B',info:'#3B82F6'};
+    el.innerHTML = `<i data-lucide="${icon}" style="width:18px;height:18px;color:${iconColors[type]||iconColors.info};flex-shrink:0"></i><span style="font-weight:500;font-size:.85rem">${msg}</span>`;
     container.appendChild(el);
     if (typeof lucide !== 'undefined') lucide.createIcons();
 
-    // Animate in
-    requestAnimationFrame(() => {
-        el.classList.remove('translate-y-10', 'opacity-0');
-    });
-
-    // Remove after 3s (or 10s for static warning)
     const duration = msg.includes('静态预览模式') ? 10000 : 3000;
-    setTimeout(() => {
-        el.classList.add('translate-y-10', 'opacity-0');
-        setTimeout(() => {
-            if (el.parentNode) el.parentNode.removeChild(el);
-        }, 300);
-    }, duration);
+    setTimeout(() => { el.style.animation = 'toastOut .3s ease forwards'; setTimeout(() => { if (el.parentNode) el.remove(); }, 300); }, duration);
 }
 
 async function safeFetch(endpoint, options = {}) {
@@ -636,19 +622,19 @@ const ConfirmationDialog = {
         this.hide();
         const dialog = document.createElement('div');
         dialog.id = 'confirmation-dialog';
-        dialog.className = 'fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4';
+        dialog.className = 'admin-dialog-overlay';
         dialog.innerHTML = `
-            <div class="bg-white rounded-xl shadow-2xl max-w-md w-full p-6 transform transition-all">
-                <div class="flex items-center gap-3 mb-4">
-                    <div class="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
-                        <i data-lucide="alert-triangle" class="w-5 h-5 text-red-600"></i>
+            <div class="admin-dialog">
+                <div class="flex items-center gap-3 mb-4 justify-center">
+                    <div style="width:44px;height:44px;background:rgba(239,68,68,.12);border-radius:50%;display:flex;align-items:center;justify-content:center">
+                        <i data-lucide="alert-triangle" style="width:22px;height:22px;color:#EF4444"></i>
                     </div>
-                    <h3 class="text-lg font-semibold text-slate-800">确认操作</h3>
                 </div>
-                <p class="text-slate-600 mb-6">${message}</p>
-                <div class="flex gap-3 justify-end">
-                    <button id="dialog-cancel" class="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors">取消</button>
-                    <button id="dialog-confirm" class="px-4 py-2 bg-red-500 text-white hover:bg-red-600 rounded-lg transition-colors">确认</button>
+                <h3 style="font-size:1.1rem;font-weight:600;margin-bottom:8px;color:inherit">确认操作</h3>
+                <p style="color:#94a3b8;margin-bottom:20px;font-size:.9rem">${message}</p>
+                <div class="flex gap-3 justify-center">
+                    <button id="dialog-cancel" class="admin-btn admin-btn-secondary">取消</button>
+                    <button id="dialog-confirm" class="admin-btn" style="background:rgba(239,68,68,.15);color:#EF4444;border:1px solid rgba(239,68,68,.2)">确认</button>
                 </div>
             </div>
         `;

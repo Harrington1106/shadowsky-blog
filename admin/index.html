@@ -1,45 +1,130 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#0B1120" media="(prefers-color-scheme: dark)">
-    <meta name="theme-color" content="#F5F7FA" media="(prefers-color-scheme: light)">
-    <title>ShadowQuake Admin Dashboard</title>
+    <meta name="theme-color" content="#060B18" media="(prefers-color-scheme: dark)">
+    <meta name="theme-color" content="#E8ECF1" media="(prefers-color-scheme: light)">
+    <title>ShadowQuake Admin</title>
     <link rel="icon" type="image/png" href="../public/img/favicon256.png">
-    
+
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.loli.net">
     <link rel="preconnect" href="https://gstatic.loli.net" crossorigin>
-    <link href="https://fonts.loli.net/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
-    
-    <!-- Unified CSS -->
-        <link href="../css/unified.css?v=2606270700" rel="stylesheet">
+    <link href="https://fonts.loli.net/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <!-- CSS -->
+    <link href="../css/unified.css?v=2606270700" rel="stylesheet">
     <link href="../css/liquid-ambient.css?v=20260624v5" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- Lucide Icons -->
     <script src="../js/vendor/lucide.min.js"></script>
-    
-    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
-        body { font-family: 'Inter', 'Noto Sans SC', sans-serif; }
-        .glass { background: rgba(255, 255, 255, 0.9); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
-        .dark .glass { background: rgba(15, 23, 42, 0.9); }
-        .hide-scrollbar::-webkit-scrollbar { display: none; }
-        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        body{font-family:'Inter','Noto Sans SC',sans-serif;background:#060B18;color:#e2e8f0}
+        html:not(.dark) body{background:#F1F5F9;color:#0f172a}
+
+        /* ===== 侧边栏 ===== */
+        #sidebar{background:rgba(11,17,32,.92);backdrop-filter:blur(24px) saturate(1.2);-webkit-backdrop-filter:blur(24px) saturate(1.2);border-right:1px solid rgba(20,184,166,.1)}
+        html:not(.dark) #sidebar{background:rgba(255,255,255,.88);border-right:1px solid rgba(20,184,166,.15)}
+        .nav-item{transition:all .2s ease;border-left:3px solid transparent}
+        .nav-item:hover{background:rgba(20,184,166,.08)}
+        .nav-item.active{background:rgba(20,184,166,.12);color:var(--color-primary,#14B8A6);border-left-color:var(--color-primary,#14B8A6)}
+        html:not(.dark) .nav-item{color:#475569}
+        html:not(.dark) .nav-item:hover{background:rgba(20,184,166,.06)}
+        html:not(.dark) .nav-item.active{background:rgba(20,184,166,.1);color:#0F766E;border-left-color:#0F766E}
+
+        /* ===== 卡片 ===== */
+        .admin-card{background:rgba(15,23,42,.55);backdrop-filter:blur(18px) saturate(1.3);-webkit-backdrop-filter:blur(18px) saturate(1.3);border:1px solid rgba(255,255,255,.06);border-radius:20px}
+        html:not(.dark) .admin-card{background:rgba(255,255,255,.75);border:1px solid rgba(0,0,0,.06)}
+
+        /* ===== 输入框 ===== */
+        .admin-input{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:8px 12px;font-size:.875rem;color:inherit;outline:none;transition:all .2s ease;width:100%}
+        .admin-input:focus{border-color:rgba(20,184,166,.4);box-shadow:0 0 0 3px rgba(20,184,166,.1)}
+        html:not(.dark) .admin-input{background:#fff;border:1px solid #e2e8f0;color:#0f172a}
+        html:not(.dark) .admin-input:focus{border-color:#14B8A6;box-shadow:0 0 0 3px rgba(20,184,166,.15)}
+        .admin-input::placeholder{color:rgba(148,163,184,.5)}
+        select.admin-input{cursor:pointer}
+        textarea.admin-input{resize:vertical}
+
+        /* ===== 按钮 ===== */
+        .admin-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 18px;border-radius:9999px;font-size:.85rem;font-weight:500;cursor:pointer;transition:all .2s ease;border:none;font-family:inherit;text-decoration:none}
+        .admin-btn-primary{background:var(--color-primary,#0D9488);color:#fff;box-shadow:0 4px 16px rgba(20,184,166,.25)}
+        .admin-btn-primary:hover{background:var(--color-primary-hover,#0F766E);box-shadow:0 6px 24px rgba(20,184,166,.4);transform:translateY(-1px)}
+        .admin-btn-secondary{background:rgba(255,255,255,.06);color:#94a3b8;border:1px solid rgba(255,255,255,.08)}
+        .admin-btn-secondary:hover{background:rgba(255,255,255,.1);color:#e2e8f0}
+        html:not(.dark) .admin-btn-secondary{background:#f1f5f9;color:#475569;border:1px solid #e2e8f0}
+        html:not(.dark) .admin-btn-secondary:hover{background:#e2e8f0;color:#0f172a}
+        .admin-btn-danger{background:rgba(239,68,68,.15);color:#ef4444;border:1px solid rgba(239,68,68,.2)}
+        .admin-btn-danger:hover{background:rgba(239,68,68,.25)}
+        .admin-btn-sm{padding:5px 12px;font-size:.75rem}
+
+        /* ===== 标签/徽章 ===== */
+        .admin-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:9999px;font-size:.7rem;font-weight:600;letter-spacing:.05em}
+        .admin-badge-ok{background:rgba(16,185,129,.15);color:#10B981}
+        .admin-badge-warn{background:rgba(245,158,11,.15);color:#F59E0B}
+        .admin-badge-err{background:rgba(239,68,68,.15);color:#EF4444}
+
+        /* ===== Toast ===== */
+        .admin-toast{display:flex;align-items:center;gap:10px;padding:12px 18px;border-radius:14px;background:rgba(15,23,42,.9);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.08);color:#e2e8f0;font-size:.85rem;box-shadow:0 8px 32px rgba(0,0,0,.3);animation:toastIn .3s ease;pointer-events:auto;min-width:280px}
+        html:not(.dark) .admin-toast{background:rgba(255,255,255,.92);color:#0f172a;border:1px solid rgba(0,0,0,.08)}
+        .admin-toast.toast-success{border-left:3px solid #10B981}
+        .admin-toast.toast-error{border-left:3px solid #EF4444}
+        .admin-toast.toast-info{border-left:3px solid #3B82F6}
+        .admin-toast.toast-warn{border-left:3px solid #F59E0B}
+        @keyframes toastIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+        @keyframes toastOut{from{opacity:1}to{opacity:0;transform:translateX(20px)}}
+
+        /* ===== 确认对话框 ===== */
+        .admin-dialog-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);z-index:100;display:flex;align-items:center;justify-content:center;animation:fadeIn .15s ease}
+        @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+        .admin-dialog{background:rgba(15,23,42,.92);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:24px;max-width:400px;width:90%;text-align:center}
+        html:not(.dark) .admin-dialog{background:rgba(255,255,255,.92);border:1px solid rgba(0,0,0,.08)}
+
+        /* ===== 列表项 ===== */
+        .admin-list-item{display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid rgba(255,255,255,.04);transition:background .15s}
+        .admin-list-item:hover{background:rgba(20,184,166,.04)}
+        html:not(.dark) .admin-list-item{border-bottom:1px solid rgba(0,0,0,.04)}
+        html:not(.dark) .admin-list-item:hover{background:rgba(20,184,166,.03)}
+
+        /* ===== 进度条 ===== */
+        .admin-progress{width:100%;height:4px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden}
+        .admin-progress-bar{height:100%;background:var(--color-primary,#14B8A6);border-radius:2px;transition:width .3s ease}
+
+        /* ===== 表格 ===== */
+        .admin-table{width:100%;border-collapse:collapse}
+        .admin-table th{padding:10px 16px;text-align:left;font-size:.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:#94a3b8;border-bottom:1px solid rgba(255,255,255,.06)}
+        .admin-table td{padding:10px 16px;font-size:.85rem;border-bottom:1px solid rgba(255,255,255,.03)}
+        html:not(.dark) .admin-table th{color:#64748b;border-bottom-color:rgba(0,0,0,.06)}
+        html:not(.dark) .admin-table td{border-bottom-color:rgba(0,0,0,.03)}
+
+        /* ===== 标签页切换器 ===== */
+        .admin-tab-switch{display:flex;padding:3px;background:rgba(255,255,255,.04);border-radius:9999px;gap:2px}
+        html:not(.dark) .admin-tab-switch{background:#f1f5f9}
+        .admin-tab-btn{padding:6px 16px;border-radius:9999px;font-size:.8rem;font-weight:500;cursor:pointer;border:none;background:transparent;color:#94a3b8;transition:all .2s ease;font-family:inherit}
+        .admin-tab-btn.active{background:rgba(20,184,166,.2);color:#5EEAD4}
+        html:not(.dark) .admin-tab-btn{color:#64748b}
+        html:not(.dark) .admin-tab-btn.active{background:#fff;color:#0F766E;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+
+        /* ===== 滚动条 ===== */
+        .admin-scroll::-webkit-scrollbar{width:5px}
+        .admin-scroll::-webkit-scrollbar-track{background:transparent}
+        .admin-scroll::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:3px}
+        html:not(.dark) .admin-scroll::-webkit-scrollbar-thumb{background:rgba(0,0,0,.1)}
+
+        /* ===== 暗/亮模式可见性 ===== */
+        .dark .light-only{display:none!important}
+        html:not(.dark) .dark-only{display:none!important}
     </style>
 </head>
 <body class="font-sans">
+
     <!-- ═══════ 流体光斑层 ═══════ -->
     <div class="liquid-ambient ambient-subtle" aria-hidden="true">
         <div class="liquid-blob liquid-blob--1"></div>
         <div class="liquid-blob liquid-blob--2"></div>
         <div class="liquid-blob liquid-blob--3"></div>
     </div>
-
 
     <!-- ═══════════ NAVBAR ═══════════ -->
     <nav id="navbar">
@@ -49,21 +134,19 @@
                 <img src="../public/img/favicon256.png" alt="Logo" class="light-only">
                 <span>ShadowQuake</span>
             </a>
-
             <div class="nav-links" role="navigation" aria-label="Main">
-                <a href="../index.html" class="nav-link"><i data-lucide="house"></i> 首页</a>
-                <a href="../blog.html" class="nav-link"><i data-lucide="file-text"></i> 笔记</a>
-                <a href="../moments.html" class="nav-link"><i data-lucide="camera"></i> 片刻</a>
-                <a href="../bookmarks.html" class="nav-link"><i data-lucide="bookmark"></i> 收藏</a>
-                <a href="../rss.html" class="nav-link"><i data-lucide="rss"></i> 订阅</a>
-                <a href="../acg.html" class="nav-link"><i data-lucide="film"></i> ACG</a>
-                <a href="../about.html" class="nav-link"><i data-lucide="user-circle"></i> 关于</a>
+                <a href="../index.html" class="nav-link"><i data-lucide="house"></i><span class="nav-text">首页</span></a>
+                <a href="../blog.html" class="nav-link"><i data-lucide="file-text"></i><span class="nav-text">笔记</span></a>
+                <a href="../moments.html" class="nav-link"><i data-lucide="camera"></i><span class="nav-text">片刻</span></a>
+                <a href="../bookmarks.html" class="nav-link"><i data-lucide="bookmark"></i><span class="nav-text">收藏</span></a>
+                <a href="../rss.html" class="nav-link"><i data-lucide="rss"></i><span class="nav-text">订阅</span></a>
+                <a href="../acg.html" class="nav-link"><i data-lucide="film"></i><span class="nav-text">ACG</span></a>
+                <a href="../about.html" class="nav-link"><i data-lucide="user-circle"></i><span class="nav-text">关于</span></a>
                 <button id="theme-toggle" class="theme-toggle" aria-label="切换主题">
                     <i data-lucide="sun" class="dark-only"></i>
                     <i data-lucide="moon" class="light-only"></i>
                 </button>
             </div>
-
             <button id="nav-hamburger" class="nav-hamburger" aria-label="菜单" aria-expanded="false">
                 <i data-lucide="menu"></i>
             </button>
@@ -71,231 +154,165 @@
     </nav>
 
     <div id="mobile-menu" role="navigation" aria-label="Mobile">
-        <a href="../index.html" class="nav-link"><i data-lucide="house"></i> 首页</a>
-        <a href="../blog.html" class="nav-link"><i data-lucide="file-text"></i> 笔记</a>
-        <a href="../moments.html" class="nav-link"><i data-lucide="camera"></i> 片刻</a>
-        <a href="../bookmarks.html" class="nav-link"><i data-lucide="bookmark"></i> 收藏</a>
-        <a href="../rss.html" class="nav-link"><i data-lucide="rss"></i> 订阅</a>
-        <a href="../acg.html" class="nav-link"><i data-lucide="film"></i> ACG</a>
-        <a href="../about.html" class="nav-link"><i data-lucide="user-circle"></i> 关于</a>
+        <div class="mobile-menu-header"><span class="mobile-menu-brand">ShadowQuake</span><button class="mobile-menu-close"><i data-lucide="x"></i></button></div>
+        <div class="mobile-menu-links">
+            <a href="../index.html" class="mobile-nav-link"><i data-lucide="house"></i><span>首页</span></a>
+            <a href="../blog.html" class="mobile-nav-link"><i data-lucide="file-text"></i><span>笔记</span></a>
+            <a href="../moments.html" class="mobile-nav-link"><i data-lucide="camera"></i><span>片刻</span></a>
+            <a href="../bookmarks.html" class="mobile-nav-link"><i data-lucide="bookmark"></i><span>收藏</span></a>
+            <a href="../rss.html" class="mobile-nav-link"><i data-lucide="rss"></i><span>订阅</span></a>
+            <a href="../acg.html" class="mobile-nav-link"><i data-lucide="film"></i><span>ACG</span></a>
+            <a href="../about.html" class="mobile-nav-link"><i data-lucide="user-circle"></i><span>关于</span></a>
+        </div>
     </div>
 
     <!-- ═══════════ ADMIN DASHBOARD ═══════════ -->
     <div id="gh-bookmarks-config" data-owner="Harrington1106" data-repo="blog-add" class="hidden"></div>
-
-    <!-- Sidebar Overlay (Mobile) -->
     <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 z-40 lg:hidden hidden" onclick="toggleSidebar()"></div>
 
     <!-- Mobile Header -->
-    <div class="lg:hidden bg-white border-b border-slate-200 px-4 py-3 flex items-center justify-between sticky top-0 z-30">
+    <div class="lg:hidden flex items-center justify-between px-4 py-3 sticky top-0 z-30" style="background:rgba(11,17,32,.85);backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,.06)">
         <div class="flex items-center gap-3">
-            <button onclick="toggleSidebar()" 
-                    class="p-2 -ml-2 text-slate-600 hover:bg-slate-100 rounded-lg"
-                    aria-label="打开导航菜单"
-                    aria-expanded="false"
-                    aria-controls="sidebar">
+            <button onclick="toggleSidebar()" class="p-2 -ml-2 rounded-lg" style="color:#94a3b8" aria-label="打开导航菜单" aria-expanded="false" aria-controls="sidebar">
                 <i data-lucide="menu" class="w-6 h-6"></i>
             </button>
-            <span class="font-bold text-slate-800">ShadowQuake Admin</span>
+            <span class="font-bold" style="font-size:.95rem">ShadowQuake Admin</span>
         </div>
     </div>
 
-    <div class="flex min-h-screen bg-slate-50 font-sans">
-        <!-- Sidebar -->
-        <aside id="sidebar" 
-               class="fixed inset-y-0 left-0 w-64 bg-white border-r border-slate-200 z-50 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 flex flex-col"
-               role="navigation"
-               aria-label="主导航菜单">
-            <div class="p-6 border-b border-slate-100 flex items-center gap-3">
-                <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold shadow-lg shadow-blue-500/30">
+    <div class="flex min-h-screen font-sans">
+        <!-- ═══════ SIDEBAR ═══════ -->
+        <aside id="sidebar" class="fixed inset-y-0 left-0 w-64 z-50 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 flex flex-col" role="navigation" aria-label="主导航菜单">
+            <!-- Logo -->
+            <div class="p-5 flex items-center gap-3" style="border-bottom:1px solid rgba(255,255,255,.06)">
+                <div class="w-9 h-9 rounded-xl flex items-center justify-center text-white font-bold" style="background:var(--color-primary,#0D9488);box-shadow:0 4px 16px rgba(20,184,166,.3)">
                     <i data-lucide="shield" class="w-5 h-5"></i>
                 </div>
-                <span class="text-lg font-bold text-slate-800 tracking-tight">ShadowQuake</span>
-                <button class="lg:hidden ml-auto text-slate-400 hover:text-slate-600" 
-                        onclick="toggleSidebar()"
-                        aria-label="关闭导航菜单">
+                <span class="text-lg font-bold tracking-tight" style="color:inherit">ShadowQuake</span>
+                <button class="lg:hidden ml-auto" style="color:#94a3b8" onclick="toggleSidebar()" aria-label="关闭导航菜单">
                     <i data-lucide="x" class="w-5 h-5"></i>
                 </button>
             </div>
-            
-            <nav class="flex-1 overflow-y-auto p-4 space-y-1" role="navigation" aria-label="主要功能导航">
-                <div class="px-4 py-2 text-xs font-semibold text-slate-400 uppercase tracking-wider" role="heading" aria-level="2">Content</div>
-                <div role="tablist" aria-label="内容管理" class="space-y-1">
-                    <button onclick="Dashboard.switchTab('bookmarks')" 
-                            id="nav-bookmarks" 
-                            class="nav-item w-full flex items-center gap-3 px-4 py-2.5 text-slate-600 rounded-lg hover:bg-slate-50 hover:text-blue-600 transition-all group"
-                            role="tab"
-                            aria-selected="false"
-                            aria-controls="view-bookmarks"
-                            tabindex="0">
-                        <i data-lucide="bookmark" class="w-5 h-5 group-hover:scale-110 transition-transform" aria-hidden="true"></i>
-                        <span class="font-medium">收藏夹</span>
+
+            <!-- Nav -->
+            <nav class="flex-1 overflow-y-auto p-3 space-y-1 admin-scroll" role="navigation" aria-label="主要功能导航">
+                <div class="px-4 py-2 text-xs font-semibold uppercase tracking-wider" style="color:#64748b">内容管理</div>
+                <div role="tablist" aria-label="内容管理" class="space-y-0.5">
+                    <button onclick="Dashboard.switchTab('bookmarks')" id="nav-bookmarks" class="nav-item w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium" role="tab" aria-selected="false" aria-controls="view-bookmarks" tabindex="0">
+                        <i data-lucide="bookmark" class="w-4 h-4"></i> 收藏夹
                     </button>
-                    <button onclick="Dashboard.switchTab('snapshots')" 
-                            id="nav-snapshots" 
-                            class="nav-item w-full flex items-center gap-3 px-4 py-2.5 text-slate-600 rounded-lg hover:bg-slate-50 hover:text-blue-600 transition-all group"
-                            role="tab"
-                            aria-selected="false"
-                            aria-controls="view-snapshots"
-                            tabindex="-1">
-                        <i data-lucide="camera" class="w-5 h-5 group-hover:scale-110 transition-transform" aria-hidden="true"></i>
-                        <span class="font-medium">随手拍</span>
+                    <button onclick="Dashboard.switchTab('snapshots')" id="nav-snapshots" class="nav-item w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium" role="tab" aria-selected="false" aria-controls="view-snapshots" tabindex="-1">
+                        <i data-lucide="camera" class="w-4 h-4"></i> 随手拍
                     </button>
-                    <button onclick="Dashboard.switchTab('media')" 
-                            id="nav-media" 
-                            class="nav-item w-full flex items-center gap-3 px-4 py-2.5 text-slate-600 rounded-lg hover:bg-slate-50 hover:text-blue-600 transition-all group"
-                            role="tab"
-                            aria-selected="false"
-                            aria-controls="view-media"
-                            tabindex="-1">
-                        <i data-lucide="film" class="w-5 h-5 group-hover:scale-110 transition-transform" aria-hidden="true"></i>
-                        <span class="font-medium">追番/漫画</span>
+                    <button onclick="Dashboard.switchTab('media')" id="nav-media" class="nav-item w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium" role="tab" aria-selected="false" aria-controls="view-media" tabindex="-1">
+                        <i data-lucide="film" class="w-4 h-4"></i> 追番/漫画
                     </button>
-                    <button onclick="Dashboard.switchTab('feeds')" 
-                            id="nav-feeds" 
-                            class="nav-item w-full flex items-center gap-3 px-4 py-2.5 text-slate-600 rounded-lg hover:bg-slate-50 hover:text-blue-600 transition-all group"
-                            role="tab"
-                            aria-selected="false"
-                            aria-controls="view-feeds"
-                            tabindex="-1">
-                        <i data-lucide="rss" class="w-5 h-5 group-hover:scale-110 transition-transform" aria-hidden="true"></i>
-                        <span class="font-medium">订阅源</span>
+                    <button onclick="Dashboard.switchTab('feeds')" id="nav-feeds" class="nav-item w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium" role="tab" aria-selected="false" aria-controls="view-feeds" tabindex="-1">
+                        <i data-lucide="rss" class="w-4 h-4"></i> 订阅源
                     </button>
-                    <button onclick="Dashboard.switchTab('videos')" 
-                            id="nav-videos" 
-                            class="nav-item w-full flex items-center gap-3 px-4 py-2.5 text-slate-600 rounded-lg hover:bg-slate-50 hover:text-blue-600 transition-all group"
-                            role="tab"
-                            aria-selected="false"
-                            aria-controls="view-videos"
-                            tabindex="-1">
-                        <i data-lucide="youtube" class="w-5 h-5 group-hover:scale-110 transition-transform" aria-hidden="true"></i>
-                        <span class="font-medium">视频推荐</span>
+                    <button onclick="Dashboard.switchTab('videos')" id="nav-videos" class="nav-item w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium" role="tab" aria-selected="false" aria-controls="view-videos" tabindex="-1">
+                        <i data-lucide="youtube" class="w-4 h-4"></i> 视频推荐
                     </button>
                 </div>
-                
-                <div class="px-4 py-2 mt-6 text-xs font-semibold text-slate-400 uppercase tracking-wider" role="heading" aria-level="2">System</div>
-                <div role="tablist" aria-label="系统管理" class="space-y-1">
-                    <button onclick="Dashboard.switchTab('stats')" 
-                            id="nav-stats" 
-                            class="nav-item w-full flex items-center gap-3 px-4 py-2.5 text-slate-600 rounded-lg hover:bg-slate-50 hover:text-blue-600 transition-all group"
-                            role="tab"
-                            aria-selected="false"
-                            aria-controls="view-stats"
-                            tabindex="-1">
-                        <i data-lucide="bar-chart-2" class="w-5 h-5 group-hover:scale-110 transition-transform" aria-hidden="true"></i>
-                        <span class="font-medium">数据统计</span>
+
+                <div class="px-4 py-2 mt-5 text-xs font-semibold uppercase tracking-wider" style="color:#64748b">系统</div>
+                <div role="tablist" aria-label="系统管理" class="space-y-0.5">
+                    <button onclick="Dashboard.switchTab('stats')" id="nav-stats" class="nav-item w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium" role="tab" aria-selected="false" aria-controls="view-stats" tabindex="-1">
+                        <i data-lucide="bar-chart-2" class="w-4 h-4"></i> 数据统计
                     </button>
-                    <button onclick="Dashboard.switchTab('settings')" 
-                            id="nav-settings" 
-                            class="nav-item w-full flex items-center gap-3 px-4 py-2.5 text-slate-600 rounded-lg hover:bg-slate-50 hover:text-blue-600 transition-all group"
-                            role="tab"
-                            aria-selected="false"
-                            aria-controls="view-settings"
-                            tabindex="-1">
-                        <i data-lucide="settings" class="w-5 h-5 group-hover:scale-110 transition-transform" aria-hidden="true"></i>
-                        <span class="font-medium">系统设置</span>
+                    <button onclick="Dashboard.switchTab('settings')" id="nav-settings" class="nav-item w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium" role="tab" aria-selected="false" aria-controls="view-settings" tabindex="-1">
+                        <i data-lucide="settings" class="w-4 h-4"></i> 系统设置
                     </button>
                 </div>
             </nav>
 
-            <div class="p-4 border-t border-slate-100">
-                <a href="/" target="_blank" class="flex items-center gap-3 px-4 py-2.5 text-slate-500 hover:text-slate-800 transition-colors rounded-lg hover:bg-slate-50">
-                    <i data-lucide="external-link" class="w-4 h-4"></i>
-                    <span class="text-sm font-medium">访问前台</span>
+            <!-- Bottom -->
+            <div class="p-3" style="border-top:1px solid rgba(255,255,255,.06)">
+                <a href="/" target="_blank" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm transition-colors" style="color:#94a3b8">
+                    <i data-lucide="external-link" class="w-4 h-4"></i> 访问前台
                 </a>
             </div>
         </aside>
 
-        <!-- Main Content -->
-        <main class="flex-1 lg:ml-64 p-4 lg:p-8 overflow-y-auto h-screen w-full">
+        <!-- ═══════ MAIN CONTENT ═══════ -->
+        <main class="flex-1 lg:ml-64 p-4 lg:p-8 overflow-y-auto h-screen w-full admin-scroll">
             <!-- Toast Container -->
-            <div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col gap-3 pointer-events-none transition-all duration-300"></div>
+            <div id="toast-container" class="fixed top-6 right-6 z-50 flex flex-col gap-3 pointer-events-none" style="transition:all .3s ease"></div>
 
             <!-- Header -->
             <header class="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4 mt-12 lg:mt-0">
                 <div>
-                    <h1 class="text-2xl lg:text-3xl font-bold text-slate-800 tracking-tight" id="page-title">概览</h1>
-                    <p class="text-slate-500 mt-1">欢迎回来，Admin</p>
+                    <h1 class="text-2xl lg:text-3xl font-bold tracking-tight" id="page-title" style="color:inherit">概览</h1>
+                    <p style="color:#94a3b8;margin-top:4px">欢迎回来，Admin</p>
                 </div>
-                <div class="flex items-center gap-3">
-                    <a href="/" target="_blank" class="px-4 py-2 bg-white border border-slate-200 text-slate-600 rounded-lg hover:bg-slate-50 hover:text-blue-600 transition-all text-sm font-medium flex items-center gap-2 shadow-sm">
-                        <i data-lucide="external-link" class="w-4 h-4"></i>
-                        查看站点
+                <div class="flex items-center gap-3 flex-wrap">
+                    <a href="/" target="_blank" class="admin-btn admin-btn-secondary text-sm">
+                        <i data-lucide="external-link" class="w-3.5 h-3.5"></i> 查看站点
                     </a>
-                    <div class="flex items-center gap-2 mr-4">
-                        <span id="auth-status-badge" class="px-2 py-1 text-xs font-bold rounded-full bg-slate-100 text-slate-500 flex items-center gap-1 transition-all">
-                            <i data-lucide="shield-off" class="w-3 h-3"></i>
-                            未验证
-                        </span>
-                        <span id="backend-status-badge" class="px-2 py-1 text-xs font-bold rounded-full bg-slate-100 text-slate-500 flex items-center gap-1 transition-all">
-                            <i data-lucide="server" class="w-3 h-3"></i>
-                            未连接
-                        </span>
-                        <span id="api-base-text" class="hidden md:inline-flex px-2 py-1 text-xs rounded-full bg-slate-50 text-slate-400 border border-slate-200">
-                            API: -
-                        </span>
-                    </div>
+                    <span id="auth-status-badge" class="admin-badge admin-badge-err">
+                        <i data-lucide="shield-off" class="w-3 h-3"></i> 未验证
+                    </span>
+                    <span id="backend-status-badge" class="admin-badge admin-badge-warn">
+                        <i data-lucide="server" class="w-3 h-3"></i> 未连接
+                    </span>
+                    <span id="api-base-text" class="hidden md:inline-flex text-xs" style="color:#64748b">API: -</span>
                     <div class="flex items-center gap-2">
-                        <input id="admin-token-input" type="password" placeholder="管理员令牌" class="bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none w-44" />
-                        <button id="admin-token-save" class="px-3 py-2 bg-slate-900 text-white rounded-lg hover:bg-slate-800 text-sm">登录</button>
-                        <button id="admin-token-clear" class="px-3 py-2 bg-slate-100 text-slate-600 rounded-lg hover:bg-slate-200 text-sm">退出</button>
+                        <input id="admin-token-input" type="password" placeholder="管理员令牌" class="admin-input w-44">
+                        <button id="admin-token-save" class="admin-btn admin-btn-primary admin-btn-sm">登录</button>
+                        <button id="admin-token-clear" class="admin-btn admin-btn-secondary admin-btn-sm">退出</button>
                     </div>
                 </div>
             </header>
 
-            <!-- Views -->
-            
-            <!-- BOOKMARKS VIEW -->
+            <!-- ═══════ VIEW: BOOKMARKS ═══════ -->
             <section id="view-bookmarks" class="view-section space-y-6">
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <!-- Add Form -->
                     <div class="lg:col-span-1">
-                        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 sticky top-8">
-                            <h3 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
-                                <i data-lucide="plus-circle" class="w-5 h-5 text-blue-600"></i>
-                                添加收藏
+                        <div class="admin-card p-6 sticky top-8">
+                            <h3 class="text-lg font-bold mb-4 flex items-center gap-2" style="color:inherit">
+                                <i data-lucide="plus-circle" class="w-5 h-5" style="color:var(--color-primary,#14B8A6)"></i> 添加收藏
                             </h3>
                             <form id="add-bookmark-form" class="space-y-4">
                                 <input type="hidden" id="bm-id">
                                 <input type="hidden" id="bm-gh-issue">
                                 <div>
-                                    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">保存位置</label>
-                                    <select id="bm-source" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all">
+                                    <label class="block text-xs font-semibold uppercase tracking-wider mb-1.5" style="color:#94a3b8">保存位置</label>
+                                    <select id="bm-source" class="admin-input">
                                         <option value="retinbox">API (Admin)</option>
                                         <option value="github">GitHub Issues</option>
                                     </select>
                                 </div>
                                 <div id="bm-github-config" class="hidden space-y-3">
                                     <div class="grid grid-cols-2 gap-2">
-                                        <input type="text" id="bm-gh-owner" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all" placeholder="owner">
-                                        <input type="text" id="bm-gh-repo" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all" placeholder="repo">
+                                        <input type="text" id="bm-gh-owner" class="admin-input" placeholder="owner">
+                                        <input type="text" id="bm-gh-repo" class="admin-input" placeholder="repo">
                                     </div>
-                                    <input type="password" id="bm-gh-token" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all" placeholder="GitHub Token">
+                                    <input type="password" id="bm-gh-token" class="admin-input" placeholder="GitHub Token">
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">链接 URL</label>
+                                    <label class="block text-xs font-semibold uppercase tracking-wider mb-1.5" style="color:#94a3b8">链接 URL</label>
                                     <div class="flex gap-2">
-                                        <input type="url" id="bm-url" required class="flex-1 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all" placeholder="https://...">
-                                        <button type="button" onclick="BookmarksManager.autoFetchTitle()" class="px-3 py-2 bg-slate-100 text-slate-600 rounded-lg hover:bg-slate-200 transition-colors" title="自动获取标题">
-                                            <i data-lucide="wand-2" class="w-4 h-4"></i>
+                                        <input type="url" id="bm-url" required class="admin-input flex-1" placeholder="https://...">
+                                        <button type="button" onclick="BookmarksManager.autoFetchTitle()" class="admin-btn admin-btn-secondary admin-btn-sm" title="自动获取标题">
+                                            <i data-lucide="wand-2" class="w-3.5 h-3.5"></i>
                                         </button>
                                     </div>
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">标题 Title</label>
-                                    <input type="text" id="bm-title" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all" placeholder="网站标题">
+                                    <label class="block text-xs font-semibold uppercase tracking-wider mb-1.5" style="color:#94a3b8">标题</label>
+                                    <input type="text" id="bm-title" class="admin-input" placeholder="网站标题">
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">描述 Description</label>
-                                    <textarea id="bm-desc" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all resize-none" rows="3" placeholder="网站描述..."></textarea>
+                                    <label class="block text-xs font-semibold uppercase tracking-wider mb-1.5" style="color:#94a3b8">描述</label>
+                                    <textarea id="bm-desc" class="admin-input" rows="3" placeholder="网站描述..."></textarea>
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">分类 Category</label>
+                                    <label class="block text-xs font-semibold uppercase tracking-wider mb-1.5" style="color:#94a3b8">分类</label>
                                     <div class="grid grid-cols-2 gap-2">
-                                        <select id="bm-category-select" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all" aria-label="Primary Category">
+                                        <select id="bm-category-select" class="admin-input" aria-label="Primary Category">
                                             <option value="">选择一级分类...</option>
                                         </select>
-                                        <select id="bm-subcategory-select" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed" aria-label="Secondary Category">
+                                        <select id="bm-subcategory-select" class="admin-input" aria-label="Secondary Category">
                                             <option value="">选择二级分类...</option>
                                         </select>
                                     </div>
@@ -303,332 +320,219 @@
                                     <input type="hidden" id="bm-subcategory">
                                 </div>
                                 <div class="hidden">
-                                    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">标签 Tags (可选)</label>
-                                    <input type="text" id="bm-tags" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all" placeholder="例如: tool, ai, dev">
+                                    <label class="block text-xs font-semibold uppercase tracking-wider mb-1.5" style="color:#94a3b8">标签</label>
+                                    <input type="text" id="bm-tags" class="admin-input" placeholder="例如: tool, ai, dev">
                                 </div>
                                 <div class="flex gap-2 mt-2">
-                                    <button type="submit" id="bm-submit" class="flex-1 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 shadow-lg shadow-blue-500/20 transition-all font-medium flex items-center justify-center gap-2">
-                                        <i data-lucide="plus" class="w-4 h-4"></i>
-                                        <span>添加收藏</span>
+                                    <button type="submit" id="bm-submit" class="admin-btn admin-btn-primary flex-1 justify-center">
+                                        <i data-lucide="plus" class="w-4 h-4"></i> 添加收藏
                                     </button>
-                                    <button type="button" id="bm-cancel" onclick="BookmarksManager.cancelEdit()" class="hidden px-4 py-2.5 bg-slate-100 text-slate-600 rounded-lg hover:bg-slate-200 transition-all font-medium">
-                                        取消
-                                    </button>
+                                    <button type="button" id="bm-cancel" onclick="BookmarksManager.cancelEdit()" class="admin-btn admin-btn-secondary hidden">取消</button>
                                 </div>
                             </form>
                         </div>
                     </div>
-
-                    <!-- List -->
                     <div class="lg:col-span-2">
-                        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-                            <div class="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
-                                <h3 class="font-semibold text-slate-700">收藏列表</h3>
-                                <div class="flex gap-2">
-                                    <input type="text" placeholder="搜索..." oninput="BookmarksManager.filter(this.value)" class="bg-white border border-slate-200 rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-blue-500/20 outline-none w-48">
-                                    <button onclick="BookmarksManager.fetch()" class="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="刷新">
-                                        <i data-lucide="refresh-cw" class="w-4 h-4"></i>
-                                    </button>
-                                    <button onclick="BookmarksManager.checkAccessibility()" id="btn-check-access" class="p-1.5 text-slate-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors" title="一键测试访问性">
-                                        <i data-lucide="activity" class="w-4 h-4"></i>
-                                    </button>
-                                    <button onclick="BookmarksManager.deleteInvalid()" id="btn-delete-invalid" class="p-1.5 text-slate-300 rounded-lg transition-colors cursor-not-allowed" disabled title="删除无效书签 (需先测试)">
-                                        <i data-lucide="trash-2" class="w-4 h-4"></i>
-                                    </button>
+                        <div class="admin-card overflow-hidden">
+                            <div class="p-4 flex justify-between items-center" style="border-bottom:1px solid rgba(255,255,255,.05);background:rgba(255,255,255,.02)">
+                                <h3 class="font-semibold" style="color:inherit">收藏列表</h3>
+                                <div class="flex gap-2 items-center">
+                                    <input type="text" placeholder="搜索..." oninput="BookmarksManager.filter(this.value)" class="admin-input w-44 py-1.5">
+                                    <button onclick="BookmarksManager.fetch()" class="admin-btn admin-btn-secondary admin-btn-sm" title="刷新"><i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i></button>
+                                    <button onclick="BookmarksManager.checkAccessibility()" id="btn-check-access" class="admin-btn admin-btn-secondary admin-btn-sm" title="测试访问性"><i data-lucide="activity" class="w-3.5 h-3.5"></i></button>
+                                    <button onclick="BookmarksManager.deleteInvalid()" id="btn-delete-invalid" class="admin-btn admin-btn-danger admin-btn-sm" disabled title="删除无效"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
                                 </div>
                             </div>
-                            
-                            <div id="check-progress-container" class="hidden bg-slate-50 px-4 py-2 border-b border-slate-100 transition-all">
-                                <div class="flex justify-between text-xs text-slate-500 mb-1">
+                            <div id="check-progress-container" class="hidden px-4 py-2" style="border-bottom:1px solid rgba(255,255,255,.05);background:rgba(255,255,255,.02)">
+                                <div class="flex justify-between text-xs mb-1" style="color:#94a3b8">
                                     <span id="check-progress-text">检测中...</span>
                                     <span id="check-progress-percent">0%</span>
                                 </div>
-                                <div class="w-full bg-slate-200 rounded-full h-1.5 overflow-hidden">
-                                    <div id="check-progress-bar" class="bg-blue-500 h-1.5 rounded-full transition-all duration-300" style="width: 0%"></div>
-                                </div>
+                                <div class="admin-progress"><div id="check-progress-bar" class="admin-progress-bar" style="width:0%"></div></div>
                             </div>
-
-                            <div id="bookmarks-list" class="divide-y divide-slate-100 max-h-[800px] overflow-y-auto">
-                                <!-- Loaded by JS -->
-                            </div>
+                            <div id="bookmarks-list" class="admin-scroll" style="max-height:700px;overflow-y:auto"></div>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <!-- SNAPSHOTS VIEW -->
+            <!-- ═══════ VIEW: SNAPSHOTS ═══════ -->
             <section id="view-snapshots" class="view-section space-y-6 hidden">
-                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+                <div class="admin-card p-6">
                     <form id="add-snapshot-form" class="space-y-4">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div class="space-y-4">
                                 <div>
-                                    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">图片来源 Image Source</label>
+                                    <label class="block text-xs font-semibold uppercase tracking-wider mb-1.5" style="color:#94a3b8">图片来源</label>
                                     <div class="space-y-3">
-                                        <input type="text" id="snap-url" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-green-500/20 focus:border-green-500 outline-none transition-all" placeholder="图片链接 / Markdown">
-                                        <div class="relative">
-                                            <div class="absolute inset-0 flex items-center">
-                                                <div class="w-full border-t border-slate-200"></div>
-                                            </div>
-                                            <div class="relative flex justify-center text-xs uppercase">
-                                                <span class="bg-white px-2 text-slate-400">OR UPLOAD</span>
-                                            </div>
-                                        </div>
-                                        <input type="file" id="snap-file" accept="image/*" class="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100 cursor-pointer" aria-label="Upload Image">
+                                        <input type="text" id="snap-url" class="admin-input" placeholder="图片链接 / Markdown">
+                                        <div class="relative flex items-center"><div class="flex-1 border-t" style="border-color:rgba(255,255,255,.06)"></div><span class="px-2 text-xs" style="color:#64748b">或上传</span><div class="flex-1 border-t" style="border-color:rgba(255,255,255,.06)"></div></div>
+                                        <input type="file" id="snap-file" accept="image/*" class="admin-input cursor-pointer" aria-label="Upload Image">
                                     </div>
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">位置 & 标签</label>
-                                    <div class="grid grid-cols-2 gap-4">
-                                        <input type="text" id="snap-location" class="bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none" placeholder="位置">
-                                        <input type="text" id="snap-tags" class="bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none" placeholder="标签">
+                                    <label class="block text-xs font-semibold uppercase tracking-wider mb-1.5" style="color:#94a3b8">位置 & 标签</label>
+                                    <div class="grid grid-cols-2 gap-3">
+                                        <input type="text" id="snap-location" class="admin-input" placeholder="位置">
+                                        <input type="text" id="snap-tags" class="admin-input" placeholder="标签">
                                     </div>
                                 </div>
                             </div>
-                            <div class="flex flex-col h-full">
-                                <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">内容 Content</label>
-                                <textarea id="snap-content" class="flex-1 w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-green-500/20 focus:border-green-500 outline-none resize-none transition-all" placeholder="记录这一刻..."></textarea>
+                            <div class="flex flex-col">
+                                <label class="block text-xs font-semibold uppercase tracking-wider mb-1.5" style="color:#94a3b8">内容</label>
+                                <textarea id="snap-content" class="admin-input flex-1" placeholder="记录这一刻..."></textarea>
                                 <div class="mt-4 flex justify-end">
-                                    <button type="submit" class="px-6 py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 shadow-lg shadow-green-500/20 transition-all font-medium flex items-center gap-2">
-                                        <i data-lucide="send" class="w-4 h-4"></i>
-                                        发布动态
+                                    <button type="submit" class="admin-btn admin-btn-primary">
+                                        <i data-lucide="send" class="w-4 h-4"></i> 发布动态
                                     </button>
                                 </div>
                             </div>
                         </div>
                     </form>
                 </div>
-
-                <div id="snapshots-preview" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                    <!-- Loaded by JS -->
-                </div>
+                <div id="snapshots-preview" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
             </section>
 
-            <!-- MEDIA VIEW -->
+            <!-- ═══════ VIEW: MEDIA ═══════ -->
             <section id="view-media" class="view-section space-y-6 hidden">
                 <div class="flex items-center justify-between">
-                    <div class="flex p-1 bg-slate-100 rounded-lg">
-                        <button onclick="MediaManager.switchType('anime')" id="tab-anime" class="px-4 py-1.5 bg-white text-slate-800 shadow-sm rounded-md text-sm font-medium transition-all">
-                            追番 (Anime)
-                        </button>
-                        <button onclick="MediaManager.switchType('manga')" id="tab-manga" class="px-4 py-1.5 text-slate-500 hover:text-slate-700 rounded-md text-sm font-medium transition-all">
-                            漫画 (Manga)
-                        </button>
+                    <div class="admin-tab-switch">
+                        <button onclick="MediaManager.switchType('anime')" id="tab-anime" class="admin-tab-btn active">追番</button>
+                        <button onclick="MediaManager.switchType('manga')" id="tab-manga" class="admin-tab-btn">漫画</button>
                     </div>
                 </div>
-
-                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+                <div class="admin-card p-6">
                     <div class="space-y-4">
                         <div class="flex gap-2">
-                            <input type="search" id="bgm-search-input" placeholder="搜索 Bangumi 标题" class="flex-1 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-500">
-                            <button type="button" id="bgm-search-btn" class="px-4 py-2 bg-slate-900 text-white rounded-lg hover:bg-slate-800 text-sm">搜索</button>
+                            <input type="search" id="bgm-search-input" placeholder="搜索 Bangumi 标题" class="admin-input flex-1">
+                            <button type="button" id="bgm-search-btn" class="admin-btn admin-btn-primary admin-btn-sm">搜索</button>
                         </div>
-                        <div id="bgm-selected" class="text-sm text-slate-500">未选择条目</div>
+                        <div id="bgm-selected" class="text-sm" style="color:#94a3b8">未选择条目</div>
                         <div id="bgm-search-results" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"></div>
-                        <div class="space-y-4">
+                        <div class="space-y-4" style="border-top:1px solid rgba(255,255,255,.06);padding-top:16px">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div class="space-y-1.5">
-                                    <label class="text-sm font-medium text-slate-600" for="setting-bangumi-username">Bangumi 用户名</label>
-                                    <input type="text" id="setting-bangumi-username" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-pink-500/20 focus:border-pink-500 transition-all">
-                                </div>
-                                <div class="space-y-1.5">
-                                    <label class="text-sm font-medium text-slate-600" for="setting-bangumi-token">Bangumi Token</label>
-                                    <input type="password" id="setting-bangumi-token" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-pink-500/20 focus:border-pink-500 transition-all">
-                                </div>
+                                <div><label class="text-sm font-medium mb-1 block" style="color:inherit" for="setting-bangumi-username">Bangumi 用户名</label><input type="text" id="setting-bangumi-username" class="admin-input"></div>
+                                <div><label class="text-sm font-medium mb-1 block" style="color:inherit" for="setting-bangumi-token">Bangumi Token</label><input type="password" id="setting-bangumi-token" class="admin-input"></div>
                             </div>
                             <div class="flex items-center gap-3">
-                                <button type="button" onclick="saveBangumiSettings()" class="px-4 py-2 bg-slate-900 text-white rounded-lg hover:bg-slate-800 transition-colors text-sm font-medium">保存设置</button>
-                                <button type="button" onclick="syncBangumi()" class="px-4 py-2 bg-pink-50 text-pink-600 border border-pink-200 rounded-lg hover:bg-pink-100 transition-colors text-sm font-medium flex items-center gap-2">
-                                    <i data-lucide="refresh-cw" class="w-4 h-4"></i>
-                                    立即同步 Bangumi 数据
+                                <button type="button" onclick="saveBangumiSettings()" class="admin-btn admin-btn-primary admin-btn-sm">保存设置</button>
+                                <button type="button" onclick="syncBangumi()" class="admin-btn admin-btn-sm" style="background:rgba(236,72,153,.12);color:#EC4899;border:1px solid rgba(236,72,153,.2)">
+                                    <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> 同步 Bangumi
                                 </button>
                             </div>
                         </div>
                     </div>
                 </div>
-                
-                <div id="media-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                    <!-- Loaded by JS -->
-                </div>
+                <div id="media-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"></div>
             </section>
-            
-            <!-- FEEDS VIEW -->
+
+            <!-- ═══════ VIEW: FEEDS ═══════ -->
             <section id="view-feeds" class="view-section space-y-6 hidden">
-                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
-                     <form id="add-feed-form" class="space-y-4">
+                <div class="admin-card p-6">
+                    <form id="add-feed-form" class="space-y-4">
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                             <div class="space-y-1">
-                                <label class="text-xs font-semibold text-slate-500 uppercase">RSS 链接</label>
-                                <input type="url" id="feed-url" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-500" placeholder="https://..." required>
-                            </div>
-                            <div class="space-y-1">
-                                <label class="text-xs font-semibold text-slate-500 uppercase">标题</label>
-                                <input type="text" id="feed-title" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-500" placeholder="Feed Title" required>
-                            </div>
-                            <div class="space-y-1">
-                                <label class="text-xs font-semibold text-slate-500 uppercase">ID</label>
-                                <input type="text" id="feed-id" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-500" placeholder="Unique ID" required>
-                            </div>
-                             <div class="space-y-1 md:col-span-3">
-                                <label class="text-xs font-semibold text-slate-500 uppercase">图标 URL</label>
-                                <div class="flex gap-2">
-                                     <input type="url" id="feed-icon" class="flex-1 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-500" placeholder="Icon URL">
-                                     <button type="button" onclick="autoFillFeedIcon()" class="px-3 py-2 bg-slate-100 text-slate-600 rounded-lg hover:bg-slate-200 transition-colors" title="自动获取图标">
-                                        <i data-lucide="wand-2" class="w-4 h-4"></i>
-                                    </button>
-                                </div>
+                            <div><label class="text-xs font-semibold uppercase tracking-wider mb-1 block" style="color:#94a3b8">RSS 链接</label><input type="url" id="feed-url" class="admin-input" placeholder="https://..." required></div>
+                            <div><label class="text-xs font-semibold uppercase tracking-wider mb-1 block" style="color:#94a3b8">标题</label><input type="text" id="feed-title" class="admin-input" placeholder="标题" required></div>
+                            <div><label class="text-xs font-semibold uppercase tracking-wider mb-1 block" style="color:#94a3b8">ID</label><input type="text" id="feed-id" class="admin-input" placeholder="唯一ID" required></div>
+                            <div class="md:col-span-3"><label class="text-xs font-semibold uppercase tracking-wider mb-1 block" style="color:#94a3b8">图标 URL</label>
+                                <div class="flex gap-2"><input type="url" id="feed-icon" class="admin-input flex-1" placeholder="图标URL"><button type="button" onclick="autoFillFeedIcon()" class="admin-btn admin-btn-secondary admin-btn-sm"><i data-lucide="wand-2" class="w-3.5 h-3.5"></i></button></div>
                             </div>
                         </div>
                         <div class="flex justify-end">
-                            <button type="submit" class="px-6 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors text-sm font-medium">
-                                添加订阅
-                            </button>
+                            <button type="submit" class="admin-btn admin-btn-primary">添加订阅</button>
                         </div>
                     </form>
                 </div>
-                <div id="feeds-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    <!-- Loaded by JS -->
-                </div>
+                <div id="feeds-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
             </section>
 
-            <!-- VIDEOS VIEW -->
+            <!-- ═══════ VIEW: VIDEOS ═══════ -->
             <section id="view-videos" class="view-section space-y-6 hidden">
-                 <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
-                     <form id="add-video-form" class="space-y-4">
-                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div class="space-y-1">
-                                <label class="text-xs font-semibold text-slate-500 uppercase">Bilibili BV号</label>
-                                <div class="flex gap-2">
-                                    <input type="text" id="video-bvid" class="flex-1 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-500" placeholder="BV..." required>
-                                    <button type="button" onclick="fetchBilibiliInfo()" class="px-3 py-2 bg-slate-100 text-slate-600 rounded-lg hover:bg-slate-200 transition-colors" title="尝试获取信息">
-                                        <i data-lucide="download-cloud" class="w-4 h-4"></i>
-                                    </button>
-                                </div>
+                <div class="admin-card p-6">
+                    <form id="add-video-form" class="space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div><label class="text-xs font-semibold uppercase tracking-wider mb-1 block" style="color:#94a3b8">Bilibili BV号</label>
+                                <div class="flex gap-2"><input type="text" id="video-bvid" class="admin-input flex-1" placeholder="BV..." required><button type="button" onclick="fetchBilibiliInfo()" class="admin-btn admin-btn-secondary admin-btn-sm"><i data-lucide="download-cloud" class="w-3.5 h-3.5"></i></button></div>
                             </div>
-                             <div class="space-y-1">
-                                <label class="text-xs font-semibold text-slate-500 uppercase">推荐语</label>
-                                <input type="text" id="video-desc" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-500" placeholder="这视频真不错...">
+                            <div><label class="text-xs font-semibold uppercase tracking-wider mb-1 block" style="color:#94a3b8">推荐语</label><input type="text" id="video-desc" class="admin-input" placeholder="这视频真不错..."></div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 pt-4" style="border-top:1px solid rgba(255,255,255,.06)">
+                            <div><label class="text-xs font-semibold uppercase tracking-wider mb-1 block" style="color:#94a3b8">标题</label><input type="text" id="video-title" class="admin-input" required aria-label="Video Title"></div>
+                            <div><label class="text-xs font-semibold uppercase tracking-wider mb-1 block" style="color:#94a3b8">分类</label><input type="text" id="video-category" class="admin-input" placeholder="动画/游戏..."></div>
+                            <div><label class="text-xs font-semibold uppercase tracking-wider mb-1 block" style="color:#94a3b8">时长</label><input type="text" id="video-duration" class="admin-input" placeholder="mm:ss"></div>
+                            <div><label class="text-xs font-semibold uppercase tracking-wider mb-1 block" style="color:#94a3b8">封面 URL</label><input type="url" id="video-cover" class="admin-input" aria-label="Video Cover URL"></div>
+                            <div><label class="text-xs font-semibold uppercase tracking-wider mb-1 block" style="color:#94a3b8">Bangumi 关联</label>
+                                <div class="flex gap-2"><input type="text" id="video-bgm-id" class="admin-input flex-1" placeholder="Subject ID"><button type="button" onclick="VideosManager.fetchBangumiSubject(document.getElementById('video-bgm-id').value)" class="admin-btn admin-btn-secondary admin-btn-sm"><i data-lucide="search" class="w-3.5 h-3.5"></i></button></div>
                             </div>
-                         </div>
-                         
-                         <!-- Expanded Fields (Manual Entry) -->
-                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 pt-4 border-t border-slate-100">
-                             <div class="space-y-1">
-                               <label class="text-xs font-semibold text-slate-500 uppercase">标题</label>
-                               <input type="text" id="video-title" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-500" required aria-label="Video Title">
-                           </div>
-                            <div class="space-y-1">
-                                <label class="text-xs font-semibold text-slate-500 uppercase">分类</label>
-                                <input type="text" id="video-category" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-500" placeholder="动画/游戏...">
-                            </div>
-                            <div class="space-y-1">
-                                <label class="text-xs font-semibold text-slate-500 uppercase">时长</label>
-                                <input type="text" id="video-duration" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-500" placeholder="mm:ss">
-                            </div>
-                            <div class="space-y-1">
-                              <label class="text-xs font-semibold text-slate-500 uppercase">封面 URL</label>
-                              <input type="url" id="video-cover" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-500" aria-label="Video Cover URL">
-                           </div>
-                            <div class="space-y-1">
-                                <label class="text-xs font-semibold text-slate-500 uppercase">Bangumi 关联</label>
-                                <div class="flex gap-2">
-                                    <input type="text" id="video-bgm-id" class="flex-1 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-500" placeholder="Subject ID">
-                                    <button type="button" onclick="VideosManager.fetchBangumiSubject(document.getElementById('video-bgm-id').value)" class="px-3 py-2 bg-slate-100 text-slate-600 rounded-lg hover:bg-slate-200 transition-colors" title="获取 Bangumi 资料">
-                                        <i data-lucide="search" class="w-4 h-4"></i>
-                                    </button>
-                                </div>
-                            </div>
-                         </div>
-
+                        </div>
                         <div class="flex justify-end pt-2">
-                            <button type="submit" class="px-6 py-2 bg-pink-500 text-white rounded-lg hover:bg-pink-600 transition-colors text-sm font-medium">
-                                添加视频
-                            </button>
+                            <button type="submit" class="admin-btn" style="background:rgba(236,72,153,.12);color:#EC4899;border:1px solid rgba(236,72,153,.2)">添加视频</button>
                         </div>
                     </form>
                 </div>
-                <div id="videos-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    <!-- Loaded by JS -->
-                </div>
+                <div id="videos-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
             </section>
 
-            <!-- STATS VIEW -->
+            <!-- ═══════ VIEW: STATS ═══════ -->
             <section id="view-stats" class="view-section space-y-6 hidden">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-                        <div class="text-slate-500 text-sm font-medium mb-2">总访问量</div>
-                        <div class="text-3xl font-bold text-slate-800" id="stat-total-visits">-</div>
+                    <div class="admin-card p-6">
+                        <div style="color:#94a3b8;font-size:.85rem;font-weight:500;margin-bottom:8px">总访问量</div>
+                        <div class="text-3xl font-bold" id="stat-total-visits" style="color:inherit">-</div>
                     </div>
-                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-                        <div class="text-slate-500 text-sm font-medium mb-2">今日访问</div>
-                        <div class="text-3xl font-bold text-blue-600" id="stat-today-visits">-</div>
+                    <div class="admin-card p-6">
+                        <div style="color:#94a3b8;font-size:.85rem;font-weight:500;margin-bottom:8px">今日访问</div>
+                        <div class="text-3xl font-bold" id="stat-today-visits" style="color:var(--color-primary,#14B8A6)">-</div>
                     </div>
-                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-                        <div class="text-slate-500 text-sm font-medium mb-2">热门页面</div>
-                        <div class="text-xl font-bold text-slate-800 truncate" id="stat-top-page">-</div>
-                    </div>
-                </div>
-                
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-                    <h3 class="text-lg font-bold text-slate-800 mb-6">访问趋势 (近7天)</h3>
-                    <div class="h-64">
-                        <canvas id="visitsChart"></canvas>
+                    <div class="admin-card p-6">
+                        <div style="color:#94a3b8;font-size:.85rem;font-weight:500;margin-bottom:8px">热门页面</div>
+                        <div class="text-xl font-bold truncate" id="stat-top-page" style="color:inherit">-</div>
                     </div>
                 </div>
-
-                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-                    <div class="p-6 border-b border-slate-100">
-                        <h3 class="text-lg font-bold text-slate-800">访问日志</h3>
-                    </div>
+                <div class="admin-card p-6">
+                    <h3 class="text-lg font-bold mb-6" style="color:inherit">访问趋势 (近7天)</h3>
+                    <div style="height:260px"><canvas id="visitsChart"></canvas></div>
+                </div>
+                <div class="admin-card overflow-hidden">
+                    <div class="p-6" style="border-bottom:1px solid rgba(255,255,255,.05)"><h3 class="text-lg font-bold" style="color:inherit">访问日志</h3></div>
                     <div class="overflow-x-auto">
-                        <table class="w-full text-sm text-left">
-                            <thead class="bg-slate-50 text-slate-500 font-medium">
-                                <tr>
-                                    <th class="px-6 py-3">时间</th>
-                                    <th class="px-6 py-3">页面</th>
-                                    <th class="px-6 py-3">IP</th>
-                                    <th class="px-6 py-3">设备</th>
-                                </tr>
-                            </thead>
-                            <tbody id="visits-log-body" class="divide-y divide-slate-100">
-                                <!-- Loaded by JS -->
-                            </tbody>
+                        <table class="admin-table">
+                            <thead><tr><th>时间</th><th>页面</th><th>IP</th><th>设备</th></tr></thead>
+                            <tbody id="visits-log-body"></tbody>
                         </table>
                     </div>
                 </div>
             </section>
-            
-            <!-- SETTINGS VIEW -->
+
+            <!-- ═══════ VIEW: SETTINGS ═══════ -->
             <section id="view-settings" class="view-section space-y-6 hidden">
-                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-                    <div class="p-6 border-b border-slate-100">
-                        <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
-                            <i data-lucide="settings-2" class="w-5 h-5 text-blue-600"></i>
-                            系统设置
+                <div class="admin-card overflow-hidden">
+                    <div class="p-6" style="border-bottom:1px solid rgba(255,255,255,.05)">
+                        <h3 class="text-lg font-bold flex items-center gap-2" style="color:inherit">
+                            <i data-lucide="settings-2" class="w-5 h-5" style="color:var(--color-primary,#14B8A6)"></i> 系统设置
                         </h3>
                     </div>
-                    
                     <form id="settings-form" class="p-6 space-y-8">
-                            <h4 class="text-sm font-bold text-slate-700 uppercase tracking-wide border-l-4 border-slate-800 pl-3">系统安全</h4>
-                            <div class="space-y-1.5">
-                                <label class="text-sm font-medium text-slate-600">管理令牌 (Admin Token)</label>
-                                <input type="password" id="setting-admin-token" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-slate-500/20 focus:border-slate-500 transition-all" placeholder="Enter ADMIN_TOKEN from .env">
-                                <p class="text-xs text-slate-400">用于 Node.js 后端鉴权 (对应 .env 中的 ADMIN_TOKEN)</p>
+                        <div>
+                            <h4 class="text-sm font-bold uppercase tracking-wide mb-4 pl-3" style="color:inherit;border-left:3px solid var(--color-primary,#14B8A6)">系统安全</h4>
+                            <div>
+                                <label class="text-sm font-medium mb-1.5 block" style="color:inherit">管理令牌 (Admin Token)</label>
+                                <input type="password" id="setting-admin-token" class="admin-input" placeholder="输入 ADMIN_TOKEN">
+                                <p class="text-xs mt-1.5" style="color:#64748b">用于 Node.js 后端鉴权</p>
                             </div>
-
-                        <!-- Site Notice Management -->
-                        <div class="space-y-4 border-t border-slate-100 pt-6">
-                            <h4 class="text-sm font-bold text-slate-700 uppercase tracking-wide border-l-4 border-blue-500 pl-3">站点公告</h4>
+                        </div>
+                        <div style="border-top:1px solid rgba(255,255,255,.06);padding-top:24px">
+                            <h4 class="text-sm font-bold uppercase tracking-wide mb-4 pl-3" style="color:inherit;border-left:3px solid var(--color-primary,#14B8A6)">站点公告</h4>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div class="space-y-1.5">
-                                    <label class="text-sm font-medium text-slate-600">公告内容</label>
-                                    <textarea id="notice-content" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all" rows="4" placeholder="请输入公告内容"></textarea>
+                                <div>
+                                    <label class="text-sm font-medium mb-1.5 block" style="color:inherit">公告内容</label>
+                                    <textarea id="notice-content" class="admin-input" rows="4" placeholder="请输入公告内容"></textarea>
                                 </div>
-                                <div class="space-y-1.5">
-                                    <label class="text-sm font-medium text-slate-600">显示与样式</label>
-                                    <div class="flex items-center gap-3">
-                                        <label class="flex items-center gap-2 text-sm text-slate-600"><input type="checkbox" id="notice-show"> 显示公告</label>
-                                        <select id="notice-style" class="bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-500" aria-label="Notice Style">
+                                <div>
+                                    <label class="text-sm font-medium mb-1.5 block" style="color:inherit">显示与样式</label>
+                                    <div class="flex items-center gap-4">
+                                        <label class="flex items-center gap-2 text-sm cursor-pointer" style="color:inherit"><input type="checkbox" id="notice-show"> 显示公告</label>
+                                        <select id="notice-style" class="admin-input w-auto" aria-label="Notice Style">
                                             <option value="info">提示</option>
                                             <option value="success">成功</option>
                                             <option value="warning">警告</option>
@@ -637,46 +541,29 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="flex justify-end">
-                                <button type="button" id="notice-save" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium">保存公告</button>
+                            <div class="flex justify-end mt-4">
+                                <button type="button" id="notice-save" class="admin-btn admin-btn-primary admin-btn-sm">保存公告</button>
                             </div>
                         </div>
-                        
-                        <div class="border-t border-slate-100 pt-6 flex justify-end">
-                            <button type="submit" class="px-8 py-2.5 bg-slate-900 text-white rounded-lg hover:bg-slate-800 shadow-lg shadow-slate-500/20 transition-all font-medium flex items-center gap-2">
-                                <i data-lucide="save" class="w-4 h-4"></i>
-                                保存设置
+                        <div style="border-top:1px solid rgba(255,255,255,.06);padding-top:24px" class="flex justify-end">
+                            <button type="submit" class="admin-btn admin-btn-primary">
+                                <i data-lucide="save" class="w-4 h-4"></i> 保存设置
                             </button>
                         </div>
                     </form>
                 </div>
             </section>
 
-            <!-- Admin Footer -->
-            <footer class="py-8 text-center text-sm text-gray-500 dark:text-gray-400 transition-colors duration-500">
+            <!-- Footer -->
+            <footer class="py-8 text-center text-sm" style="color:#64748b">
                 <p>&copy; <span id="year"></span> ShadowQuake. All rights reserved.</p>
-                <p class="mt-2 text-xs opacity-50">
-                    <span id="visit-count" class="hidden">Visits: <span id="busuanzi_value_site_pv" class="font-mono">Loading...</span></span>
-                </p>
             </footer>
         </main>
     </div>
 
-    <!-- Light/dark visibility -->
-    <style>
-        .dark .light-only { display: none !important; }
-        .dark .dark-only { display: inline !important; }
-        .light-only { display: inline; }
-        .dark-only { display: none; }
-        img.light-only, img.dark-only { display: none; }
-        .dark img.dark-only { display: inline; }
-        img.light-only { display: inline; }
-        .dark img.light-only { display: none; }
-    </style>
-
     <!-- Scripts -->
     <script src="../js/navbar.js?v=20260626b"></script>
     <script src="admin.js"></script>
-    <script>lucide.createIcons();</script>
+    <script>lucide.createIcons();document.getElementById('year').textContent=new Date().getFullYear();</script>
 </body>
 </html>
