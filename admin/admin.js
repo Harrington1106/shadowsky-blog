@@ -1023,10 +1023,22 @@ const BookmarksManager = {
                     {role:'user',content:text}
                 ],temperature:0.3})
             });
-            if (!r.ok) { const e = await r.json().catch(()=>({})); throw new Error(e.error?.message || `HTTP ${r.status}`); }
-            descEl.value = (await r.json()).choices[0].message.content.trim();
+            if (!r.ok) {
+                let errMsg = `HTTP ${r.status}`;
+                try {
+                    const e = await r.json();
+                    if (e.error?.message) errMsg = e.error.message;
+                    else if (typeof e.error === 'string') errMsg = e.error;
+                } catch (_) {}
+                if (r.status === 503) errMsg += '（服务暂不可用，请稍后重试）';
+                throw new Error(errMsg);
+            }
+            const respData = await r.json();
+            const translated = respData.choices?.[0]?.message?.content?.trim();
+            if (!translated) throw new Error('AI 返回内容为空，请重试');
+            descEl.value = translated;
             showToast('翻译完成', 'success');
-        } catch(e) { showToast('翻译失败: '+e.message, 'error'); }
+        } catch(e) { showToast('翻译失败: ' + e.message, 'error'); }
         btn.innerHTML = orig; btn.disabled = false;
         if (typeof lucide !== 'undefined') lucide.createIcons();
     },
