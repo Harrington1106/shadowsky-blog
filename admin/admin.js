@@ -688,243 +688,6 @@ const BookmarksManager = {
             return (u || '').trim();
         }
     },
-    getGithubBookmarksConfig() {
-        if (typeof document === 'undefined') return null;
-        const el = document.getElementById('gh-bookmarks-config');
-        if (!el) return null;
-        const owner = el.getAttribute('data-owner') || '';
-        const repo = el.getAttribute('data-repo') || '';
-        if (!owner || !repo) return null;
-        return { owner, repo };
-    },
-    mapGithubCategory(categoryText) {
-        const result = { category: '', subcategory: '' };
-        if (!categoryText) return result;
-        const raw = String(categoryText);
-        const parts = raw.split('/').map(p => p.trim()).filter(Boolean);
-        const primary = parts[0] || '';
-        const secondary = parts[1] || '';
-        if (typeof this.categories === 'object' && this.categories) {
-            const entries = Object.entries(this.categories);
-            for (let i = 0; i < entries.length; i++) {
-                const key = entries[i][0];
-                const cfg = entries[i][1] || {};
-                if (!result.category && (cfg.name === primary || key === primary)) {
-                    result.category = key;
-                    const children = Array.isArray(cfg.children) ? cfg.children : [];
-                    if (secondary) {
-                        for (let j = 0; j < children.length; j++) {
-                            const child = children[j];
-                            if (child.name === secondary || child.id === secondary) {
-                                result.subcategory = child.id;
-                                break;
-                            }
-                        }
-                    }
-                    break;
-                }
-            }
-        }
-        if (!result.category) result.category = raw;
-        return result;
-    },
-    normalizeSiteTitle(metaTitle, url) {
-        let base = '';
-        if (metaTitle) {
-            const text = String(metaTitle).trim();
-            const seps = ['·', '-', '|', '—', '–'];
-            let idx = -1;
-            for (let i = 0; i < seps.length; i++) {
-                const p = text.indexOf(seps[i]);
-                if (p !== -1 && (idx === -1 || p < idx)) idx = p;
-            }
-            base = idx === -1 ? text : text.slice(0, idx).trim();
-        }
-        if (!base && url) {
-            try {
-                const u = new URL(url);
-                base = u.hostname.replace(/^www\./, '');
-            } catch (e) {
-                base = url;
-            }
-        }
-        return base || '';
-    },
-    async fetchGithubBookmarks() {
-        const cfg = this.getGithubBookmarksConfig();
-        if (!cfg) return [];
-        const api = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/issues?state=open&per_page=100&labels=bookmark`;
-        try {
-            const res = await fetch(api);
-            if (!res.ok) return [];
-            const items = await res.json();
-            const result = [];
-            for (let i = 0; i < items.length; i++) {
-                const it = items[i];
-                const body = it.body || '';
-                const lines = body.split('\n');
-                let url = '';
-                let category = '';
-                let metaTitle = '';
-                for (let j = 0; j < lines.length; j++) {
-                    const line = lines[j].trim();
-                    if (!url && /^url\s*:/i.test(line)) {
-                        url = line.replace(/^url\s*:/i, '').trim();
-                    } else if (!category && /^category\s*:/i.test(line)) {
-                        category = line.replace(/^category\s*:/i, '').trim();
-                    } else if (!metaTitle && /^title\s*:/i.test(line)) {
-                        metaTitle = line.replace(/^title\s*:/i, '').trim();
-                    }
-                }
-                if (!url) continue;
-                const labels = Array.isArray(it.labels) ? it.labels.map(l => (l && l.name ? l.name : '')).filter(Boolean) : [];
-                const tags = labels.filter(name => name.toLowerCase() !== 'bookmark');
-                const descLines = [];
-                for (let k = 0; k < lines.length; k++) {
-                    const line = lines[k];
-                    if (/^url\s*:/i.test(line) || /^category\s*:/i.test(line) || /^title\s*:/i.test(line)) continue;
-                    if (line.trim()) descLines.push(line.trim());
-                }
-                const issueTitle = (it.title || '').replace(/^#+\s*/, '').trim();
-                if (issueTitle) descLines.unshift(issueTitle);
-                const description = descLines.join('\n');
-                const mapped = this.mapGithubCategory(category);
-                const siteTitle = this.normalizeSiteTitle(metaTitle, url);
-                result.push({
-                    id: String(it.id || it.number || this.normalizeBookmarkUrl(url)),
-                    source: 'github',
-                    issueNumber: it.number,
-                    url: url,
-                    title: siteTitle || url,
-                    tags: tags,
-                    addedAt: it.created_at || new Date().toISOString(),
-                    description: description,
-                    category: mapped.category,
-                    subcategory: mapped.subcategory
-                });
-            }
-            return result;
-        } catch (e) {
-            return [];
-        }
-    },
-    getGithubRequestConfig() {
-        const cfg = this.getGithubBookmarksConfig();
-        const ownerInput = document.getElementById('bm-gh-owner');
-        const repoInput = document.getElementById('bm-gh-repo');
-        const owner = (ownerInput ? ownerInput.value.trim() : '') || (cfg ? cfg.owner : '');
-        const repo = (repoInput ? repoInput.value.trim() : '') || (cfg ? cfg.repo : '');
-        return { owner, repo };
-    },
-    formatCategoryLabel(category, subcategory) {
-        let primary = category || '';
-        let secondary = subcategory || '';
-        if (category && this.categories && this.categories[category] && this.categories[category].name) {
-            primary = this.categories[category].name;
-            const children = Array.isArray(this.categories[category].children) ? this.categories[category].children : [];
-            if (subcategory) {
-                const found = children.find(c => c.id === subcategory || c.name === subcategory);
-                if (found && found.name) secondary = found.name;
-            }
-        }
-        if (primary && secondary) return `${primary}/${secondary}`;
-        return primary || '';
-    },
-    async addGithub(url, title, category, subcategory, tags = [], description = '', issueNumber = '') {
-        const tokenInput = document.getElementById('bm-gh-token');
-        const token = tokenInput ? tokenInput.value.trim() : '';
-        const { owner, repo } = this.getGithubRequestConfig();
-        if (!owner || !repo) {
-            showToast('GitHub 仓库配置缺失', 'error');
-            return false;
-        }
-        if (!token) {
-            showToast('请填写 GitHub Token', 'error');
-            return false;
-        }
-        const labels = ['bookmark', ...tags.filter(Boolean)];
-        const categoryLabel = this.formatCategoryLabel(category, subcategory);
-        const lines = [`URL: ${url}`];
-        if (categoryLabel) lines.push(`Category: ${categoryLabel}`);
-        if (title) lines.push(`Title: ${title}`);
-        let body = lines.join('\n');
-        if (description) body += `\n\n${description}`;
-        const payload = {
-            title: title || url,
-            body,
-            labels
-        };
-        const api = issueNumber
-            ? `https://api.github.com/repos/${owner}/${repo}/issues/${issueNumber}`
-            : `https://api.github.com/repos/${owner}/${repo}/issues`;
-        try {
-            const res = await fetch(api, {
-                method: issueNumber ? 'PATCH' : 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `token ${token}`,
-                    'Accept': 'application/vnd.github+json'
-                },
-                body: JSON.stringify(payload)
-            });
-            if (res.ok) {
-                sessionStorage.setItem('gh_token', token);
-                showToast(issueNumber ? 'GitHub Issues 已更新' : '已添加到 GitHub Issues', 'success');
-                this.fetch();
-                return true;
-            }
-            let msg = `GitHub 请求失败: HTTP ${res.status}`;
-            try {
-                const data = await res.json();
-                if (data && data.message) msg += ` - ${data.message}`;
-            } catch (e) {}
-            showToast(msg, 'error');
-            return false;
-        } catch (e) {
-            showToast('GitHub 请求失败: ' + e.message, 'error');
-            return false;
-        }
-    },
-    async deleteGithub(issueNumber) {
-        const tokenInput = document.getElementById('bm-gh-token');
-        const token = tokenInput ? tokenInput.value.trim() : '';
-        const { owner, repo } = this.getGithubRequestConfig();
-        if (!owner || !repo) {
-            showToast('GitHub 仓库配置缺失', 'error');
-            return false;
-        }
-        if (!token) {
-            showToast('请填写 GitHub Token', 'error');
-            return false;
-        }
-        try {
-            const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/issues/${issueNumber}`, {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `token ${token}`,
-                    'Accept': 'application/vnd.github+json'
-                },
-                body: JSON.stringify({ state: 'closed' })
-            });
-            if (res.ok) {
-                sessionStorage.setItem('gh_token', token);
-                showToast('GitHub Issue 已关闭', 'success');
-                this.fetch();
-                return true;
-            }
-            let msg = `GitHub 请求失败: HTTP ${res.status}`;
-            try {
-                const data = await res.json();
-                if (data && data.message) msg += ` - ${data.message}`;
-            } catch (e) {}
-            showToast(msg, 'error');
-            return false;
-        } catch (e) {
-            showToast('GitHub 请求失败: ' + e.message, 'error');
-            return false;
-        }
-    },
     async fetchPublicBookmarks() {
         try {
             const res = await fetch(`/public/data/bookmarks.json?t=${Date.now()}`);
@@ -955,9 +718,8 @@ const BookmarksManager = {
             
             const apiData = await safeFetch(`${API_BASE}/bookmarks`);
             const publicData = await this.fetchPublicBookmarks();
-            const githubData = await this.fetchGithubBookmarks();
             const normalizedApi = Array.isArray(apiData) ? apiData : [];
-            this.data = this.mergeBookmarks(githubData, normalizedApi, publicData);
+            this.data = this.mergeBookmarks(normalizedApi, publicData);
             bookmarks = this.data;
             this.render();
             // Re-populate categories dropdown whenever we fetch new data
@@ -1113,13 +875,6 @@ const BookmarksManager = {
         const tagsInput = document.getElementById('bm-tags');
         if (tagsInput) tagsInput.value = item.tags ? item.tags.join(', ') : '';
 
-        const sourceSelect = document.getElementById('bm-source');
-        const issueInput = document.getElementById('bm-gh-issue');
-        const source = item.source || (item.issueNumber ? 'github' : 'retinbox');
-        if (sourceSelect) sourceSelect.value = source;
-        if (issueInput) issueInput.value = item.issueNumber ? String(item.issueNumber) : '';
-        updateBookmarkSourceUI(source);
-        
         const submitBtn = document.getElementById('bm-submit');
         submitBtn.innerHTML = '<i data-lucide="save" class="w-4 h-4"></i><span>保存修改</span>';
         submitBtn.classList.remove('bg-blue-600', 'hover:bg-blue-700');
@@ -1141,13 +896,6 @@ const BookmarksManager = {
         const descInput = document.getElementById('bm-desc');
         if (descInput) descInput.value = '';
 
-        const issueInput = document.getElementById('bm-gh-issue');
-        if (issueInput) issueInput.value = '';
-
-        const sourceSelect = document.getElementById('bm-source');
-        if (sourceSelect) sourceSelect.value = 'retinbox';
-        updateBookmarkSourceUI('retinbox');
-        
         // Reset category fields
         document.getElementById('bm-category').value = '';
         document.getElementById('bm-subcategory').value = '';
@@ -1178,21 +926,12 @@ const BookmarksManager = {
                     showToast('收藏已删除', 'success');
                     return;
                 }
-                if (item && (item.source === 'github' || item.issueNumber)) {
-                    const issueNumber = item.issueNumber;
-                    if (!issueNumber) {
-                        showToast('缺少 Issue 编号，无法删除', 'error');
-                        return;
-                    }
-                    await this.deleteGithub(issueNumber);
+                const data = await safeFetch(`${API_BASE}/bookmarks?id=${encodeURIComponent(id)}`, { method: 'DELETE' });
+                if (data.success) {
+                    showToast('收藏已删除', 'success');
+                    this.fetch();
                 } else {
-                    const data = await safeFetch(`${API_BASE}/bookmarks?id=${encodeURIComponent(id)}`, { method: 'DELETE' });
-                    if (data.success) {
-                        showToast('收藏已删除', 'success');
-                        this.fetch();
-                    } else {
-                        showToast('删除失败: ' + (data.error || '未知错误'), 'error');
-                    }
+                    showToast('删除失败: ' + (data.error || '未知错误'), 'error');
                 }
             } catch (e) {
                 showToast('删除失败: ' + e.message, 'error');
@@ -2491,14 +2230,6 @@ window.fetchBilibiliInfo = () => VideosManager.fetchBilibiliInfo(document.getEle
 
 // --- Event Handlers ---
 
-function updateBookmarkSourceUI(mode) {
-    const config = document.getElementById('bm-github-config');
-    if (config) {
-        if (mode === 'github') config.classList.remove('hidden');
-        else config.classList.add('hidden');
-    }
-}
-
 async function handleAddBookmark(e) {
     e.preventDefault();
     const form = e.target;
@@ -2517,13 +2248,8 @@ async function handleAddBookmark(e) {
     const subcategory = document.getElementById('bm-subcategory').value;
     const tagsInput = document.getElementById('bm-tags');
     const tags = tagsInput ? tagsInput.value.split(/[,，]/).map(t => t.trim()).filter(Boolean) : [];
-    const source = document.getElementById('bm-source')?.value || 'retinbox';
-    const issueInput = document.getElementById('bm-gh-issue');
-    const issueNumber = issueInput ? issueInput.value.trim() : '';
     try {
-        const success = source === 'github'
-            ? await BookmarksManager.addGithub(url, title, category, subcategory, tags, description, issueNumber)
-            : await BookmarksManager.add(url, title, category, tags, id, description, subcategory);
+        const success = await BookmarksManager.add(url, title, category, tags, id, description, subcategory);
         if (success) { 
             BookmarksManager.cancelEdit();
             FormValidator.clearErrors(form); 
@@ -2831,12 +2557,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     const noticeSave = document.getElementById('notice-save');
     if (noticeSave) noticeSave.addEventListener('click', () => NoticeManager.save());
 
-    const sourceSelect = document.getElementById('bm-source');
-    if (sourceSelect) {
-        updateBookmarkSourceUI(sourceSelect.value);
-        sourceSelect.addEventListener('change', (e) => updateBookmarkSourceUI(e.target.value));
-    }
-
     const saveTokenBtn = document.getElementById('admin-token-save');
     if (saveTokenBtn) saveTokenBtn.addEventListener('click', () => {
         const v = document.getElementById('admin-token-input')?.value || '';
@@ -2853,8 +2573,16 @@ document.addEventListener('DOMContentLoaded', async () => {
         sendTokenBtn.innerHTML = '<i data-lucide="loader-2" class="w-3.5 h-3.5" style="animation:spin 1s linear infinite"></i> 发送中...';
         if (typeof lucide !== 'undefined') lucide.createIcons();
         try {
-            const res = await fetch(API_BASE + '/api/auth/send-token', { method: 'POST' });
-            const data = await res.json();
+            const res = await fetch(`${API_BASE}/auth/send-token`, { method: 'POST' });
+            let data;
+            try {
+                data = await res.json();
+            } catch {
+                showToast('服务器返回异常，请检查后端是否在线', 'error');
+                sendTokenBtn.disabled = false;
+                sendTokenBtn.innerHTML = origHTML;
+                return;
+            }
             if (res.ok) {
                 showToast(data.message || '验证码已发送', 'success');
             } else {
