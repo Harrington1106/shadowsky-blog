@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>关于我 - 夏日科技探索</title>
+    <meta name="theme-color" content="#0B1120" media="(prefers-color-scheme: dark)">
+    <meta name="theme-color" content="#F5F7FA" media="(prefers-color-scheme: light)">
+    <title>关于 — Shadow Quake</title>
     <link rel="icon" type="image/png" href="public/img/favicon256.png">
 
     <!-- Fonts -->
@@ -14,36 +16,9 @@
     <!-- Unified CSS -->
         <link href="css/unified.css?v=20260626e" rel="stylesheet">
     <link href="css/liquid-ambient.css?v=20260624v5" rel="stylesheet">
-
-    <!-- Lucide Icons -->
+    <link href="css/liquid-about.css?v=2606270000" rel="stylesheet">
     <script src="js/vendor/lucide.min.js?v=20260624v5"></script>
-
-    <style>
-        body {
-            font-family: 'Inter', 'Noto Sans SC', sans-serif;
-        }
-        /* Dark/Light visibility */
-        .dark .light-only { display: none !important; }
-        .dark .dark-only { display: inline !important; }
-        img.light-only, img.dark-only { display: none; }
-        .dark img.dark-only { display: inline; }
-        img.light-only { display: inline; }
-        .dark img.light-only { display: none; }
-
-        /* Page-specific star styles (migrated from common-animations.css) */
-        .star {
-            position: absolute;
-            background: currentColor;
-            border-radius: 50%;
-            animation: twinkle var(--duration, 3s) ease-in-out infinite;
-            animation-delay: var(--delay, 0s);
-            opacity: 0;
-        }
-        @keyframes twinkle {
-            0%, 100% { opacity: 0.1; transform: scale(1); }
-            50% { opacity: var(--opacity, 0.6); transform: scale(1.3); }
-        }
-    </style>
+    <style>html:not(.dark) .dark-only{display:none!important}html.dark .light-only{display:none!important}</style>
 </head>
 <body class="font-sans">
     <!-- ═══════ 流体光斑层 ═══════ -->
@@ -52,9 +27,6 @@
         <div class="liquid-blob liquid-blob--2"></div>
         <div class="liquid-blob liquid-blob--3"></div>
     </div>
-
-    <!-- Starry Background Container -->
-    <div id="stars-container" class="fixed inset-0 pointer-events-none z-0 overflow-hidden text-blue-300/30 dark:text-white/30"></div>
 
     <!-- Navbar -->
     <nav id="navbar" class="homepage-cover-nav-shell" data-ui-region="home-nav-shell">
@@ -108,181 +80,69 @@
     </div>
 
     <!-- Main Content -->
-    <main class="public-shell public-shell--floating-nav layout-safe-top max-w-3xl mx-auto px-6 pb-24" data-ui-shell="about-story">
+    <main class="about-page">
 
-        <!-- Profile Section with Elegant Card Design -->
-        <div class="section-shell layout-flow-section relative mb-20 animate-fade-in-up" data-ui-section="about-intro">
-            <!-- Background Decorative Elements -->
-            <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full max-w-lg bg-gradient-to-b from-blue-50/50 to-transparent dark:from-blue-900/10 dark:to-transparent blur-3xl -z-10 rounded-full opacity-60"></div>
+        <header class="about-hero">
+            <img src="public/img/avatar.jpg" alt="Avatar" class="about-avatar">
+            <h1 class="about-name">Thoi</h1>
+            <div class="about-tags">
+                <span>大四学生</span><span class="about-tag-dot"></span>
+                <span>学习者</span><span class="about-tag-dot"></span>
+                <span>探索者</span>
+            </div>
+        </header>
 
-            <div class="text-center">
-                <span class="editorial-kicker">About This Site</span>
-                <div class="relative inline-block mb-8 group cursor-default">
-                    <div class="absolute -inset-2 bg-gradient-to-tr from-blue-100 to-indigo-100 dark:from-blue-900/30 dark:to-indigo-900/30 rounded-full blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
-                    <img src="public/img/avatar.jpg" alt="Avatar" class="relative w-32 h-32 rounded-full object-cover ring-4 ring-white dark:ring-gray-900 shadow-2xl mx-auto transition-all duration-700 ease-out">
-                    <div class="absolute bottom-1 right-1 w-4 h-4 bg-green-500 border-2 border-white dark:border-gray-900 rounded-full" title="Available"></div>
+        <p class="about-quote">仰望星空，是为了更好地脚踏实地。<br>构建代码，是为了更自由地表达思想。</p>
+
+        <p class="about-bio">很高兴你能来到这里。我是 Thoi，一个在多元兴趣中探索成长的大四学生。从代码构建到星空观测，我始终保持着好奇与热情。这个网站没有弹窗、没有广告、没有复杂交互——一个在数字洪流中可以片刻驻足的安静角落。</p>
+
+        <div class="about-cards">
+            <div class="about-card">
+                <div class="about-card-icon blue"><i data-lucide="code-2"></i></div>
+                <h3>构建</h3>
+                <p>崇尚简洁与高效。好的代码应该像诗歌一样，逻辑清晰，韵律优美。</p>
+                <div class="about-tags-row">
+                    <span class="about-tag-pill">React</span><span class="about-tag-pill">TypeScript</span><span class="about-tag-pill">Tailwind</span>
                 </div>
-
-                <h1 class="text-4xl font-serif font-bold text-gray-900 dark:text-white mb-4 tracking-tight">Thoi</h1>
-
-                <div class="flex items-center justify-center space-x-2 text-sm text-gray-500 dark:text-gray-400 font-medium tracking-wide uppercase">
-                    <span>大四学生</span>
-                    <span class="w-1 h-1 bg-gray-300 dark:bg-gray-600 rounded-full"></span>
-                    <span>学习者</span>
-                    <span class="w-1 h-1 bg-gray-300 dark:bg-gray-600 rounded-full"></span>
-                    <span>探索者</span>
+            </div>
+            <div class="about-card">
+                <div class="about-card-icon indigo"><i data-lucide="telescope"></i></div>
+                <h3>探索</h3>
+                <p>被未知与宏大所吸引。深空摄影、RSS 阅读、开源世界——拓展认知的边界。</p>
+                <div class="about-tags-row">
+                    <span class="about-tag-pill">Astro</span><span class="about-tag-pill">Nature</span><span class="about-tag-pill">RSS</span>
                 </div>
             </div>
         </div>
 
-        <article class="prose dark:prose-invert prose md:prose-lg mx-auto prose-headings:font-serif prose-p:text-gray-600 dark:prose-p:text-gray-300 prose-a:no-underline hover:prose-a:text-blue-600 transition-colors opacity-0 animate-fade-in-up [animation-delay:300ms]">
-            <!-- Introduction: Narrative style with Drop Cap -->
-            <div class="relative">
-                <span class="absolute -left-4 -top-4 text-6xl text-gray-100 dark:text-gray-800 font-serif font-bold -z-10 select-none">"</span>
-                <p class="lead text-xl text-gray-600 dark:text-gray-300 italic mb-12 text-center font-serif leading-relaxed">
-                    仰望星空，是为了更好地脚踏实地。<br>
-                    构建代码，是为了更自由地表达思想。
-                </p>
-            </div>
+        <div class="about-quote-box">
+            <span class="about-quote-icon">"</span>
+            <p>在这个信息爆炸的时代，我希望通过 RSS 订阅回归阅读的本质，通过精选的网页收藏构建知识的图谱。去除了多余的装饰，只保留最核心的阅读体验。</p>
+        </div>
 
-            <p class="first-letter:text-5xl first-letter:font-serif first-letter:font-bold first-letter:text-gray-900 dark:first-letter:text-white first-letter:mr-3 first-letter:float-left leading-relaxed text-justify">
-                很高兴你能来到这里。如果你已经浏览过前面的页面，你会发现这里是一个有些"安静"的地方。没有弹窗，没有广告，甚至没有复杂的交互。这正是我想呈现的——一个在数字洪流中可以片刻驻足的角落。
-            </p>
-            <p class="indent-[2em] text-justify">
-                我是 Thoi，一个在多元兴趣中探索成长的大四学生。虽然我涉足的领域不少——从代码构建到星空观测，以及更多未知的领域——尽管尚不够精通，但我始终保持着好奇与热情，在学习的道路上稳步前行。夜晚，我则化身为星空的观察者，试图透过望远镜捕捉那些穿越了亿万光年的光子，在宏大宇宙中寻找成长的动力。
-            </p>
+        <div class="about-wave-wrap">
+            <button id="wave-btn" class="about-wave-btn">👋 向 Thoi 打个招呼</button>
+            <p id="wave-text" class="about-wave-text" style="opacity:0">谢谢你的来访！✨</p>
+        </div>
 
-            <!-- Divider -->
-            <div class="flex items-center justify-center my-12 opacity-30">
-                <div class="w-16 h-px bg-gray-400"></div>
-                <i data-lucide="star" class="w-4 h-4 mx-4 text-gray-400"></i>
-                <div class="w-16 h-px bg-gray-400"></div>
-            </div>
+        <p class="about-closing">这个网站是我数字生命的一部分，它会随着我的成长而缓慢生长。<br>如果你能在这里找到一篇有用的文章，一张喜欢的图片，那便是我最大的荣幸。</p>
+        <p class="about-signature">—— 2025. Thoi</p>
 
-            <!-- Tech & Interests: Modern Grid Layout -->
-            <div class="not-prose grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 mb-16" data-ui-panel="about-signals">
-                <!-- Left: Code -->
-                <div class="glass-card group p-6 rounded-2xl bg-gray-50 dark:bg-gray-900/50 hover:bg-blue-50/50 dark:hover:bg-blue-900/10 transition-colors duration-300 border border-transparent hover:border-blue-100 dark:hover:border-blue-900/30">
-                    <div class="flex items-center mb-4">
-                        <div class="p-2 bg-white dark:bg-gray-800 rounded-lg shadow-sm mr-3 text-blue-500">
-                            <i data-lucide="code-2" class="w-5 h-5"></i>
-                        </div>
-                        <h3 class="text-lg font-bold text-gray-900 dark:text-white font-serif">构建</h3>
-                    </div>
-                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-4 leading-relaxed">
-                        崇尚简洁与高效。我相信好的代码应该像诗歌一样，逻辑清晰，韵律优美。
-                    </p>
-                    <div class="flex flex-wrap gap-2">
-                        <span class="px-2 py-1 bg-white dark:bg-gray-800 rounded text-xs font-mono text-gray-600 dark:text-gray-400 border border-gray-100 dark:border-gray-700">React</span>
-                        <span class="px-2 py-1 bg-white dark:bg-gray-800 rounded text-xs font-mono text-gray-600 dark:text-gray-400 border border-gray-100 dark:border-gray-700">TypeScript</span>
-                        <span class="px-2 py-1 bg-white dark:bg-gray-800 rounded text-xs font-mono text-gray-600 dark:text-gray-400 border border-gray-100 dark:border-gray-700">Tailwind</span>
-                    </div>
-                </div>
-
-                <!-- Right: Explore -->
-                <div class="glass-card group p-6 rounded-2xl bg-gray-50 dark:bg-gray-900/50 hover:bg-indigo-50/50 dark:hover:bg-indigo-900/10 transition-colors duration-300 border border-transparent hover:border-indigo-100 dark:hover:border-indigo-900/30">
-                    <div class="flex items-center mb-4">
-                        <div class="p-2 bg-white dark:bg-gray-800 rounded-lg shadow-sm mr-3 text-indigo-500">
-                            <i data-lucide="telescope" class="w-5 h-5"></i>
-                        </div>
-                        <h3 class="text-lg font-bold text-gray-900 dark:text-white font-serif">探索</h3>
-                    </div>
-                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-4 leading-relaxed">
-                        被未知与宏大所吸引。无论是深空摄影还是 RSS 阅读，都是对世界边界的拓展。
-                    </p>
-                    <div class="flex flex-wrap gap-2">
-                        <span class="px-2 py-1 bg-white dark:bg-gray-800 rounded text-xs font-mono text-gray-600 dark:text-gray-400 border border-gray-100 dark:border-gray-700">Astro</span>
-                        <span class="px-2 py-1 bg-white dark:bg-gray-800 rounded text-xs font-mono text-gray-600 dark:text-gray-400 border border-gray-100 dark:border-gray-700">Nature</span>
-                        <span class="px-2 py-1 bg-white dark:bg-gray-800 rounded text-xs font-mono text-gray-600 dark:text-gray-400 border border-gray-100 dark:border-gray-700">RSS</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Philosophy Block -->
-            <div class="glass-card relative bg-gradient-to-br from-gray-50 to-white dark:from-gray-900 dark:to-gray-900 border border-gray-100 dark:border-gray-800 p-8 rounded-2xl shadow-sm mb-16">
-                <i data-lucide="quote" class="absolute top-6 left-6 w-8 h-8 text-gray-200 dark:text-gray-700 -z-10"></i>
-                <p class="text-gray-700 dark:text-gray-300 italic text-center font-serif text-lg leading-loose">
-                    "在这个信息爆炸的时代，我希望通过 RSS 订阅回归阅读的本质，通过精选的网页收藏构建知识的图谱。去除了多余的装饰，只保留最核心的阅读体验。"
-                </p>
-            </div>
-
-            <!-- Interaction Zone -->
-            <div class="flex flex-col items-center justify-center my-16 not-prose">
-                <button id="wave-btn" class="group relative inline-flex items-center justify-center px-8 py-3 font-semibold text-white transition-all duration-300 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full hover:shadow-lg hover:shadow-blue-500/30 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 dark:focus:ring-offset-gray-900 overflow-hidden">
-                    <span class="relative z-10 flex items-center">
-                        <span class="mr-2 text-xl group-hover:animate-wave origin-bottom-right inline-block">👋</span>
-                        <span>向 Thoi 打个招呼</span>
-                    </span>
-                    <div class="absolute inset-0 bg-white/20 group-hover:translate-x-full transition-transform duration-700 -skew-x-12 origin-left"></div>
-                </button>
-                <p id="wave-text" class="mt-4 text-sm text-gray-400 dark:text-gray-500 opacity-0 transition-opacity duration-500 transform translate-y-2 font-medium">谢谢你的来访！✨</p>
-            </div>
-
-            <!-- Closing -->
-            <p class="text-center text-gray-500 dark:text-gray-400">
-                这个网站是我数字生命的一部分，它会随着我的成长而缓慢生长。<br>
-                如果你能在这里找到一篇有用的文章，一张喜欢的图片，那便是我最大的荣幸。
-            </p>
-
-            <div class="flex items-center justify-center mt-12 mb-4">
-                <span class="font-serif italic text-gray-400 text-sm">—— 2025. Thoi</span>
-            </div>
-        </article>
-
-        <!-- Minimal Footer Contact -->
-        <div class="mt-20 flex flex-col items-center">
-            <div class="flex flex-wrap justify-center gap-4 max-w-2xl mx-auto px-4">
-                <a href="mailto:contact@shadowsky.com" class="p-3 text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 rounded-full transition-all duration-300" aria-label="Email" title="Email">
-                    <i data-lucide="mail" class="w-5 h-5"></i>
-                </a>
-                <a href="https://github.com/shadowsky" target="_blank" rel="noopener" class="p-3 text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 rounded-full transition-all duration-300" aria-label="GitHub" title="GitHub">
-                    <i data-lucide="github" class="w-5 h-5"></i>
-                </a>
-                <a href="https://gitlab.com/" target="_blank" rel="noopener" class="p-3 text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 rounded-full transition-all duration-300" aria-label="GitLab" title="GitLab">
-                    <i data-lucide="gitlab" class="w-5 h-5"></i>
-                </a>
-                <a href="https://twitter.com/shadowsky" target="_blank" rel="noopener" class="p-3 text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 rounded-full transition-all duration-300" aria-label="Twitter" title="Twitter">
-                    <i data-lucide="twitter" class="w-5 h-5"></i>
-                </a>
-                <a href="https://www.linkedin.com/" target="_blank" rel="noopener" class="p-3 text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 rounded-full transition-all duration-300" aria-label="LinkedIn" title="LinkedIn">
-                    <i data-lucide="linkedin" class="w-5 h-5"></i>
-                </a>
-                <a href="https://www.instagram.com/" target="_blank" rel="noopener" class="p-3 text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 rounded-full transition-all duration-300" aria-label="Instagram" title="Instagram">
-                    <i data-lucide="instagram" class="w-5 h-5"></i>
-                </a>
-                <a href="https://www.youtube.com/" target="_blank" rel="noopener" class="p-3 text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 rounded-full transition-all duration-300" aria-label="YouTube" title="YouTube">
-                    <i data-lucide="youtube" class="w-5 h-5"></i>
-                </a>
-                <a href="https://space.bilibili.com/" target="_blank" rel="noopener" class="p-3 text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 rounded-full transition-all duration-300" aria-label="Bilibili" title="Bilibili">
-                    <i data-lucide="tv" class="w-5 h-5"></i>
-                </a>
-                <a href="https://www.twitch.tv/" target="_blank" rel="noopener" class="p-3 text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 rounded-full transition-all duration-300" aria-label="Twitch" title="Twitch">
-                    <i data-lucide="twitch" class="w-5 h-5"></i>
-                </a>
-                <a href="https://steamcommunity.com/" target="_blank" rel="noopener" class="p-3 text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 rounded-full transition-all duration-300" aria-label="Steam" title="Steam">
-                    <i data-lucide="gamepad-2" class="w-5 h-5"></i>
-                </a>
-                <a href="https://dribbble.com/" target="_blank" rel="noopener" class="p-3 text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 rounded-full transition-all duration-300" aria-label="Dribbble" title="Dribbble">
-                    <i data-lucide="dribbble" class="w-5 h-5"></i>
-                </a>
-                <a href="https://www.figma.com/" target="_blank" rel="noopener" class="p-3 text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 rounded-full transition-all duration-300" aria-label="Figma" title="Figma">
-                    <i data-lucide="figma" class="w-5 h-5"></i>
-                </a>
-                <a href="https://codepen.io/" target="_blank" rel="noopener" class="p-3 text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 rounded-full transition-all duration-300" aria-label="CodePen" title="CodePen">
-                    <i data-lucide="codepen" class="w-5 h-5"></i>
-                </a>
-                <a href="https://t.me/" target="_blank" rel="noopener" class="p-3 text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 rounded-full transition-all duration-300" aria-label="Telegram" title="Telegram">
-                    <i data-lucide="send" class="w-5 h-5"></i>
-                </a>
-            </div>
-            <p class="mt-8 text-xs text-gray-300 dark:text-gray-700 font-serif">Designed with <i data-lucide="bookmark" class="inline w-3 h-3 mx-1 text-red-400"></i> in 2025</p>
+        <div class="about-social">
+            <a href="mailto:contact@shadowsky.com" aria-label="Email"><i data-lucide="mail"></i></a>
+            <a href="https://github.com/shadowsky" target="_blank" rel="noopener" aria-label="GitHub"><i data-lucide="github"></i></a>
+            <a href="https://twitter.com/shadowsky" target="_blank" rel="noopener" aria-label="Twitter"><i data-lucide="twitter"></i></a>
+            <a href="https://space.bilibili.com/" target="_blank" rel="noopener" aria-label="Bilibili"><i data-lucide="tv"></i></a>
+            <a href="https://steamcommunity.com/" target="_blank" rel="noopener" aria-label="Steam"><i data-lucide="gamepad-2"></i></a>
+            <a href="https://www.youtube.com/" target="_blank" rel="noopener" aria-label="YouTube"><i data-lucide="youtube"></i></a>
+            <a href="https://t.me/" target="_blank" rel="noopener" aria-label="Telegram"><i data-lucide="send"></i></a>
         </div>
 
     </main>
 
     <!-- Back to Top Button -->
-    <button id="back-to-top" class="fixed bottom-8 right-8 p-3 rounded-full bg-blue-600 text-white shadow-lg transition-all duration-300 opacity-0 translate-y-10 hover:bg-blue-700 hover:scale-110 z-50 focus:outline-none ring-2 ring-blue-500 ring-offset-2 dark:ring-offset-slate-950" aria-label="Back to top">
-        <i data-lucide="chevron-up" class="w-6 h-6"></i>
+    <button id="back-to-top" style="position:fixed;bottom:28px;right:28px;width:44px;height:44px;border-radius:50%;background:var(--accent);color:#fff;border:none;cursor:pointer;z-index:50;opacity:0;transform:translateY(12px);pointer-events:none;transition:all .3s;box-shadow:0 4px 16px rgba(59,130,246,.25);display:flex;align-items:center;justify-content:center" aria-label="回到顶部">
+        <i data-lucide="chevron-up"></i>
     </button>
 
     <!-- Footer -->
@@ -292,44 +152,31 @@
         <span>&copy; 2026 Shadow Quake</span>
     </footer>
 
+    <script src="js/navbar.js?v=2606270000"></script>
     <script src="js/api.js?v=20260624v5"></script>
-    <script src="js/navbar.js?v=20260626b"></script>
+    <script src="js/main.js?v=2606270000"></script>
     <script src="js/click-effect.js?v=20260624v5"></script>
     <script src="js/context-menu.js?v=20260624v5"></script>
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script src="https://unpkg.com/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script>
-        // Initialize Lucide icons
         lucide.createIcons();
 
-        // Smooth Scroll (Lenis)
-        window.lenis = new Lenis({
-            duration: 0.5
-            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -6 * t)),
-            direction: 'vertical',
-            gestureDirection: 'vertical',
-            smooth: true,
-            mouseMultiplier: 1,
-            smoothTouch: false,
-            touchMultiplier: 2,
-        })
+        const lenis = new Lenis({ duration: 0.5, easing: t => Math.min(1, 1.001 - Math.pow(2, -6 * t)), smoothTouch: false, touchMultiplier: 2 });
+        window.lenis = lenis;
+        function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
+        requestAnimationFrame(raf);
 
-        let rafId;
-        function raf(time) {
-            window.lenis.raf(time)
-            rafId = requestAnimationFrame(raf)
+        // BTT
+        const btt = document.getElementById('back-to-top');
+        if (btt) {
+            lenis.on('scroll', ({ scroll }) => {
+                btt.style.opacity = scroll > 400 ? '1' : '0';
+                btt.style.transform = scroll > 400 ? 'translateY(0)' : 'translateY(12px)';
+                btt.style.pointerEvents = scroll > 400 ? 'auto' : 'none';
+            });
+            btt.addEventListener('click', () => lenis.scrollTo(0, { duration: 0.8 }));
         }
-
-        rafId = requestAnimationFrame(raf)
-
-        // Handle bfcache
-        window.addEventListener('pageshow', (event) => {
-            if (event.persisted) {
-                window.lenis.start();
-                cancelAnimationFrame(rafId);
-                rafId = requestAnimationFrame(raf);
-            }
-        });
 
         // Visit counter
         (function() {
@@ -337,63 +184,22 @@
             if (!el || !window.api || !window.api.fetchVisitCount) return;
             window.api.fetchVisitCount('about').then(d => { el.textContent = d.count; }).catch(() => {});
         })();
-    </script>
-    <script src="js/back-to-top.js?v=20260624v5"></script>
-    <script>
 
-        // Interaction Button
+        // Wave button + confetti
         const waveBtn = document.getElementById('wave-btn');
         const waveText = document.getElementById('wave-text');
         if (waveBtn) {
             waveBtn.addEventListener('click', () => {
-                // Confetti
-                const count = 200;
-                const defaults = {
-                    origin: { y: 0.7 }
-                };
-                function fire(particleRatio, opts) {
-                    confetti(Object.assign({}, defaults, opts, {
-                        particleCount: Math.floor(count * particleRatio)
-                    }));
-                }
-                fire(0.25, { spread: 26, startVelocity: 55, });
-                fire(0.2, { spread: 60, });
-                fire(0.35, { spread: 100, decay: 0.91, scalar: 0.8 });
-                fire(0.1, { spread: 120, startVelocity: 25, decay: 0.92, scalar: 1.2 });
-                fire(0.1, { spread: 120, startVelocity: 45, });
-                // Show Text
+                const d = { origin: { y: 0.7 } };
+                confetti({...d, particleCount: 50, spread: 26, startVelocity: 55});
+                confetti({...d, particleCount: 40, spread: 60});
+                confetti({...d, particleCount: 70, spread: 100, decay: .91, scalar: .8});
+                confetti({...d, particleCount: 20, spread: 120, startVelocity: 25, decay: .92, scalar: 1.2});
+                confetti({...d, particleCount: 20, spread: 120, startVelocity: 45});
                 waveText.style.opacity = '1';
-                waveText.style.transform = 'translateY(0)';
-                // Button feedback
-                waveBtn.innerHTML = '✨已收到';
+                waveBtn.textContent = '✨ 已收到！';
                 waveBtn.disabled = true;
-                waveBtn.classList.remove('bg-gradient-to-r');
-                waveBtn.classList.add('bg-green-500', 'cursor-default');
             });
-        }
-
-        // Generate Stars
-        const starsContainer = document.getElementById('stars-container');
-        if (starsContainer) {
-            const starCount = 60;
-            for (let i = 0; i < starCount; i++) {
-                const star = document.createElement('div');
-                star.classList.add('star');
-                const x = Math.random() * 100;
-                const y = Math.random() * 100;
-                const size = Math.random() * 3 + 1;
-                const duration = Math.random() * 3 + 2;
-                const delay = Math.random() * 5;
-                const opacity = Math.random() * 0.5 + 0.3;
-                star.style.left = `${x}%`;
-                star.style.top = `${y}%`;
-                star.style.width = `${size}px`;
-                star.style.height = `${size}px`;
-                star.style.setProperty('--duration', `${duration}s`);
-                star.style.setProperty('--delay', `${delay}s`);
-                star.style.setProperty('--opacity', opacity);
-                starsContainer.appendChild(star);
-            }
         }
     </script>
 <script src="js/tracker.js?v=20260624v5"></script>
