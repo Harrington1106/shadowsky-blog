@@ -866,7 +866,7 @@ const BookmarksManager = {
         document.getElementById('bm-title').value = item.title;
         
         const descInput = document.getElementById('bm-desc');
-        if (descInput) descInput.value = item.desc || item.description || '';
+        if (descInput) descInput.value = item.description || item.desc || '';
         
         document.getElementById('bm-category').value = item.category || 'others';
         document.getElementById('bm-subcategory').value = item.subcategory || '';
