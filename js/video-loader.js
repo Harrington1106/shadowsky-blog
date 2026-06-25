@@ -1,6 +1,6 @@
 const getProxyUrl = (url) => {
     if (url && (url.includes('hdslb.com') || url.includes('bilibili.com'))) {
-        return `https://images.weserv.nl/?url=${encodeURIComponent(url)}`;
+        return `${encodeURIComponent(url)}`;
     }
     return url;
 };
@@ -11,7 +11,7 @@ const defaultVideos = (window.videoLoaderOptions && window.videoLoaderOptions.vi
     {
         id: 1,
         title: "【🐇🐱】村井優X山下瞳月《地球最可爱》",
-        thumbnail: "https://images.weserv.nl/?url=https://i1.hdslb.com/bfs/archive/77d329da1454c5fda5906c2ad291c784cbed9a3d.jpg",
+        thumbnail: "https://i1.hdslb.com/bfs/archive/77d329da1454c5fda5906c2ad291c784cbed9a3d.jpg",
         duration: "01:31",
         views: 1263,
         category: "music",
@@ -21,7 +21,7 @@ const defaultVideos = (window.videoLoaderOptions && window.videoLoaderOptions.vi
     {
         id: 2,
         title: "【村山下】村山美羽X山下瞳月《爱了很久的朋友》",
-        thumbnail: "https://images.weserv.nl/?url=https://i1.hdslb.com/bfs/archive/0b2bc5cefdda75b741af02a486153dd02fe95507.jpg",
+        thumbnail: "https://i1.hdslb.com/bfs/archive/0b2bc5cefdda75b741af02a486153dd02fe95507.jpg",
         duration: "02:24",
         views: 947,
         category: "amv",
@@ -31,7 +31,7 @@ const defaultVideos = (window.videoLoaderOptions && window.videoLoaderOptions.vi
     {
         id: 3,
         title: "【CGT48】提姆吉兔(练手作)",
-        thumbnail: "https://images.weserv.nl/?url=https://i2.hdslb.com/bfs/archive/77654b9db94e9b75dd817712617ce189fedbb4e1.jpg",
+        thumbnail: "https://i2.hdslb.com/bfs/archive/77654b9db94e9b75dd817712617ce189fedbb4e1.jpg",
         duration: "01:26",
         views: 464,
         category: "life",
@@ -41,7 +41,7 @@ const defaultVideos = (window.videoLoaderOptions && window.videoLoaderOptions.vi
     {
         id: 4,
         title: "【璃花带羽】村山美羽X石森璃花《肯定》",
-        thumbnail: "https://images.weserv.nl/?url=https://i1.hdslb.com/bfs/archive/abef3a9dfbc7c21334b5a620775fd6d051f98435.jpg",
+        thumbnail: "https://i1.hdslb.com/bfs/archive/abef3a9dfbc7c21334b5a620775fd6d051f98435.jpg",
         duration: "01:19",
         views: 5511,
         category: "amv",
@@ -51,7 +51,7 @@ const defaultVideos = (window.videoLoaderOptions && window.videoLoaderOptions.vi
     {
         id: 5,
         title: "【谷山】村山美羽X谷口爱季《心跳的证明》",
-        thumbnail: "https://images.weserv.nl/?url=https://i1.hdslb.com/bfs/archive/5bc2cd6efe99d691a74bbf0b144d9efb3136206f.jpg",
+        thumbnail: "https://i1.hdslb.com/bfs/archive/5bc2cd6efe99d691a74bbf0b144d9efb3136206f.jpg",
         duration: "01:07",
         views: 1346,
         category: "amv",
@@ -61,7 +61,7 @@ const defaultVideos = (window.videoLoaderOptions && window.videoLoaderOptions.vi
     {
         id: 6,
         title: "【车流 月亮 烟花】记录生活",
-        thumbnail: "https://images.weserv.nl/?url=https://i1.hdslb.com/bfs/archive/c6feed0e8addcb50e40142c71c58b7007b12a8f2.jpg",
+        thumbnail: "https://i1.hdslb.com/bfs/archive/c6feed0e8addcb50e40142c71c58b7007b12a8f2.jpg",
         duration: "01:27",
         views: 182,
         category: "life",
@@ -71,7 +71,7 @@ const defaultVideos = (window.videoLoaderOptions && window.videoLoaderOptions.vi
     {
         id: 7,
         title: "【村山下】村山美羽X山下瞳月《悬溺》",
-        thumbnail: "https://images.weserv.nl/?url=https://i0.hdslb.com/bfs/archive/282ad61b5bdc0ceabab4aa78c38c3466fa489ce3.jpg",
+        thumbnail: "https://i0.hdslb.com/bfs/archive/282ad61b5bdc0ceabab4aa78c38c3466fa489ce3.jpg",
         duration: "01:26",
         views: 4228,
         category: "amv",
@@ -81,7 +81,7 @@ const defaultVideos = (window.videoLoaderOptions && window.videoLoaderOptions.vi
     {
         id: 8,
         title: "【W刘】暧昧三十三天",
-        thumbnail: "https://images.weserv.nl/?url=https://i2.hdslb.com/bfs/archive/ee342217734d42280ba803ed1ffad17f695027d0.jpg",
+        thumbnail: "https://i2.hdslb.com/bfs/archive/ee342217734d42280ba803ed1ffad17f695027d0.jpg",
         duration: "00:34",
         views: 323,
         category: "amv",
@@ -91,7 +91,7 @@ const defaultVideos = (window.videoLoaderOptions && window.videoLoaderOptions.vi
     {
         id: 9,
         title: "【北蔓】阿拉斯加海湾",
-        thumbnail: "https://images.weserv.nl/?url=https://i1.hdslb.com/bfs/archive/4c9826f2facf89674913dc58b5910651ab7594ad.jpg",
+        thumbnail: "https://i1.hdslb.com/bfs/archive/4c9826f2facf89674913dc58b5910651ab7594ad.jpg",
         duration: "03:24",
         views: 482,
         category: "amv",
@@ -101,7 +101,7 @@ const defaultVideos = (window.videoLoaderOptions && window.videoLoaderOptions.vi
     {
         id: 10,
         title: "『北蔓』冯思佳×任蔓琳 《一起去风里吧》",
-        thumbnail: "https://images.weserv.nl/?url=https://i0.hdslb.com/bfs/archive/73be317498a640f495d3d84099f8c5e3c6ab7f8b.jpg",
+        thumbnail: "https://i0.hdslb.com/bfs/archive/73be317498a640f495d3d84099f8c5e3c6ab7f8b.jpg",
         duration: "03:22",
         views: 5589,
         category: "music",
@@ -201,7 +201,7 @@ class VideoLoader {
         // Proxy Bilibili images to bypass 403
         const getProxyUrl = (url) => {
             if (url && (url.includes('hdslb.com') || url.includes('bilibili.com'))) {
-                return `https://images.weserv.nl/?url=${encodeURIComponent(url)}`;
+                return `${encodeURIComponent(url)}`;
             }
             return url;
         };
