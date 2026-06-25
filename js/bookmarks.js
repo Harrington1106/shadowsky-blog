@@ -555,6 +555,36 @@ async function initBookmarksPage() {
             });
         }
         
+        // ── 标签行鼠标拖拽滚动 ──
+        document.addEventListener('mousedown', (e) => {
+            const tagsEl = e.target.closest('.bm-card-tags');
+            if (!tagsEl) return;
+            tagsEl.isDown = true;
+            tagsEl.classList.add('dragging');
+            tagsEl.startX = e.pageX - tagsEl.offsetLeft;
+            tagsEl.scrollLeftStart = tagsEl.scrollLeft;
+            e.preventDefault();
+        });
+        document.addEventListener('mousemove', (e) => {
+            const tagsEl = document.querySelector('.bm-card-tags.dragging');
+            if (!tagsEl) return;
+            const x = e.pageX - tagsEl.offsetLeft;
+            const walk = (x - tagsEl.startX) * 1.5;
+            tagsEl.scrollLeft = tagsEl.scrollLeftStart - walk;
+        });
+        document.addEventListener('mouseup', () => {
+            document.querySelectorAll('.bm-card-tags.dragging').forEach(el => {
+                el.isDown = false;
+                el.classList.remove('dragging');
+            });
+        });
+        document.addEventListener('mouseleave', () => {
+            document.querySelectorAll('.bm-card-tags.dragging').forEach(el => {
+                el.isDown = false;
+                el.classList.remove('dragging');
+            });
+        });
+
         // Mark as initialized
         _bookmarksInitialized = true;
         _bookmarksInitializing = false;
@@ -861,7 +891,7 @@ function renderCard(bookmark) {
                 <p class="bm-card-desc" title="${desc}">${desc}</p>
             </a>
             <div class="bm-card-tags">
-                ${(bookmark.tags || []).slice(0, 4).map(tag => {
+                ${(bookmark.tags || []).map(tag => {
                     const isActive = tag === activeTag;
                     return `<button class="bm-tag${isActive ? ' bm-tag--active' : ''}"
                         onclick="filterByTag('${tag}')" aria-label="按标签 #${tag} 筛选">

@@ -738,12 +738,20 @@ html:not(.dark) .bm-card:hover {
 /* ── 标签行 ── */
 .bm-card-tags {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     gap: 6px;
     padding: 0 22px 18px;
     position: relative;
     z-index: 2;
+    overflow-x: auto;
+    cursor: grab;
+    -webkit-user-select: none;
+    user-select: none;
+    scroll-behavior: auto;
 }
+.bm-card-tags:active { cursor: grabbing; }
+.bm-card-tags::-webkit-scrollbar { display: none; }
+.bm-card-tags.dragging { cursor: grabbing; }
 
 /* ── 标签药丸 ── */
 .bm-tag {
