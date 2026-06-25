@@ -11,6 +11,20 @@
 body{margin:0;background:var(--bg);color:var(--tx);font-family:'Inter','Noto Sans SC',sans-serif}
 .hidden{display:none!important}*{box-sizing:border-box}
 
+/* ═══ 页面背景层 ═══ */
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 800px 600px at 20% 0%,rgba(236,72,153,.06),transparent),
+    radial-gradient(ellipse 600px 500px at 80% 10%,rgba(139,92,246,.05),transparent),
+    radial-gradient(ellipse 500px 400px at 60% 50%,rgba(99,102,241,.04),transparent),
+    radial-gradient(ellipse 400px 350px at 10% 80%,rgba(236,72,153,.04),transparent)}
+.dark body::before{background:
+    radial-gradient(ellipse 800px 600px at 20% 0%,rgba(236,72,153,.1),transparent),
+    radial-gradient(ellipse 600px 500px at 80% 10%,rgba(139,92,246,.08),transparent),
+    radial-gradient(ellipse 500px 400px at 60% 50%,rgba(99,102,241,.06),transparent),
+    radial-gradient(ellipse 400px 350px at 10% 80%,rgba(236,72,153,.07),transparent)}
+.acg-shell{position:relative;z-index:1}
+
 /* ═══ 液态玻璃通用 ═══ */
 .glass{background:var(--glass-bg);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
   border:1px solid var(--glass-border);box-shadow:var(--glass-shadow)}
