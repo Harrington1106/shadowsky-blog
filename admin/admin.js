@@ -978,55 +978,82 @@ const BookmarksManager = {
              btn.disabled = true;
         }
 
+        let gotTitle = false;
         try {
+            // 1. 尝试服务端获取
             const res = await safeFetch(`${API_BASE}/metadata?url=${encodeURIComponent(url)}`);
-            if (res && !res.error) {
-                if (res.title) {
-                    document.getElementById('bm-title').value = res.title;
-                    const descInput = document.getElementById('bm-desc');
-                    if (descInput && res.description) {
-                        descInput.value = res.description;
-                    }
-                    showToast('标题和描述获取成功', 'success');
-                } else {
-                    // No title found (likely SPA) — fallback to domain
-                    try {
-                        const u = new URL(url);
-                        document.getElementById('bm-title').value = u.hostname.replace(/^www\./, '');
-                        showToast('未提取到标题，已填入域名', 'warning');
-                    } catch (_) {
-                        showToast('未能获取到标题', 'info');
-                    }
-                }
+            if (res && !res.error && res.title) {
+                document.getElementById('bm-title').value = res.title;
+                const descInput = document.getElementById('bm-desc');
+                if (descInput && res.description) descInput.value = res.description;
+                showToast('标题和描述获取成功', 'success');
+                gotTitle = true;
             } else {
-                // Server unreachable — auto-fill domain as title
-                try {
-                    const u = new URL(url);
-                    document.getElementById('bm-title').value = u.hostname.replace(/^www\./, '');
-                    showToast('服务器无法访问，已自动填入域名', 'warning');
-                } catch (_) {
-                    showToast('获取失败，请手动填写', 'warning');
-                }
+                // 2. 服务端失败 → 尝试 AI 根据域名推理
+                gotTitle = await this.aiGuessTitle(url);
             }
         } catch (e) {
-            const msg = e.message || '';
-            if (msg.includes('502') || msg.includes('504') || msg.includes('timeout')) {
-                try {
-                    const u = new URL(url);
-                    document.getElementById('bm-title').value = u.hostname.replace(/^www\./, '');
-                    showToast('服务器无法访问，已自动填入域名', 'warning');
-                } catch (_) {
-                    showToast('服务器无法访问，请手动填写', 'warning');
-                }
-            } else {
-                showToast('获取失败: ' + msg, 'error');
-            }
+            // safeFetch 可能抛异常（非 GET 才会，但兜底）
+            gotTitle = await this.aiGuessTitle(url);
         } finally {
             if (btn) {
                 btn.innerHTML = '<i data-lucide="wand-2" class="w-3.5 h-3.5"></i>';
                 btn.disabled = false;
             }
             if (typeof lucide !== 'undefined') lucide.createIcons();
+        }
+    },
+    async aiGuessTitle(url) {
+        try {
+            const s = JSON.parse(localStorage.getItem('ai_settings') || '{}');
+            if (!s.apiKey) {
+                this.fillDomainAsTitle(url, '请先在RSS页面配置AI翻译');
+                return false;
+            }
+            const domain = (() => { try { return new URL(url).hostname.replace(/^www\./, ''); } catch { return url; } })();
+            const r = await fetch(`${s.baseUrl || 'https://api.deepseek.com/v1'}/chat/completions`, {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${s.apiKey}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    model: s.model || 'deepseek-chat',
+                    messages: [{
+                        role: 'system',
+                        content: '根据用户提供的网址/域名，推测网站名称和简介。直接返回 JSON：{"title":"网站名","desc":"一句话中文简介"}。不要任何其他内容。'
+                    }, {
+                        role: 'user',
+                        content: domain
+                    }],
+                    temperature: 0.3,
+                    response_format: { type: 'json_object' }
+                })
+            });
+            if (!r.ok) {
+                let errMsg = `AI HTTP ${r.status}`;
+                try { const e = await r.json(); if (e.error?.message) errMsg = e.error.message; } catch (_) {}
+                throw new Error(errMsg);
+            }
+            const data = await r.json();
+            const content = JSON.parse(data.choices?.[0]?.message?.content || '{}');
+            if (content.title) {
+                document.getElementById('bm-title').value = content.title;
+                const descInput = document.getElementById('bm-desc');
+                if (descInput && content.desc) descInput.value = content.desc;
+                showToast('AI 已推测标题和简介', 'success');
+                return true;
+            }
+        } catch (e) {
+            console.warn('AI guess failed:', e.message);
+        }
+        this.fillDomainAsTitle(url, 'AI 推测失败');
+        return false;
+    },
+    fillDomainAsTitle(url, reason) {
+        try {
+            const u = new URL(url);
+            document.getElementById('bm-title').value = u.hostname.replace(/^www\./, '');
+            showToast(reason + '，已填入域名', 'warning');
+        } catch (_) {
+            showToast('获取失败，请手动填写', 'warning');
         }
     },
     async translateDesc(btn) {
