@@ -141,3 +141,17 @@ html:not(.dark) #video-player-container{box-shadow:0 0 0 1px rgba(0,0,0,.08),0 1
 .grayscale{filter:grayscale(1)}.group:hover .group-hover\:grayscale-0{filter:grayscale(0)}
 .translate-y-0{transform:translateY(0)}.translate-y-10{transform:translateY(40px)}.-translate-y-10{transform:translateY(-40px)}
 @keyframes spin{to{transform:rotate(360deg)}}@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+/* ═══ ACG 动效 ═══ */
+.acg-grid{animation:fadeUp .5s ease backwards}
+.acg-grid .media-item{animation:cardPop .4s ease backwards}
+.acg-grid .media-item:nth-child(1){animation-delay:.05s}.acg-grid .media-item:nth-child(2){animation-delay:.1s}
+.acg-grid .media-item:nth-child(3){animation-delay:.15s}.acg-grid .media-item:nth-child(4){animation-delay:.2s}
+.acg-grid .media-item:nth-child(5){animation-delay:.25s}.acg-grid .media-item:nth-child(6){animation-delay:.3s}
+@keyframes cardPop{from{opacity:0;transform:scale(.9) translateY(12px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.acg-dot{animation:breath 2s ease-in-out infinite}
+.acg-dot.pink{animation-delay:0s}.acg-dot.orange{animation-delay:.3s}.acg-dot.red{animation-delay:.6s}.acg-dot.purple{animation-delay:.9s}
+.acg-hero-label{animation:fadeUp .4s ease backwards}
+/* 视频卡片 staggered */
+.acg-vgrid .glass-card{animation:cardPop .4s ease backwards}
+.acg-vgrid .glass-card:nth-child(1){animation-delay:0s}.acg-vgrid .glass-card:nth-child(2){animation-delay:.08s}
+.acg-vgrid .glass-card:nth-child(3){animation-delay:.16s}.acg-vgrid .glass-card:nth-child(4){animation-delay:.24s}

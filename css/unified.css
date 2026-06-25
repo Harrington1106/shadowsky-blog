@@ -14,6 +14,59 @@
 html:not(.dark) .dark-only{display:none !important}
 html.dark .light-only{display:none !important}
 
+/* ═══════════════════════════════════════════════════════
+   GLOBAL ANIMATIONS — 全站动效
+   ═══════════════════════════════════════════════════════ */
+/* 页面加载淡入 */
+@keyframes pageIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+main{animation:pageIn .5s ease backwards}
+
+/* 卡片悬浮发光 */
+@keyframes glowPulse{0%,100%{box-shadow:0 0 8px rgba(20,184,166,.15)}50%{box-shadow:0 0 20px rgba(20,184,166,.3)}}
+.glass-card:hover,.card-glass:hover{animation:glowPulse 2s ease-in-out infinite}
+
+/* 链接下划线动画 */
+a.nav-link{position:relative}
+a.nav-link::after{content:'';position:absolute;bottom:-2px;left:50%;width:0;height:2px;background:var(--color-primary,#0d9488);transition:all .3s ease;transform:translateX(-50%);border-radius:1px}
+a.nav-link:hover::after,a.nav-link.active::after{width:60%}
+
+/* 按钮涟漪 */
+@keyframes ripple{to{transform:scale(4);opacity:0}}
+.btn-ripple{position:relative;overflow:hidden}
+.btn-ripple::after{content:'';position:absolute;inset:0;background:radial-gradient(circle,rgba(255,255,255,.3) 10%,transparent 10%);transform:scale(10);opacity:0;transition:transform .5s,opacity .5s}
+.btn-ripple:active::after{transform:scale(0);opacity:1;transition:0s}
+
+/* 文字渐入（stagger children） */
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.fade-up>*{animation:fadeUp .4s ease backwards}
+.fade-up>*:nth-child(1){animation-delay:0s}
+.fade-up>*:nth-child(2){animation-delay:.08s}
+.fade-up>*:nth-child(3){animation-delay:.16s}
+.fade-up>*:nth-child(4){animation-delay:.24s}
+.fade-up>*:nth-child(5){animation-delay:.32s}
+
+/* 呼吸光晕 — 给任何元素加 .breath-glow */
+@keyframes breath{0%,100%{box-shadow:0 0 4px rgba(20,184,166,.2)}50%{box-shadow:0 0 18px rgba(20,184,166,.45),0 0 36px rgba(20,184,166,.15)}}
+.breath-glow{animation:breath 3s ease-in-out infinite}
+
+/* 浮动动画 — 给装饰元素 */
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.float-el{animation:float 4s ease-in-out infinite}
+.float-el:nth-child(2){animation-delay:-1.5s}
+.float-el:nth-child(3){animation-delay:-3s}
+
+/* 渐变文字动画 */
+@keyframes gradientShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+.gradient-text{background-size:200% auto;animation:gradientShift 4s ease infinite}
+
+/* 卡片 hover 抬升 + 发光 */
+.card-lift{transition:transform .3s ease,box-shadow .3s ease}
+.card-lift:hover{transform:translateY(-6px);box-shadow:0 16px 40px rgba(20,184,166,.12)}
+
+/* 骨架屏闪烁 */
+@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+.skeleton{background:linear-gradient(90deg,var(--glass-border,rgba(0,0,0,.06)) 25%,var(--glass-bg,rgba(255,255,255,.3)) 50%,var(--glass-border,rgba(0,0,0,.06)) 75%);background-size:200% 100%;animation:shimmer 1.5s ease-in-out infinite}
+
 /* ═══════ RESET ═══════ */
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 html{
