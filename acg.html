@@ -15,78 +15,12 @@
     <link href="https://fonts.loli.net/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&family=Noto+Serif+SC:wght@400;700&display=swap" rel="stylesheet">
 
     <!-- Design System -->
-    <script src="https://cdn.tailwindcss.com"></script>
-        <link href="css/unified.css?v=20260626e" rel="stylesheet">
+    <link href="css/unified.css?v=20260626e" rel="stylesheet">
     <link href="css/liquid-ambient.css?v=20260624v5" rel="stylesheet">
+    <link href="css/liquid-acg.css?v=2606251100" rel="stylesheet">
 
     <!-- Lucide Icons -->
     <script src="js/vendor/lucide.min.js?v=20260624v5"></script>
-
-    <style>
-        /* ACG page accent colors */
-        :root {
-            --acg-pink: #ec4899;
-            --acg-orange: #f97316;
-            --acg-red: #ef4444;
-            --acg-purple: #8b5cf6;
-        }
-        .section-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: var(--sp-8);
-        }
-        .section-header h2 {
-            display: flex;
-            align-items: center;
-            gap: var(--sp-3);
-        }
-        .accent-bar {
-            width: 8px;
-            height: 32px;
-            border-radius: var(--radius-full);
-            flex-shrink: 0;
-        }
-        .accent-bar.pink { background: var(--acg-pink); }
-        .accent-bar.orange { background: var(--acg-orange); }
-        .accent-bar.red { background: var(--acg-red); }
-        .accent-bar.purple { background: var(--acg-purple); }
-
-        .view-all {
-            font-size: var(--text-sm);
-            color: var(--color-text-muted);
-            display: flex;
-            align-items: center;
-            gap: var(--sp-1);
-            transition: color var(--duration-fast) var(--ease-out);
-        }
-        .view-all:hover { color: var(--color-primary); }
-        .view-all i { width: 16px; height: 16px; transition: transform var(--duration-fast) var(--ease-out); }
-        .view-all:hover i { transform: translateX(4px); }
-
-        .media-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: var(--sp-4);
-        }
-        @media (min-width: 640px) { .media-grid { grid-template-columns: repeat(3, 1fr); } }
-        @media (min-width: 768px) { .media-grid { grid-template-columns: repeat(4, 1fr); gap: var(--sp-6); } }
-        @media (min-width: 1024px) { .media-grid { grid-template-columns: repeat(6, 1fr); } }
-
-        .video-grid {
-            display: grid;
-            gap: var(--sp-4);
-        }
-        @media (min-width: 768px) { .video-grid { grid-template-columns: repeat(2, 1fr); gap: var(--sp-6); } }
-        @media (min-width: 1024px) { .video-grid { grid-template-columns: repeat(3, 1fr); gap: var(--sp-8); } }
-
-        .page-title-gradient {
-            background: linear-gradient(to right, var(--acg-pink), #8b5cf6);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-    </style>
 </head>
 <body class="font-sans">
     <!-- ═══════ 流体光斑层 ═══════ -->
@@ -149,103 +83,58 @@
     </div>
 
     <!-- ═══════════ MAIN CONTENT ═══════════ -->
-    <main style="padding-top:var(--nav-height);min-height:100dvh;">
+    <!-- ═══════════ MAIN ═══════════ -->
+    <main class="acg-shell">
 
-        <!-- Subtle blob decorations -->
-        <div class="blob" style="width:500px;height:500px;top:-100px;right:-100px;
-                    background:radial-gradient(circle,rgba(236,72,153,0.2),transparent 70%);"></div>
-        <div class="blob" style="width:400px;height:400px;bottom:20%;left:-100px;
-                    background:radial-gradient(circle,rgba(139,92,246,0.15),transparent 70%);"></div>
-
-        <div class="shell" style="padding-block:var(--sp-10);">
-
-            <!-- Page Header -->
-            <div class="card card-glass" style="margin-bottom:var(--sp-12);padding:var(--sp-8);">
-                <div style="font-size:var(--text-xs);font-weight:var(--weight-medium);color:var(--color-text-muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:var(--sp-2);">
-                    ACG Hub
-                </div>
-                <h1 style="font-size:clamp(var(--text-3xl),5vw,var(--text-5xl));margin-bottom:var(--sp-2);">
-                    ACG <span style="color:var(--color-text-primary);">SPACE</span>
-                </h1>
-                <p style="font-size:var(--text-lg);color:var(--color-text-muted);margin:0;">
-                    追番、漫画与我的剪辑作品
-                </p>
-            </div>
-
-            <!-- Bangumi Anime Collection -->
-            <div class="section" style="padding-top:0;">
-                <div class="section-header">
-                    <h2>
-                        <span class="accent-bar pink"></span>
-                        我的追番
-                    </h2>
-                    <a href="anime.html" class="view-all">
-                        查看全部 <i data-lucide="chevron-right"></i>
-                    </a>
-                </div>
-
-                <div id="home-anime-grid" class="media-grid">
-                    <div style="grid-column:1/-1;display:flex;justify-content:center;padding:var(--sp-20) 0;">
-                        <div style="width:48px;height:48px;border-radius:50%;border:2px solid var(--acg-pink);border-top-color:transparent;animation:spin 0.8s linear infinite;"></div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Bangumi Manga Collection -->
-            <div class="section">
-                <div class="section-header">
-                    <h2>
-                        <span class="accent-bar orange"></span>
-                        我的漫画
-                    </h2>
-                    <a href="manga.html" class="view-all">
-                        查看全部 <i data-lucide="chevron-right"></i>
-                    </a>
-                </div>
-
-                <div id="home-manga-grid" class="media-grid">
-                    <div style="grid-column:1/-1;display:flex;justify-content:center;padding:var(--sp-20) 0;">
-                        <div style="width:48px;height:48px;border-radius:50%;border:2px solid var(--acg-orange);border-top-color:transparent;animation:spin 0.8s linear infinite;"></div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Latest Videos Section -->
-            <div class="section">
-                <div class="section-header">
-                    <h2 style="font-size:var(--text-2xl);">
-                        <span class="accent-bar red" style="height:24px;"></span>
-                        最新发布
-                    </h2>
-                    <a href="edits.html" class="view-all">
-                        查看全部 <i data-lucide="chevron-right"></i>
-                    </a>
-                </div>
-
-                <div id="video-grid" data-limit="6" class="video-grid">
-                    <div style="grid-column:1/-1;display:flex;justify-content:center;padding:var(--sp-20) 0;">
-                        <div style="width:48px;height:48px;border-radius:50%;border:2px solid var(--acg-red);border-top-color:transparent;animation:spin 0.8s linear infinite;"></div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Favorite Videos Section -->
-            <div class="section">
-                <div class="section-header">
-                    <h2>
-                        <span class="accent-bar purple"></span>
-                        我的收藏视频
-                    </h2>
-                </div>
-
-                <div id="favorite-video-grid" class="video-grid">
-                    <div style="grid-column:1/-1;display:flex;justify-content:center;padding:var(--sp-20) 0;">
-                        <div style="width:48px;height:48px;border-radius:50%;border:2px solid var(--acg-purple);border-top-color:transparent;animation:spin 0.8s linear infinite;"></div>
-                    </div>
-                </div>
-            </div>
-
+        <div class="acg-hero">
+            <div class="acg-hero-label">ACG Hub</div>
+            <h1 class="acg-hero-title">ACG <span>SPACE</span></h1>
+            <p class="acg-hero-desc">追番、漫画与我的剪辑作品</p>
         </div>
+
+        <!-- 追番 -->
+        <section class="acg-section">
+            <div class="acg-section-header">
+                <h2><span class="acg-accent-bar pink"></span>我的追番</h2>
+                <a href="anime.html" class="acg-view-all">查看全部 <i data-lucide="chevron-right"></i></a>
+            </div>
+            <div id="home-anime-grid" class="acg-media-grid">
+                <div class="acg-loading"><div class="acg-spinner"></div></div>
+            </div>
+        </section>
+
+        <!-- 漫画 -->
+        <section class="acg-section">
+            <div class="acg-section-header">
+                <h2><span class="acg-accent-bar orange"></span>我的漫画</h2>
+                <a href="manga.html" class="acg-view-all">查看全部 <i data-lucide="chevron-right"></i></a>
+            </div>
+            <div id="home-manga-grid" class="acg-media-grid">
+                <div class="acg-loading"><div class="acg-spinner"></div></div>
+            </div>
+        </section>
+
+        <!-- 最新发布 -->
+        <section class="acg-section">
+            <div class="acg-section-header">
+                <h2><span class="acg-accent-bar red"></span>最新发布</h2>
+                <a href="edits.html" class="acg-view-all">查看全部 <i data-lucide="chevron-right"></i></a>
+            </div>
+            <div id="video-grid" data-limit="6" class="acg-video-grid">
+                <div class="acg-loading"><div class="acg-spinner"></div></div>
+            </div>
+        </section>
+
+        <!-- 收藏视频 -->
+        <section class="acg-section">
+            <div class="acg-section-header">
+                <h2><span class="acg-accent-bar purple"></span>我的收藏视频</h2>
+            </div>
+            <div id="favorite-video-grid" class="acg-video-grid">
+                <div class="acg-loading"><div class="acg-spinner"></div></div>
+            </div>
+        </section>
+
     </main>
 
     <!-- ═══════════ FOOTER ═══════════ -->
@@ -257,24 +146,14 @@
 
     <!-- Light/dark visibility helpers -->
     <style>
-        .dark .light-only { display: none !important; }
-        .dark .dark-only { display: inline !important; }
-        .light-only { display: inline; }
-        .dark-only { display: none; }
-        img.light-only, img.dark-only { display: none; }
-        .dark img.dark-only { display: inline; }
-        img.light-only { display: inline; }
-        .dark img.light-only { display: none; }
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
+        html:not(.dark) .dark-only{display:none!important}
+        html.dark .light-only{display:none!important}
     </style>
 
     <!-- Scripts -->
+    <script src="js/navbar.js?v=2606251100"></script>
+    <script src="js/api.js?v=20260624v5"></script>
+    <script src="js/main.js?v=2606251100"></script>
     <script src="js/context-menu.js?v=20260624v5"></script>
     <script src="js/video-loader.js?v=20260624v5"></script>
     <script src="js/media-data.js?v=20260624v5"></script>
@@ -284,18 +163,11 @@
             new MediaLoader('manga', 'home-manga-grid', { limit: 6 });
         });
     </script>
-    <script src="js/api.js?v=20260624v5"></script>
-    <script src="js/main.js?v=20260626b"></script>
-    <script src="js/click-effect.js?v=20260624v5"></script>
     <script src="https://unpkg.com/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
     <script>
         const lenis = new Lenis({
-            duration: 0.5
+            duration: 0.5,
             easing: (t) => Math.min(1, 1.001 - Math.pow(2, -6 * t)),
-            direction: 'vertical',
-            gestureDirection: 'vertical',
-            smooth: true,
-            mouseMultiplier: 1,
             smoothTouch: false,
             touchMultiplier: 2,
         });
@@ -317,15 +189,8 @@
         });
     </script>
     <script src="js/back-to-top.js?v=20260624v5"></script>
-    <script>
-        if (window.initContextMenu) {
-            window.initContextMenu();
-        }
-    </script>
-    <script src="js/navbar.js?v=20260626b"></script>
-    <script>
-        lucide.createIcons();
-    </script>
+    <script src="js/click-effect.js?v=20260624v5"></script>
+    <script>lucide.createIcons();</script>
     <script src="js/tracker.js?v=20260624v5"></script>
 </body>
 </html>
