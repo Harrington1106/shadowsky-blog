@@ -118,7 +118,7 @@
     ],
     "excerpt": "在跨境电商、社媒营销或撸空投圈子里，'指纹浏览器'是一个绕不开的词。它究竟是什么？如何实现多账号防关联？本文将带你深入了解指纹浏览器的原理，并以 HubStudio 为例提供保姆级实操教程。",
     "readTime": 7,
-    "coverImage": "https://images.unsplash.com/photo-1563206767-5b1d972e9fb9?auto=format&fit=crop&q=80&w=1000",
+    "coverImage": "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=1000",
     "lastModified": "2026-06-26",
     "file": "2025-12-10-fingerprint-browser-guide.md"
   },
@@ -206,7 +206,7 @@
     ],
     "excerpt": "装好宝塔面板，访问 http://IP:8888 却打不开？装好青龙面板，http://IP:5700 也没反应？99% 的情况不是你装错了，而是防火墙没放行。本文用最通俗的比喻解释端口是什么、怎么放行、以及所有常用端口对照。",
     "readTime": 5,
-    "coverImage": "https://images.unsplash.com/photo-1562813733-b31f71025d54?auto=format&fit=crop&q=80&w=1000",
+    "coverImage": "https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&q=80&w=1000",
     "lastModified": "2026-06-26",
     "file": "2025-12-08-server-port-guide.md"
   },
@@ -259,7 +259,7 @@
     ],
     "excerpt": "写 Markdown 最头疼的就是图片去哪了？本文手把手教你配置 PicGo + Typora/Obsidian 工作流，更有水印、压缩、重命名等进阶插件玩法。",
     "readTime": 9,
-    "coverImage": "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&q=80&w=1000",
+    "coverImage": "https://images.unsplash.com/photo-1542744094-3a31f272c490?auto=format&fit=crop&q=80&w=1000",
     "lastModified": "2026-06-26",
     "file": "2025-12-08-picgo-guide.md"
   },
@@ -313,7 +313,7 @@
     ],
     "excerpt": "如果你一看到黑底白字的命令行就头疼，宝塔面板就是你的救星。它把建网站、管文件、配 SSL、装软件这些操作全部变成了点点鼠标。本文介绍宝塔能干什么，以及为什么它是新手玩服务器的第一站。",
     "readTime": 4,
-    "coverImage": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=1000",
+    "coverImage": "https://images.unsplash.com/photo-1467232004584-a241de8bcf5d?auto=format&fit=crop&q=80&w=1000",
     "lastModified": "2026-06-26",
     "file": "2025-12-08-bt-panel-guide.md"
   },
@@ -348,7 +348,7 @@
     ],
     "excerpt": "写博客最痛苦的不是写文章，而是繁琐的发布流程。今天我把这套基于 Obsidian + Templater + Node.js 的自动化工作流源代码完全开源，送给每一位热爱写作的朋友。",
     "readTime": 8,
-    "coverImage": "https://images.unsplash.com/photo-1499750310159-529800cf2c5a?auto=format&fit=crop&q=80&w=1000",
+    "coverImage": "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&q=80&w=1000",
     "lastModified": "2026-06-26",
     "file": "2025-12-07-blog-workflow.md"
   }

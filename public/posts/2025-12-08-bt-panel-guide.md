@@ -7,7 +7,7 @@ tags: ["宝塔面板", "Linux", "服务器", "运维", "教程"]
 excerpt: "如果你一看到黑底白字的命令行就头疼，宝塔面板就是你的救星。它把建网站、管文件、配 SSL、装软件这些操作全部变成了点点鼠标。本文介绍宝塔能干什么，以及为什么它是新手玩服务器的第一站。"
 lastModified: "2026-06-26"
 readTime: 4
-coverImage: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=1000"
+coverImage: "https://images.unsplash.com/photo-1467232004584-a241de8bcf5d?auto=format&fit=crop&q=80&w=1000"
 ---
 
 > **TL;DR**：宝塔面板 = 服务器的 Windows 控制面板。建站、装软件、看监控、配 SSL，全部图形化操作，不用记命令。新手玩服务器第一站。

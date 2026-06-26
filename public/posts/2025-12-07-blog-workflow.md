@@ -7,7 +7,7 @@ tags: ["工作流", "Obsidian", "自动化", "Node.js"]
 excerpt: "写博客最痛苦的不是写文章，而是繁琐的发布流程。今天我把这套基于 Obsidian + Templater + Node.js 的自动化工作流源代码完全开源，送给每一位热爱写作的朋友。"
 lastModified: "2026-06-26"
 readTime: 8
-coverImage: "https://images.unsplash.com/photo-1499750310159-529800cf2c5a?auto=format&fit=crop&q=80&w=1000"
+coverImage: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&q=80&w=1000"
 ---
 
 > **TL;DR**：Obsidian 写文章 → Templater 生成 frontmatter → Node.js 脚本解析 → 生成 posts.json → 前端自动渲染。全自动发布流水线，写完即发，不用碰代码。

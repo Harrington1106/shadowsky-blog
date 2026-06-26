@@ -7,7 +7,7 @@ tags: ["服务器", "防火墙", "端口", "故障排除", "入门"]
 excerpt: "装好宝塔面板，访问 http://IP:8888 却打不开？装好青龙面板，http://IP:5700 也没反应？99% 的情况不是你装错了，而是防火墙没放行。本文用最通俗的比喻解释端口是什么、怎么放行、以及所有常用端口对照。"
 lastModified: "2026-06-26"
 readTime: 5
-coverImage: "https://images.unsplash.com/photo-1562813733-b31f71025d54?auto=format&fit=crop&q=80&w=1000"
+coverImage: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&q=80&w=1000"
 ---
 
 > **TL;DR**：服务器 = 大楼，端口 = 房间号，防火墙 = 门卫。门卫不让你进，你在外面喊破喉咙也没用。去云控制台的"安全组/防火墙"里把需要的端口加上，问题秒解决。

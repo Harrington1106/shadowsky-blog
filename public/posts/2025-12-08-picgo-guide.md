@@ -7,7 +7,7 @@ tags: ["PicGo", "教程", "Markdown", "生产力", "工具"]
 excerpt: "写 Markdown 最头疼的就是图片去哪了？本文手把手教你配置 PicGo + Typora/Obsidian 工作流，更有水印、压缩、重命名等进阶插件玩法。"
 lastModified: "2026-06-26"
 readTime: 9
-coverImage: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&q=80&w=1000"
+coverImage: "https://images.unsplash.com/photo-1542744094-3a31f272c490?auto=format&fit=crop&q=80&w=1000"
 ---
 
 > **TL;DR**：PicGo = 图床上传神器。截图 → 自动上传到 GitHub/阿里云 OSS → 自动生成 Markdown 链接 → 粘贴到编辑器。配合 Typora/Obsidian，写作体验如丝般顺滑。本文从安装到进阶插件全流程。
