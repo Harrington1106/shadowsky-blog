@@ -611,31 +611,52 @@ async function loadFeedArticles(feed) {
 function parseRSSContent(xmlString) {
     const parser = new DOMParser();
     const doc = parser.parseFromString(xmlString, "text/xml");
-    
+
     const items = Array.from(doc.querySelectorAll("item, entry"));
-    
+
     return items.map(item => {
         const title = getTagValue(item, "title");
         const link = getTagValue(item, "link");
         const pubDate = getTagValue(item, "pubDate") || getTagValue(item, "updated") || getTagValue(item, "dc:date");
-        const description = getTagValue(item, "description") || getTagValue(item, "content") || getTagValue(item, "summary");
-        
-        // Improved content extraction
-        let fullContent = getTagValue(item, "content:encoded");
-        if (!fullContent) fullContent = getTagValue(item, "content"); // Atom content
-        if (!fullContent) fullContent = description;
-        
+        const descriptionHtml = getTagHtml(item, "description") || getTagHtml(item, "content") || getTagHtml(item, "summary");
+
+        // 正文：保留 HTML 标签
+        let fullContent = getTagHtml(item, "content:encoded");
+        if (!fullContent) fullContent = getTagHtml(item, "content"); // Atom
+        if (!fullContent) fullContent = descriptionHtml;
+
         const author = getTagValue(item, "author") || getTagValue(item, "dc:creator");
-        
+
         return {
             title,
             link,
             pubDate: pubDate ? new Date(pubDate) : new Date(),
-            description: cleanHtml(description),
-            content: fullContent, // Keep full content for reading
+            description: cleanHtml(descriptionHtml),
+            content: fullContent, // 保留 HTML 的正文
             author
         };
     });
+}
+
+/** 获取标签的 innerHTML（保留 HTML 格式） */
+function getTagHtml(node, tagName) {
+    if (tagName.includes(':')) {
+        const [prefix, localName] = tagName.split(':');
+        let els = node.getElementsByTagName(tagName);
+        if (els.length > 0) return els[0].innerHTML || els[0].textContent || '';
+        els = node.getElementsByTagNameNS("*", localName);
+        if (els.length > 0) return els[0].innerHTML || els[0].textContent || '';
+        els = node.getElementsByTagName(localName);
+        if (els.length > 0) return els[0].innerHTML || els[0].textContent || '';
+        try {
+            const el = node.querySelector(tagName.replace(':', '\\:'));
+            if (el) return el.innerHTML || el.textContent || '';
+        } catch (e) {}
+    } else {
+        const el = node.querySelector(tagName);
+        return el ? (el.innerHTML || el.textContent || '') : '';
+    }
+    return '';
 }
 
 function getTagValue(node, tagName) {
