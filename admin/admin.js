@@ -2307,7 +2307,7 @@ const FeedsManager = {
         }
         this.data.forEach((item, idx) => {
             const el = document.createElement('div');
-            el.style.cssText = 'background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:14px;position:relative';
+            el.style.cssText = 'background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:14px;position:relative';
             el.className = 'group';
             const catHtml = item.category ? `<span style="font-size:.65rem;padding:2px 7px;border-radius:4px;background:rgba(20,184,166,.1);color:#2dd4bf;flex-shrink:0">${item.category}</span>` : '';
             el.innerHTML = `
