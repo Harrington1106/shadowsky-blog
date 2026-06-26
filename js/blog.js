@@ -248,7 +248,7 @@ function renderGridView(container) {
         // 封面区域 — 徽章浮在封面内部
         const coverHtml = post.coverImage
             ? `<div class="blog-card-media">
-                 <img src="/api/image-proxy?url=${encodeURIComponent(post.coverImage)}" alt="" loading="lazy" class="blog-card-img" />
+                 <img src="https://bangumi.shadowquake.top/fetch?url=${encodeURIComponent(post.coverImage)}" alt="" loading="lazy" class="blog-card-img" />
                  <div class="blog-card-media-shade"></div>
                  <span class="blog-card-badge">
                    <i data-lucide="folder"></i>
