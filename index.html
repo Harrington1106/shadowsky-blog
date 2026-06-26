@@ -14,7 +14,7 @@
 
     <link href="css/unified.css?v=2606270700" rel="stylesheet">
     <link href="css/liquid-ambient.css?v=20260624v5" rel="stylesheet">
-    <link href="css/liquid-home.css?v=20260625a" rel="stylesheet">
+    <link href="css/liquid-home.css?v=20260626a" rel="stylesheet">
 </head>
 <body class="font-sans public-page liquid-glass-ui homepage-cover-page" data-page="home" data-ui-shell="home-cover">
 
@@ -86,12 +86,12 @@
             <h1 class="home-name homepage-hero-title">SHADOW THOI</h1>
             <p class="typewriter homepage-hero-subtitle"><span class="tw-text"></span><span class="cursor">&nbsp;</span></p>
             <div class="tag-pills">
-                <span class="tag-pill" style="animation-delay:.0s"><i data-lucide="code-2" style="width:13px;height:13px;"></i> 全栈</span>
-                <span class="tag-pill" style="animation-delay:.08s"><i data-lucide="telescope" style="width:13px;height:13px;"></i> 天文</span>
-                <span class="tag-pill" style="animation-delay:.16s"><i data-lucide="gamepad-2" style="width:13px;height:13px;"></i> ACG</span>
-                <span class="tag-pill" style="animation-delay:.24s"><i data-lucide="moon" style="width:13px;height:13px;"></i> 夜猫子</span>
-                <span class="tag-pill" style="animation-delay:.32s"><i data-lucide="star" style="width:13px;height:13px;"></i> 开源</span>
-                <span class="tag-pill" style="animation-delay:.40s"><i data-lucide="map-pin" style="width:13px;height:13px;"></i> 香港</span>
+                <span class="tag-pill"><i data-lucide="code-2" style="width:13px;height:13px;"></i> 全栈</span>
+                <span class="tag-pill"><i data-lucide="telescope" style="width:13px;height:13px;"></i> 天文</span>
+                <span class="tag-pill"><i data-lucide="gamepad-2" style="width:13px;height:13px;"></i> ACG</span>
+                <span class="tag-pill"><i data-lucide="moon" style="width:13px;height:13px;"></i> 夜猫子</span>
+                <span class="tag-pill"><i data-lucide="star" style="width:13px;height:13px;"></i> 开源</span>
+                <span class="tag-pill"><i data-lucide="map-pin" style="width:13px;height:13px;"></i> 香港</span>
             </div>
         </div>
 
@@ -132,28 +132,6 @@
                 '星垂平野阔，月涌大江流'
             ], { typeMs: 60, deleteMs: 30 });
         }
-
-        // 浏览量（API 可用时 count-up，否则显示静态数字）
-        (function() {
-            var el = document.getElementById('visit-num');
-            if (!el) return;
-            var fallback = '23,456'; // 离线静态兜底
-            if (window.api && window.api.fetchSiteStats) {
-                window.api.fetchSiteStats().then(function(s) {
-                    var t = Number(s.total) || 0;
-                    if (!t) { el.textContent = fallback; return; }
-                    var c = 0, step = Math.max(1, Math.ceil(t / 60));
-                    (function tick() {
-                        c = Math.min(t, c + step);
-                        el.textContent = c.toLocaleString();
-                        if (c < t) requestAnimationFrame(tick);
-                    })();
-                }).catch(function() { el.textContent = fallback; });
-            } else {
-                // 无 API 时显示静态数字
-                el.textContent = fallback;
-            }
-        })();
 
         // 主题 logo 同步
         var h = document.documentElement;
