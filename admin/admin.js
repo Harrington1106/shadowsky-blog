@@ -2554,7 +2554,7 @@ const VideosManager = {
             el.innerHTML = `
                 <div style="display:flex;gap:12px">
                     <div style="width:96px;height:54px;flex-shrink:0;border-radius:6px;overflow:hidden;background:rgba(15,23,42,.3);position:relative">
-                        <img src="${item.thumbnail || ''}" style="width:100%;height:100%;object-fit:cover" onerror="this.parentElement.style.display='none'" alt="">
+                        <img src="${item.thumbnail || ''}" style="width:100%;height:100%;object-fit:cover" onerror="this.style.display='none'" alt="">
                         ${item.duration ? `<span style="position:absolute;bottom:3px;right:3px;background:rgba(0,0,0,.7);color:#fff;font-size:.6rem;padding:1px 5px;border-radius:3px">${item.duration}</span>` : ''}
                     </div>
                     <div style="flex:1;min-width:0">
