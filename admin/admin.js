@@ -2553,8 +2553,9 @@ const VideosManager = {
             el.className = 'admin-feed-card group';
             el.innerHTML = `
                 <div style="display:flex;gap:12px">
-                    <div style="width:120px;height:68px;flex-shrink:0;border-radius:8px;overflow:hidden;background:rgba(15,23,42,.3)">
-                        <img src="${item.thumbnail || ''}" style="width:100%;height:100%;object-fit:cover" onerror="this.style.display='none'" alt="">
+                    <div style="width:96px;height:54px;flex-shrink:0;border-radius:6px;overflow:hidden;background:rgba(15,23,42,.3);position:relative">
+                        <img src="${item.thumbnail || ''}" style="width:100%;height:100%;object-fit:cover" onerror="this.parentElement.style.display='none'" alt="">
+                        ${item.duration ? `<span style="position:absolute;bottom:3px;right:3px;background:rgba(0,0,0,.7);color:#fff;font-size:.6rem;padding:1px 5px;border-radius:3px">${item.duration}</span>` : ''}
                     </div>
                     <div style="flex:1;min-width:0">
                         <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:4px">
@@ -2566,8 +2567,7 @@ const VideosManager = {
                         </div>
                         <div style="display:flex;align-items:center;gap:8px;margin-top:4px;font-size:.7rem;color:#64748b;flex-wrap:wrap">
                             ${item.category ? `<span style="padding:1px 8px;border-radius:999px;background:rgba(251,146,60,.12);color:#fb923c">${item.category}</span>` : ''}
-                            ${item.duration ? `<span><i data-lucide="clock" style="width:10px;height:10px;display:inline;vertical-align:-1px"></i> ${item.duration}</span>` : ''}
-                            ${item.views ? `<span><i data-lucide="eye" style="width:10px;height:10px;display:inline;vertical-align:-1px"></i> ${item.views}</span>` : ''}
+                            ${item.views ? `<span><i data-lucide="eye" style="width:10px;height:10px;display:inline;vertical-align:-1px"></i> ${item.views} 播放</span>` : ''}
                             ${item.bvid ? `<span style="opacity:.5">${item.bvid}</span>` : ''}
                         </div>
                         ${item.description ? `<div class="feed-url" style="margin-top:2px">${item.description}</div>` : ''}
