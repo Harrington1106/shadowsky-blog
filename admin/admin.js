@@ -3279,8 +3279,10 @@ async function handleAddVideo(e) {
 async function fetchSettings() {
     try {
         const data = await safeFetch(`${API_BASE}/settings`);
-        if (data.bangumi_username) document.getElementById('setting-bangumi-username').value = data.bangumi_username;
-        if (data.bangumi_token) document.getElementById('setting-bangumi-token').value = data.bangumi_token;
+        const bu = document.getElementById('setting-bangumi-username');
+        const bt = document.getElementById('setting-bangumi-token');
+        if (data.bangumi_username && bu) bu.value = data.bangumi_username;
+        if (data.bangumi_token && bt) bt.value = data.bangumi_token;
     } catch (e) {
         console.error(e);
         showToast('加载设置失败');
@@ -3322,7 +3324,8 @@ async function handleSaveSettings(e) {
 
     // 1. Save Admin Token locally
     try {
-        const adminToken = document.getElementById('setting-admin-token').value.trim();
+        const tokenEl = document.getElementById('setting-admin-token');
+        const adminToken = tokenEl ? tokenEl.value.trim() : '';
         if (adminToken) {
             localStorage.setItem('admin_token', adminToken);
             ADMIN_TOKEN = adminToken;
