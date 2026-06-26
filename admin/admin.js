@@ -3256,7 +3256,8 @@ async function handleAddVideo(e) {
     const bvid = document.getElementById('video-bvid').value.trim();
     const category = document.getElementById('video-category').value;
     const title = document.getElementById('video-title').value.trim();
-    const cover = document.getElementById('video-cover').value.trim();
+    const coverEl = document.getElementById('video-cover');
+    const cover = coverEl ? coverEl.value.trim() : '';
     const duration = document.getElementById('video-duration').value.trim();
     const description = document.getElementById('video-desc').value.trim();
     try {
