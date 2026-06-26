@@ -9,6 +9,8 @@ readTime: 5
 coverImage: "https://images.unsplash.com/photo-1544396821-4dd40b938ad3?auto=format&fit=crop&q=80&w=1000"
 ---
 
+> **TL;DR**：Obsidian 不是笔记软件，是第二大脑。Markdown 写作、双向链接构建知识网络、图谱可视化、2000+ 插件生态、自动化工作流。本文从零基础到入土，保姆级教学。
+
 ## 👋 为什么是 Obsidian？
 
 在这个笔记软件满天飞的时代（Notion, Evernote, Wolai...），为什么我要强烈推荐 **Obsidian**？

@@ -9,7 +9,7 @@ readTime: 4
 coverImage: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=1000"
 ---
 
-> **警告**：Hysteria 2 协议较为激进，虽然能显著提升速度，但在部分地区可能会被运营商短时阻断（表现为断网几分钟）。建议配合 Shadowsocks 作为备用。
+> **TL;DR**：晚高峰 VPS 卡成狗？Hysteria 2 基于 UDP 暴力传输，专门拯救垃圾线路。一键脚本 3 分钟搞定，不挑配置不吃资源。⚠️ 部分地区运营商会对 UDP QoS，建议跟 SS 搭配使用互为备胎。
 
 ## 为什么你需要 Hysteria 2？
 

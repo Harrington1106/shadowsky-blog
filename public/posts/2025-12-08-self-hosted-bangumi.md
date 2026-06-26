@@ -9,6 +9,8 @@ readTime: 7
 coverImage: "https://images.unsplash.com/photo-1578632767115-351597cf2477?auto=format&fit=crop&q=80&w=1000"
 ---
 
+> **TL;DR**：告别圣光和广告。AutoBangumi 自动订阅 RSS → qBittorrent 下载 → Jellyfin 精美海报墙 → 全平台播放。配一次，永久自动追番。需要一台服务器/NAS + Docker 环境。
+
 还在忍受视频网站的“圣光”、“暗牧”和超长广告？还在因为番剧版权分散在不同平台而烦恼？
 是时候利用你的服务器，搭建一套属于自己的全自动追番系统了！
 

@@ -9,7 +9,7 @@ readTime: 3
 coverImage: "https://images.unsplash.com/photo-1523961131990-5ea7c61b2107?auto=format&fit=crop&q=80&w=1000"
 ---
 
-> **简介**：AWS Free Tier（免费套餐）是目前云服务商中最大方的试用计划，提供 **12 个月** 的 `t2.micro` 或 `t3.micro` 实例。这对于学习 Linux、搭建小型网站或测试环境是极佳的零成本资源。
+> **TL;DR**：AWS 免费 12 个月服务器 🆓。唯一坑点：超额自动扣费。记住三不原则——不开第二台、不闲置公网 IP、不超 100GB 流量。设置好账单报警，放心白嫖。
 
 ## 第一阶段：准备工作与资格验证
 

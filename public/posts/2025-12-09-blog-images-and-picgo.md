@@ -9,6 +9,8 @@ readTime: 3
 coverImage: "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&q=80&w=1000"
 ---
 
+> **TL;DR**：Unsplash/Pexels/Pixabay 找免费商用图 + PicGo 一键上传到 GitHub 图床 + jsDelivr CDN 加速。这三件套让你的博客配图从「凑合」变成「惊艳」。
+
 ## 🖼️ 为什么配图这么重要？
 
 大家都有过这种体验：打开一篇技术文章，全是密密麻麻的文字，还没看两行就想关掉。

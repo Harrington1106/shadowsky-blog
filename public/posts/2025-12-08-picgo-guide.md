@@ -9,6 +9,8 @@ readTime: 9
 coverImage: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&q=80&w=1000"
 ---
 
+> **TL;DR**：PicGo = 图床上传神器。截图 → 自动上传到 GitHub/阿里云 OSS → 自动生成 Markdown 链接 → 粘贴到编辑器。配合 Typora/Obsidian，写作体验如丝般顺滑。本文从安装到进阶插件全流程。
+
 # 图床神器 PicGo 保姆级教程：从安装到进阶插件玩法
 
 如果你开始尝试用 **Markdown** 写作，你一定会遇到一个痛点：**图片放哪？**

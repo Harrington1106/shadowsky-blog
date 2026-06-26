@@ -9,6 +9,8 @@ readTime: 10
 coverImage: "https://images.unsplash.com/photo-1555421689-d68471e189f2?auto=format&fit=crop&q=80&w=1000"
 ---
 
+> **TL;DR**：Rime 是输入法界的 Vim——配置复杂但定制性极强。本文从安装、基础配置到词库定制、主题美化，教你打造专属的高效输入方案。适合追求键盘效率的极客。
+
 # Rime 输入法配置指南：从入门到精通
 
 ## 🧐 为什么选择 Rime？

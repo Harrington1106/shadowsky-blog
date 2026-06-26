@@ -9,6 +9,8 @@ readTime: 6
 coverImage: "https://images.unsplash.com/photo-1618401471353-b98afee0b2eb?auto=format&fit=crop&q=80&w=1000"
 ---
 
+> **TL;DR**：GitHub Trending = 开发者的今日头条。本文教你如何通过 Trendshift、Hacker News、GitHub 高级搜索和 Newsletter 高效发掘潜力开源项目，告别信息差。
+
 > **简介**：GitHub Trending 是全球开发者的风向标。在这里，你不仅能看到最热门的技术趋势（如 AI Agent、RAG），还能发现能够提升效率的生产力工具。
 
 ## 授人以渔：如何发现“潜力股”？

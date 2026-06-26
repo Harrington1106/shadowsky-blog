@@ -9,6 +9,8 @@ readTime: 8
 coverImage: "https://images.unsplash.com/photo-1499750310159-529800cf2c5a?auto=format&fit=crop&q=80&w=1000"
 ---
 
+> **TL;DR**：Obsidian 写文章 → Templater 生成 frontmatter → Node.js 脚本解析 → 生成 posts.json → 前端自动渲染。全自动发布流水线，写完即发，不用碰代码。
+
 # 开源我的 Obsidian 自动化博客工作流
 
 ## 👋 为什么要有这篇文章？

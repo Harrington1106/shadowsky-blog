@@ -9,6 +9,8 @@ readTime: 14
 coverImage: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&q=80&w=1000"
 ---
 
+> **TL;DR**：B 站外链播放器最佳实践。从基础 iframe 嵌入到响应式自适应、参数调优、React/Vue 组件封装、HTTPS 兼容性，本文全部覆盖。文末还有常见问题排查指南。
+
 # 如何在个人网站优雅地嵌入 B 站视频（使用 iframe 或其他方式）
 
 > **摘要**：在个人博客或网站中嵌入 B 站（Bilibili）视频是丰富内容的绝佳方式。然而，官方提供的默认代码往往不具备响应式能力，且加载性能较差。本文将从基础的 iframe 嵌入出发，深入探讨自适应布局、参数调优、HTTPS 兼容性以及 React/Vue 等框架中的最佳实践，助你打造丝滑的视频播放体验。

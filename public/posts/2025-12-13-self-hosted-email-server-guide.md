@@ -9,6 +9,8 @@ readTime: 11
 coverImage: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&q=80&w=1000"
 ---
 
+> **TL;DR**：2025 年自建企业邮箱/个人邮箱完整教程。从域名、DNS 记录、Docker 部署到反垃圾邮件配置，一站式教学。告别第三方邮箱，数据完全自主掌控。
+
 # 2025版自建企业邮箱/个人邮箱保姆级教程 (Mailcow Dockerized)
 
 > **免责声明**：自建邮件服务器需要一定的 Linux 运维基础。本文旨在技术交流，请勿用于发送垃圾邮件。国内云服务器通常封禁 25 端口，建议选择海外 VPS（需确认支持 rDNS）。
