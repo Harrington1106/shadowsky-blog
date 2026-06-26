@@ -441,31 +441,86 @@
 
             <!-- ═══════ VIEW: SNAPSHOTS ═══════ -->
             <section id="view-snapshots" class="view-section space-y-6 hidden">
+                <!-- 图片上传卡片 -->
                 <div class="admin-card p-6">
-                    <form id="add-snapshot-form" class="space-y-4">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <form id="add-snapshot-form" class="space-y-5">
+                        <!-- 上传方式切换 + PicGo 状态 -->
+                        <div class="flex items-center justify-between flex-wrap gap-3">
+                            <div class="flex items-center gap-1 p-1 rounded-xl" style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.05)">
+                                <button type="button" id="snap-method-picgo" onclick="ImageUploader.setMethod('picgo')"
+                                    class="snap-method-btn px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
+                                    style="color:#94a3b8">🚀 PicGo</button>
+                                <button type="button" id="snap-method-direct" onclick="ImageUploader.setMethod('direct')"
+                                    class="snap-method-btn px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
+                                    style="color:#94a3b8">📁 直传服务器</button>
+                                <button type="button" id="snap-method-url" onclick="ImageUploader.setMethod('url')"
+                                    class="snap-method-btn px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
+                                    style="color:#94a3b8">🔗 粘贴URL</button>
+                            </div>
+                            <div id="picgo-status" class="flex items-center gap-1.5 text-xs" style="display:none">
+                                <span id="picgo-dot" class="w-2 h-2 rounded-full" style="background:#22c55e;box-shadow:0 0 6px #22c55e"></span>
+                                <span id="picgo-text" style="color:#94a3b8">检测中...</span>
+                            </div>
+                        </div>
+
+                        <!-- 拖拽上传区 (PicGo / 直传模式) -->
+                        <div id="snap-dropzone" class="relative rounded-2xl border-2 border-dashed text-center cursor-pointer transition-all p-8"
+                            style="border-color:rgba(255,255,255,.1);background:rgba(255,255,255,.015)"
+                            ondrop="ImageUploader.handleDrop(event)" ondragover="ImageUploader.handleDragOver(event)" ondragleave="ImageUploader.handleDragLeave(event)" onclick="document.getElementById('snap-file-input').click()">
+                            <i data-lucide="image-plus" class="w-10 h-10 mx-auto mb-3" style="color:rgba(148,163,184,.4)"></i>
+                            <p class="text-sm font-medium mb-1" style="color:#94a3b8">拖拽图片到此处</p>
+                            <p class="text-xs" style="color:rgba(148,163,184,.5)">或点击选择 / Ctrl+V 粘贴</p>
+                            <input type="file" id="snap-file-input" accept="image/*" multiple class="hidden"
+                                onchange="ImageUploader.handleFileSelect(event)">
+                        </div>
+
+                        <!-- URL 输入区 (仅 URL 模式显示) -->
+                        <div id="snap-url-area" style="display:none">
+                            <input type="text" id="snap-url" class="admin-input" placeholder="粘贴图片链接或 Markdown 语法...">
+                        </div>
+
+                        <!-- 图片预览区 -->
+                        <div id="snap-previews" class="flex gap-3 overflow-x-auto pb-2" style="display:none;scroll-behavior:smooth"></div>
+                        <div id="snap-upload-status" class="text-xs text-center" style="display:none;color:#94a3b8"></div>
+
+                        <!-- 元信息 -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                             <div class="space-y-4">
                                 <div>
-                                    <label class="block text-xs font-semibold uppercase tracking-wider mb-1.5" style="color:#94a3b8">图片来源</label>
-                                    <div class="space-y-3">
-                                        <input type="text" id="snap-url" class="admin-input" placeholder="图片链接 / Markdown">
-                                        <div class="relative flex items-center"><div class="flex-1 border-t" style="border-color:rgba(255,255,255,.06)"></div><span class="px-2 text-xs" style="color:#64748b">或上传</span><div class="flex-1 border-t" style="border-color:rgba(255,255,255,.06)"></div></div>
-                                        <input type="file" id="snap-file" accept="image/*" class="admin-input cursor-pointer" aria-label="Upload Image">
+                                    <label class="block text-xs font-semibold uppercase tracking-wider mb-1.5" style="color:#94a3b8">位置 · 标签</label>
+                                    <div class="grid grid-cols-2 gap-3">
+                                        <input type="text" id="snap-location" class="admin-input" placeholder="拍摄地点">
+                                        <input type="text" id="snap-tags" class="admin-input" placeholder="标签（逗号分隔）">
                                     </div>
                                 </div>
+                                <!-- EXIF 折叠面板 -->
                                 <div>
-                                    <label class="block text-xs font-semibold uppercase tracking-wider mb-1.5" style="color:#94a3b8">位置 & 标签</label>
-                                    <div class="grid grid-cols-2 gap-3">
-                                        <input type="text" id="snap-location" class="admin-input" placeholder="位置">
-                                        <input type="text" id="snap-tags" class="admin-input" placeholder="标签">
+                                    <button type="button" id="exif-toggle" onclick="ImageUploader.toggleExif()"
+                                        class="flex items-center gap-1.5 text-xs font-medium transition-colors w-full"
+                                        style="color:#64748b">
+                                        <i data-lucide="chevron-right" id="exif-chevron" class="w-3.5 h-3.5 transition-transform"></i>
+                                        相机参数 (EXIF)
+                                    </button>
+                                    <div id="exif-panel" class="grid grid-cols-3 gap-2 mt-2" style="display:none">
+                                        <input type="text" id="exif-camera" class="admin-input text-xs" placeholder="相机 (如 iPhone 15 Pro)">
+                                        <input type="text" id="exif-lens" class="admin-input text-xs" placeholder="镜头">
+                                        <input type="text" id="exif-iso" class="admin-input text-xs" placeholder="ISO">
+                                        <input type="text" id="exif-aperture" class="admin-input text-xs" placeholder="光圈 (f/2.8)">
+                                        <input type="text" id="exif-shutter" class="admin-input text-xs" placeholder="快门 (1/250)">
+                                        <button type="button" onclick="ImageUploader.autoExif()"
+                                            class="text-xs rounded-lg transition-colors flex items-center justify-center gap-1"
+                                            style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);color:#94a3b8">
+                                            <i data-lucide="sparkles" class="w-3 h-3"></i> 自动提取
+                                        </button>
                                     </div>
                                 </div>
                             </div>
                             <div class="flex flex-col">
                                 <label class="block text-xs font-semibold uppercase tracking-wider mb-1.5" style="color:#94a3b8">内容</label>
-                                <textarea id="snap-content" class="admin-input flex-1" placeholder="记录这一刻..."></textarea>
-                                <div class="mt-4 flex justify-end">
-                                    <button type="submit" class="admin-btn admin-btn-primary">
+                                <textarea id="snap-content" class="admin-input flex-1" placeholder="记录这一刻..." rows="4"></textarea>
+                                <div class="mt-4 flex justify-end gap-2">
+                                    <span id="snap-upload-progress" class="text-xs self-center" style="display:none;color:#14B8A6"></span>
+                                    <button type="submit" id="snap-submit-btn" class="admin-btn admin-btn-primary">
                                         <i data-lucide="send" class="w-4 h-4"></i> 发布动态
                                     </button>
                                 </div>
@@ -473,6 +528,7 @@
                         </div>
                     </form>
                 </div>
+                <!-- 已发布预览网格 -->
                 <div id="snapshots-preview" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
             </section>
 

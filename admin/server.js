@@ -8,6 +8,7 @@ const net = require('net');
 const crypto = require('crypto');
 const https = require('https');
 const nodemailer = require('nodemailer');
+const multer = require('multer');
 const app = express();
 const port = process.env.PORT ? Number(process.env.PORT) : 3000;
 const host = process.env.HOST || '127.0.0.1';
@@ -95,6 +96,33 @@ const pageVisitsPath = path.join(__dirname, '../public/data/page_visits.json');
     const dir = path.dirname(p);
     if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 });
+
+// ── Multer 图片上传配置 ──
+const uploadsDir = path.join(__dirname, '../public/img/snapshots');
+if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
+
+const storage = multer.diskStorage({
+    destination: uploadsDir,
+    filename: (req, file, cb) => {
+        const ext = path.extname(file.originalname) || '.jpg';
+        const name = 'snap-' + Date.now() + '-' + crypto.randomBytes(4).toString('hex') + ext;
+        cb(null, name);
+    }
+});
+
+const fileFilter = (req, file, cb) => {
+    const allowed = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/avif'];
+    if (allowed.includes(file.mimetype)) {
+        cb(null, true);
+    } else {
+        cb(new Error('仅支持 JPEG/PNG/GIF/WebP/AVIF 图片格式'), false);
+    }
+};
+
+const upload = multer({ storage, fileFilter, limits: { fileSize: 10 * 1024 * 1024 } });
+
+// 静态服务上传目录
+app.use('/img/snapshots', express.static(uploadsDir));
 
 // Alias: serve Bangumi data before static middleware
 app.get('/api/bangumi.php', async (req, res) => {
@@ -1216,22 +1244,71 @@ app.get('/api/snapshots', (req, res) => {
     }
 });
 
-// API to save snapshot
-app.post('/api/snapshots', requireAdminToken, rateLimit(60_000, 30), (req, res) => {
+// API to upload image (PicGo fallback / 直传)
+app.post('/api/upload', requireAdminToken, (req, res, next) => {
+    upload.single('image')(req, res, err => {
+        if (err) {
+            if (err.code === 'LIMIT_FILE_SIZE') {
+                return res.status(413).json({ success: false, error: '图片大小不能超过 10MB' });
+            }
+            return res.status(400).json({ success: false, error: err.message });
+        }
+        if (!req.file) {
+            return res.status(400).json({ success: false, error: '未收到图片文件' });
+        }
+        const url = '/img/snapshots/' + req.file.filename;
+        res.json({ success: true, url });
+    });
+});
+
+// API to save snapshot (JSON 或 multipart 上传)
+app.post('/api/snapshots', requireAdminToken, rateLimit(60_000, 30), (req, res, next) => {
+    // 如果是 multipart/form-data，先用 multer 处理
+    const isMultipart = req.is('multipart/form-data');
+    if (isMultipart) {
+        return upload.single('image')(req, res, err => {
+            if (err) {
+                if (err.code === 'LIMIT_FILE_SIZE') {
+                    return res.status(413).json({ error: '图片大小不能超过 10MB' });
+                }
+                return res.status(400).json({ error: err.message });
+            }
+            saveSnapshot(req, res);
+        });
+    }
+    saveSnapshot(req, res);
+});
+
+function saveSnapshot(req, res) {
     const data = req.body;
-    if (!data || typeof data !== 'object') {
-        return res.status(400).json({ error: 'Invalid data' });
+    const hasBody = data && typeof data === 'object';
+
+    // 从 req.file 获取上传的图片 URL
+    let uploadedImage = '';
+    if (req.file) {
+        uploadedImage = '/img/snapshots/' + req.file.filename;
     }
 
     const newMoment = {
         id: 'snap-' + Date.now(),
         date: new Date().toISOString(),
-        content: data.content || '',
-        image: data.imageUrl || data.image || '',
-        location: data.location || '',
-        tags: Array.isArray(data.tags) ? data.tags : (data.tags ? data.tags.split(',') : []),
+        content: hasBody ? (data.content || '') : '',
+        image: hasBody ? (data.imageUrl || data.image || uploadedImage) : uploadedImage,
+        location: hasBody ? (data.location || '') : '',
+        tags: (() => {
+            if (!hasBody) return [];
+            if (Array.isArray(data.tags)) return data.tags;
+            return data.tags ? data.tags.split(',') : [];
+        })(),
         fromAdmin: true
     };
+
+    // EXIF 数据（如果有）
+    if (hasBody && data.exif) {
+        try {
+            newMoment.exif = typeof data.exif === 'string' ? JSON.parse(data.exif) : data.exif;
+        } catch (e) {}
+    }
 
     let moments = [];
     if (fs.existsSync(momentsPath)) {
@@ -1244,7 +1321,7 @@ app.post('/api/snapshots', requireAdminToken, rateLimit(60_000, 30), (req, res) 
     moments.unshift(newMoment);
     fs.writeFileSync(momentsPath, JSON.stringify(moments, null, 2));
     res.json({ success: true, data: newMoment });
-});
+}
 
 // API to delete snapshot
 app.delete('/api/snapshots', requireAdminToken, rateLimit(60_000, 30), (req, res) => {

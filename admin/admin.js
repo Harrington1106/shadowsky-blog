@@ -470,15 +470,20 @@ async function handleMockRequest(url, options) {
         }
         if (resource === 'snapshots') {
             if (options.body instanceof FormData) {
-                 snapshots.unshift({ 
-                    content: options.body.get('content'), 
+                 snapshots.unshift({
+                    content: options.body.get('content'),
                     date: new Date().toISOString(),
-                    image: 'https://via.placeholder.com/300' 
+                    image: 'https://via.placeholder.com/300'
                  });
             } else {
-                snapshots.unshift({ ...body, date: new Date().toISOString() });
+                const snap = { ...body, date: new Date().toISOString(), fromAdmin: true };
+                if (body.exif) snap.exif = body.exif;
+                snapshots.unshift(snap);
             }
             localStorage.setItem('mock_snapshots', JSON.stringify(snapshots));
+        }
+        if (resource === 'upload') {
+            return { success: true, url: 'https://via.placeholder.com/300' };
         }
         if (resource === 'media') {
             if (body.anime || body.manga) {
@@ -1341,6 +1346,471 @@ const BookmarksManager = {
     }
 };
 
+// ═══════ PicGo 客户端 ═══════
+const PicGoClient = {
+    baseUrl: 'http://127.0.0.1:36677',
+    available: false,
+    version: '',
+
+    /** 检查 PicGo 是否在运行 */
+    async checkStatus() {
+        try {
+            const resp = await fetch(`${this.baseUrl}/`, {
+                method: 'GET',
+                signal: AbortSignal.timeout(2000)
+            });
+            if (resp.ok) {
+                this.available = true;
+                try {
+                    const info = await resp.json();
+                    this.version = info.version || '';
+                } catch (e) {}
+            }
+        } catch (e) {
+            this.available = false;
+            this.version = '';
+        }
+        this.updateUI();
+        return this.available;
+    },
+
+    /** 通过 PicGo 上传图片，返回 CDN URL 列表 */
+    async upload(file) {
+        const formData = new FormData();
+        formData.append('list', file);
+        const resp = await fetch(`${this.baseUrl}/upload`, {
+            method: 'POST',
+            body: formData
+        });
+        if (!resp.ok) {
+            throw new Error(`PicGo 返回 ${resp.status}: ${resp.statusText}`);
+        }
+        const result = await resp.json();
+        if (!result.success) {
+            throw new Error(result.error || 'PicGo 上传失败');
+        }
+        // result.result 是 URL 数组
+        return Array.isArray(result.result) ? result.result : [];
+    },
+
+    updateUI() {
+        const statusEl = document.getElementById('picgo-status');
+        const dotEl = document.getElementById('picgo-dot');
+        const textEl = document.getElementById('picgo-text');
+        if (!statusEl || !dotEl || !textEl) return;
+
+        statusEl.style.display = 'flex';
+        if (this.available) {
+            dotEl.style.background = '#22c55e';
+            dotEl.style.boxShadow = '0 0 6px #22c55e';
+            textEl.textContent = this.version ? `PicGo 已连接 (v${this.version})` : 'PicGo 已连接';
+        } else {
+            dotEl.style.background = '#ef4444';
+            dotEl.style.boxShadow = '0 0 6px #ef4444';
+            textEl.textContent = 'PicGo 未连接';
+        }
+    }
+};
+
+// ═══════ 图片上传管理器 ═══════
+const ImageUploader = {
+    method: 'picgo',   // 'picgo' | 'direct' | 'url'
+    files: [],          // File 对象数组
+    previewUrls: [],    // blob: URL 数组
+    _initialized: false,
+
+    /** 初始化：绑定事件 + 检查 PicGo */
+    init() {
+        if (this._initialized) {
+            PicGoClient.checkStatus();
+            return;
+        }
+        this._initialized = true;
+        this.setMethod('picgo');
+        PicGoClient.checkStatus();
+        // 监听粘贴（只绑定一次）
+        document.addEventListener('paste', (e) => {
+            const view = document.getElementById('view-snapshots');
+            if (!view || view.classList.contains('hidden')) return;
+            this.handlePaste(e);
+        });
+    },
+
+    /** 切换上传方式 */
+    setMethod(method) {
+        this.method = method;
+        // 更新 tabs 样式
+        document.querySelectorAll('.snap-method-btn').forEach(btn => {
+            btn.style.background = 'transparent';
+            btn.style.color = '#94a3b8';
+            btn.style.fontWeight = '400';
+        });
+        const activeBtn = document.getElementById(`snap-method-${method}`);
+        if (activeBtn) {
+            activeBtn.style.background = '#14B8A6';
+            activeBtn.style.color = '#fff';
+            activeBtn.style.fontWeight = '600';
+        }
+        // 切换拖拽区 / URL 输入
+        const dropzone = document.getElementById('snap-dropzone');
+        const urlArea = document.getElementById('snap-url-area');
+        const picgoStatus = document.getElementById('picgo-status');
+        if (method === 'url') {
+            if (dropzone) dropzone.style.display = 'none';
+            if (urlArea) urlArea.style.display = 'block';
+            if (picgoStatus) picgoStatus.style.display = 'none';
+            this.clearFiles();
+        } else {
+            if (dropzone) dropzone.style.display = '';
+            if (urlArea) urlArea.style.display = 'none';
+            // 直传模式隐藏 PicGo 状态
+            if (picgoStatus) picgoStatus.style.display = method === 'picgo' ? 'flex' : 'none';
+        }
+    },
+
+    /** 拖拽事件 */
+    handleDragOver(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        const dz = document.getElementById('snap-dropzone');
+        if (dz) {
+            dz.style.borderColor = '#14B8A6';
+            dz.style.background = 'rgba(20,184,166,.06)';
+        }
+    },
+    handleDragLeave(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        const dz = document.getElementById('snap-dropzone');
+        if (dz) {
+            dz.style.borderColor = 'rgba(255,255,255,.1)';
+            dz.style.background = 'rgba(255,255,255,.015)';
+        }
+    },
+    handleDrop(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        this.handleDragLeave(e);
+        if (this.method === 'url') return;
+        const dt = e.dataTransfer;
+        if (dt && dt.files && dt.files.length > 0) {
+            this.addFiles(dt.files);
+        }
+    },
+
+    /** 文件选择 */
+    handleFileSelect(e) {
+        if (this.method === 'url') return;
+        if (e.target.files && e.target.files.length > 0) {
+            this.addFiles(e.target.files);
+        }
+        // 重置 input 以便重复选同一文件
+        e.target.value = '';
+    },
+
+    /** 粘贴事件 */
+    handlePaste(e) {
+        if (this.method === 'url') return;
+        const items = e.clipboardData?.items;
+        if (!items) return;
+        const imageItems = [];
+        for (const item of items) {
+            if (item.type.startsWith('image/')) {
+                imageItems.push(item.getAsFile());
+            }
+        }
+        if (imageItems.length > 0) {
+            e.preventDefault();
+            this.addFiles(imageItems);
+        }
+    },
+
+    /** 添加文件 + 生成预览 */
+    addFiles(fileList) {
+        const newFiles = Array.from(fileList).filter(f => f.type.startsWith('image/'));
+        if (newFiles.length === 0) {
+            showToast('请选择图片文件', 'warning');
+            return;
+        }
+        this.files.push(...newFiles);
+        // 生成预览 URL
+        for (const f of newFiles) {
+            const blobUrl = URL.createObjectURL(f);
+            this.previewUrls.push(blobUrl);
+        }
+        this.renderPreviews();
+        // 如果 PicGo 模式且之前未检测，重新检测
+        if (this.method === 'picgo' && !PicGoClient.available) {
+            PicGoClient.checkStatus();
+        }
+    },
+
+    /** 移除文件 */
+    removeFile(index) {
+        if (this.previewUrls[index]) {
+            URL.revokeObjectURL(this.previewUrls[index]);
+        }
+        this.files.splice(index, 1);
+        this.previewUrls.splice(index, 1);
+        this.renderPreviews();
+    },
+
+    /** 清空所有文件 */
+    clearFiles() {
+        this.previewUrls.forEach(u => URL.revokeObjectURL(u));
+        this.files = [];
+        this.previewUrls = [];
+        this.renderPreviews();
+    },
+
+    /** 渲染预览卡片 */
+    renderPreviews() {
+        const container = document.getElementById('snap-previews');
+        if (!container) return;
+        container.innerHTML = '';
+        if (this.files.length === 0) {
+            container.style.display = 'none';
+            return;
+        }
+        container.style.display = 'flex';
+        this.files.forEach((f, i) => {
+            const card = document.createElement('div');
+            card.className = 'relative flex-shrink-0 rounded-xl overflow-hidden';
+            card.style.width = '120px';
+            card.style.height = '120px';
+            card.style.border = '1px solid rgba(255,255,255,.08)';
+            card.innerHTML = `
+                <img src="${this.previewUrls[i]}" class="w-full h-full object-cover">
+                <div class="absolute bottom-0 left-0 right-0 text-xs px-2 py-1 truncate"
+                    style="background:rgba(0,0,0,.7);color:#e2e8f0">${f.name}</div>
+                <button type="button" onclick="ImageUploader.removeFile(${i})"
+                    class="absolute top-1 right-1 w-5 h-5 rounded-full flex items-center justify-center text-white text-xs"
+                    style="background:rgba(239,68,68,.85)">×</button>
+            `;
+            container.appendChild(card);
+        });
+        // 更新拖拽区提示
+        const dz = document.getElementById('snap-dropzone');
+        if (dz) {
+            const hint = dz.querySelector('p:first-of-type');
+            if (hint) hint.textContent = this.files.length > 0
+                ? `已选择 ${this.files.length} 张图片（可继续添加）`
+                : '拖拽图片到此处';
+        }
+    },
+
+    /** 上传所有图片，返回 URL 数组 */
+    async uploadAll() {
+        // URL 模式：直接返回输入框中的 URL
+        if (this.method === 'url') {
+            const urlInput = document.getElementById('snap-url');
+            const url = urlInput ? urlInput.value.trim() : '';
+            if (!url) throw new Error('请输入图片链接');
+            // 提取 Markdown 语法中的 URL
+            const mdMatch = url.match(/!\[.*?\]\((.*?)\)/);
+            return [mdMatch ? mdMatch[1].trim() : url];
+        }
+
+        if (this.files.length === 0) throw new Error('请先选择图片');
+
+        const statusEl = document.getElementById('snap-upload-status');
+        const progressEl = document.getElementById('snap-upload-progress');
+        const showProgress = (msg) => {
+            if (statusEl) { statusEl.style.display = 'block'; statusEl.textContent = msg; }
+            if (progressEl) { progressEl.style.display = 'inline'; progressEl.textContent = msg; }
+        };
+        const hideProgress = () => {
+            if (statusEl) statusEl.style.display = 'none';
+            if (progressEl) progressEl.style.display = 'none';
+        };
+
+        const urls = [];
+
+        for (let i = 0; i < this.files.length; i++) {
+            const file = this.files[i];
+            showProgress(`上传中 ${i + 1}/${this.files.length}...`);
+
+            if (this.method === 'picgo') {
+                if (!PicGoClient.available) {
+                    throw new Error('PicGo 未连接，请启动 PicGo 或切换到"直传服务器"模式');
+                }
+                const result = await PicGoClient.upload(file);
+                urls.push(...result);
+            } else {
+                // 直传服务器
+                const formData = new FormData();
+                formData.append('image', file);
+                const data = await safeFetch(`${API_BASE}/upload`, {
+                    method: 'POST',
+                    body: formData
+                });
+                if (!data.success) {
+                    throw new Error(data.error || '服务器上传失败');
+                }
+                urls.push(data.url);
+            }
+        }
+
+        hideProgress();
+        return urls;
+    },
+
+    /** EXIF 面板切换 */
+    toggleExif() {
+        const panel = document.getElementById('exif-panel');
+        const chevron = document.getElementById('exif-chevron');
+        if (!panel || !chevron) return;
+        const isOpen = panel.style.display !== 'none';
+        panel.style.display = isOpen ? 'none' : 'grid';
+        chevron.style.transform = isOpen ? '' : 'rotate(90deg)';
+    },
+
+    /** 从文件自动提取 EXIF（简单的 JPEG 解析） */
+    autoExif() {
+        const file = this.files[0];
+        if (!file) {
+            showToast('请先选择一张图片', 'warning');
+            return;
+        }
+        if (file.type !== 'image/jpeg') {
+            showToast('EXIF 自动提取仅支持 JPEG 格式，其他格式请手动填写', 'warning');
+            return;
+        }
+        // 打开 EXIF 面板
+        const panel = document.getElementById('exif-panel');
+        const chevron = document.getElementById('exif-chevron');
+        if (panel && panel.style.display === 'none') {
+            panel.style.display = 'grid';
+            if (chevron) chevron.style.transform = 'rotate(90deg)';
+        }
+
+        const reader = new FileReader();
+        reader.onload = function() {
+            try {
+                const dv = new DataView(reader.result);
+                const exif = ImageUploader.parseExif(dv);
+                if (exif.camera) document.getElementById('exif-camera').value = exif.camera;
+                if (exif.lens) document.getElementById('exif-lens').value = exif.lens;
+                if (exif.iso) document.getElementById('exif-iso').value = String(exif.iso);
+                if (exif.aperture) document.getElementById('exif-aperture').value = 'f/' + exif.aperture.toFixed(1);
+                if (exif.shutter) document.getElementById('exif-shutter').value = exif.shutter;
+                if (!exif.camera && !exif.iso) {
+                    showToast('此图片不含 EXIF 信息，请手动填写', 'info');
+                } else {
+                    showToast('EXIF 已自动提取', 'success');
+                }
+            } catch (e) {
+                showToast('EXIF 解析失败: ' + e.message, 'error');
+            }
+        };
+        reader.readAsArrayBuffer(file.slice(0, 65536)); // 只读前 64KB
+    },
+
+    /** 简单 JPEG EXIF 解析 */
+    parseExif(dv) {
+        // 检测 JPEG SOI
+        if (dv.getUint16(0, false) !== 0xFFD8) return {};
+
+        const result = {};
+        let offset = 2;
+        while (offset < dv.byteLength) {
+            if (dv.getUint16(offset, false) === 0xFFE1) {
+                const exifOffset = offset;
+                // Check "Exif\0\0" header
+                const header = String.fromCharCode(...new Uint8Array(dv.buffer, exifOffset + 4, 6));
+                if (header !== 'Exif\x00\x00') break;
+
+                const tiffOffset = exifOffset + 10;
+                const bigEndian = dv.getUint16(tiffOffset, false) === 0x4D4D;
+                const ifd0Offset = dv.getUint32(tiffOffset + 4, bigEndian);
+                const entries = dv.getUint16(tiffOffset + ifd0Offset, bigEndian);
+
+                // EXIF tags we care about
+                const TAG_MAKE = 0x010F;
+                const TAG_MODEL = 0x0110;
+                const TAG_ISO = 0x8827;
+                const TAG_APERTURE = 0x829D;
+                const TAG_SHUTTER = 0x829A;
+                const TAG_LENS = 0xA434;
+
+                let entryOff = tiffOffset + ifd0Offset + 2;
+                for (let i = 0; i < entries; i++) {
+                    const tag = dv.getUint16(entryOff, bigEndian);
+                    const type = dv.getUint16(entryOff + 2, bigEndian);
+                    const count = dv.getUint32(entryOff + 4, bigEndian);
+                    const valueOff = entryOff + 8;
+
+                    if (tag === TAG_MAKE || tag === TAG_MODEL || tag === TAG_LENS) {
+                        // ASCII string
+                        const strOff = tiffOffset + (count > 4 ? dv.getUint32(valueOff, bigEndian) : valueOff);
+                        let str = '';
+                        for (let j = 0; j < count - 1; j++) {
+                            str += String.fromCharCode(dv.getUint8(strOff + j));
+                        }
+                        if (tag === TAG_MAKE) result.make = str;
+                        if (tag === TAG_MODEL) result.model = str;
+                        if (tag === TAG_LENS) result.lens = str;
+                    }
+                    if (tag === TAG_ISO) {
+                        const iso = count > 1
+                            ? dv.getUint32(tiffOffset + dv.getUint32(valueOff, bigEndian), bigEndian)
+                            : dv.getUint16(valueOff, bigEndian);
+                        result.iso = iso;
+                    }
+                    if (tag === TAG_APERTURE) {
+                        const raw = dv.getUint32(valueOff, bigEndian);
+                        const num = dv.getUint16(valueOff, bigEndian);
+                        const den = dv.getUint16(valueOff + 2, bigEndian);
+                        result.aperture = Math.pow(2, (num/den) / 2);
+                    }
+                    if (tag === TAG_SHUTTER) {
+                        const raw = dv.getUint32(valueOff, bigEndian);
+                        const num = dv.getUint16(valueOff, bigEndian);
+                        const den = dv.getUint16(valueOff + 2, bigEndian);
+                        if (num / den <= 1) {
+                            result.shutter = '1/' + Math.round(den/num);
+                        } else {
+                            result.shutter = (num/den).toFixed(1) + 's';
+                        }
+                    }
+
+                    entryOff += 12;
+                }
+
+                // Compose camera string
+                if (result.make && result.model) {
+                    result.camera = result.model.startsWith(result.make)
+                        ? result.model
+                        : `${result.make} ${result.model}`;
+                } else {
+                    result.camera = result.make || result.model || '';
+                }
+
+                return result;
+            }
+            offset += 2 + dv.getUint16(offset + 2, false);
+        }
+        return result;
+    },
+
+    /** 重置 */
+    reset() {
+        this.clearFiles();
+        document.getElementById('snap-url').value = '';
+        document.getElementById('snap-content').value = '';
+        document.getElementById('snap-location').value = '';
+        document.getElementById('snap-tags').value = '';
+        document.getElementById('exif-camera').value = '';
+        document.getElementById('exif-lens').value = '';
+        document.getElementById('exif-iso').value = '';
+        document.getElementById('exif-aperture').value = '';
+        document.getElementById('exif-shutter').value = '';
+        document.getElementById('exif-panel').style.display = 'none';
+        document.getElementById('exif-chevron').style.transform = '';
+    }
+};
+
+// ═══════ 随手拍管理器 ═══════
 const SnapshotsManager = {
     data: [],
     async fetch() {
@@ -1353,27 +1823,34 @@ const SnapshotsManager = {
             console.error(e);
             showToast(`加载随手拍失败: ${e.message}`);
             this.data = [];
-            this.render(); 
+            this.render();
         }
     },
     render() {
         const container = document.getElementById('snapshots-preview');
         container.innerHTML = '';
         if (!Array.isArray(this.data) || this.data.length === 0) {
-            container.innerHTML = '<div class="col-span-full text-center text-slate-500 py-12">暂无随手拍</div>';
+            container.innerHTML = '<div class="col-span-full text-center text-slate-500 py-12" style="color:#64748b">暂无随手拍 — 上传第一张照片吧 📸</div>';
             return;
         }
         this.data.slice(0, 12).forEach(item => {
             const el = document.createElement('div');
-            el.className = 'bg-slate-50 rounded-lg p-3 border border-slate-200 relative group';
+            el.className = 'bg-slate-50 rounded-lg p-3 border border-slate-200 relative group dark:bg-slate-800 dark:border-slate-700';
+            const exifHtml = item.exif ? `
+                <div class="flex items-center gap-1 text-xs mt-1" style="color:#94a3b8">
+                    <i data-lucide="camera" class="w-3 h-3"></i>
+                    <span>${[item.exif.camera, item.exif.iso ? 'ISO' + item.exif.iso : '', item.exif.aperture ? 'f/' + item.exif.aperture : ''].filter(Boolean).join(' · ') || '相机参数'}</span>
+                </div>
+            ` : '';
             el.innerHTML = `
-                ${item.image ? `<img src="${item.image}" class="w-full h-32 object-cover rounded-md mb-2 bg-slate-200" loading="lazy">` : ''}
-                <p class="text-sm text-slate-800 line-clamp-2 mb-1">${item.content}</p>
-                <div class="text-xs text-slate-500 flex justify-between">
+                ${item.image ? `<img src="${item.image}" class="w-full h-32 object-cover rounded-md mb-2 bg-slate-200" loading="lazy" onerror="this.style.display='none'">` : ''}
+                <p class="text-sm text-slate-800 dark:text-slate-200 line-clamp-2 mb-1">${item.content || '(无内容)'}</p>
+                ${exifHtml}
+                <div class="text-xs text-slate-500 flex justify-between mt-1">
                     <span>${new Date(item.date).toLocaleDateString()}</span>
                     <span>${item.location || ''}</span>
                 </div>
-                <button onclick="SnapshotsManager.delete('${item.id || item.date}')" 
+                <button onclick="SnapshotsManager.delete('${item.id || item.date}')"
                         class="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
                     <i data-lucide="trash-2" class="w-3 h-3"></i>
                 </button>
@@ -1382,26 +1859,37 @@ const SnapshotsManager = {
         });
         if (typeof lucide !== 'undefined') lucide.createIcons();
     },
-    async add(content, imageUrl, location, tags, imageFile = null) {
+    async add({ content, imageUrl, location, tags, exif }) {
         try {
+            if (!imageUrl) throw new Error('请提供图片（链接或上传文件）');
+            // 提取 Markdown 图片语法
+            const mdMatch = imageUrl.match(/!\[.*?\]\((.*?)\)/);
+            if (mdMatch) imageUrl = mdMatch[1].trim();
+
             let data;
-            if (imageUrl) {
-                const mdMatch = imageUrl.match(/!\[.*?\]\((.*?)\)/);
-                if (mdMatch) imageUrl = mdMatch[1].trim();
+            if (USE_MOCK) {
+                const snap = {
+                    id: 'snap-' + Date.now(),
+                    date: new Date().toISOString(),
+                    content: content || '',
+                    image: imageUrl,
+                    location: location || '',
+                    tags: typeof tags === 'string' ? tags.split(/[,，]/).map(t => t.trim()).filter(Boolean) : (Array.isArray(tags) ? tags : []),
+                    exif: exif || undefined,
+                    fromAdmin: true
+                };
+                snapshots.unshift(snap);
+                localStorage.setItem('mock_snapshots', JSON.stringify(snapshots));
+                data = { success: true };
+            } else {
+                const body = { content, location, tags };
+                if (imageUrl) body.imageUrl = imageUrl;
+                if (exif && Object.values(exif).some(v => v)) body.exif = exif;
                 data = await safeFetch(`${API_BASE}/snapshots`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ content, location, tags, imageUrl })
+                    body: JSON.stringify(body)
                 });
-            } else if (imageFile) {
-                const formData = new FormData();
-                formData.append('image', imageFile);
-                formData.append('content', content);
-                formData.append('location', location);
-                formData.append('tags', tags);
-                data = await safeFetch(`${API_BASE}/snapshots`, { method: 'POST', body: formData });
-            } else {
-                throw new Error('请提供图片（链接或文件）。');
             }
             if (data.success) {
                 showToast('随手拍发布成功！');
@@ -2183,7 +2671,7 @@ const Dashboard = {
         if (pageTitle) pageTitle.textContent = TAB_TITLES[tabId] || '概览';
 
         if (tabId === 'bookmarks') { BookmarksManager.fetch(); BookmarksManager.populateCategories(); }
-        if (tabId === 'snapshots') SnapshotsManager.fetch();
+        if (tabId === 'snapshots') { SnapshotsManager.fetch(); ImageUploader.init(); }
         if (tabId === 'media') MediaManager.fetch();
         if (tabId === 'feeds') FeedsManager.fetch();
         if (tabId === 'videos') VideosManager.fetch();
@@ -2367,20 +2855,53 @@ async function handleAddSnapshot(e) {
     const form = e.target;
     const btn = form.querySelector('button[type="submit"]');
     FormValidator.clearErrors(form);
-    const validation = FormValidator.validateForm(form);
-    if (!validation.isValid) { showToast('请检查表单中的错误', 'error'); return; }
-    FormValidator.setLoadingState(btn, true);
-    const fileInput = document.getElementById('snap-file');
-    const urlInput = document.getElementById('snap-url');
+
     const content = document.getElementById('snap-content').value.trim();
     const location = document.getElementById('snap-location').value.trim();
     const tags = document.getElementById('snap-tags').value.trim();
+
+    // EXIF 数据
+    const exifFields = {
+        camera: document.getElementById('exif-camera').value.trim(),
+        lens: document.getElementById('exif-lens').value.trim(),
+        iso: document.getElementById('exif-iso').value.trim(),
+        aperture: document.getElementById('exif-aperture').value.trim(),
+        shutter: document.getElementById('exif-shutter').value.trim()
+    };
+    const hasExif = Object.values(exifFields).some(v => v);
+    const exif = hasExif ? exifFields : null;
+
+    FormValidator.setLoadingState(btn, true);
+
     try {
-        const imageUrl = urlInput ? urlInput.value.trim() : '';
-        const imageFile = fileInput && fileInput.files[0] ? fileInput.files[0] : null;
-        if (!imageUrl && !imageFile) { showToast('请提供图片（链接或文件）', 'error'); return; }
-        const success = await SnapshotsManager.add(content, imageUrl, location, tags, imageFile);
-        if (success) { form.reset(); FormValidator.clearErrors(form); }
+        // 上传图片获取 URL
+        const urls = await ImageUploader.uploadAll();
+        if (urls.length === 0) {
+            showToast('获取图片链接失败', 'error');
+            return;
+        }
+
+        // 每个 URL 创建一个 moment
+        let allSuccess = true;
+        for (let i = 0; i < urls.length; i++) {
+            const snapContent = i === 0 ? content : `[${i + 1}/${urls.length}] ${content}`;
+            const success = await SnapshotsManager.add({
+                content: snapContent,
+                imageUrl: urls[i],
+                location,
+                tags,
+                exif: i === 0 ? exif : null  // 只有第一张带 EXIF
+            });
+            if (!success) allSuccess = false;
+        }
+
+        if (allSuccess) {
+            form.reset();
+            ImageUploader.reset();
+            FormValidator.clearErrors(form);
+        }
+    } catch (err) {
+        showToast(err.message, 'error');
     } finally {
         FormValidator.setLoadingState(btn, false);
     }
