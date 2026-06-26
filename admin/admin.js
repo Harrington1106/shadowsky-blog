@@ -2060,7 +2060,7 @@ const MediaManager = {
         }
         items.forEach(item => {
             const el = document.createElement('div');
-            el.style.cssText = 'background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:12px;position:relative';
+            el.style.cssText = 'background:rgba(15,23,42,.45);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:12px;position:relative';
             el.className = 'group';
 
             const progress = item.total ? Math.round((item.progress / item.total) * 100) : 0;
@@ -2248,7 +2248,7 @@ const BgmSearch = {
             const total = item.eps || item.vols || '';
             const isSelected = this.selected && String(this.selected.id) === String(item.id);
             return `
-                <div style="background:rgba(255,255,255,.03);border:1px solid ${isSelected ? '#14B8A6' : 'rgba(255,255,255,.06)'};border-radius:10px;padding:10px;display:flex;gap:10px;align-items:center;cursor:pointer;transition:border-color .2s"
+                <div style="background:rgba(15,23,42,.35);border:1px solid ${isSelected ? '#14B8A6' : 'rgba(255,255,255,.1)'};border-radius:10px;padding:10px;display:flex;gap:10px;align-items:center;cursor:pointer;transition:border-color .2s"
                     onclick="BgmSearch.select('${item.id}')">
                     <img src="${img}" style="width:40px;height:56px;object-fit:cover;border-radius:6px;background:rgba(255,255,255,.04);flex-shrink:0" onerror="this.style.display='none'">
                     <div style="flex:1;min-width:0">
@@ -2307,7 +2307,7 @@ const FeedsManager = {
         }
         this.data.forEach((item, idx) => {
             const el = document.createElement('div');
-            el.style.cssText = 'background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:14px;position:relative';
+            el.style.cssText = 'background:rgba(15,23,42,.45);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:14px;position:relative';
             el.className = 'group';
             const catHtml = item.category ? `<span style="font-size:.65rem;padding:2px 7px;border-radius:4px;background:rgba(20,184,166,.1);color:#2dd4bf;flex-shrink:0">${item.category}</span>` : '';
             el.innerHTML = `
