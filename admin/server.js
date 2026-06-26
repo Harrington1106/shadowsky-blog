@@ -1202,23 +1202,35 @@ app.get('/api/bilibili_stream', async (req, res) => {
     }
 });
 
-// Image proxy — 代理 Unsplash 等境外图片
+// Image proxy — 代理 Unsplash 等境外图片，直连失败走 CF Worker
 app.get('/api/image-proxy', rateLimit(60_000, 120), async (req, res) => {
     const url = req.query.url;
     if (!url || !/^https?:\/\//i.test(url)) return res.status(400).end();
-    try {
-        const resp = await axios.get(url, {
+    const fetchImage = async (fetchUrl, timeout = 10000) => {
+        return axios.get(fetchUrl, {
             responseType: 'arraybuffer',
-            timeout: 10000,
+            timeout,
             headers: { 'User-Agent': 'Mozilla/5.0' },
             maxContentLength: 5 * 1024 * 1024
         });
-        const ct = resp.headers['content-type'] || 'image/jpeg';
-        res.setHeader('Content-Type', ct);
+    };
+    try {
+        // 1) 直连
+        const resp = await fetchImage(url, 5000);
+        res.setHeader('Content-Type', resp.headers['content-type'] || 'image/jpeg');
         res.setHeader('Cache-Control', 'public, max-age=86400');
-        res.send(resp.data);
+        return res.send(resp.data);
     } catch (e) {
-        res.status(502).end();
+        // 2) CF Worker 代理
+        try {
+            const proxyUrl = `https://bangumi.shadowquake.top/fetch?url=${encodeURIComponent(url)}`;
+            const resp = await fetchImage(proxyUrl, 15000);
+            res.setHeader('Content-Type', resp.headers['content-type'] || 'image/jpeg');
+            res.setHeader('Cache-Control', 'public, max-age=86400');
+            return res.send(resp.data);
+        } catch (e2) {
+            res.status(502).end();
+        }
     }
 });
 
