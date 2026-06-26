@@ -749,11 +749,13 @@ app.post('/api/test_feed', requireAdminToken, rateLimit(60_000, 5), async (req, 
         const $ = cheerio.load(xml, { xmlMode: true });
         let title = $('rss > channel > title').first().text() || $('rss > channel > title').text();
         let articles = $('rss > channel > item');
+        let sourceLink = $('rss > channel > link').first().text() || '';
         if (!title) {
             title = $('feed > title').first().text() || $('feed > title').text();
             articles = $('feed > entry');
+            sourceLink = $('feed > link[rel="alternate"]').attr('href') || $('feed > link:not([rel="self"])').first().attr('href') || '';
         }
-        return { title, articleCount: articles.length || 0 };
+        return { title, articleCount: articles.length || 0, sourceLink };
     };
 
     const fetchOpts = {
@@ -786,8 +788,14 @@ app.post('/api/test_feed', requireAdminToken, rateLimit(60_000, 5), async (req, 
     }
 
     const data = parseXml(xml);
+    // 从 RSS <link> 取真实网站域名做 favicon，不用 RSSHub 代理域名
     let iconUrl = '';
-    try { iconUrl = `https://www.google.com/s2/favicons?domain=${new URL(url).hostname}&sz=64`; } catch (e) {}
+    try {
+        const host = data.sourceLink ? new URL(data.sourceLink).hostname : new URL(url).hostname;
+        iconUrl = `https://www.google.com/s2/favicons?domain=${host}&sz=64`;
+    } catch (e) {
+        try { iconUrl = `https://www.google.com/s2/favicons?domain=${new URL(url).hostname}&sz=64`; } catch (e) {}
+    }
     res.json({ success: true, ...data, iconUrl, proxied });
 });
 
