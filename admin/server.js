@@ -493,9 +493,10 @@ app.use((req, res, next) => {
         }
         
         stats[today].visits++;
-        
-        const ip = req.ip || req.connection.remoteAddress || 'unknown';
-        stats[today].ip_locations[ip] = (stats[today].ip_locations[ip] || 0) + 1;
+        const ip = (req.ip || req.connection.remoteAddress || '').replace(/^::ffff:/, '');
+        if (ip !== '127.0.0.1' && ip !== '::1' && !ip.startsWith('192.168.') && !ip.startsWith('10.')) {
+            stats[today].ip_locations[ip] = (stats[today].ip_locations[ip] || 0) + 1;
+        }
         
         fs.writeFile(statsPath, JSON.stringify(stats, null, 2), () => {});
     } catch (e) {
@@ -521,9 +522,10 @@ app.post('/api/visit', (req, res) => {
         }
         
         stats[today].visits++;
-        
-        const ip = req.ip || req.connection.remoteAddress || 'unknown';
-        stats[today].ip_locations[ip] = (stats[today].ip_locations[ip] || 0) + 1;
+        const ip = (req.ip || req.connection.remoteAddress || '').replace(/^::ffff:/, '');
+        if (ip !== '127.0.0.1' && ip !== '::1' && !ip.startsWith('192.168.') && !ip.startsWith('10.')) {
+            stats[today].ip_locations[ip] = (stats[today].ip_locations[ip] || 0) + 1;
+        }
         
         fs.writeFileSync(statsPath, JSON.stringify(stats, null, 2));
 

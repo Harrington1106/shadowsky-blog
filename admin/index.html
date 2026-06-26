@@ -741,38 +741,6 @@
                     </div>
                     <form id="settings-form" class="p-6 space-y-8">
                         <div>
-                            <h4 class="text-sm font-bold uppercase tracking-wide mb-4 pl-3" style="color:inherit;border-left:3px solid var(--color-primary,#14B8A6)">系统安全</h4>
-                            <div>
-                                <label class="text-sm font-medium mb-1.5 block" style="color:inherit">管理令牌 (Admin Token)</label>
-                                <input type="password" id="setting-admin-token" class="admin-input" placeholder="输入 ADMIN_TOKEN">
-                                <p class="text-xs mt-1.5" style="color:#64748b">用于 Node.js 后端鉴权</p>
-                            </div>
-                        </div>
-                        <div style="border-top:1px solid rgba(255,255,255,.06);padding-top:24px">
-                            <h4 class="text-sm font-bold uppercase tracking-wide mb-4 pl-3" style="color:inherit;border-left:3px solid var(--color-primary,#14B8A6)">站点公告</h4>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div>
-                                    <label class="text-sm font-medium mb-1.5 block" style="color:inherit">公告内容</label>
-                                    <textarea id="notice-content" class="admin-input" rows="4" placeholder="请输入公告内容"></textarea>
-                                </div>
-                                <div>
-                                    <label class="text-sm font-medium mb-1.5 block" style="color:inherit">显示与样式</label>
-                                    <div class="flex items-center gap-4">
-                                        <label class="flex items-center gap-2 text-sm cursor-pointer" style="color:inherit"><input type="checkbox" id="notice-show"> 显示公告</label>
-                                        <select id="notice-style" class="admin-input w-auto" aria-label="Notice Style">
-                                            <option value="info">提示</option>
-                                            <option value="success">成功</option>
-                                            <option value="warning">警告</option>
-                                            <option value="error">错误</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="flex justify-end mt-4">
-                                <button type="button" id="notice-save" class="admin-btn admin-btn-primary admin-btn-sm">保存公告</button>
-                            </div>
-                        </div>
-                        <div style="border-top:1px solid rgba(255,255,255,.06);padding-top:24px">
                             <h4 class="text-sm font-bold uppercase tracking-wide mb-4 pl-3" style="color:inherit;border-left:3px solid var(--color-primary,#14B8A6)">Bangumi 设置</h4>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div><label class="text-sm font-medium mb-1 block" style="color:inherit" for="setting-bangumi-username">用户名</label><input type="text" id="setting-bangumi-username" class="admin-input" placeholder="Bangumi 用户名"></div>
@@ -782,10 +750,22 @@
                                 <button type="button" onclick="saveBangumiSettings()" class="admin-btn admin-btn-primary admin-btn-sm">保存 Bangumi 设置</button>
                             </div>
                         </div>
-                        <div style="border-top:1px solid rgba(255,255,255,.06);padding-top:24px" class="flex justify-end">
-                            <button type="submit" class="admin-btn admin-btn-primary">
-                                <i data-lucide="save" class="w-4 h-4"></i> 保存设置
-                            </button>
+                        <div style="border-top:1px solid rgba(255,255,255,.06);padding-top:24px">
+                            <h4 class="text-sm font-bold uppercase tracking-wide mb-4 pl-3" style="color:inherit;border-left:3px solid var(--color-primary,#14B8A6)">服务器状态</h4>
+                            <div id="server-status" class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm" style="color:#94a3b8">
+                                <div style="padding:10px 14px;background:rgba(255,255,255,.03);border-radius:8px;border:1px solid rgba(255,255,255,.06)">
+                                    <span style="color:#64748b">Node.js:</span> <span id="status-node" style="color:#4ade80">运行中</span>
+                                </div>
+                                <div style="padding:10px 14px;background:rgba(255,255,255,.03);border-radius:8px;border:1px solid rgba(255,255,255,.06)">
+                                    <span style="color:#64748b">数据文件:</span> <span id="status-data" style="color:#e2e8f0">—</span>
+                                </div>
+                                <div style="padding:10px 14px;background:rgba(255,255,255,.03);border-radius:8px;border:1px solid rgba(255,255,255,.06)">
+                                    <span style="color:#64748b">CDN:</span> <span style="color:#fbbf24">Cloudflare</span>
+                                </div>
+                                <div style="padding:10px 14px;background:rgba(255,255,255,.03);border-radius:8px;border:1px solid rgba(255,255,255,.06)">
+                                    <span style="color:#64748b">PicList:</span> <span id="status-picgo" style="color:#94a3b8">检测中...</span>
+                                </div>
+                            </div>
                         </div>
                     </form>
                 </div>

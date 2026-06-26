@@ -2843,9 +2843,11 @@ const StatsManager = {
         if (!container) return;
         // 用日志表格展示 IP 分布
         const ipMap = {};
+        const isLocal = ip => ip === '127.0.0.1' || ip === '::1' || ip === '::ffff:127.0.0.1' || ip.startsWith('192.168.') || ip.startsWith('10.') || ip.startsWith('172.16.');
         Object.values(this.data.raw).forEach(day => {
             if (day.ip_locations) {
                 Object.entries(day.ip_locations).forEach(([ip, c]) => {
+                    if (isLocal(ip)) return;
                     ipMap[ip] = (ipMap[ip] || 0) + c;
                 });
             }
@@ -2940,7 +2942,7 @@ const Dashboard = {
         if (tabId === 'feeds') FeedsManager.fetch();
         if (tabId === 'videos') VideosManager.fetch();
         if (tabId === 'stats') StatsManager.fetch();
-        if (tabId === 'settings') { fetchSettings(); NoticeManager.fetch(); }
+        if (tabId === 'settings') { fetchSettings(); }
     }
 };
 
@@ -3279,15 +3281,30 @@ async function fetchSettings() {
         const data = await safeFetch(`${API_BASE}/settings`);
         if (data.bangumi_username) document.getElementById('setting-bangumi-username').value = data.bangumi_username;
         if (data.bangumi_token) document.getElementById('setting-bangumi-token').value = data.bangumi_token;
-        
-        // Load Admin Token from localStorage
-        const adminToken = localStorage.getItem('admin_token');
-        if (adminToken) {
-            document.getElementById('setting-admin-token').value = adminToken;
-        }
     } catch (e) {
         console.error(e);
-        showToast('加载设置失败: ' + e.message);
+        showToast('加载设置失败');
+    }
+    // 服务状态
+    const dn = document.getElementById('status-node');
+    if (dn) dn.textContent = '运行中';
+    // 数据文件统计
+    try {
+        const feeds = await safeFetch(`${API_BASE}/feeds`);
+        const media = await safeFetch(`${API_BASE}/media`);
+        const bm = await safeFetch(`${API_BASE}/bookmarks`);
+        const sd = document.getElementById('status-data');
+        if (sd) sd.textContent = `${Array.isArray(feeds)?feeds.length:0}订阅 · ${(media?.anime||[]).length+(media?.manga||[]).length}追番 · ${Array.isArray(bm)?bm.length:0}书签`;
+    } catch (e) {}
+    // PicList 状态
+    if (typeof PicGoClient !== 'undefined') {
+        PicGoClient.checkStatus().then(() => {
+            const sp = document.getElementById('status-picgo');
+            if (sp) {
+                sp.textContent = PicGoClient.available ? (PicGoClient.version || '已连接') : '未连接';
+                sp.style.color = PicGoClient.available ? '#4ade80' : '#94a3b8';
+            }
+        });
     }
 }
 
@@ -3469,7 +3486,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     bindListener('add-media-form', handleAddMedia);
     bindListener('add-feed-form', handleAddFeed);
     bindListener('add-video-form', handleAddVideo);
-    bindListener('settings-form', handleSaveSettings);
+    // 设置表单已重命名，保存按钮各功能独立
     const noticeSave = document.getElementById('notice-save');
     if (noticeSave) noticeSave.addEventListener('click', () => NoticeManager.save());
 
