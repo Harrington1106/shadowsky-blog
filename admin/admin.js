@@ -2578,6 +2578,20 @@ const VideosManager = {
         });
         if (typeof lucide !== 'undefined') lucide.createIcons();
     },
+    async save() {
+        try {
+            await safeFetch(`${API_BASE}/videos`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(this.fullData)
+            });
+            videos = this.fullData;
+            this.updateCount();
+        } catch (e) {
+            showToast('保存失败: ' + e.message);
+            throw e;
+        }
+    },
     async add(video) {
         const newVideo = { id: Date.now(), ...video };
         this.data.unshift(newVideo);
@@ -3265,7 +3279,7 @@ async function handleAddVideo(e) {
             const item = VideosManager.data.find(v => v.id === VideosManager._editingId);
             if (item) {
                 Object.assign(item, { title, thumbnail: cover, category, duration, description, bvid });
-                await VideosManager.saveCurrentList();
+                await VideosManager.save();
                 showToast('已更新', 'success');
                 VideosManager.cancelEdit();
                 VideosManager.render();
