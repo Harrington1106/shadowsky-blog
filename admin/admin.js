@@ -1352,9 +1352,8 @@ const PicGoClient = {
     available: false,
     version: '',
 
-    /** 检查 PicGo 是否在运行 */
+    /** 检查 PicGo/PicList 是否在运行 */
     async checkStatus() {
-        // 显示检测中状态
         const dotEl = document.getElementById('picgo-dot');
         const textEl = document.getElementById('picgo-text');
         const retryEl = document.getElementById('picgo-retry');
@@ -1366,40 +1365,34 @@ const PicGoClient = {
             dotEl.style.animation = 'pulse-dot 1.5s ease-in-out infinite';
         }
         if (textEl) {
-            textEl.textContent = '检测 PicGo 连接中...';
+            textEl.textContent = '检测连接中...';
             textEl.style.color = '#fcd34d';
         }
         if (retryEl) retryEl.style.display = 'none';
 
-        // 用 abortable fetch + 硬超时兜底（Promise.race 确保无论如何 5s 后结束）
+        // 用 POST /upload 发空请求检测 — PicList 会秒回 JSON 错误
+        // 比 GET / 可靠，PicList 没有 GET / 路由会挂起
         try {
             const ctrl = new AbortController();
-            const timer = setTimeout(() => ctrl.abort(), 3000);
-            const fetchPromise = fetch(`${this.baseUrl}/`, {
-                method: 'GET',
+            const timer = setTimeout(() => ctrl.abort(), 2000);
+            const resp = await fetch(`${this.baseUrl}/upload`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: '{}',
                 signal: ctrl.signal,
                 cache: 'no-cache'
             });
-            // 硬超时兜底：即使 abort 失败也结束
-            const hardTimeout = new Promise(r => setTimeout(() => r(null), 5000));
-            const resp = await Promise.race([fetchPromise, hardTimeout]);
             clearTimeout(timer);
-
-            // 只要能拿到 HTTP 响应（哪怕 404），就说明 PicGo 服务在运行
+            // 任何响应（包括错误JSON）都说明服务在运行
             if (resp) {
                 this.available = true;
                 try {
-                    const text = await resp.text();
-                    // 尝试从响应中提取版本号
-                    const vMatch = text.match(/version["']?\s*[:=]\s*["']?([\d.]+)/i);
-                    if (vMatch) this.version = vMatch[1];
+                    const data = await resp.json();
+                    // PicList 可能返回版本信息
+                    this.version = data.version || '';
                 } catch (e) {}
-            } else {
-                this.available = false;
-                this.version = '';
             }
         } catch (e) {
-            // 连接拒绝 / 网络不通 — 才是真正的未启动
             this.available = false;
             this.version = '';
         }
