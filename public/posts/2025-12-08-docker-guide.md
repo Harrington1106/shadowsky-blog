@@ -5,6 +5,7 @@ category: "技术"
 author: "Thoi"
 tags: ["Docker", "容器", "运维", "服务器", "教程"]
 excerpt: "装个 WordPress 要配 PHP + MySQL + Nginx，中间随便哪步报错就得 Google 半天。Docker 把这一切打包成一个镜像，一行命令搞定，删掉也干干净净。本文带你从零理解 Docker 是什么、怎么用、为什么它是服务器上最伟大的发明。"
+lastModified: "2026-06-26"
 readTime: 4
 coverImage: "https://images.unsplash.com/photo-1605745341112-85968b19335b?auto=format&fit=crop&q=80&w=1000"
 ---

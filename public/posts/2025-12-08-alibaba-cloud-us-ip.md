@@ -5,6 +5,7 @@ category: "教程"
 author: "Thoi"
 tags: ["阿里云", "服务器", "IP", "教程", "Shadowsocks"]
 excerpt: "免责声明：本文仅供技术交流与学习使用。想要拥有一个专属的美国 IP 地址？本文将手把手教你如何利用阿里云轻量应用服务器搭建属于自己的网络环境，从购买、部署到全平台客户端配置，一站式解决所有连接问题。"
+lastModified: "2026-06-26"
 readTime: 9
 coverImage: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=1000"
 ---

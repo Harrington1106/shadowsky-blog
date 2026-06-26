@@ -5,6 +5,7 @@ category: "博客运维"
 author: "Thoi"
 tags: ["教程", "域名", "托管", "备案", "萌备"]
 excerpt: "想拥有一个属于自己的网站？本文从域名购买、服务器托管、技术栈选择到身份认证（备案），为你梳理构建个人网站所需的完整知识图谱。"
+lastModified: "2026-06-26"
 readTime: 9
 coverImage: "https://images.unsplash.com/photo-1467232004584-a241de8bcf5d?auto=format&fit=crop&q=80&w=1000"
 ---

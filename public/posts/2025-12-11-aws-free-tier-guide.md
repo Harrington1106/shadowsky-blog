@@ -5,6 +5,7 @@ category: "教程"
 author: "Thoi"
 tags: ["AWS", "EC2", "免费套餐", "服务器"]
 excerpt: "亚马逊云科技 (AWS) 提供长达 12 个月的免费服务器试用，但复杂的计费规则常导致新手意外扣费。本文详解申请流程、信用卡验证替代方案及防止扣费的核心配置策略。"
+lastModified: "2026-06-26"
 readTime: 3
 coverImage: "https://images.unsplash.com/photo-1523961131990-5ea7c61b2107?auto=format&fit=crop&q=80&w=1000"
 ---

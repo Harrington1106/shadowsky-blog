@@ -5,6 +5,7 @@ category: "效率工具"
 author: "Thoi"
 tags: ["Obsidian", "知识库", "生产力", "知识管理"]
 excerpt: "Obsidian 不仅仅是一个笔记软件，它是一个可以伴随你一生的知识库。本文将带你从最基础的 Markdown 语法开始，一路探索双向链接、图谱、插件生态，直到构建自动化工作流，彻底掌握这个“第二大脑”神器。"
+lastModified: "2026-06-26"
 readTime: 5
 coverImage: "https://images.unsplash.com/photo-1544396821-4dd40b938ad3?auto=format&fit=crop&q=80&w=1000"
 ---

@@ -5,6 +5,7 @@ category: "教程"
 author: "Thoi"
 tags: ["Hysteria2", "VPS", "教程", "网络优化"]
 excerpt: "RackNerd 晚高峰速度慢？试试 Hysteria 2！基于 UDP 的暴力传输协议，专门拯救垃圾线路。本文提供最简单的免域名一键部署方案，3分钟救活你的 VPS。"
+lastModified: "2026-06-26"
 readTime: 4
 coverImage: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=1000"
 ---

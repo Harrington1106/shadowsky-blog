@@ -5,6 +5,7 @@ category: "技术"
 author: "Thoi"
 tags: ["服务器", "自托管", "Docker", "指南", "进阶"]
 excerpt: "很多人买了云服务器，装了宝塔面板，搭了个 WordPress，然后就不知道还能干什么了。其实一台 24 小时在线的 Linux 服务器能做的事远超你的想象——从私有云盘到密码管理器，从自动化签到大全套到远程开发环境。本文是一张服务器玩法的全景地图。"
+lastModified: "2026-06-26"
 readTime: 6
 coverImage: "https://images.unsplash.com/photo-1558494949-ef2a0de422d0?auto=format&fit=crop&q=80&w=1000"
 ---

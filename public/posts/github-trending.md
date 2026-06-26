@@ -5,6 +5,7 @@ category: "开源资讯"
 author: "Thoi"
 tags: ["GitHub", "热榜", "开源", "教程"]
 excerpt: "授人以鱼不如授人以渔。本文不仅为你带来今日的 GitHub 热门项目精选，更将分享几条高效发掘潜力开源项目的独家技巧，助你摆脱信息差。"
+lastModified: "2026-06-26"
 readTime: 6
 coverImage: "https://images.unsplash.com/photo-1618401471353-b98afee0b2eb?auto=format&fit=crop&q=80&w=1000"
 ---

@@ -5,6 +5,7 @@ category: "教程"
 author: "Thoi"
 tags: ["青龙面板", "自动化", "脚本", "Python", "定时任务"]
 excerpt: "青龙面板因「薅羊毛」而出圈——自动签到、自动领京豆、自动抢券。但它的真正身份是一个强大的定时任务管理平台，能帮你把生活中所有重复的网上操作全部自动化。本文介绍青龙面板能干什么、怎么用、以及需要注意的风险。"
+lastModified: "2026-06-26"
 readTime: 5
 coverImage: "https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?auto=format&fit=crop&q=80&w=1000"
 ---

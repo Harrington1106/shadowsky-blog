@@ -5,6 +5,7 @@ category: "软件推荐"
 author: "Thoi"
 tags: ["指纹浏览器", "隐私", "安全", "电商", "工具", "HubStudio"]
 excerpt: "在跨境电商、社媒营销或撸空投圈子里，'指纹浏览器'是一个绕不开的词。它究竟是什么？如何实现多账号防关联？本文将带你深入了解指纹浏览器的原理，并以 HubStudio 为例提供保姆级实操教程。"
+lastModified: "2026-06-26"
 readTime: 7
 coverImage: "https://images.unsplash.com/photo-1563206767-5b1d972e9fb9?auto=format&fit=crop&q=80&w=1000"
 ---

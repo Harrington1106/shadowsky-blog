@@ -5,6 +5,7 @@ category: "软件推荐"
 author: "Thoi"
 tags: ["Rime", "输入法", "Windows", "Android", "教程"]
 excerpt: "受够了流氓输入法的广告和隐私窥探？来试试 Rime（小狼毫/同文），一款开源、极度可定制、且完全属于你自己的输入法。本文将手把手教你如何在 PC 和 Android 上配置 Rime。"
+lastModified: "2026-06-26"
 readTime: 10
 coverImage: "https://images.unsplash.com/photo-1555421689-d68471e189f2?auto=format&fit=crop&q=80&w=1000"
 ---

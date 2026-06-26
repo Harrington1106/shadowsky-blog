@@ -5,6 +5,7 @@ category: "Uncategorized"
 author: "Thoi"
 tags: []
 excerpt: "如何在个人网站优雅地嵌入 B 站视频（使用 iframe 或其他方式） 摘要：在个人博客或网站中嵌入 B 站（Bilibili）视频是丰富内容的绝佳方式。然而，官方提供的默认代码往往不具备响应式能力，且加载性能较差。本文将从基础的 ifra..."
+lastModified: "2026-06-26"
 readTime: 14
 coverImage: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&q=80&w=1000"
 ---

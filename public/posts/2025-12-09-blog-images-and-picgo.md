@@ -5,6 +5,7 @@ category: "博客运维"
 author: "Thoi"
 tags: ["PicGo", "图片", "资源", "建站"]
 excerpt: "写博客，文字是骨架，图片是灵魂。很多朋友问我：你的文章配图都很好看，去哪里找的？找到图后怎么快速放到博客里？今天这篇文就来解决这两个痛点：找图源 + 图床工具 PicGo 的完美配合。"
+lastModified: "2026-06-26"
 readTime: 3
 coverImage: "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&q=80&w=1000"
 ---

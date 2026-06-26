@@ -415,8 +415,17 @@
                 dateLinkHtml = `<a href="blog.html?date=${ym}" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors border-b border-transparent hover:border-blue-600 dark:hover:border-blue-400">${dateStr}</a>`;
             }
 
+            // 最近修改时间
+            let modifiedHtml = '';
+            if (metadata.lastModified && metadata.lastModified !== metadata.date) {
+                const modDate = new Date(metadata.lastModified);
+                const modStr = modDate.toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' });
+                modifiedHtml = `<span class="post-hero-meta-item" title="最近修改"><i data-lucide="edit-3"></i> ${modStr}</span>`;
+            }
+
             postMeta.innerHTML = `
                 <span class="post-hero-meta-item"><i data-lucide="calendar"></i> ${dateLinkHtml}</span>
+                ${modifiedHtml}
                 <span class="post-hero-meta-item"><i data-lucide="folder"></i> ${category}</span>
                 <span class="post-hero-meta-item"><i data-lucide="clock"></i> ${readingTime} 分钟阅读</span>
                 <span class="post-hero-meta-item" title="阅读量"><i data-lucide="eye"></i> <span id="post-visit-count">...</span></span>

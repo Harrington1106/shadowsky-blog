@@ -8,6 +8,7 @@
     "excerpt": "授人以鱼不如授人以渔。本文不仅为你带来今日的 GitHub 热门项目精选，更将分享几条高效发掘潜力开源项目的独家技巧，助你摆脱信息差。",
     "readTime": 6,
     "coverImage": "https://images.unsplash.com/photo-1618401471353-b98afee0b2eb?auto=format&fit=crop&q=80&w=1000",
+    "lastModified": "2026-06-26",
     "file": "github-trending.md"
   },
   {
@@ -19,6 +20,7 @@
     "excerpt": "2025版自建企业邮箱/个人邮箱保姆级教程 Mailcow Dockerized 免责声明：自建邮件服务器需要一定的 Linux 运维基础。本文旨在技术交流，请勿用于发送垃圾邮件。国内云服务器通常封禁 25 端口，建议选择海外 VPS（需确...",
     "readTime": 11,
     "coverImage": "https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&q=80&w=1000",
+    "lastModified": "2026-06-26",
     "file": "2025-12-13-self-hosted-email-server-guide.md"
   },
   {
@@ -30,6 +32,7 @@
     "excerpt": "RackNerd 是目前性价比极高的入门级 VPS 选择，但其严格的风控机制和复古的管理面板常让新手感到困惑。本文将指导你如何正确完成购买、通过欺诈检测以及解决 SSH 连接中的常见问题。",
     "readTime": 5,
     "coverImage": "https://images.unsplash.com/photo-1629654297299-c8506221ca97?auto=format&fit=crop&q=80&w=1000",
+    "lastModified": "2026-06-26",
     "file": "2025-12-12-racknerd-vps-setup-guide.md"
   },
   {
@@ -41,6 +44,7 @@
     "excerpt": "RackNerd 晚高峰速度慢？试试 Hysteria 2！基于 UDP 的暴力传输协议，专门拯救垃圾线路。本文提供最简单的免域名一键部署方案，3分钟救活你的 VPS。",
     "readTime": 4,
     "coverImage": "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=1000",
+    "lastModified": "2026-06-26",
     "file": "2025-12-12-hysteria2-guide.md"
   },
   {
@@ -52,6 +56,7 @@
     "excerpt": "亚马逊云科技 (AWS) 提供长达 12 个月的免费服务器试用，但复杂的计费规则常导致新手意外扣费。本文详解申请流程、信用卡验证替代方案及防止扣费的核心配置策略。",
     "readTime": 3,
     "coverImage": "https://images.unsplash.com/photo-1523961131990-5ea7c61b2107?auto=format&fit=crop&q=80&w=1000",
+    "lastModified": "2026-06-26",
     "file": "2025-12-11-aws-free-tier-guide.md"
   },
   {
@@ -63,6 +68,7 @@
     "excerpt": "受够了流氓输入法的广告和隐私窥探？来试试 Rime（小狼毫/同文），一款开源、极度可定制、且完全属于你自己的输入法。本文将手把手教你如何在 PC 和 Android 上配置 Rime。",
     "readTime": 10,
     "coverImage": "https://images.unsplash.com/photo-1555421689-d68471e189f2?auto=format&fit=crop&q=80&w=1000",
+    "lastModified": "2026-06-26",
     "file": "2025-12-10-rime-input-guide.md"
   },
   {
@@ -74,6 +80,7 @@
     "excerpt": "在跨境电商、社媒营销或撸空投圈子里，'指纹浏览器'是一个绕不开的词。它究竟是什么？如何实现多账号防关联？本文将带你深入了解指纹浏览器的原理，并以 HubStudio 为例提供保姆级实操教程。",
     "readTime": 7,
     "coverImage": "https://images.unsplash.com/photo-1563206767-5b1d972e9fb9?auto=format&fit=crop&q=80&w=1000",
+    "lastModified": "2026-06-26",
     "file": "2025-12-10-fingerprint-browser-guide.md"
   },
   {
@@ -85,6 +92,7 @@
     "excerpt": "Obsidian 不仅仅是一个笔记软件，它是一个可以伴随你一生的知识库。本文将带你从最基础的 Markdown 语法开始，一路探索双向链接、图谱、插件生态，直到构建自动化工作流，彻底掌握这个“第二大脑”神器。",
     "readTime": 5,
     "coverImage": "https://images.unsplash.com/photo-1544396821-4dd40b938ad3?auto=format&fit=crop&q=80&w=1000",
+    "lastModified": "2026-06-26",
     "file": "2025-12-09-obsidian-guide.md"
   },
   {
@@ -96,6 +104,7 @@
     "excerpt": "写博客，文字是骨架，图片是灵魂。很多朋友问我：你的文章配图都很好看，去哪里找的？找到图后怎么快速放到博客里？今天这篇文就来解决这两个痛点：找图源 + 图床工具 PicGo 的完美配合。",
     "readTime": 3,
     "coverImage": "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&q=80&w=1000",
+    "lastModified": "2026-06-26",
     "file": "2025-12-09-blog-images-and-picgo.md"
   },
   {
@@ -107,6 +116,7 @@
     "excerpt": "如何在个人网站优雅地嵌入 B 站视频（使用 iframe 或其他方式） 摘要：在个人博客或网站中嵌入 B 站（Bilibili）视频是丰富内容的绝佳方式。然而，官方提供的默认代码往往不具备响应式能力，且加载性能较差。本文将从基础的 ifra...",
     "readTime": 14,
     "coverImage": "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&q=80&w=1000",
+    "lastModified": "2026-06-26",
     "file": "2025-12-09-bilibili-embedding-guide.md"
   },
   {
@@ -118,6 +128,7 @@
     "excerpt": "很多人买了云服务器，装了宝塔面板，搭了个 WordPress，然后就不知道还能干什么了。其实一台 24 小时在线的 Linux 服务器能做的事远超你的想象——从私有云盘到密码管理器，从自动化签到大全套到远程开发环境。本文是一张服务器玩法的全景地图。",
     "readTime": 6,
     "coverImage": "https://images.unsplash.com/photo-1558494949-ef2a0de422d0?auto=format&fit=crop&q=80&w=1000",
+    "lastModified": "2026-06-26",
     "file": "2025-12-08-server-usage-guide.md"
   },
   {
@@ -129,6 +140,7 @@
     "excerpt": "装好宝塔面板，访问 http://IP:8888 却打不开？装好青龙面板，http://IP:5700 也没反应？99% 的情况不是你装错了，而是防火墙没放行。本文用最通俗的比喻解释端口是什么、怎么放行、以及所有常用端口对照。",
     "readTime": 5,
     "coverImage": "https://images.unsplash.com/photo-1562813733-b31f71025d54?auto=format&fit=crop&q=80&w=1000",
+    "lastModified": "2026-06-26",
     "file": "2025-12-08-server-port-guide.md"
   },
   {
@@ -140,6 +152,7 @@
     "excerpt": "还在忍受视频网站的“圣光”、“暗牧”和超长广告？还在因为番剧版权分散在不同平台而烦恼？ 是时候利用你的服务器，搭建一套属于自己的全自动追番系统了！ 只需配置一次，系统就会自动订阅、下载、整理、刮削海报，你只需要躺在沙发上打开电视/手机，直接...",
     "readTime": 7,
     "coverImage": "https://images.unsplash.com/photo-1578632767115-351597cf2477?auto=format&fit=crop&q=80&w=1000",
+    "lastModified": "2026-06-26",
     "file": "2025-12-08-self-hosted-bangumi.md"
   },
   {
@@ -151,6 +164,7 @@
     "excerpt": "青龙面板因「薅羊毛」而出圈——自动签到、自动领京豆、自动抢券。但它的真正身份是一个强大的定时任务管理平台，能帮你把生活中所有重复的网上操作全部自动化。本文介绍青龙面板能干什么、怎么用、以及需要注意的风险。",
     "readTime": 5,
     "coverImage": "https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?auto=format&fit=crop&q=80&w=1000",
+    "lastModified": "2026-06-26",
     "file": "2025-12-08-qinglong-panel-guide.md"
   },
   {
@@ -162,6 +176,7 @@
     "excerpt": "写 Markdown 最头疼的就是图片去哪了？本文手把手教你配置 PicGo + Typora/Obsidian 工作流，更有水印、压缩、重命名等进阶插件玩法。",
     "readTime": 9,
     "coverImage": "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&q=80&w=1000",
+    "lastModified": "2026-06-26",
     "file": "2025-12-08-picgo-guide.md"
   },
   {
@@ -173,6 +188,7 @@
     "excerpt": "想拥有一个属于自己的网站？本文从域名购买、服务器托管、技术栈选择到身份认证（备案），为你梳理构建个人网站所需的完整知识图谱。",
     "readTime": 9,
     "coverImage": "https://images.unsplash.com/photo-1467232004584-a241de8bcf5d?auto=format&fit=crop&q=80&w=1000",
+    "lastModified": "2026-06-26",
     "file": "2025-12-08-personal-homepage-guide.md"
   },
   {
@@ -184,6 +200,7 @@
     "excerpt": "装个 WordPress 要配 PHP + MySQL + Nginx，中间随便哪步报错就得 Google 半天。Docker 把这一切打包成一个镜像，一行命令搞定，删掉也干干净净。本文带你从零理解 Docker 是什么、怎么用、为什么它是服务器上最伟大的发明。",
     "readTime": 4,
     "coverImage": "https://images.unsplash.com/photo-1605745341112-85968b19335b?auto=format&fit=crop&q=80&w=1000",
+    "lastModified": "2026-06-26",
     "file": "2025-12-08-docker-guide.md"
   },
   {
@@ -195,6 +212,7 @@
     "excerpt": "如果你一看到黑底白字的命令行就头疼，宝塔面板就是你的救星。它把建网站、管文件、配 SSL、装软件这些操作全部变成了点点鼠标。本文介绍宝塔能干什么，以及为什么它是新手玩服务器的第一站。",
     "readTime": 4,
     "coverImage": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=1000",
+    "lastModified": "2026-06-26",
     "file": "2025-12-08-bt-panel-guide.md"
   },
   {
@@ -206,6 +224,7 @@
     "excerpt": "免责声明：本文仅供技术交流与学习使用。想要拥有一个专属的美国 IP 地址？本文将手把手教你如何利用阿里云轻量应用服务器搭建属于自己的网络环境，从购买、部署到全平台客户端配置，一站式解决所有连接问题。",
     "readTime": 9,
     "coverImage": "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=1000",
+    "lastModified": "2026-06-26",
     "file": "2025-12-08-alibaba-cloud-us-ip.md"
   },
   {
@@ -217,6 +236,7 @@
     "excerpt": "写博客最痛苦的不是写文章，而是繁琐的发布流程。今天我把这套基于 Obsidian + Templater + Node.js 的自动化工作流源代码完全开源，送给每一位热爱写作的朋友。",
     "readTime": 8,
     "coverImage": "https://images.unsplash.com/photo-1499750310159-529800cf2c5a?auto=format&fit=crop&q=80&w=1000",
+    "lastModified": "2026-06-26",
     "file": "2025-12-07-blog-workflow.md"
   }
 ]

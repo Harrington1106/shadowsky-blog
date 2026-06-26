@@ -5,6 +5,7 @@ category: "技术"
 author: "Thoi"
 tags: ["自托管", "Jellyfin", "AutoBangumi", "番剧"]
 excerpt: "还在忍受视频网站的“圣光”、“暗牧”和超长广告？还在因为番剧版权分散在不同平台而烦恼？ 是时候利用你的服务器，搭建一套属于自己的全自动追番系统了！ 只需配置一次，系统就会自动订阅、下载、整理、刮削海报，你只需要躺在沙发上打开电视/手机，直接..."
+lastModified: "2026-06-26"
 readTime: 7
 coverImage: "https://images.unsplash.com/photo-1578632767115-351597cf2477?auto=format&fit=crop&q=80&w=1000"
 ---

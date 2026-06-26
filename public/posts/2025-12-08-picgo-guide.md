@@ -5,6 +5,7 @@ category: "效率工具"
 author: "Thoi"
 tags: ["PicGo", "教程", "Markdown", "生产力", "工具"]
 excerpt: "写 Markdown 最头疼的就是图片去哪了？本文手把手教你配置 PicGo + Typora/Obsidian 工作流，更有水印、压缩、重命名等进阶插件玩法。"
+lastModified: "2026-06-26"
 readTime: 9
 coverImage: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&q=80&w=1000"
 ---

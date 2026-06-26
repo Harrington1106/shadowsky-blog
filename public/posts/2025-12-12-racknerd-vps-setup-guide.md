@@ -5,6 +5,7 @@ category: "教程"
 author: "Thoi"
 tags: ["RackNerd", "VPS", "SSH", "教程"]
 excerpt: "RackNerd 是目前性价比极高的入门级 VPS 选择，但其严格的风控机制和复古的管理面板常让新手感到困惑。本文将指导你如何正确完成购买、通过欺诈检测以及解决 SSH 连接中的常见问题。"
+lastModified: "2026-06-26"
 readTime: 5
 coverImage: "https://images.unsplash.com/photo-1629654297299-c8506221ca97?auto=format&fit=crop&q=80&w=1000"
 ---
