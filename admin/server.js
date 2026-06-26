@@ -1088,9 +1088,11 @@ app.get('/api/stats.php', (req, res) => {
 // API to save videos
 app.post('/api/videos', requireAdminToken, rateLimit(60_000, 30), (req, res) => {
     const data = req.body;
-    if (typeof data !== 'object' || !Array.isArray(data.videos)) {
+    if (typeof data !== 'object') {
         return res.status(400).json({ error: 'Invalid data format' });
     }
+    if (!data.videos) data.videos = [];
+    if (!data.favorites) data.favorites = [];
     fs.writeFileSync(videosPath, JSON.stringify(data, null, 2));
     res.json({ success: true });
 });

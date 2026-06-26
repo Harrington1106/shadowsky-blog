@@ -2493,23 +2493,58 @@ const FeedsManager = {
 };
 
 const VideosManager = {
-    data: [],
+    currentList: 'edits',  // 'edits' | 'favorites'
+    currentList: 'edits',
+    fullData: { videos: [], favorites: [] },
+    get data() {
+        return this.currentList === 'edits' ? this.fullData.videos : this.fullData.favorites;
+    },
+    set data(val) {
+        if (this.currentList === 'edits') this.fullData.videos = val;
+        else this.fullData.favorites = val;
+    },
+    switchList(type) {
+        this.currentList = type;
+        document.querySelectorAll('.video-tab-btn').forEach(btn => {
+            btn.style.background = 'transparent';
+            btn.style.color = '#94a3b8';
+            btn.style.fontWeight = '400';
+        });
+        const activeBtn = document.getElementById(`tab-video-${type}`);
+        if (activeBtn) {
+            activeBtn.style.background = '#14B8A6';
+            activeBtn.style.color = '#fff';
+            activeBtn.style.fontWeight = '600';
+        }
+        const submitLabel = document.getElementById('video-submit-label');
+        if (submitLabel) submitLabel.textContent = type === 'edits' ? '添加剪辑' : '添加收藏';
+        this.render();
+        this.updateCount();
+    },
+    updateCount() {
+        const el = document.getElementById('video-count');
+        if (el) el.textContent = `共 ${this.data.length} 个`;
+    },
     async fetch() {
         try {
             const response = await safeFetch(`${API_BASE}/videos`);
-            this.data = response.videos || [];
-            videos = this.data;
+            this.fullData = response || { videos: [], favorites: [] };
+            if (!this.fullData.videos) this.fullData.videos = [];
+            if (!this.fullData.favorites) this.fullData.favorites = [];
+            videos = this.fullData;
             this.render();
+            this.updateCount();
         } catch (e) {
             console.error(e);
-            showToast('获取视频失败: ' + e.message);
+            showToast('获取视频失败');
         }
     },
     render() {
         const list = document.getElementById('videos-list');
         list.innerHTML = '';
         if (this.data.length === 0) {
-            list.innerHTML = '<div class="col-span-full text-center py-12" style="color:#64748b">暂无视频 — 粘贴 BV 号添加吧 🎬</div>';
+            const hint = this.currentList === 'edits' ? '暂无剪辑 — 粘贴 BV 号添加吧 🎬' : '暂无收藏 — 粘贴 BV 号添加吧 ⭐';
+            list.innerHTML = `<div class="col-span-full text-center py-12" style="color:#64748b">${hint}</div>`;
             return;
         }
         this.data.forEach(item => {
@@ -2546,10 +2581,11 @@ const VideosManager = {
             await safeFetch(`${API_BASE}/videos`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ videos: this.data })
+                body: JSON.stringify(this.fullData)
             });
-            showToast('视频添加成功');
-            videos = this.data;
+            showToast('添加成功', 'success');
+            videos = this.fullData;
+            this.updateCount();
             this.render();
             return true;
         } catch (e) {
@@ -2559,21 +2595,24 @@ const VideosManager = {
         }
     },
     async delete(id) {
-        ConfirmationDialog.show('确定要删除这个视频推荐吗？', async () => {
-            const originalList = [...this.data];
-            this.data = this.data.filter(v => v.id !== id);
+        const item = this.data.find(v => v.id === id);
+        const title = item ? (item.title || '').slice(0, 20) : '';
+        ConfirmationDialog.show(`确定要删除「${title}」吗？`, async () => {
+            const key = this.currentList === 'edits' ? 'videos' : 'favorites';
+            const original = [...this.fullData[key]];
+            this.fullData[key] = this.fullData[key].filter(v => v.id !== id);
             this.render();
             try {
                 await safeFetch(`${API_BASE}/videos`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ videos: this.data })
+                    body: JSON.stringify(this.fullData)
                 });
-                showToast('视频已删除');
-                videos = this.data;
+                showToast('已删除', 'success');
+                videos = this.fullData;
+                this.updateCount();
             } catch (e) {
-                showToast('删除失败: ' + e.message);
-                this.data = originalList;
+                this.fullData[key] = original;
                 this.render();
             }
         });
@@ -3191,7 +3230,6 @@ async function handleAddVideo(e) {
     const description = document.getElementById('video-desc').value.trim();
     try {
         const payload = { title, cover, duration, category, bvid, description };
-        if (bgmId) payload.bgm_subject_id = bgmId;
         const success = await VideosManager.add(payload);
         if (success) { form.reset(); FormValidator.clearErrors(form); }
     } finally {

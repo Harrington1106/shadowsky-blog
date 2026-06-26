@@ -661,6 +661,15 @@
 
             <!-- ═══════ VIEW: VIDEOS ═══════ -->
             <section id="view-videos" class="view-section space-y-6 hidden">
+                <!-- 子标签 -->
+                <div class="flex items-center gap-3 flex-wrap">
+                    <div class="flex items-center gap-1 p-1 rounded-xl" style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.05)">
+                        <button onclick="VideosManager.switchList('edits')" id="tab-video-edits" class="video-tab-btn px-3 py-1.5 rounded-lg text-xs font-medium transition-all" style="background:#14B8A6;color:#fff">🎬 我的剪辑</button>
+                        <button onclick="VideosManager.switchList('favorites')" id="tab-video-favorites" class="video-tab-btn px-3 py-1.5 rounded-lg text-xs font-medium transition-all" style="color:#94a3b8">⭐ 收藏推荐</button>
+                    </div>
+                    <span id="video-count" class="text-xs" style="color:#64748b"></span>
+                </div>
+
                 <div class="admin-card p-5">
                     <form id="add-video-form" class="space-y-4">
                         <div class="flex gap-2">
@@ -674,10 +683,10 @@
                             <div><label class="text-xs font-semibold uppercase tracking-wider mb-1 block" style="color:#94a3b8">分类</label><input type="text" id="video-category" class="admin-input" placeholder="如 MAD/音乐"></div>
                             <div><label class="text-xs font-semibold uppercase tracking-wider mb-1 block" style="color:#94a3b8">时长</label><input type="text" id="video-duration" class="admin-input" placeholder="mm:ss"></div>
                         </div>
-                        <div><label class="text-xs font-semibold uppercase tracking-wider mb-1 block" style="color:#94a3b8">推荐语</label><input type="text" id="video-desc" class="admin-input" placeholder="一句话说说为什么推荐..."></div>
+                        <div><label class="text-xs font-semibold uppercase tracking-wider mb-1 block" style="color:#94a3b8">描述</label><input type="text" id="video-desc" class="admin-input" placeholder="一句话介绍..."></div>
                         <div class="flex justify-end">
                             <button type="submit" class="admin-btn admin-btn-primary">
-                                <i data-lucide="plus" class="w-4 h-4"></i> 添加视频
+                                <i data-lucide="plus" class="w-4 h-4"></i> <span id="video-submit-label">添加剪辑</span>
                             </button>
                         </div>
                     </form>
