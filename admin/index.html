@@ -684,7 +684,8 @@
                             <div><label class="text-xs font-semibold uppercase tracking-wider mb-1 block" style="color:#94a3b8">时长</label><input type="text" id="video-duration" class="admin-input" placeholder="mm:ss"></div>
                         </div>
                         <div><label class="text-xs font-semibold uppercase tracking-wider mb-1 block" style="color:#94a3b8">描述</label><input type="text" id="video-desc" class="admin-input" placeholder="一句话介绍..."></div>
-                        <div class="flex justify-end">
+                        <div class="flex justify-end gap-2 items-center">
+                            <button type="button" id="video-cancel-btn" onclick="VideosManager.cancelEdit()" style="display:none;color:#94a3b8;background:none;border:none;cursor:pointer;font-size:.8rem">取消编辑</button>
                             <button type="submit" class="admin-btn admin-btn-primary">
                                 <i data-lucide="plus" class="w-4 h-4"></i> <span id="video-submit-label">添加剪辑</span>
                             </button>

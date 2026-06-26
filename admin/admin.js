@@ -2495,6 +2495,7 @@ const FeedsManager = {
 const VideosManager = {
     currentList: 'edits',  // 'edits' | 'favorites'
     currentList: 'edits',
+    _editingId: null,
     fullData: { videos: [], favorites: [] },
     get data() {
         return this.currentList === 'edits' ? this.fullData.videos : this.fullData.favorites;
@@ -2558,7 +2559,10 @@ const VideosManager = {
                     <div style="flex:1;min-width:0">
                         <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:4px">
                             <h3 class="feed-title" style="line-height:1.3">${item.title}</h3>
-                            <button onclick="VideosManager.delete(${item.id})" style="padding:4px;color:#64748b;background:none;border:none;border-radius:4px;cursor:pointer;flex-shrink:0" onmouseover="this.style.color='#f87171'" onmouseout="this.style.color='#64748b'"><i data-lucide="trash-2" style="width:14px;height:14px"></i></button>
+                            <div style="display:flex;gap:2px;flex-shrink:0">
+                                <button onclick="VideosManager.editById(${item.id})" style="padding:4px;color:#64748b;background:none;border:none;border-radius:4px;cursor:pointer" onmouseover="this.style.color='#14B8A6'" onmouseout="this.style.color='#64748b'"><i data-lucide="edit-2" style="width:14px;height:14px"></i></button>
+                                <button onclick="VideosManager.delete(${item.id})" style="padding:4px;color:#64748b;background:none;border:none;border-radius:4px;cursor:pointer" onmouseover="this.style.color='#f87171'" onmouseout="this.style.color='#64748b'"><i data-lucide="trash-2" style="width:14px;height:14px"></i></button>
+                            </div>
                         </div>
                         <div style="display:flex;align-items:center;gap:8px;margin-top:4px;font-size:.7rem;color:#64748b;flex-wrap:wrap">
                             ${item.category ? `<span style="padding:1px 8px;border-radius:999px;background:rgba(251,146,60,.12);color:#fb923c">${item.category}</span>` : ''}
@@ -2616,6 +2620,34 @@ const VideosManager = {
                 this.render();
             }
         });
+    },
+    editById(id) {
+        const item = this.data.find(v => v.id === id);
+        if (!item) return;
+        this._editingId = id;
+        document.getElementById('video-title').value = item.title || '';
+        document.getElementById('video-bvid').value = item.bvid || '';
+        document.getElementById('video-category').value = item.category || '';
+        document.getElementById('video-duration').value = item.duration || '';
+        document.getElementById('video-desc').value = item.description || '';
+        if (item.thumbnail) document.getElementById('video-cover').value = item.thumbnail;
+        const submitBtn = document.querySelector('#add-video-form button[type="submit"]');
+        if (submitBtn) submitBtn.innerHTML = '<i data-lucide="save" class="w-4 h-4"></i> 保存修改';
+        const cancelBtn = document.getElementById('video-cancel-btn');
+        if (cancelBtn) cancelBtn.style.display = 'inline';
+        document.getElementById('add-video-form').scrollIntoView({ behavior: 'smooth' });
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+    },
+    cancelEdit() {
+        this._editingId = null;
+        const form = document.getElementById('add-video-form');
+        if (form) form.reset();
+        const submitBtn = document.querySelector('#add-video-form button[type="submit"]');
+        if (submitBtn) submitBtn.innerHTML = '<i data-lucide="plus" class="w-4 h-4"></i> <span id="video-submit-label">添加</span>';
+        document.getElementById('video-submit-label').textContent = this.currentList === 'edits' ? '添加剪辑' : '添加收藏';
+        const cancelBtn = document.getElementById('video-cancel-btn');
+        if (cancelBtn) cancelBtn.style.display = 'none';
+        if (typeof lucide !== 'undefined') lucide.createIcons();
     },
     async fetchBilibiliInfo(bvid) {
         if (!bvid) { showToast('请先输入 BV 号'); return; }
@@ -3222,16 +3254,25 @@ async function handleAddVideo(e) {
     if (!validation.isValid) { showToast('请检查表单中的错误', 'error'); return; }
     FormValidator.setLoadingState(btn, true);
     const bvid = document.getElementById('video-bvid').value.trim();
-    const bgmId = document.getElementById('video-bgm-id') ? document.getElementById('video-bgm-id').value.trim() : '';
     const category = document.getElementById('video-category').value;
     const title = document.getElementById('video-title').value.trim();
     const cover = document.getElementById('video-cover').value.trim();
     const duration = document.getElementById('video-duration').value.trim();
     const description = document.getElementById('video-desc').value.trim();
     try {
-        const payload = { title, cover, duration, category, bvid, description };
-        const success = await VideosManager.add(payload);
-        if (success) { form.reset(); FormValidator.clearErrors(form); }
+        if (VideosManager._editingId) {
+            const item = VideosManager.data.find(v => v.id === VideosManager._editingId);
+            if (item) {
+                Object.assign(item, { title, thumbnail: cover, category, duration, description, bvid });
+                await VideosManager.saveCurrentList();
+                showToast('已更新', 'success');
+                VideosManager.cancelEdit();
+                VideosManager.render();
+            }
+        } else {
+            const success = await VideosManager.add({ title, cover, duration, category, bvid, description });
+            if (success) { form.reset(); FormValidator.clearErrors(form); }
+        }
     } finally {
         FormValidator.setLoadingState(btn, false);
     }
