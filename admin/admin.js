@@ -1385,18 +1385,21 @@ const PicGoClient = {
             const resp = await Promise.race([fetchPromise, hardTimeout]);
             clearTimeout(timer);
 
-            if (resp && resp.ok) {
+            // 只要能拿到 HTTP 响应（哪怕 404），就说明 PicGo 服务在运行
+            if (resp) {
                 this.available = true;
                 try {
-                    const info = await resp.json();
-                    this.version = info.version || '';
+                    const text = await resp.text();
+                    // 尝试从响应中提取版本号
+                    const vMatch = text.match(/version["']?\s*[:=]\s*["']?([\d.]+)/i);
+                    if (vMatch) this.version = vMatch[1];
                 } catch (e) {}
             } else {
                 this.available = false;
                 this.version = '';
             }
         } catch (e) {
-            // 连接失败 / 超时 / 被阻止
+            // 连接拒绝 / 网络不通 — 才是真正的未启动
             this.available = false;
             this.version = '';
         }
