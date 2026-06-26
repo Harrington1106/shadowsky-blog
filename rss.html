@@ -424,5 +424,24 @@
         img.light-only { display: inline; }
         .dark img.light-only { display: none; }
     </style>
+
+    <script>
+        (function() {
+            var el = document.getElementById('visit-count');
+            if (!el) return;
+            var retry = 0;
+            var load = function() {
+                if (window.api && window.api.fetchVisitCount) {
+                    window.api.fetchVisitCount('rss').then(function(d) {
+                        if (d && d.count) el.textContent = d.count;
+                    }).catch(function() {});
+                } else if (retry++ < 20) {
+                    setTimeout(load, 500);
+                }
+            };
+            if (document.readyState === 'complete') load();
+            else window.addEventListener('load', load);
+        })();
+    </script>
 </body>
 </html>

@@ -650,5 +650,25 @@
             init();
         })();
     </script>
+
+    <script>
+        (function() {
+            var el = document.getElementById('visit-count');
+            if (!el) return;
+            // 等 api.js 加载
+            var retry = 0;
+            var load = function() {
+                if (window.api && window.api.fetchVisitCount) {
+                    window.api.fetchVisitCount('404').then(function(d) {
+                        if (d && d.count) el.textContent = d.count;
+                    }).catch(function() {});
+                } else if (retry++ < 20) {
+                    setTimeout(load, 500);
+                }
+            };
+            if (document.readyState === 'complete') load();
+            else window.addEventListener('load', load);
+        })();
+    </script>
 </body>
 </html>
