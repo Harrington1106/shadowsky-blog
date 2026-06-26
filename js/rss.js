@@ -627,12 +627,20 @@ function parseRSSContent(xmlString) {
 
         const author = getTagValue(item, "author") || getTagValue(item, "dc:creator");
 
+        // 将 XML 文本中的 HTML 实体转为真正的 HTML（处理多层编码）
+        const decodeContent = (html) => {
+            if (!html) return '';
+            const txt = document.createElement('textarea');
+            txt.innerHTML = html;
+            return txt.value;
+        };
+
         return {
             title,
             link,
             pubDate: pubDate ? new Date(pubDate) : new Date(),
-            description: cleanHtml(descriptionHtml),
-            content: fullContent, // 保留 HTML 的正文
+            description: cleanHtml(decodeContent(descriptionHtml)),
+            content: decodeContent(fullContent),
             author
         };
     });
