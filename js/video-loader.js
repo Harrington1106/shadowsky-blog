@@ -467,14 +467,14 @@ class VideoLoader {
                 // Use the standard player for better quality as per the new guide
                 this.playerContainer.innerHTML = `
                     <iframe
-                        src="//player.bilibili.com/player.html?bvid=${video.bvid}&page=1&high_quality=1&autoplay=1&danmaku=0"
+                        src="https://player.bilibili.com/player.html?bvid=${video.bvid}&page=1&high_quality=1&autoplay=1&danmaku=0&as_wide=1"
                         scrolling="no"
                         border="0"
                         frameborder="no"
                         framespacing="0"
                         allowfullscreen="true"
-                        sandbox="allow-top-navigation allow-same-origin allow-forms allow-scripts allow-popups allow-presentation allow-modals"
-                        referrerpolicy="no-referrer"
+                        sandbox="allow-same-origin allow-scripts allow-popups allow-presentation"
+                        allow="autoplay; fullscreen"
                         class="w-full h-full absolute top-0 left-0"
                     ></iframe>
                 `;
