@@ -1371,18 +1371,21 @@ const PicGoClient = {
         }
         if (retryEl) retryEl.style.display = 'none';
 
-        // 用 AbortController + setTimeout（不用 AbortSignal.timeout 避免兼容问题）
+        // 用 abortable fetch + 硬超时兜底（Promise.race 确保无论如何 5s 后结束）
         try {
             const ctrl = new AbortController();
             const timer = setTimeout(() => ctrl.abort(), 3000);
-            const resp = await fetch(`${this.baseUrl}/`, {
+            const fetchPromise = fetch(`${this.baseUrl}/`, {
                 method: 'GET',
                 signal: ctrl.signal,
-                // 关键：对 localhost 不强制 HTTPS，不触发 preflight
                 cache: 'no-cache'
             });
+            // 硬超时兜底：即使 abort 失败也结束
+            const hardTimeout = new Promise(r => setTimeout(() => r(null), 5000));
+            const resp = await Promise.race([fetchPromise, hardTimeout]);
             clearTimeout(timer);
-            if (resp.ok) {
+
+            if (resp && resp.ok) {
                 this.available = true;
                 try {
                     const info = await resp.json();
