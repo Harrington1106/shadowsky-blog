@@ -874,68 +874,74 @@ app.get('/api/article-content', rateLimit(30_000, 30), async (req, res) => {
         return res.status(400).json({ error: 'Invalid host' });
     }
 
+    const fetchOpts = {
+        responseType: 'text',
+        timeout: 15000,
+        headers: { 'User-Agent': 'Mozilla/5.0 (compatible; ShadowQuake RSS Reader/1.0)' },
+        maxRedirects: 3,
+        maxContentLength: 3 * 1024 * 1024,
+    };
+
+    let html = '';
     try {
-        const response = await axios.get(url, {
-            responseType: 'text',
-            timeout: 15000,
-            headers: {
-                'User-Agent': 'Mozilla/5.0 (compatible; ShadowQuake RSS Reader/1.0)'
-            },
-            maxRedirects: 3,
-            maxContentLength: 3 * 1024 * 1024,
-        });
-
-        const html = typeof response.data === 'string' ? response.data : '';
-        const $ = cheerio.load(html);
-
-        // 移除干扰元素
-        $('script, style, nav, footer, header, iframe, .sidebar, .comment, .comments, .ad, .advertisement, [role="navigation"], [role="banner"], [role="contentinfo"]').remove();
-
-        // 尝试常见正文选择器
-        const selectors = [
-            'article', '[role="main"]', 'main',
-            '.post-content', '.article-content', '.post-body', '.article-body',
-            '.entry-content', '.content', '#content', '#article',
-            '.markdown-body', '.prose', '.post', '.article'
-        ];
-
-        let content = null;
-        for (const sel of selectors) {
-            const el = $(sel);
-            if (el.length && el.text().trim().length > 200) {
-                content = el.html();
-                break;
-            }
+        html = (await axios.get(url, fetchOpts)).data;
+    } catch (directErr) {
+        // 直连失败 → 走 CF Worker 代理
+        try {
+            const proxyUrl = `https://bangumi.shadowquake.top/fetch?url=${encodeURIComponent(url)}`;
+            html = (await axios.get(proxyUrl, { ...fetchOpts, timeout: 20000 })).data;
+        } catch (proxyErr) {
+            return res.status(502).json({ success: false, error: '直连和代理均无法获取原文' });
         }
-
-        // 回退：取最大的文本块
-        if (!content) {
-            let best = null, bestLen = 0;
-            $('div, section').each((_, el) => {
-                const text = $(el).text().trim();
-                if (text.length > bestLen && text.length > 300) {
-                    best = el;
-                    bestLen = text.length;
-                }
-            });
-            if (best) content = $(best).html();
-        }
-
-        // 最终回退：返回 body 内容
-        if (!content) content = $('body').html() || '';
-
-        // 清理：移除空标签、保留链接使其可点击
-        const cleanContent = (content || '').replace(/\s+(href|src)=/g, ' $1=');
-
-        res.json({
-            success: true,
-            content: cleanContent,
-            title: $('title').text().trim() || '',
-        });
-    } catch (e) {
-        console.error('[Article] Fetch error:', e.message);
-        res.status(502).json({ error: 'Failed to fetch article: ' + e.message });
     }
+
+    html = typeof html === 'string' ? html : '';
+    const $ = cheerio.load(html);
+
+    // 移除干扰元素
+    $('script, style, nav, footer, header, iframe, .sidebar, .comment, .comments, .ad, .advertisement, [role="navigation"], [role="banner"], [role="contentinfo"]').remove();
+
+    // 尝试常见正文选择器
+    const selectors = [
+        'article', '[role="main"]', 'main',
+        '.post-content', '.article-content', '.post-body', '.article-body',
+        '.entry-content', '.content', '#content', '#article',
+        '.markdown-body', '.prose', '.post', '.article'
+    ];
+
+    let content = null;
+    for (const sel of selectors) {
+        const el = $(sel);
+        if (el.length && el.text().trim().length > 200) {
+            content = el.html();
+            break;
+        }
+    }
+
+    // 回退：取最大的文本块
+    if (!content) {
+        let best = null, bestLen = 0;
+        $('div, section').each((_, el) => {
+            const text = $(el).text().trim();
+            if (text.length > bestLen && text.length > 300) {
+                best = el;
+                bestLen = text.length;
+            }
+        });
+        if (best) content = $(best).html();
+    }
+
+    // 最终回退：返回 body 内容
+    if (!content) content = $('body').html() || '';
+
+    // 清理：移除空标签、保留链接使其可点击
+    const cleanContent = (content || '').replace(/\s+(href|src)=/g, ' $1=');
+
+    res.json({
+        success: true,
+        content: cleanContent,
+        title: $('title').text().trim() || '',
+    });
 });
 
 // API to fetch metadata
