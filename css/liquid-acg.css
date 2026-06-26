@@ -14,9 +14,9 @@ body{margin:0;background:var(--bg);color:var(--tx);font-family:'Inter','Noto San
 .hidden{display:none!important}*{box-sizing:border-box}
 
 /* ═══ Layout ═══ */
-.acg-shell{max-width:1520px;margin:0 auto;padding:96px 20px 60px;position:relative;z-index:1}
-@media(min-width:768px){.acg-shell{padding:96px 28px 60px}}
-@media(min-width:1440px){.acg-shell{padding:96px 36px 60px}}
+.acg-shell{max-width:100%;margin:0 auto;padding:96px 24px 60px;position:relative;z-index:1}
+@media(min-width:768px){.acg-shell{padding:96px 36px 60px}}
+@media(min-width:1440px){.acg-shell{padding:96px 56px 60px}}
 
 /* ═══ Hero ═══ */
 .acg-hero{margin-bottom:44px}
@@ -37,6 +37,8 @@ body{margin:0;background:var(--bg);color:var(--tx);font-family:'Inter','Noto San
 @media(min-width:768px){.acg-grid{grid-template-columns:repeat(4,1fr);gap:20px}}
 @media(min-width:1100px){.acg-grid{grid-template-columns:repeat(5,1fr);gap:20px}}
 @media(min-width:1440px){.acg-grid{grid-template-columns:repeat(6,1fr);gap:24px}}
+@media(min-width:1800px){.acg-grid{grid-template-columns:repeat(7,1fr);gap:28px}}
+@media(min-width:2200px){.acg-grid{grid-template-columns:repeat(8,1fr);gap:32px}}
 .acg-vgrid{display:grid;gap:20px}
 @media(min-width:768px){.acg-vgrid{grid-template-columns:repeat(2,1fr)}}
 @media(min-width:1100px){.acg-vgrid{grid-template-columns:repeat(3,1fr);gap:24px}}
