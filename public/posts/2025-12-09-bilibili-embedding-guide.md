@@ -1,7 +1,7 @@
 ---
 title: "如何在个人网站优雅地嵌入 B 站视频（使用 iframe 或其他方式）"
 date: "2025-12-28"
-category: "Uncategorized"
+category: "前端"
 author: "Thoi"
 tags: ["Bilibili", "嵌入", "前端", "iframe", "教程"]
 excerpt: "如何在个人网站优雅地嵌入 B 站视频（使用 iframe 或其他方式） 摘要：在个人博客或网站中嵌入 B 站（Bilibili）视频是丰富内容的绝佳方式。然而，官方提供的默认代码往往不具备响应式能力，且加载性能较差。本文将从基础的 ifra..."

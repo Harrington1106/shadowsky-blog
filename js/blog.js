@@ -105,7 +105,7 @@ function updateStats() {
 
     const categorySet = new Set();
     allPosts.forEach(post => {
-        categorySet.add(post.category || '未分类');
+        categorySet.add((!post.category || post.category === 'Uncategorized') ? '其他' : post.category);
     });
     const categoryCountEl = document.getElementById('category-count');
     if (categoryCountEl) {
@@ -183,7 +183,10 @@ function renderCurrentView() {
             return titleMatch || excerptMatch || tagMatch;
         });
     } else if (currentCategory !== 'all') {
-        filteredPosts = allPosts.filter(post => (post.category || '未分类') === currentCategory);
+                filteredPosts = allPosts.filter(post => {
+            const cat = (!post.category || post.category === 'Uncategorized') ? '其他' : post.category;
+            return cat === currentCategory;
+        });
     } else {
         filteredPosts = allPosts;
     }
@@ -264,7 +267,7 @@ function renderGridView(container) {
                     <div class="blog-card-body">
                         <span class="blog-card-badge">
                             <i data-lucide="folder"></i>
-                            ${post.category || '笔记'}
+                            ${(!post.category || post.category === 'Uncategorized') ? '笔记' : post.category}
                         </span>
                         ${tagsHtml}
                         <h2 class="blog-card-title">${post.title}</h2>
@@ -363,7 +366,7 @@ function renderDirectoryView(container) {
 
     const categories = {};
     filteredPosts.forEach(post => {
-        const c = post.category || '未分类';
+        const c = (!post.category || post.category === 'Uncategorized') ? '其他' : post.category;
         if (!categories[c]) categories[c] = [];
         categories[c].push(post);
     });
