@@ -13,8 +13,10 @@
 body{margin:0;background:var(--bg);color:var(--tx);font-family:'Inter','Noto Sans SC',sans-serif}
 .hidden{display:none!important}*{box-sizing:border-box}
 
-/* ═══ Layou ═══ */
-.acg-shell{max-width:1280px;margin:0 auto;padding:96px 24px 60px;position:relative;z-index:1}
+/* ═══ Layout ═══ */
+.acg-shell{max-width:1520px;margin:0 auto;padding:96px 20px 60px;position:relative;z-index:1}
+@media(min-width:768px){.acg-shell{padding:96px 28px 60px}}
+@media(min-width:1440px){.acg-shell{padding:96px 36px 60px}}
 
 /* ═══ Hero ═══ */
 .acg-hero{margin-bottom:44px}
@@ -34,7 +36,7 @@ body{margin:0;background:var(--bg);color:var(--tx);font-family:'Inter','Noto San
 @media(min-width:500px){.acg-grid{grid-template-columns:repeat(3,1fr)}}
 @media(min-width:768px){.acg-grid{grid-template-columns:repeat(4,1fr);gap:20px}}
 @media(min-width:1100px){.acg-grid{grid-template-columns:repeat(5,1fr);gap:20px}}
-@media(min-width:1440px){.acg-grid{grid-template-columns:repeat(5,1fr);gap:24px}}
+@media(min-width:1440px){.acg-grid{grid-template-columns:repeat(6,1fr);gap:24px}}
 .acg-vgrid{display:grid;gap:20px}
 @media(min-width:768px){.acg-vgrid{grid-template-columns:repeat(2,1fr)}}
 @media(min-width:1100px){.acg-vgrid{grid-template-columns:repeat(3,1fr);gap:24px}}
