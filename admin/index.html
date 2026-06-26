@@ -190,6 +190,7 @@
         .dark .light-only{display:none!important}
         html:not(.dark) .dark-only{display:none!important}
         @keyframes spin{to{transform:rotate(360deg)}}
+        @keyframes pulse-dot{0%,100%{opacity:1}50%{opacity:.35}}
     </style>
 </head>
 <body class="font-sans">
@@ -457,9 +458,10 @@
                                     class="snap-method-btn px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
                                     style="color:#94a3b8">🔗 粘贴URL</button>
                             </div>
-                            <div id="picgo-status" class="flex items-center gap-1.5 text-xs" style="display:none">
-                                <span id="picgo-dot" class="w-2 h-2 rounded-full" style="background:#22c55e;box-shadow:0 0 6px #22c55e"></span>
-                                <span id="picgo-text" style="color:#94a3b8">检测中...</span>
+                            <div id="picgo-status" class="flex items-center gap-1.5 text-xs">
+                                <span id="picgo-dot" class="w-2 h-2 rounded-full flex-shrink-0" style="background:#f59e0b;box-shadow:0 0 4px #f59e0b;animation:pulse-dot 1.5s ease-in-out infinite"></span>
+                                <span id="picgo-text" style="color:#94a3b8">检测 PicGo 连接中...</span>
+                                <button type="button" id="picgo-retry" onclick="PicGoClient.checkStatus()" class="text-xs px-1.5 py-0.5 rounded" style="display:none;color:#64748b" title="重新检测">⟳</button>
                             </div>
                         </div>
 

@@ -1354,6 +1354,23 @@ const PicGoClient = {
 
     /** 检查 PicGo 是否在运行 */
     async checkStatus() {
+        // 显示检测中状态
+        const dotEl = document.getElementById('picgo-dot');
+        const textEl = document.getElementById('picgo-text');
+        const retryEl = document.getElementById('picgo-retry');
+        const statusEl = document.getElementById('picgo-status');
+        if (statusEl) statusEl.style.display = 'flex';
+        if (dotEl) {
+            dotEl.style.background = '#f59e0b';
+            dotEl.style.boxShadow = '0 0 6px rgba(245,158,11,.5)';
+            dotEl.style.animation = 'pulse-dot 1.5s ease-in-out infinite';
+        }
+        if (textEl) {
+            textEl.textContent = '检测 PicGo 连接中...';
+            textEl.style.color = '#fcd34d';
+        }
+        if (retryEl) retryEl.style.display = 'none';
+
         try {
             const resp = await fetch(`${this.baseUrl}/`, {
                 method: 'GET',
@@ -1365,6 +1382,9 @@ const PicGoClient = {
                     const info = await resp.json();
                     this.version = info.version || '';
                 } catch (e) {}
+            } else {
+                this.available = false;
+                this.version = '';
             }
         } catch (e) {
             this.available = false;
@@ -1397,17 +1417,32 @@ const PicGoClient = {
         const statusEl = document.getElementById('picgo-status');
         const dotEl = document.getElementById('picgo-dot');
         const textEl = document.getElementById('picgo-text');
+        const retryEl = document.getElementById('picgo-retry');
         if (!statusEl || !dotEl || !textEl) return;
 
+        // 始终可见
         statusEl.style.display = 'flex';
+
         if (this.available) {
             dotEl.style.background = '#22c55e';
-            dotEl.style.boxShadow = '0 0 6px #22c55e';
+            dotEl.style.boxShadow = '0 0 8px rgba(34,197,94,.5)';
+            dotEl.style.animation = 'none';
             textEl.textContent = this.version ? `PicGo 已连接 (v${this.version})` : 'PicGo 已连接';
+            textEl.style.color = '#86efac';
+            if (retryEl) retryEl.style.display = 'none';
         } else {
             dotEl.style.background = '#ef4444';
-            dotEl.style.boxShadow = '0 0 6px #ef4444';
-            textEl.textContent = 'PicGo 未连接';
+            dotEl.style.boxShadow = '0 0 8px rgba(239,68,68,.5)';
+            dotEl.style.animation = 'none';
+            const method = ImageUploader.method;
+            if (method === 'picgo') {
+                textEl.textContent = 'PicGo 未启动 — 请打开 PicGo 桌面端或切换上传方式';
+                textEl.style.color = '#fca5a5';
+            } else {
+                textEl.textContent = 'PicGo 未启动（当前使用其他上传方式）';
+                textEl.style.color = '#94a3b8';
+            }
+            if (retryEl) retryEl.style.display = 'inline-block';
         }
     }
 };
@@ -1454,17 +1489,18 @@ const ImageUploader = {
         // 切换拖拽区 / URL 输入
         const dropzone = document.getElementById('snap-dropzone');
         const urlArea = document.getElementById('snap-url-area');
-        const picgoStatus = document.getElementById('picgo-status');
         if (method === 'url') {
             if (dropzone) dropzone.style.display = 'none';
             if (urlArea) urlArea.style.display = 'block';
-            if (picgoStatus) picgoStatus.style.display = 'none';
             this.clearFiles();
         } else {
             if (dropzone) dropzone.style.display = '';
             if (urlArea) urlArea.style.display = 'none';
-            // 直传模式隐藏 PicGo 状态
-            if (picgoStatus) picgoStatus.style.display = method === 'picgo' ? 'flex' : 'none';
+        }
+        // PicGo 状态始终可见，切换后刷新提示
+        PicGoClient.updateUI();
+        if (method === 'picgo' && !PicGoClient.available) {
+            showToast('⚠️ PicGo 未连接 — 请启动桌面端，或切换到"直传服务器"模式', 'warning');
         }
     },
 
