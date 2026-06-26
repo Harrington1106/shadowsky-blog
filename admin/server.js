@@ -10,6 +10,7 @@ const https = require('https');
 const nodemailer = require('nodemailer');
 const multer = require('multer');
 const app = express();
+app.set('trust proxy', true);
 const port = process.env.PORT ? Number(process.env.PORT) : 3000;
 const host = process.env.HOST || '127.0.0.1';
 
