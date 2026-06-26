@@ -1202,6 +1202,26 @@ app.get('/api/bilibili_stream', async (req, res) => {
     }
 });
 
+// Image proxy — 代理 Unsplash 等境外图片
+app.get('/api/image-proxy', rateLimit(60_000, 120), async (req, res) => {
+    const url = req.query.url;
+    if (!url || !/^https?:\/\//i.test(url)) return res.status(400).end();
+    try {
+        const resp = await axios.get(url, {
+            responseType: 'arraybuffer',
+            timeout: 10000,
+            headers: { 'User-Agent': 'Mozilla/5.0' },
+            maxContentLength: 5 * 1024 * 1024
+        });
+        const ct = resp.headers['content-type'] || 'image/jpeg';
+        res.setHeader('Content-Type', ct);
+        res.setHeader('Cache-Control', 'public, max-age=86400');
+        res.send(resp.data);
+    } catch (e) {
+        res.status(502).end();
+    }
+});
+
 // Proxy Bangumi subject (Admin)
 app.get('/api/bgm_subject', requireAdminToken, async (req, res) => {
     try {
