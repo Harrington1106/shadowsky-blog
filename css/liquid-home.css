@@ -400,7 +400,11 @@ html:not(.dark) .home-stage > .site-footer { color: rgba(15,23,42,.45); }
   50% { box-shadow: 0 0 12px rgba(20,184,166,.2), 0 0 24px rgba(20,184,166,.08); }
 }
 .tag-pill {
-  animation: tagPop .5s ease backwards, pillGlow 3s ease-in-out infinite;
+  animation-name: tagPop, pillGlow;
+  animation-duration: .5s, 3s;
+  animation-timing-function: var(--ease-spring), ease-in-out;
+  animation-fill-mode: forwards, none;
+  animation-iteration-count: 1, infinite;
 }
 .tag-pill:nth-child(1) { animation-delay: 0s, .5s; }
 .tag-pill:nth-child(2) { animation-delay: .08s, .8s; }
