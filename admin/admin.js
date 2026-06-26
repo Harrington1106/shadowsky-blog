@@ -2757,92 +2757,70 @@ const VideosManager = {
 };
 
 const StatsManager = {
-    data: { logs: [], stats: { total: 0, daily: {}, pages: {} } },
+    data: { raw: {}, pageData: {} },
     chart: null,
     async fetch() {
         try {
-            const result = await safeFetch(`${API_BASE}/stats`);
-            
-            // Format: { "YYYY-MM-DD": { visits: 0, ip_locations: {} } }
-            
-            let dailyStats = {};
-            let total = 0;
-            
-            if (result && typeof result === 'object') {
-                Object.keys(result).forEach(date => {
-                    const d = result[date];
-                    const visits = d.visits || 0;
-                    dailyStats[date] = visits;
-                    total += visits;
-                });
-            }
-
-            this.data = {
-                logs: [], // Legacy logs not supported in simple stats
-                stats: {
-                    total: total,
-                    daily: dailyStats,
-                    pages: {}
-                },
-                raw: result
-            };
-            
+            const [visitsResult, pageResult] = await Promise.all([
+                safeFetch(`${API_BASE}/stats`),
+                safeFetch(`${API_BASE}/page_visits`).catch(() => ({}))
+            ]);
+            this.data.raw = visitsResult || {};
+            this.data.pageData = pageResult || {};
             this.render();
         } catch (e) {
             console.error(e);
-            showToast('获取统计数据失败: ' + e.message);
+            showToast('获取统计数据失败');
         }
     },
-    render() {
-        const stats = this.data.stats;
-        const logs = this.data.logs;
-        const raw = this.data.raw;
-        
-        const totalElement = document.getElementById('stat-total-visits');
-        if (totalElement) totalElement.textContent = stats.total;
-        
+    getTotals() {
+        let total = 0;
         const today = new Date().toISOString().split('T')[0];
-        const todayVisits = stats.daily[today] || 0;
-        
-        const todayElement = document.getElementById('stat-today-visits');
-        if (todayElement) todayElement.textContent = todayVisits;
-        
-        const pageCounts = stats.pages || {};
-        const topPage = Object.entries(pageCounts).sort((a,b) => b[1] - a[1])[0];
-        const topPageElement = document.getElementById('stat-top-page');
-        if (topPageElement) topPageElement.textContent = topPage ? `${topPage[0]} (${topPage[1]})` : '-';
-        
-        this.renderChart(stats.daily);
-        this.renderLogs(logs);
-        this.renderLocations(raw);
+        let todayVisits = 0;
+        Object.entries(this.data.raw).forEach(([date, d]) => {
+            const v = d.visits || 0;
+            total += v;
+            if (date === today) todayVisits = v;
+        });
+        return { total, today: todayVisits };
     },
-    renderChart(dailyStats) {
+    render() {
+        const { total, today } = this.getTotals();
+        document.getElementById('stat-total-visits').textContent = total.toLocaleString();
+        document.getElementById('stat-today-visits').textContent = today;
+        // 热门页面
+        const pages = this.data.pageData.pages || {};
+        const top = Object.entries(pages).sort((a,b) => b[1] - a[1])[0];
+        document.getElementById('stat-top-page').textContent = top ? `${top[0]} (${top[1]})` : '-';
+        // 子组件
+        this.renderChart();
+        this.renderLocations();
+        this.renderPageBreakdown();
+    },
+    renderChart() {
         const ctx = document.getElementById('visitsChart');
         if (!ctx) return;
-        
-        const dateCounts = {};
-        for(let i=6; i>=0; i--) {
+        const labels = [], values = [];
+        for (let i = 6; i >= 0; i--) {
             const d = new Date();
             d.setDate(d.getDate() - i);
             const key = d.toISOString().split('T')[0];
-            dateCounts[key] = dailyStats[key] || 0;
+            labels.push(key.slice(5));
+            values.push((this.data.raw[key] || {}).visits || 0);
         }
-        
-        const labels = Object.keys(dateCounts);
-        const values = Object.values(dateCounts);
-        
         if (this.chart) this.chart.destroy();
-        
         if (typeof Chart !== 'undefined') {
             this.chart = new Chart(ctx.getContext('2d'), {
                 type: 'line',
                 data: {
-                    labels: labels,
+                    labels,
                     datasets: [{
-                        label: 'Visits',
                         data: values,
-                        borderColor: 'rgb(59, 130, 246)',
-                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        borderColor: '#14B8A6',
+                        backgroundColor: 'rgba(20,184,166,.1)',
+                        borderWidth: 2,
+                        pointBackgroundColor: '#14B8A6',
+                        pointRadius: 3,
                         fill: true,
                         tension: 0.4
                     }]
@@ -2851,94 +2829,72 @@ const StatsManager = {
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: { legend: { display: false } },
-                    scales: { y: { beginAtZero: true } }
+                    scales: {
+                        x: { ticks: { color: '#94a3b8' }, grid: { color: 'rgba(255,255,255,.04)' } },
+                        y: { beginAtZero: true, ticks: { color: '#94a3b8', stepSize: 1 }, grid: { color: 'rgba(255,255,255,.04)' } }
+                    }
                 }
             });
             window.myChart = this.chart;
         }
     },
-    renderLogs(logs) {
-        const tbody = document.getElementById('visits-log-body');
-        if (!tbody) return;
-        
-        tbody.innerHTML = '';
-        if (logs.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="4" class="px-6 py-8 text-center text-slate-500">暂无访问记录</td></tr>';
-            return;
-        }
-        
-        // Logs are already truncated to 50 by backend, but we reverse to show newest first
-        // If backend returns oldest first (append), we reverse.
-        // If backend returns newest first (prepend), we don't.
-        // Backend currently appends (oldest -> newest). So we reverse.
-        [...logs].reverse().forEach(s => {
-            const row = document.createElement('tr');
-            row.className = 'bg-white border-b hover:bg-slate-50';
-            row.innerHTML = `<td class="px-6 py-4">${s.time || '-'}</td><td class="px-6 py-4 truncate max-w-xs" title="${s.page || '-'}">${s.page || '-'}</td><td class="px-6 py-4">${s.ip || '-'}</td><td class="px-6 py-4 truncate max-w-xs" title="${s.ua || '-'}">${s.ua || '-'}</td>`;
-            tbody.appendChild(row);
+    renderLocations() {
+        const container = document.getElementById('visits-log-body');
+        if (!container) return;
+        // 用日志表格展示 IP 分布
+        const ipMap = {};
+        Object.values(this.data.raw).forEach(day => {
+            if (day.ip_locations) {
+                Object.entries(day.ip_locations).forEach(([ip, c]) => {
+                    ipMap[ip] = (ipMap[ip] || 0) + c;
+                });
+            }
         });
-    },
-    renderLocations(rawData) {
-        // Try to find or create the wrapper
-        let wrapper = document.getElementById('stat-locations-wrapper');
-        
-        if (!wrapper) {
-             const view = document.getElementById('view-stats');
-             if (view) {
-                 wrapper = document.createElement('div');
-                 wrapper.id = 'stat-locations-wrapper';
-                 wrapper.className = 'bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mt-6';
-                 wrapper.innerHTML = '<h3 class="text-lg font-bold text-slate-800 mb-4">访客分布 (IP Location)</h3><div id="stat-locations-list" class="space-y-3"></div>';
-                 
-                 // Insert before logs if possible, or append
-                 const logsCard = document.querySelector('#view-stats .bg-white.rounded-2xl.shadow-sm.border.border-slate-200.overflow-hidden');
-                 if (logsCard) {
-                     view.insertBefore(wrapper, logsCard);
-                 } else {
-                     view.appendChild(wrapper);
-                 }
-             }
-        }
-        
-        const list = document.getElementById('stat-locations-list');
-        if (!list) return;
-        
-        list.innerHTML = '';
-        
-        const locations = {};
-        if (rawData) {
-            Object.values(rawData).forEach(day => {
-                if (day.ip_locations) {
-                    Object.entries(day.ip_locations).forEach(([loc, count]) => {
-                        locations[loc] = (locations[loc] || 0) + count;
-                    });
-                }
-            });
-        }
-        
-        const sorted = Object.entries(locations).sort((a,b) => b[1] - a[1]).slice(0, 10);
-        
-        if (sorted.length === 0) {
-            list.innerHTML = '<div class="text-center text-slate-500 py-4">暂无分布数据</div>';
+        const sorted = Object.entries(ipMap).sort((a,b) => b[1] - a[1]).slice(0, 20);
+        if (!sorted.length) {
+            container.innerHTML = '<tr><td colspan="3" style="padding:32px;text-align:center;color:#64748b">暂无访问数据</td></tr>';
             return;
         }
-        
         const max = sorted[0][1];
-        
-        sorted.forEach(([loc, count]) => {
-            const percent = Math.round((count / max) * 100);
-            const el = document.createElement('div');
-            el.innerHTML = `
-                <div class="flex justify-between text-sm mb-1">
-                    <span class="font-medium text-slate-700">${loc || '未知'}</span>
-                    <span class="text-slate-500">${count}</span>
+        container.innerHTML = sorted.map(([ip, count]) => `
+            <tr>
+                <td style="padding:8px 16px;font-size:.8rem;color:#94a3b8">${ip}</td>
+                <td style="padding:8px 16px;font-size:.8rem;color:#e2e8f0;font-weight:500">${count}</td>
+                <td style="padding:8px 16px">
+                    <div style="height:4px;background:rgba(255,255,255,.06);border-radius:2px;min-width:60px">
+                        <div style="height:100%;background:#14B8A6;border-radius:2px;width:${Math.round(count/max*100)}%"></div>
+                    </div>
+                </td>
+            </tr>
+        `).join('');
+    },
+    renderPageBreakdown() {
+        const pages = this.data.pageData.pages || {};
+        const entries = Object.entries(pages).sort((a,b) => b[1] - a[1]).slice(0, 10);
+        if (!entries.length) return;
+        // 找到访问日志表格前面插入页面分布
+        let el = document.getElementById('stat-page-breakdown');
+        if (!el) {
+            const tableCard = document.querySelector('#view-stats .admin-card.overflow-hidden');
+            if (!tableCard) return;
+            el = document.createElement('div');
+            el.id = 'stat-page-breakdown';
+            el.className = 'admin-card p-5';
+            el.innerHTML = '<h3 style="font-size:1rem;font-weight:700;margin-bottom:12px;color:inherit">页面访问排行</h3><div id="stat-page-list"></div>';
+            tableCard.parentNode.insertBefore(el, tableCard);
+        }
+        const list = document.getElementById('stat-page-list');
+        if (!list) return;
+        const max = entries[0][1];
+        list.innerHTML = entries.map(([page, count]) => `
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+                <span style="font-size:.78rem;color:#94a3b8;min-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${page}">${page}</span>
+                <span style="font-size:.78rem;color:#e2e8f0;font-weight:500;min-width:30px">${count}</span>
+                <div style="flex:1;height:4px;background:rgba(255,255,255,.06);border-radius:2px">
+                    <div style="height:100%;background:#14B8A6;border-radius:2px;width:${Math.round(count/max*100)}%"></div>
                 </div>
-                <div class="w-full bg-slate-100 rounded-full h-2">
-                    <div class="bg-blue-500 h-2 rounded-full" style="width: ${percent}%"></div>
-                </div>
-            `;
-            list.appendChild(el);
-        });
+            </div>
+        `).join('');
     }
 };
 

@@ -570,6 +570,19 @@ app.get('/api/stats', requireAdminToken, (req, res) => {
     }
 });
 
+// API to get page visit breakdown
+app.get('/api/page_visits', requireAdminToken, (req, res) => {
+    if (fs.existsSync(pageVisitsPath)) {
+        try {
+            res.json(JSON.parse(fs.readFileSync(pageVisitsPath, 'utf8')));
+        } catch (e) {
+            res.json({ pages: {} });
+        }
+    } else {
+        res.json({ pages: {} });
+    }
+});
+
 // API to get settings
 app.get('/api/settings', requireAdminToken, (req, res) => {
     if (fs.existsSync(settingsPath)) {
