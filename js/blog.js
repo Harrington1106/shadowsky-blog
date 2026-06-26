@@ -245,39 +245,40 @@ function renderGridView(container) {
             `<span class="blog-card-tag">#${t}</span>`
         ).join('');
 
-        // 封面区域 — 徽章浮在封面内部
+        // 封面区域
         const coverHtml = post.coverImage
             ? `<div class="blog-card-media">
                  <img src="https://bangumi.shadowquake.top/fetch?url=${encodeURIComponent(post.coverImage)}" alt="" loading="lazy" class="blog-card-img" />
                  <div class="blog-card-media-shade"></div>
-                 <span class="blog-card-badge">
-                   <i data-lucide="folder"></i>
-                   <span>${post.category || '笔记'}</span>
-                 </span>
                </div>`
             : `<div class="blog-card-media blog-card-media--placeholder" style="background:${gradient}">
                  <i data-lucide="file-text" class="blog-card-placeholder-icon"></i>
-                 <span class="blog-card-badge">
-                   <i data-lucide="folder"></i>
-                   <span>${post.category || '笔记'}</span>
-                 </span>
                </div>`;
+
+        // 标签 pills (最多 3 个)
+        const tagsHtml = tags.length ? `<div class="blog-card-tags">${tags.slice(0, 3).map(t => `<span class="blog-card-tag">${t}</span>`).join('')}</div>` : '';
+
+        const readTime = post.readTime || 5;
 
         const html = `
             <article class="blog-card animate-in" style="animation-delay:${delay}ms" data-file="${post.file}" data-title="${post.title.replace(/"/g, '&quot;')}">
                 <a href="post.html?file=${encodeURIComponent(post.file)}" class="blog-card-link">
                     ${coverHtml}
                     <div class="blog-card-body">
+                        <span class="blog-card-badge">
+                            <i data-lucide="folder"></i>
+                            ${post.category || '笔记'}
+                        </span>
+                        ${tagsHtml}
                         <h2 class="blog-card-title">${post.title}</h2>
                         <p class="blog-card-excerpt">${post.excerpt || '暂无摘要...'}</p>
                     </div>
                     <div class="blog-card-footer">
-                        <time datetime="${post.date}">${dateStr}</time>
-                        ${tagsHtml ? '<span class="footer-dot-sep">·</span>' + tagsHtml : ''}
+                        <time datetime="${post.date}"><i data-lucide="calendar" style="width:12px;height:12px;margin-right:3px;vertical-align:-1px"></i>${dateStr}</time>
+                        <span class="footer-dot-sep">·</span>
+                        <span class="blog-card-readtime"><i data-lucide="clock" style="width:12px;height:12px;margin-right:3px;vertical-align:-1px"></i>${readTime} 分钟</span>
                         <span class="footer-spacer"></span>
-                        <span class="footer-arrow">
-                            <i data-lucide="arrow-right"></i>
-                        </span>
+                        <span class="footer-arrow"><i data-lucide="arrow-right"></i></span>
                     </div>
                 </a>
             </article>

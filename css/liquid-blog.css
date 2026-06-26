@@ -427,33 +427,48 @@ html:not(.dark) .blog-card-media-shade {
             transparent 100%);
 }
 
-/* 徽章 — 绝对定位在封面左下角 */
+/* 徽章 — 行内显示在卡片内容区 */
 .blog-card-badge {
-    position: absolute;
-    bottom: 12px;
-    left: 16px;
-    z-index: 2;
     display: inline-flex;
     align-items: center;
-    gap: 5px;
-    padding: 4px 10px;
-    background: rgba(0, 0, 0, 0.55);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    border-radius: 6px;
-    font-size: 0.72rem;
+    gap: 4px;
+    padding: 3px 10px;
+    background: rgba(20, 184, 166, 0.1);
+    border: 1px solid rgba(20, 184, 166, 0.15);
+    border-radius: 999px;
+    font-size: 0.68rem;
     font-weight: 500;
-    color: #fff;
-    letter-spacing: 0.02em;
-    pointer-events: none;
+    color: #2dd4bf;
+    margin-bottom: 10px;
+    align-self: flex-start;
 }
+html:not(.dark) .blog-card-badge {
+    background: rgba(13, 148, 136, 0.08);
+    border-color: rgba(13, 148, 136, 0.12);
+    color: #0d9488;
+}
+.blog-card-badge i { width: 11px; height: 11px; }
 
-.blog-card-badge i {
-    width: 11px;
-    height: 11px;
-    opacity: 0.8;
+/* 标签行 */
+.blog-card-tags {
+    display: flex; flex-wrap: wrap; gap: 6px;
+    margin-bottom: 10px;
 }
+.blog-card-tag {
+    font-size: 0.7rem;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: #94a3b8;
+    transition: all .2s;
+}
+html:not(.dark) .blog-card-tag {
+    background: #f1f5f9;
+    border-color: #e2e8f0;
+    color: #64748b;
+}
+.blog-card-tag:hover { border-color: #14B8A6; color: #14B8A6; }
 
 /* ── 无封面占位 ── */
 .blog-card-media--placeholder {
@@ -462,18 +477,9 @@ html:not(.dark) .blog-card-media-shade {
     justify-content: center;
     height: 140px;
 }
-
-.blog-card-media--placeholder .blog-card-badge {
-    position: absolute;
-    bottom: 12px;
-    left: 16px;
-}
-
 .blog-card-placeholder-icon {
-    width: 40px;
-    height: 40px;
-    color: rgba(255, 255, 255, 0.2);
-    z-index: 0;
+    width: 40px; height: 40px;
+    color: rgba(255, 255, 255, 0.15);
 }
 
 /* ═══════════════════════════════════════════════════════
@@ -485,28 +491,28 @@ html:not(.dark) .blog-card-media-shade {
     display: flex;
     flex-direction: column;
 }
-
 .blog-card-title {
-    font-size: 1.1rem;
-    font-weight: 600;
-    line-height: 1.45;
-    margin-bottom: 6px;
+    font-size: 1.05rem;
+    font-weight: 650;
+    line-height: 1.4;
+    margin-bottom: 8px;
     color: var(--bg-text-title);
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
+    order: 10;
 }
-
 .blog-card-excerpt {
-    font-size: 0.85rem;
-    line-height: 1.55;
+    font-size: 0.84rem;
+    line-height: 1.6;
     flex: 1;
     color: var(--bg-text-dim);
     display: -webkit-box;
-    -webkit-line-clamp: 2;
+    -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
+    order: 20;
     margin-bottom: 0;
 }
 
@@ -530,22 +536,10 @@ html:not(.dark) .blog-card-media-shade {
     font-variant-numeric: tabular-nums;
 }
 
-/* 标签真名药丸 */
-.blog-card-tag {
-    display: inline-block;
-    padding: 2px 8px;
-    background: var(--bg-accent-soft);
-    color: var(--bg-accent);
-    border-radius: 4px;
-    font-size: 0.7rem;
-    font-weight: 500;
-    white-space: nowrap;
+.blog-card-readtime {
     flex-shrink: 0;
-    transition: background 0.2s ease;
-}
-
-.blog-card:hover .blog-card-tag {
-    background: rgba(45, 212, 191, 0.15);
+    font-size: 0.73rem;
+    opacity: 0.6;
 }
 
 .footer-dot-sep {
