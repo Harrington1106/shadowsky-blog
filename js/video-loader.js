@@ -230,7 +230,8 @@ class VideoLoader {
                         </div>
                     </div>
                 </div>
-                <h3 class="font-bold text-gray-800 dark:text-gray-100 text-lg leading-tight mb-2 line-clamp-2 group-hover:text-pink-600 dark:group-hover:text-pink-400 transition-colors">${video.title}</h3>
+                <h3 class="font-bold text-gray-800 dark:text-gray-100 text-lg leading-tight mb-1 line-clamp-2 group-hover:text-pink-600 dark:group-hover:text-pink-400 transition-colors">${video.title}</h3>
+                ${video.description ? `<p class="text-xs text-gray-500 dark:text-gray-400 mb-2 line-clamp-1">${video.description}</p>` : ''}
                 <div class="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
                     <div class="flex items-center space-x-3">
                         <span class="flex items-center">
