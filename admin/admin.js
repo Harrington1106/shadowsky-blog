@@ -1409,16 +1409,22 @@ const PicGoClient = {
 
     /** 通过 PicGo 上传图片，返回 CDN URL 列表 */
     async upload(file) {
-        const formData = new FormData();
-        formData.append('list', file);
+        // 读成 base64 data URL，避免 multipart 解析兼容问题
+        const dataUrl = await new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = () => reject(new Error('读取文件失败'));
+            reader.readAsDataURL(file);
+        });
+
         let resp;
         try {
             resp = await fetch(`${this.baseUrl}/upload`, {
                 method: 'POST',
-                body: formData
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ list: [dataUrl] })
             });
         } catch (e) {
-            // fetch 本身失败（网络/CORS）
             throw new Error(`PicGo 通信失败: ${e.message || '请检查 PicGo 是否运行'}`);
         }
         if (!resp.ok) {
@@ -1429,7 +1435,6 @@ const PicGoClient = {
         if (!result.success) {
             throw new Error(result.error || result.message || 'PicGo 上传失败，请检查图床配置');
         }
-        // result.result 是 URL 数组
         return Array.isArray(result.result) ? result.result : [];
     },
 
