@@ -1409,32 +1409,32 @@ const PicGoClient = {
 
     /** 通过 PicGo 上传图片，返回 CDN URL 列表 */
     async upload(file) {
-        // 尝试两种字段名，兼容不同 PicGo/PicList 版本
-        const methods = [
-            () => { const fd = new FormData(); fd.append('list', file, file.name); return fd; },
-            () => { const fd = new FormData(); fd.append('image', file, file.name); return fd; }
-        ];
-        let lastErr = '';
-        for (const mkForm of methods) {
-            try {
-                const resp = await fetch(`${this.baseUrl}/upload`, {
-                    method: 'POST',
-                    body: mkForm()
-                });
-                if (!resp.ok) {
-                    lastErr = `${resp.status}: ${await resp.text().catch(() => '')}`;
-                    continue;
+        // 用 XHR 代替 fetch — 某些场景下 XHR 的 FormData 编码更可靠
+        return new Promise((resolve, reject) => {
+            const formData = new FormData();
+            // 重新构造 File 对象确保兼容性
+            const f = new File([file], file.name || 'image.png', { type: file.type || 'image/png' });
+            formData.append('list', f, f.name);
+
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', `${this.baseUrl}/upload`);
+            xhr.onload = () => {
+                try {
+                    const result = JSON.parse(xhr.responseText);
+                    if (result.success) {
+                        resolve(Array.isArray(result.result) ? result.result : []);
+                    } else {
+                        reject(new Error(result.message || result.error || 'PicGo 上传失败'));
+                    }
+                } catch (e) {
+                    reject(new Error(`PicGo 响应解析失败: ${xhr.responseText?.slice(0, 100)}`));
                 }
-                const result = await resp.json();
-                if (result.success) {
-                    return Array.isArray(result.result) ? result.result : [];
-                }
-                lastErr = result.message || result.error || 'PicGo 上传失败';
-            } catch (e) {
-                lastErr = e.message;
-            }
-        }
-        throw new Error(lastErr || 'PicGo 上传失败');
+            };
+            xhr.onerror = () => reject(new Error('PicGo 通信失败，请检查 PicGo 是否运行'));
+            xhr.ontimeout = () => reject(new Error('PicGo 上传超时'));
+            xhr.timeout = 30000;
+            xhr.send(formData);
+        });
     },
 
     updateUI() {
