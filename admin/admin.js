@@ -1409,11 +1409,11 @@ const PicGoClient = {
 
     /** 通过 PicGo 上传图片，返回 CDN URL 列表 */
     async upload(file) {
-        // 发送原始二进制 — PicGo 通常用 koa-body 同时支持 raw body 和 multipart
+        const formData = new FormData();
+        formData.append('list', file, file.name);  // 加上 filename 确保 koa-body 识别
         const resp = await fetch(`${this.baseUrl}/upload`, {
             method: 'POST',
-            headers: { 'Content-Type': file.type || 'image/png' },
-            body: file
+            body: formData
         });
         if (!resp.ok) {
             let errMsg = `${resp.status}`;
