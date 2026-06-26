@@ -1411,16 +1411,23 @@ const PicGoClient = {
     async upload(file) {
         const formData = new FormData();
         formData.append('list', file);
-        const resp = await fetch(`${this.baseUrl}/upload`, {
-            method: 'POST',
-            body: formData
-        });
+        let resp;
+        try {
+            resp = await fetch(`${this.baseUrl}/upload`, {
+                method: 'POST',
+                body: formData
+            });
+        } catch (e) {
+            // fetch 本身失败（网络/CORS）
+            throw new Error(`PicGo 通信失败: ${e.message || '请检查 PicGo 是否运行'}`);
+        }
         if (!resp.ok) {
-            throw new Error(`PicGo 返回 ${resp.status}: ${resp.statusText}`);
+            const errText = await resp.text().catch(() => '');
+            throw new Error(`PicGo 返回 ${resp.status}: ${errText || resp.statusText}`);
         }
         const result = await resp.json();
         if (!result.success) {
-            throw new Error(result.error || 'PicGo 上传失败');
+            throw new Error(result.error || result.message || 'PicGo 上传失败，请检查图床配置');
         }
         // result.result 是 URL 数组
         return Array.isArray(result.result) ? result.result : [];
@@ -1683,8 +1690,24 @@ const ImageUploader = {
                 if (!PicGoClient.available) {
                     throw new Error('PicGo 未连接，请启动 PicGo 或切换到"直传服务器"模式');
                 }
-                const result = await PicGoClient.upload(file);
-                urls.push(...result);
+                try {
+                    const result = await PicGoClient.upload(file);
+                    urls.push(...result);
+                } catch (picgoErr) {
+                    // PicGo 上传失败 → 自动回退到直传
+                    console.warn('PicGo 上传失败，回退直传:', picgoErr.message);
+                    showToast(`PicGo: ${picgoErr.message}，改为直传服务器`, 'warning');
+                    const fallbackForm = new FormData();
+                    fallbackForm.append('image', file);
+                    const fbData = await safeFetch(`${API_BASE}/upload`, {
+                        method: 'POST',
+                        body: fallbackForm
+                    });
+                    if (!fbData.success) {
+                        throw new Error(fbData.error || '直传也失败了');
+                    }
+                    urls.push(fbData.url);
+                }
             } else {
                 // 直传服务器
                 const formData = new FormData();
