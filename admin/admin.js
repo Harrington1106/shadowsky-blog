@@ -2060,8 +2060,7 @@ const MediaManager = {
         }
         items.forEach(item => {
             const el = document.createElement('div');
-            el.style.cssText = 'background:rgba(15,23,42,.45);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:12px;position:relative';
-            el.className = 'group';
+            el.className = 'admin-media-card group';
 
             const progress = item.total ? Math.round((item.progress / item.total) * 100) : 0;
             const isComplete = progress >= 100 && item.total > 0;
@@ -2088,7 +2087,7 @@ const MediaManager = {
                     </div>
                     <div style="flex:1;min-width:0">
                         <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px">
-                            <h3 style="font-size:.85rem;font-weight:600;color:#e2e8f0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding-right:4px" title="${item.title}">${item.title}</h3>
+                            <h3 class="media-title" style="padding-right:4px" title="${item.title}">${item.title}</h3>
                             <button onclick="MediaManager.delete('${item.id}')" style="background:none;border:none;cursor:pointer;color:#64748b;padding:2px;border-radius:4px;opacity:0;transition:opacity .2s" class="group-hover:opacity-100">
                                 <i data-lucide="trash-2" style="width:14px;height:14px"></i>
                             </button>
@@ -2248,7 +2247,7 @@ const BgmSearch = {
             const total = item.eps || item.vols || '';
             const isSelected = this.selected && String(this.selected.id) === String(item.id);
             return `
-                <div style="background:rgba(15,23,42,.35);border:1px solid ${isSelected ? '#14B8A6' : 'rgba(255,255,255,.1)'};border-radius:10px;padding:10px;display:flex;gap:10px;align-items:center;cursor:pointer;transition:border-color .2s"
+                <div class="admin-bgm-result${isSelected ? ' selected' : ''}"
                     onclick="BgmSearch.select('${item.id}')">
                     <img src="${img}" style="width:40px;height:56px;object-fit:cover;border-radius:6px;background:rgba(255,255,255,.04);flex-shrink:0" onerror="this.style.display='none'">
                     <div style="flex:1;min-width:0">
@@ -2307,27 +2306,26 @@ const FeedsManager = {
         }
         this.data.forEach((item, idx) => {
             const el = document.createElement('div');
-            el.style.cssText = 'background:rgba(15,23,42,.45);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:14px;position:relative';
-            el.className = 'group';
-            const catHtml = item.category ? `<span style="font-size:.65rem;padding:2px 7px;border-radius:4px;background:rgba(20,184,166,.1);color:#2dd4bf;flex-shrink:0">${item.category}</span>` : '';
+            el.className = 'admin-feed-card group';
+            const catHtml = item.category ? `<span class="feed-cat">${item.category}</span>` : '';
             el.innerHTML = `
                 <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px">
                     <div style="display:flex;align-items:center;gap:10px;min-width:0">
-                        <div style="width:36px;height:36px;border-radius:8px;overflow:hidden;flex-shrink:0;background:rgba(255,255,255,.04)">
+                        <div style="width:36px;height:36px;border-radius:8px;overflow:hidden;flex-shrink:0;background:rgba(15,23,42,.3)">
                             <img src="${item.icon || ''}" style="width:100%;height:100%;object-fit:cover" onerror="this.style.display='none'" alt="">
                         </div>
                         <div style="min-width:0">
                             <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px">
-                                <h3 style="font-size:.85rem;font-weight:600;color:#e2e8f0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${item.title}</h3>
+                                <h3 class="feed-title">${item.title}</h3>
                                 ${catHtml}
                             </div>
-                            <div style="font-size:.7rem;color:#64748b;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${item.url}</div>
+                            <div class="feed-url">${item.url}</div>
                         </div>
                     </div>
                     <div style="display:flex;align-items:center;gap:2px;flex-shrink:0">
-                        <a href="${item.url}" target="_blank" style="padding:6px;color:#64748b;border-radius:6px;text-decoration:none" onmouseover="this.style.background='rgba(59,130,246,.1)';this.style.color='#60a5fa'" onmouseout="this.style.background='';this.style.color='#64748b'"><i data-lucide="external-link" style="width:14px;height:14px"></i></a>
-                        <button onclick="FeedsManager.editByIndex(${idx})" style="padding:6px;color:#64748b;background:none;border:none;border-radius:6px;cursor:pointer" onmouseover="this.style.background='rgba(20,184,166,.1)';this.style.color='#14B8A6'" onmouseout="this.style.background='';this.style.color='#64748b'"><i data-lucide="edit-2" style="width:14px;height:14px"></i></button>
-                        <button onclick="FeedsManager.deleteByIndex(${idx})" style="padding:6px;color:#64748b;background:none;border:none;border-radius:6px;cursor:pointer" onmouseover="this.style.background='rgba(239,68,68,.1)';this.style.color='#ef4444'" onmouseout="this.style.background='';this.style.color='#64748b'"><i data-lucide="trash-2" style="width:14px;height:14px"></i></button>
+                        <a href="${item.url}" target="_blank" style="padding:6px;color:#64748b;border-radius:6px;text-decoration:none" onmouseover="this.style.background='rgba(59,130,246,.15)';this.style.color='#60a5fa'" onmouseout="this.style.background='';this.style.color=''"><i data-lucide="external-link" style="width:14px;height:14px"></i></a>
+                        <button onclick="FeedsManager.editByIndex(${idx})" style="padding:6px;color:#64748b;background:none;border:none;border-radius:6px;cursor:pointer" onmouseover="this.style.background='rgba(20,184,166,.15)';this.style.color='#14B8A6'" onmouseout="this.style.background='';this.style.color=''"><i data-lucide="edit-2" style="width:14px;height:14px"></i></button>
+                        <button onclick="FeedsManager.deleteByIndex(${idx})" style="padding:6px;color:#64748b;background:none;border:none;border-radius:6px;cursor:pointer" onmouseover="this.style.background='rgba(239,68,68,.15)';this.style.color='#f87171'" onmouseout="this.style.background='';this.style.color=''"><i data-lucide="trash-2" style="width:14px;height:14px"></i></button>
                     </div>
                 </div>
             `;
