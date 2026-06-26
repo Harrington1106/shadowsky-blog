@@ -550,35 +550,56 @@
 
             <!-- ═══════ VIEW: MEDIA ═══════ -->
             <section id="view-media" class="view-section space-y-6 hidden">
-                <div class="flex items-center justify-between">
-                    <div class="admin-tab-switch">
-                        <button onclick="MediaManager.switchType('anime')" id="tab-anime" class="admin-tab-btn active">追番</button>
-                        <button onclick="MediaManager.switchType('manga')" id="tab-manga" class="admin-tab-btn">漫画</button>
+                <!-- 顶部工具栏 -->
+                <div class="flex items-center justify-between flex-wrap gap-3">
+                    <div class="flex items-center gap-3">
+                        <div class="flex items-center gap-1 p-1 rounded-xl" style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.05)">
+                            <button onclick="MediaManager.switchType('anime')" id="tab-anime" class="media-tab-btn px-3 py-1.5 rounded-lg text-xs font-medium transition-all" style="background:#14B8A6;color:#fff">追番</button>
+                            <button onclick="MediaManager.switchType('manga')" id="tab-manga" class="media-tab-btn px-3 py-1.5 rounded-lg text-xs font-medium transition-all" style="color:#94a3b8">漫画</button>
+                        </div>
+                        <span id="media-count" class="text-xs" style="color:#64748b"></span>
                     </div>
+                    <button type="button" onclick="syncBangumi()" class="admin-btn admin-btn-sm flex items-center gap-1.5" style="background:rgba(236,72,153,.12);color:#EC4899;border:1px solid rgba(236,72,153,.2)">
+                        <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> 同步 Bangumi
+                    </button>
                 </div>
-                <div class="admin-card p-6">
-                    <div class="space-y-4">
+
+                <!-- 搜索 + 添加卡片 -->
+                <div class="admin-card p-5">
+                    <form id="add-media-form" class="space-y-4">
                         <div class="flex gap-2">
-                            <input type="search" id="bgm-search-input" placeholder="搜索 Bangumi 标题" class="admin-input flex-1">
-                            <button type="button" id="bgm-search-btn" class="admin-btn admin-btn-primary admin-btn-sm">搜索</button>
+                            <input type="search" id="bgm-search-input" placeholder="搜索 Bangumi 标题" class="admin-input flex-1" onkeydown="if(event.key==='Enter'){event.preventDefault();BgmSearch.search(this.value)}">
+                            <button type="button" id="bgm-search-btn" class="admin-btn admin-btn-primary admin-btn-sm" onclick="BgmSearch.search(document.getElementById('bgm-search-input').value)">搜索</button>
                         </div>
-                        <div id="bgm-selected" class="text-sm" style="color:#94a3b8">未选择条目</div>
-                        <div id="bgm-search-results" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"></div>
-                        <div class="space-y-4" style="border-top:1px solid rgba(255,255,255,.06);padding-top:16px">
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div><label class="text-sm font-medium mb-1 block" style="color:inherit" for="setting-bangumi-username">Bangumi 用户名</label><input type="text" id="setting-bangumi-username" class="admin-input"></div>
-                                <div><label class="text-sm font-medium mb-1 block" style="color:inherit" for="setting-bangumi-token">Bangumi Token</label><input type="password" id="setting-bangumi-token" class="admin-input"></div>
-                            </div>
-                            <div class="flex items-center gap-3">
-                                <button type="button" onclick="saveBangumiSettings()" class="admin-btn admin-btn-primary admin-btn-sm">保存设置</button>
-                                <button type="button" onclick="syncBangumi()" class="admin-btn admin-btn-sm" style="background:rgba(236,72,153,.12);color:#EC4899;border:1px solid rgba(236,72,153,.2)">
-                                    <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> 同步 Bangumi
-                                </button>
+                        <div id="bgm-search-results" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3"></div>
+                        <div id="bgm-selected" class="text-sm" style="display:none;color:#94a3b8"></div>
+                        <!-- 添加表单（选中条目后出现） -->
+                        <div id="media-add-form" style="display:none;border-top:1px solid rgba(255,255,255,.06);padding-top:16px">
+                            <div class="grid grid-cols-2 gap-3">
+                                <select id="media-status" class="admin-input admin-select" required>
+                                    <option value="">选择状态</option>
+                                    <option value="watching">追番 — 在看</option>
+                                    <option value="completed">追番 — 看过</option>
+                                    <option value="plan">追番 — 想看</option>
+                                    <option value="on_hold">追番 — 搁置</option>
+                                    <option value="dropped">追番 — 抛弃</option>
+                                </select>
+                                <div class="flex gap-2">
+                                    <input type="number" id="media-progress" class="admin-input" placeholder="集数" min="0" required>
+                                    <button type="submit" class="admin-btn admin-btn-primary flex-shrink-0">
+                                        <i data-lucide="plus" class="w-4 h-4"></i> 添加
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    </form>
                 </div>
-                <div id="media-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"></div>
+
+                <!-- 状态筛选 -->
+                <div id="media-filters" class="flex items-center gap-1.5 flex-wrap"></div>
+
+                <!-- 条目网格 -->
+                <div id="media-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
             </section>
 
             <!-- ═══════ VIEW: FEEDS ═══════ -->
@@ -698,6 +719,16 @@
                             </div>
                             <div class="flex justify-end mt-4">
                                 <button type="button" id="notice-save" class="admin-btn admin-btn-primary admin-btn-sm">保存公告</button>
+                            </div>
+                        </div>
+                        <div style="border-top:1px solid rgba(255,255,255,.06);padding-top:24px">
+                            <h4 class="text-sm font-bold uppercase tracking-wide mb-4 pl-3" style="color:inherit;border-left:3px solid var(--color-primary,#14B8A6)">Bangumi 设置</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div><label class="text-sm font-medium mb-1 block" style="color:inherit" for="setting-bangumi-username">用户名</label><input type="text" id="setting-bangumi-username" class="admin-input" placeholder="Bangumi 用户名"></div>
+                                <div><label class="text-sm font-medium mb-1 block" style="color:inherit" for="setting-bangumi-token">Token</label><input type="password" id="setting-bangumi-token" class="admin-input" placeholder="Bangumi Access Token"></div>
+                            </div>
+                            <div class="flex justify-end mt-3">
+                                <button type="button" onclick="saveBangumiSettings()" class="admin-btn admin-btn-primary admin-btn-sm">保存 Bangumi 设置</button>
                             </div>
                         </div>
                         <div style="border-top:1px solid rgba(255,255,255,.06);padding-top:24px" class="flex justify-end">

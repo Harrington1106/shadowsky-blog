@@ -1999,6 +1999,8 @@ const SnapshotsManager = {
 const MediaManager = {
     data: { anime: [], manga: [] },
     currentType: 'anime',
+    currentFilter: 'all',
+
     async fetch() {
         try {
             this.data = await safeFetch(`${API_BASE}/media`);
@@ -2010,61 +2012,97 @@ const MediaManager = {
             showToast('获取媒体数据失败');
         }
     },
+
+    getItems() {
+        const items = this.data[this.currentType] || [];
+        return this.currentFilter === 'all' ? items : items.filter(i => i.status === this.currentFilter);
+    },
+
+    getCount() {
+        return (this.data[this.currentType] || []).length;
+    },
+
+    filter(status) {
+        this.currentFilter = status;
+        this.updateFilterUI();
+        this.render();
+    },
+
+    updateFilterUI() {
+        const container = document.getElementById('media-filters');
+        if (!container) return;
+        const isAnime = this.currentType === 'anime';
+        const filters = [
+            { key: 'all', label: '全部' },
+            { key: 'watching', label: isAnime ? '在看' : '在读' },
+            { key: 'completed', label: isAnime ? '看过' : '读过' },
+            { key: 'plan', label: isAnime ? '想看' : '想读' },
+            { key: 'on_hold', label: '搁置' },
+            { key: 'dropped', label: '抛弃' }
+        ];
+        container.innerHTML = filters.map(f => {
+            const active = this.currentFilter === f.key;
+            return `<button onclick="MediaManager.filter('${f.key}')" class="text-xs px-3 py-1 rounded-full font-medium transition-all"
+                style="${active ? 'background:#14B8A6;color:#fff' : 'background:rgba(255,255,255,.04);color:#94a3b8;border:1px solid rgba(255,255,255,.06)'}">${f.label}</button>`;
+        }).join('');
+    },
+
     render() {
         const list = document.getElementById('media-list');
+        const countEl = document.getElementById('media-count');
         list.innerHTML = '';
-        if (!this.data) this.data = { anime: [], manga: [] };
-        const items = this.data[this.currentType] || [];
+        const items = this.getItems();
+        if (countEl) countEl.textContent = `共 ${this.getCount()} 部`;
+
         if (items.length === 0) {
-            list.innerHTML = '<div class="col-span-full text-center text-slate-500 py-12">暂无媒体内容</div>';
+            list.innerHTML = `<div class="col-span-full text-center py-12" style="color:#64748b">${this.currentFilter === 'all' ? '暂无内容 — 搜索 Bangumi 添加吧 📺' : '该状态下暂无条目'}</div>`;
             return;
         }
         items.forEach(item => {
             const el = document.createElement('div');
-            el.className = 'bg-white border border-slate-200 rounded-xl p-4 shadow-sm hover:shadow-md transition-all group';
-            
-            // Status Badge Colors
-            let statusColor = 'bg-slate-100 text-slate-600';
-            if (item.status === 'watching' || item.status === 'reading') statusColor = 'bg-blue-50 text-blue-600';
-            if (item.status === 'completed') statusColor = 'bg-green-50 text-green-600';
-            if (item.status === 'plan') statusColor = 'bg-purple-50 text-purple-600';
-            if (item.status === 'dropped') statusColor = 'bg-red-50 text-red-600';
+            el.style.cssText = 'background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:12px;position:relative';
+            el.className = 'group';
 
-            // Progress Percentage
             const progress = item.total ? Math.round((item.progress / item.total) * 100) : 0;
-            const progressColor = progress >= 100 ? 'bg-green-500' : 'bg-blue-500';
+            const isComplete = progress >= 100 && item.total > 0;
+
+            // 状态颜色
+            const statusColors = {
+                'watching': { bg: 'rgba(59,130,246,.15)', text: '#60a5fa' },
+                'reading': { bg: 'rgba(59,130,246,.15)', text: '#60a5fa' },
+                'completed': { bg: 'rgba(34,197,94,.15)', text: '#4ade80' },
+                'plan': { bg: 'rgba(168,85,247,.15)', text: '#c084fc' },
+                'on_hold': { bg: 'rgba(251,191,36,.15)', text: '#fbbf24' },
+                'dropped': { bg: 'rgba(239,68,68,.15)', text: '#f87171' }
+            };
+            const sc = statusColors[item.status] || { bg: 'rgba(255,255,255,.06)', text: '#94a3b8' };
+            const progressColor = isComplete ? '#22c55e' : '#3b82f6';
 
             el.innerHTML = `
-                <div class="flex gap-4">
-                    <div class="w-16 h-24 flex-shrink-0 bg-slate-100 rounded-lg overflow-hidden relative group-hover:scale-105 transition-transform duration-300">
-                        ${item.cover ? `<img src="${item.cover}" class="w-full h-full object-cover" loading="lazy" onerror="this.src='../public/img/default-book.jpg'">` : `<div class="w-full h-full flex items-center justify-center text-slate-300"><i data-lucide="image" class="w-6 h-6"></i></div>`}
-                        <div class="absolute bottom-0 left-0 w-full h-1 bg-slate-200/50 backdrop-blur-sm">
-                            <div class="h-full ${progressColor} transition-all" style="width: ${progress}%"></div>
+                <div style="display:flex;gap:12px">
+                    <div style="width:56px;height:80px;flex-shrink:0;background:rgba(255,255,255,.04);border-radius:8px;overflow:hidden;position:relative">
+                        ${item.cover ? `<img src="${item.cover}" style="width:100%;height:100%;object-fit:cover" loading="lazy" onerror="this.style.display='none'">` : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:rgba(148,163,184,.3)"><i data-lucide="image" style="width:20px;height:20px"></i></div>`}
+                        <div style="position:absolute;bottom:0;left:0;right:0;height:3px;background:rgba(0,0,0,.3)">
+                            <div style="height:100%;background:${progressColor};width:${Math.min(progress, 100)}%"></div>
                         </div>
                     </div>
-                    <div class="flex-1 min-w-0">
-                        <div class="flex justify-between items-start mb-1">
-                            <h3 class="font-medium text-slate-800 truncate pr-2" title="${item.title}">${item.title}</h3>
-                            <button onclick="MediaManager.delete('${item.id}')" class="text-slate-400 hover:text-red-500 p-1 rounded-md hover:bg-red-50 transition-colors opacity-0 group-hover:opacity-100">
-                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                    <div style="flex:1;min-width:0">
+                        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px">
+                            <h3 style="font-size:.85rem;font-weight:600;color:#e2e8f0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding-right:4px" title="${item.title}">${item.title}</h3>
+                            <button onclick="MediaManager.delete('${item.id}')" style="background:none;border:none;cursor:pointer;color:#64748b;padding:2px;border-radius:4px;opacity:0;transition:opacity .2s" class="group-hover:opacity-100">
+                                <i data-lucide="trash-2" style="width:14px;height:14px"></i>
                             </button>
                         </div>
-                        
-                        <div class="flex items-center gap-2 mb-2">
-                            <span class="text-xs px-2 py-0.5 rounded-full font-medium ${statusColor}">
-                                ${this.getStatusText(item.status)}
-                            </span>
-                            ${item.tag ? `<span class="text-xs text-slate-400 px-1 border border-slate-200 rounded">${item.tag}</span>` : ''}
+                        <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px">
+                            <span style="font-size:.7rem;padding:2px 8px;border-radius:999px;background:${sc.bg};color:${sc.text};font-weight:500">${this.getStatusText(item.status)}</span>
+                            ${item.tag ? `<span style="font-size:.7rem;color:#64748b;border:1px solid rgba(255,255,255,.08);padding:1px 6px;border-radius:4px">${item.tag}</span>` : ''}
                         </div>
-
-                        <div class="space-y-1">
-                            <div class="flex items-center justify-between text-xs text-slate-500">
-                                <span>进度</span>
-                                <span class="font-medium font-mono">${item.progress} / <span class="text-slate-400">${item.total || '?'}</span></span>
-                            </div>
-                            <div class="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
-                                <div class="${progressColor} h-full rounded-full" style="width: ${progress}%"></div>
-                            </div>
+                        <div style="display:flex;align-items:center;justify-content:space-between;font-size:.75rem;color:#64748b">
+                            <span>进度</span>
+                            <span style="font-family:monospace;font-weight:500;color:#94a3b8">${item.progress}<span style="color:#64748b"> / ${item.total || '?'}</span></span>
+                        </div>
+                        <div style="width:100%;height:3px;background:rgba(255,255,255,.06);border-radius:2px;margin-top:4px;overflow:hidden">
+                            <div style="height:100%;background:${progressColor};width:${Math.min(progress, 100)}%;border-radius:2px"></div>
                         </div>
                     </div>
                 </div>
@@ -2073,6 +2111,7 @@ const MediaManager = {
         });
         if (typeof lucide !== 'undefined') lucide.createIcons();
     },
+
     getStatusText(status) {
         const map = {
             'watching': this.currentType === 'anime' ? '在看' : '在读',
@@ -2084,36 +2123,55 @@ const MediaManager = {
         };
         return map[status] || status;
     },
+
     switchType(type) {
         this.currentType = type;
-        
-        // Update tabs UI
-        const tabs = ['anime', 'manga'];
-        tabs.forEach(t => {
-            const btn = document.getElementById(`tab-${t}`);
-            if (btn) {
-                if (t === type) {
-                    btn.className = 'px-4 py-1.5 bg-white text-slate-800 shadow-sm rounded-md text-sm font-medium transition-all';
-                } else {
-                    btn.className = 'px-4 py-1.5 text-slate-500 hover:text-slate-700 rounded-md text-sm font-medium transition-all';
-                }
-            }
+        this.currentFilter = 'all';
+
+        // 更新 tabs
+        document.querySelectorAll('.media-tab-btn').forEach(btn => {
+            btn.style.background = 'transparent';
+            btn.style.color = '#94a3b8';
+            btn.style.fontWeight = '400';
         });
+        const activeBtn = document.getElementById(`tab-${type}`);
+        if (activeBtn) {
+            activeBtn.style.background = '#14B8A6';
+            activeBtn.style.color = '#fff';
+            activeBtn.style.fontWeight = '600';
+        }
 
-        // Update form placeholders
+        // 更新添加表单的 status select 选项
+        const statusSel = document.getElementById('media-status');
+        if (statusSel) {
+            const isAnime = type === 'anime';
+            statusSel.innerHTML = `
+                <option value="">选择状态</option>
+                <option value="watching">${isAnime ? '在看' : '在读'}</option>
+                <option value="completed">${isAnime ? '看过' : '读过'}</option>
+                <option value="plan">${isAnime ? '想看' : '想读'}</option>
+                <option value="on_hold">搁置</option>
+                <option value="dropped">抛弃</option>
+            `;
+        }
         const progressInput = document.getElementById('media-progress');
-        const totalInput = document.getElementById('media-total');
-        if (progressInput) progressInput.placeholder = type === 'anime' ? '看到第几集' : '读到第几话/卷';
-        if (totalInput) totalInput.placeholder = type === 'anime' ? '总集数' : '总话/卷数';
+        if (progressInput) progressInput.placeholder = type === 'anime' ? '集数' : '话/卷数';
 
+        // 清除搜索
+        BgmSearch.selected = null;
+        BgmSearch.results = [];
+        document.getElementById('bgm-search-results').innerHTML = '';
+        document.getElementById('bgm-selected').style.display = 'none';
+        document.getElementById('media-add-form').style.display = 'none';
+
+        this.updateFilterUI();
         this.render();
     },
+
     async add(item) {
-        // Normalize status for manga
         if (this.currentType === 'manga' && item.status === 'watching') {
             item.status = 'reading';
         }
-        
         const newItem = { id: Date.now(), ...item };
         if (!this.data[this.currentType]) this.data[this.currentType] = [];
         this.data[this.currentType].unshift(newItem);
@@ -2123,19 +2181,23 @@ const MediaManager = {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(this.data)
             });
-            showToast('媒体添加成功');
+            showToast('添加成功！', 'success');
             media = this.data;
             this.render();
+            this.updateFilterUI();
             return true;
         } catch (e) {
-            showToast('保存媒体失败: ' + e.message);
+            showToast('保存失败: ' + e.message);
             this.data[this.currentType].shift();
             this.render();
             return false;
         }
     },
+
     async delete(id) {
-        ConfirmationDialog.show('确定要删除这个媒体项目吗？', async () => {
+        const item = this.data[this.currentType].find(i => i.id == id);
+        const title = item ? (item.title || '').slice(0, 20) : '';
+        ConfirmationDialog.show(`确定要删除${title ? `「${title}」` : '这个条目'}吗？`, async () => {
             const originalList = [...(this.data[this.currentType] || [])];
             this.data[this.currentType] = this.data[this.currentType].filter(i => i.id != id);
             this.render();
@@ -2145,10 +2207,11 @@ const MediaManager = {
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(this.data)
                 });
-                showToast('媒体已删除');
+                showToast('已删除', 'success');
                 media = this.data;
+                this.updateFilterUI();
             } catch (e) {
-                showToast('删除媒体失败: ' + e.message);
+                showToast('删除失败: ' + e.message);
                 this.data[this.currentType] = originalList;
                 this.render();
             }
@@ -2159,46 +2222,63 @@ const MediaManager = {
 const BgmSearch = {
     results: [],
     selected: null,
+
     async search(keyword) {
+        if (!keyword.trim()) { showToast('请输入搜索关键词', 'warning'); return; }
         const type = MediaManager.currentType === 'anime' ? '2' : '1';
         try {
             const data = await safeFetch(`${API_BASE}/bgm_search?q=${encodeURIComponent(keyword)}&type=${type}`);
             this.results = (data && data.data) ? data.data : (Array.isArray(data) ? data : []);
             this.render();
-            showToast(`搜索到 ${this.results.length} 条结果`, 'success');
         } catch (e) {
             showToast('搜索失败: ' + e.message, 'error');
         }
     },
+
     render() {
         const c = document.getElementById('bgm-search-results');
         if (!c) return;
+        if (this.results.length === 0) {
+            c.innerHTML = '<div class="col-span-full text-xs py-4 text-center" style="color:#64748b">无搜索结果</div>';
+            return;
+        }
         c.innerHTML = this.results.map(item => {
             const title = item.name_cn || item.name || '';
             const img = item.images?.large || item.images?.common || '';
             const total = item.eps || item.vols || '';
+            const isSelected = this.selected && String(this.selected.id) === String(item.id);
             return `
-                <div class="bg-white border border-slate-200 rounded-xl p-3 flex gap-3 items-center">
-                    <img src="${img}" class="w-12 h-16 object-cover rounded bg-slate-100" onerror="this.src='../public/img/default-book.jpg'">
-                    <div class="flex-1 min-w-0">
-                        <div class="font-medium text-slate-800 truncate">${title}</div>
-                        <div class="text-xs text-slate-400">${total ? `总数: ${total}` : ''}</div>
+                <div style="background:rgba(255,255,255,.03);border:1px solid ${isSelected ? '#14B8A6' : 'rgba(255,255,255,.06)'};border-radius:10px;padding:10px;display:flex;gap:10px;align-items:center;cursor:pointer;transition:border-color .2s"
+                    onclick="BgmSearch.select('${item.id}')">
+                    <img src="${img}" style="width:40px;height:56px;object-fit:cover;border-radius:6px;background:rgba(255,255,255,.04);flex-shrink:0" onerror="this.style.display='none'">
+                    <div style="flex:1;min-width:0">
+                        <div style="font-size:.8rem;font-weight:500;color:#e2e8f0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${title}</div>
+                        <div style="font-size:.7rem;color:#64748b">${total ? `共 ${total} 集` : ''}</div>
                     </div>
-                    <button class="px-3 py-1 bg-slate-900 text-white rounded text-xs" data-select-id="${item.id}">选择</button>
+                    <span style="font-size:.7rem;padding:3px 10px;border-radius:999px;background:${isSelected ? '#14B8A6' : 'rgba(255,255,255,.08)'};color:${isSelected ? '#fff' : '#94a3b8'};flex-shrink:0">
+                        ${isSelected ? '已选' : '选择'}
+                    </span>
                 </div>`;
         }).join('');
         if (typeof lucide !== 'undefined') lucide.createIcons();
     },
+
     select(id) {
         const item = this.results.find(i => String(i.id) === String(id));
         if (!item) return;
         this.selected = item;
+        this.render();
+        // 显示已选信息 + 展开添加表单
         const sel = document.getElementById('bgm-selected');
+        const form = document.getElementById('media-add-form');
         if (sel) {
-            const title = item.name_cn || item.name || '';
-            sel.textContent = `已选择: ${title} (#${item.id})`;
+            sel.style.display = 'block';
+            sel.innerHTML = `已选择: <span style="color:#14B8A6;font-weight:500">${item.name_cn || item.name || ''}</span> (#${item.id})`;
         }
-        showToast('已选择条目');
+        if (form) form.style.display = 'block';
+        // 预填进度
+        const progressInput = document.getElementById('media-progress');
+        if (progressInput) progressInput.focus();
     }
 };
 
@@ -2737,7 +2817,7 @@ const Dashboard = {
 
         if (tabId === 'bookmarks') { BookmarksManager.fetch(); BookmarksManager.populateCategories(); }
         if (tabId === 'snapshots') { SnapshotsManager.fetch(); ImageUploader.init(); }
-        if (tabId === 'media') MediaManager.fetch();
+        if (tabId === 'media') { MediaManager.fetch(); MediaManager.updateFilterUI(); }
         if (tabId === 'feeds') FeedsManager.fetch();
         if (tabId === 'videos') VideosManager.fetch();
         if (tabId === 'stats') StatsManager.fetch();
@@ -2976,21 +3056,34 @@ async function handleAddMedia(e) {
     e.preventDefault();
     const form = e.target;
     const btn = form.querySelector('button[type="submit"]');
-    FormValidator.clearErrors(form);
-    const validation = FormValidator.validateForm(form);
-    if (!validation.isValid) { showToast('请检查表单中的错误', 'error'); return; }
-    FormValidator.setLoadingState(btn, true);
     const status = document.getElementById('media-status').value;
     const progress = document.getElementById('media-progress').value;
-    if (!BgmSearch.selected) { showToast('请先通过 Bangumi 搜索选择条目', 'warning'); FormValidator.setLoadingState(btn, false); return; }
+    if (!status) { showToast('请选择状态', 'warning'); return; }
+    if (progress === '' || parseInt(progress) < 0) { showToast('请输入有效集数', 'warning'); return; }
+    if (!BgmSearch.selected) { showToast('请先搜索并选择一个 Bangumi 条目', 'warning'); return; }
+    FormValidator.setLoadingState(btn, true);
     const subj = BgmSearch.selected;
     const title = subj.name_cn || subj.name || '';
     const cover = (subj.images && (subj.images.large || subj.images.common)) || '';
     const total = subj.eps || subj.vols || 0;
-    const tag = 'Bangumi';
     try {
-        const success = await MediaManager.add({ title, status, cover, progress: parseInt(progress) || 0, total: parseInt(total) || 0, tag, id: String(subj.id) });
-        if (success) { form.reset(); FormValidator.clearErrors(form); }
+        const success = await MediaManager.add({
+            title, status, cover,
+            progress: parseInt(progress) || 0,
+            total: parseInt(total) || 0,
+            tag: 'Bangumi',
+            id: String(subj.id)
+        });
+        if (success) {
+            form.reset();
+            FormValidator.clearErrors(form);
+            // 重置搜索
+            BgmSearch.selected = null;
+            BgmSearch.results = [];
+            document.getElementById('bgm-search-results').innerHTML = '';
+            document.getElementById('bgm-selected').style.display = 'none';
+            document.getElementById('media-add-form').style.display = 'none';
+        }
     } finally {
         FormValidator.setLoadingState(btn, false);
     }
@@ -3239,7 +3332,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     bindListener('add-bookmark-form', handleAddBookmark);
     bindListener('add-snapshot-form', handleAddSnapshot);
-    // 写入功能禁用：不再绑定添加媒体表单
+    bindListener('add-media-form', handleAddMedia);
     bindListener('add-feed-form', handleAddFeed);
     bindListener('add-video-form', handleAddVideo);
     bindListener('settings-form', handleSaveSettings);
