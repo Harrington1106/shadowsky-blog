@@ -21,7 +21,13 @@
     "date": "2025-12-28",
     "category": "Uncategorized",
     "author": "Thoi",
-    "tags": [],
+    "tags": [
+      "邮箱",
+      "自托管",
+      "Docker",
+      "Mailcow",
+      "教程"
+    ],
     "excerpt": "2025版自建企业邮箱/个人邮箱保姆级教程 Mailcow Dockerized 免责声明：自建邮件服务器需要一定的 Linux 运维基础。本文旨在技术交流，请勿用于发送垃圾邮件。国内云服务器通常封禁 25 端口，建议选择海外 VPS（需确...",
     "readTime": 11,
     "coverImage": "https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&q=80&w=1000",
@@ -155,7 +161,13 @@
     "date": "2025-12-28",
     "category": "Uncategorized",
     "author": "Thoi",
-    "tags": [],
+    "tags": [
+      "Bilibili",
+      "嵌入",
+      "前端",
+      "iframe",
+      "教程"
+    ],
     "excerpt": "如何在个人网站优雅地嵌入 B 站视频（使用 iframe 或其他方式） 摘要：在个人博客或网站中嵌入 B 站（Bilibili）视频是丰富内容的绝佳方式。然而，官方提供的默认代码往往不具备响应式能力，且加载性能较差。本文将从基础的 ifra...",
     "readTime": 14,
     "coverImage": "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&q=80&w=1000",

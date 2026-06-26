@@ -3,7 +3,7 @@ title: "2025版自建企业邮箱/个人邮箱保姆级教程 (Mailcow Dockerize
 date: "2025-12-28"
 category: "Uncategorized"
 author: "Thoi"
-tags: []
+tags: ["邮箱", "自托管", "Docker", "Mailcow", "教程"]
 excerpt: "2025版自建企业邮箱/个人邮箱保姆级教程 Mailcow Dockerized 免责声明：自建邮件服务器需要一定的 Linux 运维基础。本文旨在技术交流，请勿用于发送垃圾邮件。国内云服务器通常封禁 25 端口，建议选择海外 VPS（需确..."
 lastModified: "2026-06-26"
 readTime: 11

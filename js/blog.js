@@ -248,7 +248,7 @@ function renderGridView(container) {
         // 封面区域 — 徽章浮在封面内部
         const coverHtml = post.coverImage
             ? `<div class="blog-card-media">
-                 <img src="${post.coverImage}" alt="" loading="lazy" class="blog-card-img" />
+                 <img src="${post.coverImage}" alt="" loading="lazy" class="blog-card-img" referrerpolicy="no-referrer" />
                  <div class="blog-card-media-shade"></div>
                  <span class="blog-card-badge">
                    <i data-lucide="folder"></i>

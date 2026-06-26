@@ -40,7 +40,7 @@ coverImage: "https://images.unsplash.com/photo-1499750310159-529800cf2c5a?auto=f
 
 ---
 
-## �️ 第一部分：Obsidian 里的“魔法” (The Writing Experience)
+## ⚙️ 第一部分：Obsidian 里的“魔法” (The Writing Experience)
 
 我使用 **Obsidian** 作为我的编辑器。它最强大的地方在于插件生态，特别是 **Templater** 插件。
 
@@ -200,7 +200,7 @@ Write-Host "🚀 Ready to deploy!"
 
 ---
 
-## � 总结
+## ⚙️ 总结
 
 通过这三个步骤，我把博客维护的时间从**30分钟**压缩到了**30秒**。
 
