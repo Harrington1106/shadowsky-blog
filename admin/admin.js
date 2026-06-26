@@ -2285,6 +2285,7 @@ const BgmSearch = {
 const FeedsManager = {
     data: [],
     editingId: null,
+
     async fetch() {
         try {
             this.data = await safeFetch(`${API_BASE}/feeds`);
@@ -2296,107 +2297,128 @@ const FeedsManager = {
             showToast('获取订阅失败');
         }
     },
+
     render() {
         const list = document.getElementById('feeds-list');
         list.innerHTML = '';
         if (!Array.isArray(this.data) || this.data.length === 0) {
-            list.innerHTML = '<div class="col-span-full text-center text-slate-500 py-12">暂无订阅源</div>';
+            list.innerHTML = '<div class="col-span-full text-center py-12" style="color:#64748b">暂无订阅源 — 添加第一个 RSS 吧 📡</div>';
             return;
         }
-        this.data.forEach(item => {
+        this.data.forEach((item, idx) => {
             const el = document.createElement('div');
-            el.className = 'bg-white p-4 rounded-xl border border-slate-200 flex justify-between items-center';
+            el.style.cssText = 'background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:14px;position:relative';
+            el.className = 'group';
+            const catHtml = item.category ? `<span style="font-size:.65rem;padding:2px 7px;border-radius:4px;background:rgba(20,184,166,.1);color:#2dd4bf;flex-shrink:0">${item.category}</span>` : '';
             el.innerHTML = `
-                <div class="flex items-center gap-3">
-                    <img src="${item.icon || ''}" class="w-8 h-8 rounded bg-slate-100" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(item.title)}'">
-                    <div><h3 class="font-semibold text-slate-800">${item.title}</h3><div class="text-xs text-slate-400">${item.id}</div></div>
-                </div>
-                <div class="flex items-center gap-2">
-                    <a href="${item.url}" target="_blank" class="p-2 text-slate-400 hover:text-blue-600"><i data-lucide="external-link" class="w-4 h-4"></i></a>
-                    <button onclick="FeedsManager.edit('${item.id}')" class="p-2 text-slate-400 hover:text-blue-600" title="编辑"><i data-lucide="edit-2" class="w-4 h-4"></i></button>
-                    <button onclick="FeedsManager.delete('${item.id}')" class="p-2 text-slate-400 hover:text-red-500"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px">
+                    <div style="display:flex;align-items:center;gap:10px;min-width:0">
+                        <div style="width:36px;height:36px;border-radius:8px;overflow:hidden;flex-shrink:0;background:rgba(255,255,255,.04)">
+                            <img src="${item.icon || ''}" style="width:100%;height:100%;object-fit:cover" onerror="this.style.display='none'" alt="">
+                        </div>
+                        <div style="min-width:0">
+                            <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px">
+                                <h3 style="font-size:.85rem;font-weight:600;color:#e2e8f0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${item.title}</h3>
+                                ${catHtml}
+                            </div>
+                            <div style="font-size:.7rem;color:#64748b;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${item.url}</div>
+                        </div>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:2px;flex-shrink:0">
+                        <a href="${item.url}" target="_blank" style="padding:6px;color:#64748b;border-radius:6px;text-decoration:none" onmouseover="this.style.background='rgba(59,130,246,.1)';this.style.color='#60a5fa'" onmouseout="this.style.background='';this.style.color='#64748b'"><i data-lucide="external-link" style="width:14px;height:14px"></i></a>
+                        <button onclick="FeedsManager.editByIndex(${idx})" style="padding:6px;color:#64748b;background:none;border:none;border-radius:6px;cursor:pointer" onmouseover="this.style.background='rgba(20,184,166,.1)';this.style.color='#14B8A6'" onmouseout="this.style.background='';this.style.color='#64748b'"><i data-lucide="edit-2" style="width:14px;height:14px"></i></button>
+                        <button onclick="FeedsManager.deleteByIndex(${idx})" style="padding:6px;color:#64748b;background:none;border:none;border-radius:6px;cursor:pointer" onmouseover="this.style.background='rgba(239,68,68,.1)';this.style.color='#ef4444'" onmouseout="this.style.background='';this.style.color='#64748b'"><i data-lucide="trash-2" style="width:14px;height:14px"></i></button>
+                    </div>
                 </div>
             `;
             list.appendChild(el);
         });
         if (typeof lucide !== 'undefined') lucide.createIcons();
     },
-    edit(id) {
-        const item = this.data.find(f => f.id === id);
+
+    /** 用索引编辑（解决 item.id 可能缺失的问题） */
+    editByIndex(idx) {
+        const item = this.data[idx];
         if (!item) return;
-        this.editingId = id;
-        const idInput = document.getElementById('feed-id');
+        this.editingId = item.id || ('idx-' + idx);
         const titleInput = document.getElementById('feed-title');
         const urlInput = document.getElementById('feed-url');
         const iconInput = document.getElementById('feed-icon');
-        if (idInput) idInput.value = item.id;
+        const catInput = document.getElementById('feed-category');
         if (titleInput) titleInput.value = item.title || '';
         if (urlInput) urlInput.value = item.url || '';
         if (iconInput) iconInput.value = item.icon || '';
-        const submitBtn = document.querySelector('#add-feed-form button[type="submit"]');
-        if (submitBtn) {
-            submitBtn.innerHTML = '保存修改';
-            submitBtn.classList.remove('bg-orange-500','hover:bg-orange-600');
-            submitBtn.classList.add('bg-emerald-600','hover:bg-emerald-700');
-        }
-        let cancelBtn = document.getElementById('feed-cancel');
-        if (!cancelBtn) {
-            cancelBtn = document.createElement('button');
-            cancelBtn.type = 'button';
-            cancelBtn.id = 'feed-cancel';
-            cancelBtn.className = 'ml-2 px-6 py-2 bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300 transition-colors text-sm font-medium';
-            cancelBtn.textContent = '取消编辑';
-            cancelBtn.onclick = () => FeedsManager.cancelEdit();
-            const container = document.querySelector('#add-feed-form .flex.justify-end');
-            if (container) container.appendChild(cancelBtn);
-        } else {
-            cancelBtn.classList.remove('hidden');
-        }
-        const form = document.getElementById('add-feed-form');
-        if (form) form.scrollIntoView({ behavior: 'smooth' });
+        if (catInput) catInput.value = item.category || '';
+        // 存储当前编辑的索引
+        this._editingIdx = idx;
+        document.getElementById('feed-edit-bar').style.display = 'flex';
+        const btn = document.getElementById('feed-submit-btn');
+        if (btn) btn.innerHTML = '<i data-lucide="save" class="w-4 h-4"></i> 保存修改';
+        document.getElementById('feed-test-result').style.display = 'none';
         if (typeof lucide !== 'undefined') lucide.createIcons();
     },
+
     cancelEdit() {
         this.editingId = null;
+        this._editingIdx = null;
         const form = document.getElementById('add-feed-form');
         if (form) form.reset();
-        const submitBtn = document.querySelector('#add-feed-form button[type="submit"]');
-        if (submitBtn) {
-            submitBtn.innerHTML = '添加订阅';
-            submitBtn.classList.add('bg-orange-500','hover:bg-orange-600');
-            submitBtn.classList.remove('bg-emerald-600','hover:bg-emerald-700');
-        }
-        const cancelBtn = document.getElementById('feed-cancel');
-        if (cancelBtn) cancelBtn.classList.add('hidden');
+        document.getElementById('feed-edit-bar').style.display = 'none';
+        document.getElementById('feed-test-result').style.display = 'none';
+        const btn = document.getElementById('feed-submit-btn');
+        if (btn) btn.innerHTML = '<i data-lucide="plus" class="w-4 h-4"></i> 添加订阅';
         if (typeof lucide !== 'undefined') lucide.createIcons();
     },
-    async update(oldId, newId, title, url, icon) {
-        const original = [...this.data];
-        const idx = this.data.findIndex(f => f.id === oldId);
-        if (idx === -1) { showToast('未找到要编辑的订阅', 'error'); return false; }
-        if (newId !== oldId && this.data.some(f => f.id === newId)) { showToast('订阅 ID 已存在', 'error'); return false; }
-        this.data[idx] = { id: newId, title, url, icon };
-        try {
-            await safeFetch(`${API_BASE}/feeds`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(this.data)
-            });
-            showToast('订阅更新成功！', 'success');
-            feeds = this.data;
+
+    deleteByIndex(idx) {
+        const item = this.data[idx];
+        const title = item ? (item.title || '').slice(0, 20) : '此订阅源';
+        ConfirmationDialog.show(`确定要删除「${title}」吗？`, async () => {
+            const original = [...this.data];
+            this.data.splice(idx, 1);
             this.render();
-            return true;
-        } catch (e) {
-            showToast('保存订阅失败: ' + e.message, 'error');
-            this.data = original;
-            this.render();
-            return false;
-        }
+            try {
+                await safeFetch(`${API_BASE}/feeds`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(this.data)
+                });
+                showToast('已删除', 'success');
+                feeds = this.data;
+            } catch (e) {
+                showToast('删除失败: ' + e.message);
+                this.data = original;
+                this.render();
+            }
+        });
     },
-    async add(id, title, url, icon) {
-        if (this.data.some(f => f.id === id)) { showToast('订阅 ID 已存在', 'error'); return false; }
-        const newFeed = { id, title, url, icon };
-        this.data.push(newFeed);
+
+    async save(title, url, icon, category) {
+        const item = { title, url, icon, category };
+        // 编辑模式
+        if (this._editingIdx != null) {
+            const original = [...this.data];
+            this.data[this._editingIdx] = item;
+            try {
+                await safeFetch(`${API_BASE}/feeds`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(this.data)
+                });
+                showToast('订阅已更新', 'success');
+                feeds = this.data;
+                this.cancelEdit();
+                this.render();
+                return true;
+            } catch (e) {
+                showToast('保存失败: ' + e.message);
+                this.data = original;
+                this.render();
+                return false;
+            }
+        }
+        // 添加模式
+        this.data.push(item);
         try {
             await safeFetch(`${API_BASE}/feeds`, {
                 method: 'POST',
@@ -2408,40 +2430,67 @@ const FeedsManager = {
             this.render();
             return true;
         } catch (e) {
-            showToast('保存订阅失败', 'error');
+            showToast('保存失败: ' + e.message);
             this.data.pop();
             return false;
         }
     },
-    async delete(id) {
-        const item = this.data.find(f => f.id === id);
-        const title = item ? item.title : '此订阅源';
-        ConfirmationDialog.show(`确定要删除 "${title}" 吗？`, async () => {
-            const originalData = [...this.data];
-            this.data = this.data.filter(f => f.id !== id);
-            try {
-                await safeFetch(`${API_BASE}/feeds`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(this.data)
-                });
-                showToast('订阅已删除', 'success');
-                feeds = this.data;
-            } catch (e) {
-                showToast('删除订阅失败', 'error');
-                this.data = originalData;
-                this.render();
+
+    /** RSS 检测：调服务端验证订阅源是否可用 */
+    async testFeed() {
+        const url = document.getElementById('feed-url').value.trim();
+        if (!url) { showToast('请先输入 RSS 链接', 'warning'); return; }
+        const resultEl = document.getElementById('feed-test-result');
+        const btn = document.getElementById('feed-test-btn');
+        if (btn) { btn.disabled = true; btn.innerHTML = '<i data-lucide="loader" class="w-3.5 h-3.5 animate-spin"></i> 检测中...'; }
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+        try {
+            const data = await safeFetch(`${API_BASE}/test_feed`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ url })
+            });
+            if (data.success) {
+                resultEl.style.display = 'block';
+                resultEl.style.background = 'rgba(34,197,94,.08)';
+                resultEl.style.color = '#4ade80';
+                resultEl.style.borderColor = 'rgba(34,197,94,.15)';
+                resultEl.innerHTML = `✅ RSS 有效 — 标题: <strong>${data.title || '未知'}</strong>，共 ${data.articleCount || 0} 篇文章`;
+                // 自动填充
+                if (data.title && !document.getElementById('feed-title').value) {
+                    document.getElementById('feed-title').value = data.title;
+                }
+                if (data.iconUrl && !document.getElementById('feed-icon').value) {
+                    document.getElementById('feed-icon').value = data.iconUrl;
+                }
+            } else {
+                resultEl.style.display = 'block';
+                resultEl.style.background = 'rgba(239,68,68,.08)';
+                resultEl.style.color = '#f87171';
+                resultEl.style.borderColor = 'rgba(239,68,68,.15)';
+                resultEl.innerHTML = `❌ ${data.error || '无法解析此 RSS 源'}`;
             }
-        });
+        } catch (e) {
+            resultEl.style.display = 'block';
+            resultEl.style.background = 'rgba(239,68,68,.08)';
+            resultEl.style.color = '#f87171';
+            resultEl.style.borderColor = 'rgba(239,68,68,.15)';
+            resultEl.innerHTML = `❌ 检测失败: ${e.message}`;
+        } finally {
+            if (btn) { btn.disabled = false; btn.innerHTML = '<i data-lucide="search-check" class="w-3.5 h-3.5"></i> 检测'; }
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+        }
     },
-    autoFillIcon(url) {
-        if (!url) { showToast('请先输入RSS链接'); return; }
+
+    autoFillIcon() {
+        const url = document.getElementById('feed-url').value.trim();
+        if (!url) { showToast('请先输入 RSS 链接', 'warning'); return; }
         try {
             const domain = new URL(url).hostname;
-            const iconUrl = `https://www.google.com/s2/favicons?domain=${domain}&sz=32`;
-            document.getElementById('feed-icon').value = iconUrl;
-            showToast('图标链接已自动填充');
-        } catch (e) { showToast('无效的链接'); }
+            // 优先用 Google favicons
+            document.getElementById('feed-icon').value = `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
+            showToast('图标已自动填充');
+        } catch (e) { showToast('无效的链接', 'error'); }
     }
 };
 
@@ -2960,7 +3009,7 @@ function saveBangumiSettings() {
 }
 window.saveBangumiSettings = saveBangumiSettings;
 window.deleteFeed = (id) => FeedsManager.delete(id);
-window.autoFillFeedIcon = () => FeedsManager.autoFillIcon(document.getElementById('feed-url').value);
+window.autoFillFeedIcon = () => FeedsManager.autoFillIcon();
 window.deleteVideo = (id) => VideosManager.delete(id);
 window.fetchBilibiliInfo = () => VideosManager.fetchBilibiliInfo(document.getElementById('video-bvid').value);
 
@@ -3093,22 +3142,18 @@ async function handleAddFeed(e) {
     e.preventDefault();
     const form = e.target;
     const btn = form.querySelector('button[type="submit"]');
-    FormValidator.clearErrors(form);
-    const validation = FormValidator.validateForm(form);
-    if (!validation.isValid) { showToast('请检查表单中的错误', 'error'); return; }
-    FormValidator.setLoadingState(btn, true);
-    const id = document.getElementById('feed-id').value.trim();
     const title = document.getElementById('feed-title').value.trim();
     const url = document.getElementById('feed-url').value.trim();
     const icon = document.getElementById('feed-icon').value.trim();
+    const category = document.getElementById('feed-category').value.trim();
+    if (!title) { showToast('请输入标题', 'warning'); return; }
+    if (!url) { showToast('请输入 RSS 链接', 'warning'); return; }
+    FormValidator.setLoadingState(btn, true);
     try {
-        let success = false;
-        if (FeedsManager.editingId) {
-            success = await FeedsManager.update(FeedsManager.editingId, id, title, url, icon);
-            if (success) { FeedsManager.cancelEdit(); }
-        } else {
-            success = await FeedsManager.add(id, title, url, icon);
-            if (success) { form.reset(); FormValidator.clearErrors(form); }
+        const success = await FeedsManager.save(title, url, icon, category);
+        if (success && !FeedsManager.editingId) {
+            form.reset();
+            FormValidator.clearErrors(form);
         }
     } finally {
         FormValidator.setLoadingState(btn, false);
