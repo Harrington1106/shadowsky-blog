@@ -314,29 +314,29 @@
                 <div class="px-4 py-2 text-xs font-semibold uppercase tracking-wider" style="color:#64748b">内容管理</div>
                 <div role="tablist" aria-label="内容管理" class="space-y-0.5">
                     <button onclick="Dashboard.switchTab('bookmarks')" id="nav-bookmarks" class="nav-item w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium" role="tab" aria-selected="false" aria-controls="view-bookmarks" tabindex="0">
-                        <i data-lucide="bookmark" class="w-4 h-4"></i> 收藏夹
+                        <i data-lucide="bookmark" class="w-4 h-4"></i> 书签收藏
                     </button>
                     <button onclick="Dashboard.switchTab('snapshots')" id="nav-snapshots" class="nav-item w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium" role="tab" aria-selected="false" aria-controls="view-snapshots" tabindex="-1">
-                        <i data-lucide="camera" class="w-4 h-4"></i> 随手拍
+                        <i data-lucide="camera" class="w-4 h-4"></i> 片刻动态
                     </button>
                     <button onclick="Dashboard.switchTab('media')" id="nav-media" class="nav-item w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium" role="tab" aria-selected="false" aria-controls="view-media" tabindex="-1">
-                        <i data-lucide="film" class="w-4 h-4"></i> 追番/漫画
+                        <i data-lucide="film" class="w-4 h-4"></i> 追番追漫
                     </button>
                     <button onclick="Dashboard.switchTab('feeds')" id="nav-feeds" class="nav-item w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium" role="tab" aria-selected="false" aria-controls="view-feeds" tabindex="-1">
-                        <i data-lucide="rss" class="w-4 h-4"></i> 订阅源
+                        <i data-lucide="rss" class="w-4 h-4"></i> RSS 订阅
                     </button>
                     <button onclick="Dashboard.switchTab('videos')" id="nav-videos" class="nav-item w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium" role="tab" aria-selected="false" aria-controls="view-videos" tabindex="-1">
-                        <i data-lucide="youtube" class="w-4 h-4"></i> 视频推荐
+                        <i data-lucide="video" class="w-4 h-4"></i> 视频推荐
                     </button>
                 </div>
 
                 <div class="px-4 py-2 mt-5 text-xs font-semibold uppercase tracking-wider" style="color:#64748b">系统</div>
                 <div role="tablist" aria-label="系统管理" class="space-y-0.5">
                     <button onclick="Dashboard.switchTab('stats')" id="nav-stats" class="nav-item w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium" role="tab" aria-selected="false" aria-controls="view-stats" tabindex="-1">
-                        <i data-lucide="bar-chart-2" class="w-4 h-4"></i> 数据统计
+                        <i data-lucide="bar-chart-2" class="w-4 h-4"></i> 访问统计
                     </button>
                     <button onclick="Dashboard.switchTab('settings')" id="nav-settings" class="nav-item w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium" role="tab" aria-selected="false" aria-controls="view-settings" tabindex="-1">
-                        <i data-lucide="settings" class="w-4 h-4"></i> 系统设置
+                        <i data-lucide="settings" class="w-4 h-4"></i> 站点设置
                     </button>
                 </div>
             </nav>
@@ -661,25 +661,24 @@
 
             <!-- ═══════ VIEW: VIDEOS ═══════ -->
             <section id="view-videos" class="view-section space-y-6 hidden">
-                <div class="admin-card p-6">
+                <div class="admin-card p-5">
                     <form id="add-video-form" class="space-y-4">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div><label class="text-xs font-semibold uppercase tracking-wider mb-1 block" style="color:#94a3b8">Bilibili BV号</label>
-                                <div class="flex gap-2"><input type="text" id="video-bvid" class="admin-input flex-1" placeholder="BV..." required><button type="button" onclick="fetchBilibiliInfo()" class="admin-btn admin-btn-secondary admin-btn-sm"><i data-lucide="download-cloud" class="w-3.5 h-3.5"></i></button></div>
-                            </div>
-                            <div><label class="text-xs font-semibold uppercase tracking-wider mb-1 block" style="color:#94a3b8">推荐语</label><input type="text" id="video-desc" class="admin-input" placeholder="这视频真不错..."></div>
+                        <div class="flex gap-2">
+                            <input type="text" id="video-bvid" class="admin-input flex-1" placeholder="粘贴 Bilibili BV 号自动获取信息..." required>
+                            <button type="button" onclick="fetchBilibiliInfo()" class="admin-btn flex-shrink-0 flex items-center gap-1.5" style="background:rgba(251,146,60,.12);color:#fb923c;border:1px solid rgba(251,146,60,.2)">
+                                <i data-lucide="download-cloud" class="w-3.5 h-3.5"></i> 获取
+                            </button>
                         </div>
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 pt-4" style="border-top:1px solid rgba(255,255,255,.06)">
-                            <div><label class="text-xs font-semibold uppercase tracking-wider mb-1 block" style="color:#94a3b8">标题</label><input type="text" id="video-title" class="admin-input" required aria-label="Video Title"></div>
-                            <div><label class="text-xs font-semibold uppercase tracking-wider mb-1 block" style="color:#94a3b8">分类</label><input type="text" id="video-category" class="admin-input" placeholder="动画/游戏..."></div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                            <div><label class="text-xs font-semibold uppercase tracking-wider mb-1 block" style="color:#94a3b8">标题</label><input type="text" id="video-title" class="admin-input" placeholder="自动获取" required></div>
+                            <div><label class="text-xs font-semibold uppercase tracking-wider mb-1 block" style="color:#94a3b8">分类</label><input type="text" id="video-category" class="admin-input" placeholder="如 MAD/音乐"></div>
                             <div><label class="text-xs font-semibold uppercase tracking-wider mb-1 block" style="color:#94a3b8">时长</label><input type="text" id="video-duration" class="admin-input" placeholder="mm:ss"></div>
-                            <div><label class="text-xs font-semibold uppercase tracking-wider mb-1 block" style="color:#94a3b8">封面 URL</label><input type="url" id="video-cover" class="admin-input" aria-label="Video Cover URL"></div>
-                            <div><label class="text-xs font-semibold uppercase tracking-wider mb-1 block" style="color:#94a3b8">Bangumi 关联</label>
-                                <div class="flex gap-2"><input type="text" id="video-bgm-id" class="admin-input flex-1" placeholder="Subject ID"><button type="button" onclick="VideosManager.fetchBangumiSubject(document.getElementById('video-bgm-id').value)" class="admin-btn admin-btn-secondary admin-btn-sm"><i data-lucide="search" class="w-3.5 h-3.5"></i></button></div>
-                            </div>
                         </div>
-                        <div class="flex justify-end pt-2">
-                            <button type="submit" class="admin-btn" style="background:rgba(236,72,153,.12);color:#EC4899;border:1px solid rgba(236,72,153,.2)">添加视频</button>
+                        <div><label class="text-xs font-semibold uppercase tracking-wider mb-1 block" style="color:#94a3b8">推荐语</label><input type="text" id="video-desc" class="admin-input" placeholder="一句话说说为什么推荐..."></div>
+                        <div class="flex justify-end">
+                            <button type="submit" class="admin-btn admin-btn-primary">
+                                <i data-lucide="plus" class="w-4 h-4"></i> 添加视频
+                            </button>
                         </div>
                     </form>
                 </div>

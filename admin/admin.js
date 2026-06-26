@@ -2509,25 +2509,30 @@ const VideosManager = {
         const list = document.getElementById('videos-list');
         list.innerHTML = '';
         if (this.data.length === 0) {
-            list.innerHTML = '<div class="col-span-full text-center text-slate-500 py-12">暂无视频推荐</div>';
+            list.innerHTML = '<div class="col-span-full text-center py-12" style="color:#64748b">暂无视频 — 粘贴 BV 号添加吧 🎬</div>';
             return;
         }
         this.data.forEach(item => {
             const el = document.createElement('div');
-            el.className = 'bg-white p-4 rounded-xl border border-slate-200 flex gap-4';
+            el.className = 'admin-feed-card group';
             el.innerHTML = `
-                <img src="${item.thumbnail}" class="w-32 h-20 object-cover rounded-lg bg-slate-100" onerror="this.src='../public/img/default-book.jpg'">
-                <div class="flex-1">
-                    <div class="flex justify-between items-start">
-                        <h3 class="font-semibold text-slate-800 line-clamp-1">${item.title}</h3>
-                        <button onclick="VideosManager.delete(${item.id})" class="text-slate-400 hover:text-red-500"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                <div style="display:flex;gap:12px">
+                    <div style="width:120px;height:68px;flex-shrink:0;border-radius:8px;overflow:hidden;background:rgba(15,23,42,.3)">
+                        <img src="${item.thumbnail || ''}" style="width:100%;height:100%;object-fit:cover" onerror="this.style.display='none'" alt="">
                     </div>
-                    <div class="mt-1 text-sm text-slate-600 flex gap-3">
-                        <span class="bg-slate-100 px-2 rounded text-xs py-0.5">${item.category}</span>
-                        <span class="text-slate-400 text-xs flex items-center gap-1"><i data-lucide="clock" class="w-3 h-3"></i> ${item.duration}</span>
-                        <span class="text-slate-400 text-xs flex items-center gap-1"><i data-lucide="eye" class="w-3 h-3"></i> ${item.views || 0}</span>
+                    <div style="flex:1;min-width:0">
+                        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:4px">
+                            <h3 class="feed-title" style="line-height:1.3">${item.title}</h3>
+                            <button onclick="VideosManager.delete(${item.id})" style="padding:4px;color:#64748b;background:none;border:none;border-radius:4px;cursor:pointer;flex-shrink:0" onmouseover="this.style.color='#f87171'" onmouseout="this.style.color='#64748b'"><i data-lucide="trash-2" style="width:14px;height:14px"></i></button>
+                        </div>
+                        <div style="display:flex;align-items:center;gap:8px;margin-top:4px;font-size:.7rem;color:#64748b;flex-wrap:wrap">
+                            ${item.category ? `<span style="padding:1px 8px;border-radius:999px;background:rgba(251,146,60,.12);color:#fb923c">${item.category}</span>` : ''}
+                            ${item.duration ? `<span><i data-lucide="clock" style="width:10px;height:10px;display:inline;vertical-align:-1px"></i> ${item.duration}</span>` : ''}
+                            ${item.views ? `<span><i data-lucide="eye" style="width:10px;height:10px;display:inline;vertical-align:-1px"></i> ${item.views}</span>` : ''}
+                            ${item.bvid ? `<span style="opacity:.5">${item.bvid}</span>` : ''}
+                        </div>
+                        ${item.description ? `<div class="feed-url" style="margin-top:2px">${item.description}</div>` : ''}
                     </div>
-                    ${item.bgm_subject_id ? `<div class="mt-2 text-xs"><a href="https://bgm.tv/subject/${item.bgm_subject_id}" target="_blank" class="text-pink-600 hover:underline flex items-center gap-1"><i data-lucide=\"link-2\" class=\"w-3 h-3\"></i> Bangumi #${item.bgm_subject_id}</a></div>` : ''}
                 </div>
             `;
             list.appendChild(el);
@@ -2602,7 +2607,11 @@ const VideosManager = {
                 document.getElementById('video-title').value = info.title || '';
                 document.getElementById('video-desc').value = info.desc || '';
                 document.getElementById('video-category').value = info.tname || '';
-                showToast('获取成功', 'success');
+                document.getElementById('video-duration').value = info.duration ? formatDuration(info.duration) : '';
+                if (info.pic && !document.getElementById('video-cover').value) {
+                    document.getElementById('video-cover').value = info.pic;
+                }
+                showToast(`获取成功: ${(info.title||'').slice(0,20)}`, 'success');
             } else {
                 showToast('获取失败: ' + (data?.message || '未知错误'), 'error');
             }
@@ -2856,8 +2865,8 @@ const Dashboard = {
             activeBtn.setAttribute('tabindex', '0');
         }
         const TAB_TITLES = {
-            bookmarks: '收藏夹', snapshots: '随手拍', media: '追番/漫画',
-            feeds: '订阅源', videos: '视频推荐', stats: '数据统计', settings: '系统设置'
+            bookmarks: '书签收藏', snapshots: '片刻动态', media: '追番追漫',
+            feeds: 'RSS 订阅', videos: '视频推荐', stats: '访问统计', settings: '站点设置'
         };
         const pageTitle = document.getElementById('page-title');
         if (pageTitle) pageTitle.textContent = TAB_TITLES[tabId] || '概览';
@@ -3010,6 +3019,13 @@ window.deleteFeed = (id) => FeedsManager.delete(id);
 window.autoFillFeedIcon = () => FeedsManager.autoFillIcon();
 window.deleteVideo = (id) => VideosManager.delete(id);
 window.fetchBilibiliInfo = () => VideosManager.fetchBilibiliInfo(document.getElementById('video-bvid').value);
+
+/** Bilibili 秒数 → mm:ss */
+function formatDuration(sec) {
+    const m = Math.floor(sec / 60);
+    const s = sec % 60;
+    return String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+}
 
 // --- Event Handlers ---
 
