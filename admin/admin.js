@@ -1371,11 +1371,17 @@ const PicGoClient = {
         }
         if (retryEl) retryEl.style.display = 'none';
 
+        // 用 AbortController + setTimeout（不用 AbortSignal.timeout 避免兼容问题）
         try {
+            const ctrl = new AbortController();
+            const timer = setTimeout(() => ctrl.abort(), 3000);
             const resp = await fetch(`${this.baseUrl}/`, {
                 method: 'GET',
-                signal: AbortSignal.timeout(2000)
+                signal: ctrl.signal,
+                // 关键：对 localhost 不强制 HTTPS，不触发 preflight
+                cache: 'no-cache'
             });
+            clearTimeout(timer);
             if (resp.ok) {
                 this.available = true;
                 try {
@@ -1387,6 +1393,7 @@ const PicGoClient = {
                 this.version = '';
             }
         } catch (e) {
+            // 连接失败 / 超时 / 被阻止
             this.available = false;
             this.version = '';
         }
