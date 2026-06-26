@@ -762,26 +762,33 @@ app.post('/api/test_feed', requireAdminToken, rateLimit(60_000, 5), async (req, 
         headers: { 'User-Agent': 'ShadowQuake/1.0 RSS Reader', 'Accept': 'application/rss+xml, application/atom+xml, text/xml, application/xml' }
     };
 
-    // 1) 直连
+    // 先走 CF Worker 代理（境外源更快更稳），失败再直连
+    let xml, proxied = false;
     try {
-        const resp = await axios.get(url, fetchOpts);
-        const data = parseXml(resp.data);
-        let iconUrl = '';
-        try { iconUrl = `https://www.google.com/s2/favicons?domain=${new URL(url).hostname}&sz=64`; } catch (e) {}
-        return res.json({ success: true, ...data, iconUrl });
-    } catch (directErr) {
-        // 2) 走 Cloudflare Worker 代理（RSSHub 等境外源）
+        const proxyUrl = `https://bangumi.shadowquake.top/fetch?url=${encodeURIComponent(url)}`;
+        const resp = await axios.get(proxyUrl, { ...fetchOpts, timeout: 15000 });
+        xml = resp.data;
+        proxied = true;
+    } catch (proxyErr) {
         try {
-            const proxyUrl = `https://bangumi.shadowquake.top/fetch?url=${encodeURIComponent(url)}`;
-            const resp = await axios.get(proxyUrl, { ...fetchOpts, timeout: 15000 });
-            const data = parseXml(resp.data);
-            let iconUrl = '';
-            try { iconUrl = `https://www.google.com/s2/favicons?domain=${new URL(url).hostname}&sz=64`; } catch (e) {}
-            return res.json({ success: true, ...data, iconUrl, proxied: true });
-        } catch (proxyErr) {
-            return res.json({ success: false, error: proxyErr.message || '直连和代理均无法获取' });
+            const resp = await axios.get(url, fetchOpts);
+            xml = resp.data;
+        } catch (directErr) {
+            return res.json({ success: false, error: '直连和代理均无法获取该 RSS 源' });
         }
     }
+
+    // 检查返回内容是否像 RSS/Atom
+    const looksLikeFeed = xml && (xml.includes('<rss') || xml.includes('<feed') || xml.includes('<channel') || xml.includes('<entry'));
+    if (!looksLikeFeed) {
+        const preview = (xml || '').slice(0, 200).replace(/[\n\r]/g, ' ');
+        return res.json({ success: false, error: `返回内容不是有效的 RSS/Atom 格式${proxied ? '' : ''}。响应开头: ${preview}...` });
+    }
+
+    const data = parseXml(xml);
+    let iconUrl = '';
+    try { iconUrl = `https://www.google.com/s2/favicons?domain=${new URL(url).hostname}&sz=64`; } catch (e) {}
+    res.json({ success: true, ...data, iconUrl, proxied });
 });
 
 // API to save feeds
