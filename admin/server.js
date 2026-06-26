@@ -742,6 +742,50 @@ app.get('/api/sync_bangumi', requireAdminToken, rateLimit(60_000, 10), async (re
 });
 
 // API to get feeds
+// 自动从 MD 文件生成 posts.json 并缓存
+let _postsCache = null;
+let _postsCacheTime = 0;
+function getPostsIndex() {
+    if (_postsCache && Date.now() - _postsCacheTime < 30000) return _postsCache;
+    const postsDir = path.join(__dirname, '../public/posts');
+    const files = fs.readdirSync(postsDir).filter(f => f.endsWith('.md') && !f.includes('sample') && !f.includes('templates')).sort().reverse();
+    const posts = files.map(file => {
+        const raw = fs.readFileSync(path.join(postsDir, file), 'utf-8');
+        const parts = raw.split('---', 3);
+        const fm = {};
+        if (parts.length >= 3) {
+            for (const line of parts[1].trim().split('\n')) {
+                const ci = line.indexOf(':');
+                if (ci === -1) continue;
+                const k = line.slice(0, ci).trim();
+                let v = line.slice(ci + 1).trim().replace(/^["']|["']$/g, '');
+                if (k === 'tags') {
+                    try { fm[k] = JSON.parse(v); } catch { fm[k] = []; }
+                } else if (k === 'readTime') {
+                    fm[k] = parseInt(v) || 5;
+                } else {
+                    fm[k] = v;
+                }
+            }
+        }
+        // 补默认值
+        const cat = fm.category;
+        fm.category = (!cat || cat === 'Uncategorized') ? '其他' : cat;
+        if (!fm.tags || !Array.isArray(fm.tags) || !fm.tags.length) fm.tags = [];
+        return { title: fm.title || '', date: fm.date || '', category: fm.category, author: fm.author || 'Thoi',
+            tags: fm.tags, excerpt: fm.excerpt || '', readTime: fm.readTime || 5,
+            coverImage: fm.coverImage || '', lastModified: fm.lastModified || '', file };
+    });
+    _postsCache = posts;
+    _postsCacheTime = Date.now();
+    return posts;
+}
+
+// 提供 posts.json（自动从 md 生成 30s 缓存）
+app.get('/public/posts/posts.json', (req, res) => {
+    res.json(getPostsIndex());
+});
+
 app.get('/api/feeds', (req, res) => {
     if (fs.existsSync(feedsPath)) {
         try {
