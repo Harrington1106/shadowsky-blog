@@ -1884,25 +1884,22 @@ const SnapshotsManager = {
         }
         this.data.slice(0, 12).forEach(item => {
             const el = document.createElement('div');
-            el.style.cssText = 'background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:12px;position:relative';
-            el.className = 'group';
+            el.className = 'snap-preview-card group';
             const exifHtml = item.exif ? `
-                <div style="display:flex;align-items:center;gap:4px;font-size:.7rem;margin-top:4px;color:#94a3b8">
+                <div class="snap-preview-exif">
                     <i data-lucide="camera" style="width:12px;height:12px"></i>
                     <span>${[item.exif.camera, item.exif.iso ? 'ISO' + item.exif.iso : '', item.exif.aperture ? 'f/' + item.exif.aperture : ''].filter(Boolean).join(' · ') || '相机参数'}</span>
                 </div>
             ` : '';
             el.innerHTML = `
-                ${item.image ? `<img src="${item.image}" style="width:100%;height:128px;object-fit:cover;border-radius:8px;margin-bottom:8px;background:rgba(255,255,255,.04)" loading="lazy" onerror="this.style.display='none'">` : ''}
-                <p style="font-size:.85rem;color:#e2e8f0;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;margin-bottom:4px">${item.content || '(无内容)'}</p>
+                ${item.image ? `<img src="${item.image}" class="snap-preview-img" loading="lazy" onerror="this.style.display='none'">` : ''}
+                <p class="snap-preview-content">${item.content || '(无内容)'}</p>
                 ${exifHtml}
-                <div style="font-size:.75rem;color:#64748b;display:flex;justify-content:space-between;margin-top:4px">
+                <div class="snap-preview-meta">
                     <span>${new Date(item.date).toLocaleDateString()}</span>
                     <span>${item.location || ''}</span>
                 </div>
-                <button onclick="SnapshotsManager.delete('${item.id || item.date}')"
-                        style="position:absolute;top:8px;right:8px;width:22px;height:22px;background:#EF4444;color:#fff;border:none;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:0;transition:opacity .2s"
-                        onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0'">
+                <button onclick="SnapshotsManager.delete('${item.id || item.date}')" class="snap-preview-del">
                     <i data-lucide="trash-2" style="width:12px;height:12px"></i>
                 </button>
             `;
