@@ -1473,7 +1473,7 @@ const PicGoClient = {
 
 // ═══════ 图片上传管理器 ═══════
 const ImageUploader = {
-    method: 'direct',  // 'direct' | 'picgo' | 'url'
+    method: 'picgo',  // 'picgo' | 'direct' | 'url'
     files: [],          // File 对象数组
     previewUrls: [],    // blob: URL 数组
     _initialized: false,
@@ -1485,7 +1485,7 @@ const ImageUploader = {
             return;
         }
         this._initialized = true;
-        this.setMethod('direct');
+        this.setMethod('picgo');
         PicGoClient.checkStatus();
         // 监听粘贴（只绑定一次）
         document.addEventListener('paste', (e) => {
