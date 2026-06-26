@@ -14,7 +14,7 @@ body{margin:0;background:var(--bg);color:var(--tx);font-family:'Inter','Noto San
 .hidden{display:none!important}*{box-sizing:border-box}
 
 /* ═══ Layout ═══ */
-.acg-shell{max-width:100%;margin:0 auto;padding:96px 24px 60px;position:relative;z-index:1}
+.acg-shell{max-width:none!important;margin:0 auto;padding:96px 24px 60px;position:relative;z-index:1}
 @media(min-width:768px){.acg-shell{padding:96px 36px 60px}}
 @media(min-width:1440px){.acg-shell{padding:96px 56px 60px}}
 
