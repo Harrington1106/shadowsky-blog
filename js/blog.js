@@ -239,11 +239,8 @@ function renderGridView(container) {
         const delay = index * 80;
         const gradient = gradients[index % gradients.length];
 
-        // 标签列表（最多 3 个）
+        // 标签
         const tags = post.tags || [];
-        const tagsHtml = tags.slice(0, 3).map(t =>
-            `<span class="blog-card-tag">#${t}</span>`
-        ).join('');
 
         // 封面区域
         const coverHtml = post.coverImage
