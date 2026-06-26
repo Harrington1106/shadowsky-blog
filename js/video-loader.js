@@ -148,8 +148,10 @@ class VideoLoader {
     constructor(options = {}) {
         this.containerId = options.containerId || 'video-grid';
         this.container = document.getElementById(this.containerId);
-        this.filterContainer = document.querySelector('.filter-container'); // Only main loader should handle filters?
+        this.filterContainer = document.querySelector('.filter-container');
         this.videos = options.videos || [...defaultVideos];
+        this.dataUrl = options.dataUrl || null;
+        this.arrayKey = options.arrayKey || 'videos';  // 'videos' | 'favorites'
         this.currentCategory = options.initialCategory || 'all';
         this.options = options;
 
@@ -168,6 +170,21 @@ class VideoLoader {
     }
 
     async init() {
+        // 尝试从 JSON 文件加载数据（admin 管理的数据源）
+        if (this.dataUrl) {
+            try {
+                const resp = await fetch(this.dataUrl);
+                if (resp.ok) {
+                    const data = await resp.json();
+                    const arr = data[this.arrayKey];
+                    if (arr && arr.length) {
+                        this.videos = arr;
+                    }
+                }
+            } catch (e) {
+                console.warn('[VideoLoader] 无法从JSON加载，使用默认数据:', e.message);
+            }
+        }
         // Deduplicate categories by normalizing to lowercase
         this.videos.forEach(v => {
             if (v.category) v.category = v.category.toLowerCase();
@@ -488,24 +505,27 @@ class VideoLoader {
 
 // Initialize on load
 function initVideoLoader() {
-    // Check if container exists
+    const DATA_URL = 'public/data/videos.json';
+
     if (document.getElementById('video-grid')) {
-        // Main video loader
         if (!window.videoLoaderInstance) {
             const options = window.videoLoaderOptions || {};
             window.videoLoaderInstance = new VideoLoader({
                 ...options,
-                containerId: 'video-grid'
+                containerId: 'video-grid',
+                dataUrl: DATA_URL,
+                arrayKey: 'videos'
             });
         }
     }
 
     if (document.getElementById('favorite-video-grid')) {
-        // Favorite video loader
         if (!window.favoriteVideoLoaderInstance) {
             window.favoriteVideoLoaderInstance = new VideoLoader({
                 containerId: 'favorite-video-grid',
-                videos: favoriteVideos
+                videos: favoriteVideos,
+                dataUrl: DATA_URL,
+                arrayKey: 'favorites'
             });
         }
     }
