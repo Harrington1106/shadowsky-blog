@@ -462,7 +462,7 @@ class VideoLoader {
             this.modalContent.classList.add('scale-100');
             document.body.style.overflow = 'hidden'; // Prevent scrolling
 
-            if (video.type === 'bilibili' && video.bvid) {
+            if (video.bvid) {
                 // 加载中
                 this.playerContainer.innerHTML = '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:#000"><div class="acg-spin" style="border-top-color:#fb923c"></div></div>';
                 // 通过 API 获取真实视频流
