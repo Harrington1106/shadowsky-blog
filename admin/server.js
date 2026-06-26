@@ -1097,7 +1097,7 @@ app.post('/api/videos', requireAdminToken, rateLimit(60_000, 30), (req, res) => 
     res.json({ success: true });
 });
 
-// Bilibili 视频流代理 — 绕过嵌入限制，提供原始 mp4
+// Bilibili 视频流代理 — 绕过嵌入限制，直接代理 mp4 流
 app.get('/api/bilibili_playurl', rateLimit(60_000, 60), async (req, res) => {
     const bvid = req.query.bvid;
     if (!bvid) return res.status(400).json({ error: 'Missing bvid' });
@@ -1113,7 +1113,7 @@ app.get('/api/bilibili_playurl', rateLimit(60_000, 60), async (req, res) => {
         }
         const cid = cidData.data[0].cid || (cidData.data[0].first_cid || cidData.data[0].id);
 
-        // 2. 获取流地址 — fnval=1 返回 mp4
+        // 2. 获取流地址
         const playResp = await axios.get(
             `https://api.bilibili.com/x/player/playurl?bvid=${bvid}&cid=${cid}&qn=64&fnval=1&fourk=1`,
             { headers: { Referer: 'https://www.bilibili.com', 'User-Agent': 'Mozilla/5.0' }, timeout: 5000 }
@@ -1123,18 +1123,66 @@ app.get('/api/bilibili_playurl', rateLimit(60_000, 60), async (req, res) => {
             return res.json({ success: false, error: '无法获取视频流' });
         }
         const durl = playData.data.durl || [];
-        const url = durl.length ? durl[0].url : (playData.data.dash ? playData.data.dash.video[0]?.baseUrl : '');
-        if (!url) return res.json({ success: false, error: '未找到可用视频流' });
+        const mp4Url = durl.length ? durl[0].url : '';
+
+        if (!mp4Url) return res.json({ success: false, error: '未找到可用视频流' });
+
+        // 3. 返回代理流 URL（不直接暴露 B 站 CDN 地址）
+        const proxyStreamUrl = `/api/bilibili_stream?bvid=${bvid}&t=${Date.now()}`;
+        // 缓存到内存（简单实现，播放完自动清理）
+        if (!global.biliStreams) global.biliStreams = {};
+        global.biliStreams[bvid] = { url: mp4Url, time: Date.now() };
 
         res.json({
             success: true,
-            url,
+            url: proxyStreamUrl,
             quality: playData.data.quality,
-            duration: playData.data.timelength || 0,
-            accept_quality: playData.data.accept_quality || []
+            duration: playData.data.timelength || 0
         });
     } catch (e) {
         res.json({ success: false, error: e.message || '获取失败' });
+    }
+});
+
+// 视频流代理 — 服务端拉 mp4 并 pipe 给浏览器
+app.get('/api/bilibili_stream', async (req, res) => {
+    const bvid = req.query.bvid;
+    const cached = global.biliStreams && global.biliStreams[bvid];
+    if (!cached || !cached.url) return res.status(404).end();
+    // 5 分钟过期
+    if (Date.now() - cached.time > 300000) {
+        delete global.biliStreams[bvid];
+        return res.status(410).end();
+    }
+    try {
+        const range = req.headers.range;
+        const headers = {
+            Referer: 'https://www.bilibili.com',
+            'User-Agent': 'Mozilla/5.0'
+        };
+        if (range) headers.Range = range;
+
+        const videoResp = await axios.get(cached.url, {
+            headers,
+            responseType: 'stream',
+            timeout: 60000
+        });
+
+        const contentLength = videoResp.headers['content-length'];
+        const contentType = videoResp.headers['content-type'] || 'video/mp4';
+
+        if (range && videoResp.status === 206) {
+            res.status(206);
+            res.setHeader('Content-Range', videoResp.headers['content-range']);
+        }
+        res.setHeader('Content-Type', contentType);
+        res.setHeader('Accept-Ranges', 'bytes');
+        if (contentLength) res.setHeader('Content-Length', contentLength);
+        res.setHeader('Cache-Control', 'no-cache');
+
+        videoResp.data.pipe(res);
+    } catch (e) {
+        res.status(502).end();
     }
 });
 
