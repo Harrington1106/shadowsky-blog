@@ -1409,22 +1409,32 @@ const PicGoClient = {
 
     /** 通过 PicGo 上传图片，返回 CDN URL 列表 */
     async upload(file) {
-        const formData = new FormData();
-        formData.append('list', file, file.name);  // 加上 filename 确保 koa-body 识别
-        const resp = await fetch(`${this.baseUrl}/upload`, {
-            method: 'POST',
-            body: formData
-        });
-        if (!resp.ok) {
-            let errMsg = `${resp.status}`;
-            try { errMsg = await resp.text(); } catch (e) {}
-            throw new Error(`PicGo ${errMsg}`);
+        // 尝试两种字段名，兼容不同 PicGo/PicList 版本
+        const methods = [
+            () => { const fd = new FormData(); fd.append('list', file, file.name); return fd; },
+            () => { const fd = new FormData(); fd.append('image', file, file.name); return fd; }
+        ];
+        let lastErr = '';
+        for (const mkForm of methods) {
+            try {
+                const resp = await fetch(`${this.baseUrl}/upload`, {
+                    method: 'POST',
+                    body: mkForm()
+                });
+                if (!resp.ok) {
+                    lastErr = `${resp.status}: ${await resp.text().catch(() => '')}`;
+                    continue;
+                }
+                const result = await resp.json();
+                if (result.success) {
+                    return Array.isArray(result.result) ? result.result : [];
+                }
+                lastErr = result.message || result.error || 'PicGo 上传失败';
+            } catch (e) {
+                lastErr = e.message;
+            }
         }
-        const result = await resp.json();
-        if (!result.success) {
-            throw new Error(result.error || result.message || 'PicGo 上传失败');
-        }
-        return Array.isArray(result.result) ? result.result : [];
+        throw new Error(lastErr || 'PicGo 上传失败');
     },
 
     updateUI() {
