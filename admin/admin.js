@@ -2663,6 +2663,24 @@ const VideosManager = {
         if (cancelBtn) cancelBtn.style.display = 'none';
         if (typeof lucide !== 'undefined') lucide.createIcons();
     },
+    async fetchBilibiliCover(bvid) {
+        if (!bvid) { showToast('请先输入 BV 号', 'warning'); return; }
+        showToast('正在获取封面...');
+        try {
+            const proxyUrl = `${API_BASE}/rss-proxy?url=${encodeURIComponent(`https://api.bilibili.com/x/web-interface/view?bvid=${bvid}`)}`;
+            const res = await safeFetch(proxyUrl);
+            let data = res;
+            if (typeof res === 'string') { try { data = JSON.parse(res); } catch (e) {} }
+            if (data && data.code === 0 && data.data && data.data.pic) {
+                document.getElementById('video-cover').value = data.data.pic;
+                showToast('封面已获取', 'success');
+            } else {
+                showToast('获取封面失败', 'error');
+            }
+        } catch (e) {
+            showToast('获取封面失败: ' + e.message, 'error');
+        }
+    },
     async fetchBilibiliInfo(bvid) {
         if (!bvid) { showToast('请先输入 BV 号'); return; }
         
@@ -2695,6 +2713,10 @@ const VideosManager = {
                 document.getElementById('video-duration').value = info.duration ? formatDuration(info.duration) : '';
                 if (info.pic && !document.getElementById('video-cover').value) {
                     document.getElementById('video-cover').value = info.pic;
+                }
+                const viewsEl = document.getElementById('video-views');
+                if (viewsEl && info.stat && info.stat.view) {
+                    viewsEl.value = info.stat.view;
                 }
                 showToast(`获取成功: ${(info.title||'').slice(0,20)}`, 'success');
             } else {
@@ -3104,6 +3126,7 @@ window.deleteFeed = (id) => FeedsManager.delete(id);
 window.autoFillFeedIcon = () => FeedsManager.autoFillIcon();
 window.deleteVideo = (id) => VideosManager.delete(id);
 window.fetchBilibiliInfo = () => VideosManager.fetchBilibiliInfo(document.getElementById('video-bvid').value);
+window.fetchBilibiliCover = () => VideosManager.fetchBilibiliCover(document.getElementById('video-bvid').value);
 
 /** Bilibili 秒数 → mm:ss */
 function formatDuration(sec) {
@@ -3272,13 +3295,15 @@ async function handleAddVideo(e) {
     const title = document.getElementById('video-title').value.trim();
     const coverEl = document.getElementById('video-cover');
     const cover = coverEl ? coverEl.value.trim() : '';
+    const viewsEl = document.getElementById('video-views');
+    const views = viewsEl ? parseInt(viewsEl.value) || 0 : 0;
     const duration = document.getElementById('video-duration').value.trim();
     const description = document.getElementById('video-desc').value.trim();
     try {
         if (VideosManager._editingId) {
             const item = VideosManager.data.find(v => v.id === VideosManager._editingId);
             if (item) {
-                Object.assign(item, { title, thumbnail: cover, category, duration, description, bvid });
+                Object.assign(item, { title, thumbnail: cover, category, duration, description, bvid, views });
                 await VideosManager.save();
                 showToast('已更新', 'success');
                 VideosManager.cancelEdit();

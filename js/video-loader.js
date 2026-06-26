@@ -247,8 +247,7 @@ class VideoLoader {
                         </div>
                     </div>
                 </div>
-                <h3 class="font-bold text-gray-800 dark:text-gray-100 text-lg leading-tight mb-1 line-clamp-2 group-hover:text-pink-600 dark:group-hover:text-pink-400 transition-colors">${video.title}</h3>
-                ${video.description ? `<p class="text-xs text-gray-500 dark:text-gray-400 mb-2 line-clamp-1">${video.description}</p>` : ''}
+                <h3 class="font-bold text-gray-800 dark:text-gray-100 text-lg leading-tight mb-2 line-clamp-2 group-hover:text-pink-600 dark:group-hover:text-pink-400 transition-colors">${video.title}</h3>
                 <div class="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
                     <div class="flex items-center space-x-3">
                         <span class="flex items-center">
@@ -403,10 +402,11 @@ class VideoLoader {
 
                         <div class="mt-4">
                             <h3 id="modal-video-title" class="text-xl font-bold text-white mb-1"></h3>
-                            <div class="flex items-center text-sm text-gray-400">
+                            <div class="flex items-center text-sm text-gray-400 mb-2">
                                 <span class="bg-pink-600 text-white text-xs px-2 py-0.5 rounded mr-3">Bilibili</span>
                                 <span id="modal-video-views"></span>
                             </div>
+                            <p id="modal-video-desc" class="text-sm text-gray-400 leading-relaxed" style="display:none"></p>
                         </div>
                     </div>
                 </div>
@@ -420,6 +420,7 @@ class VideoLoader {
         this.closeBtn = document.getElementById('close-modal');
         this.modalTitle = document.getElementById('modal-video-title');
         this.modalViews = document.getElementById('modal-video-views');
+        this.modalDesc = document.getElementById('modal-video-desc');
 
         if (this.closeBtn) {
             this.closeBtn.addEventListener('click', () => this.closeVideo());
@@ -444,6 +445,14 @@ class VideoLoader {
         if (this.modal) {
             this.modalTitle.textContent = video.title;
             this.modalViews.textContent = `${video.views} 次播放`;
+            if (this.modalDesc) {
+                if (video.description) {
+                    this.modalDesc.textContent = video.description;
+                    this.modalDesc.style.display = 'block';
+                } else {
+                    this.modalDesc.style.display = 'none';
+                }
+            }
 
             this.modal.classList.remove('hidden');
             // Trigger reflow
