@@ -1097,6 +1097,47 @@ app.post('/api/videos', requireAdminToken, rateLimit(60_000, 30), (req, res) => 
     res.json({ success: true });
 });
 
+// Bilibili 视频流代理 — 绕过嵌入限制，提供原始 mp4
+app.get('/api/bilibili_playurl', rateLimit(60_000, 60), async (req, res) => {
+    const bvid = req.query.bvid;
+    if (!bvid) return res.status(400).json({ error: 'Missing bvid' });
+    try {
+        // 1. 获取 cid
+        const cidResp = await axios.get(`https://api.bilibili.com/x/player/pagelist?bvid=${bvid}`, {
+            headers: { Referer: 'https://www.bilibili.com', 'User-Agent': 'Mozilla/5.0' },
+            timeout: 5000
+        });
+        const cidData = cidResp.data;
+        if (cidData.code !== 0 || !cidData.data || !cidData.data.length) {
+            return res.json({ success: false, error: '无法获取视频分P信息' });
+        }
+        const cid = cidData.data[0].cid || (cidData.data[0].first_cid || cidData.data[0].id);
+
+        // 2. 获取流地址 — fnval=1 返回 mp4
+        const playResp = await axios.get(
+            `https://api.bilibili.com/x/player/playurl?bvid=${bvid}&cid=${cid}&qn=64&fnval=1&fourk=1`,
+            { headers: { Referer: 'https://www.bilibili.com', 'User-Agent': 'Mozilla/5.0' }, timeout: 5000 }
+        );
+        const playData = playResp.data;
+        if (playData.code !== 0 || !playData.data) {
+            return res.json({ success: false, error: '无法获取视频流' });
+        }
+        const durl = playData.data.durl || [];
+        const url = durl.length ? durl[0].url : (playData.data.dash ? playData.data.dash.video[0]?.baseUrl : '');
+        if (!url) return res.json({ success: false, error: '未找到可用视频流' });
+
+        res.json({
+            success: true,
+            url,
+            quality: playData.data.quality,
+            duration: playData.data.timelength || 0,
+            accept_quality: playData.data.accept_quality || []
+        });
+    } catch (e) {
+        res.json({ success: false, error: e.message || '获取失败' });
+    }
+});
+
 // Proxy Bangumi subject (Admin)
 app.get('/api/bgm_subject', requireAdminToken, async (req, res) => {
     try {

@@ -462,25 +462,44 @@ class VideoLoader {
             this.modalContent.classList.add('scale-100');
             document.body.style.overflow = 'hidden'; // Prevent scrolling
 
-            // Inject Bilibili Player with cleaner parameters
             if (video.type === 'bilibili' && video.bvid) {
-                // Use the standard player for better quality as per the new guide
-                this.playerContainer.innerHTML = `
-                    <iframe
-                        src="https://player.bilibili.com/player.html?bvid=${video.bvid}&page=1&high_quality=1&autoplay=1&danmaku=0&as_wide=1"
-                        scrolling="no"
-                        border="0"
-                        frameborder="no"
-                        framespacing="0"
-                        allowfullscreen="true"
-                        sandbox="allow-same-origin allow-scripts allow-popups allow-presentation"
-                        allow="autoplay; fullscreen"
-                        class="w-full h-full absolute top-0 left-0"
-                    ></iframe>
-                    <a href="https://www.bilibili.com/video/${video.bvid}" target="_blank"
-                       style="position:absolute;bottom:8px;right:8px;background:rgba(0,0,0,.75);color:#fff;font-size:.68rem;padding:3px 8px;border-radius:4px;text-decoration:none;z-index:5"
-                       title="无法播放？点击前往B站观看">在 Bilibili 观看 →</a>
-                `;
+                // 加载中
+                this.playerContainer.innerHTML = '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:#000"><div class="acg-spin" style="border-top-color:#fb923c"></div></div>';
+                // 通过 API 获取真实视频流
+                fetch(`/api/bilibili_playurl?bvid=${video.bvid}`).then(r => r.json()).then(data => {
+                    if (data.success && data.url) {
+                        this.playerContainer.innerHTML = `
+                            <video src="${data.url}" controls autoplay
+                                style="width:100%;height:100%;position:absolute;top:0;left:0;object-fit:contain;background:#000"
+                                poster="${video.thumbnail || ''}"
+                                playsinline></video>
+                        `;
+                    } else {
+                        // 回退到 iframe
+                        this.playerContainer.innerHTML = `
+                            <iframe src="https://player.bilibili.com/player.html?bvid=${video.bvid}&page=1&high_quality=1&autoplay=1&danmaku=0&as_wide=1"
+                                scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"
+                                sandbox="allow-same-origin allow-scripts allow-popups allow-presentation"
+                                allow="autoplay; fullscreen"
+                                class="w-full h-full absolute top-0 left-0"></iframe>
+                            <a href="https://www.bilibili.com/video/${video.bvid}" target="_blank"
+                               style="position:absolute;bottom:8px;right:8px;background:rgba(0,0,0,.75);color:#fff;font-size:.68rem;padding:3px 8px;border-radius:4px;text-decoration:none;z-index:5"
+                               title="API获取失败，回退iframe">在 Bilibili 观看 →</a>
+                        `;
+                    }
+                }).catch(() => {
+                    // 回退到 iframe
+                    this.playerContainer.innerHTML = `
+                        <iframe src="https://player.bilibili.com/player.html?bvid=${video.bvid}&page=1&high_quality=1&autoplay=1&danmaku=0&as_wide=1"
+                            scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"
+                            sandbox="allow-same-origin allow-scripts allow-popups allow-presentation"
+                            allow="autoplay; fullscreen"
+                            class="w-full h-full absolute top-0 left-0"></iframe>
+                        <a href="https://www.bilibili.com/video/${video.bvid}" target="_blank"
+                           style="position:absolute;bottom:8px;right:8px;background:rgba(0,0,0,.75);color:#fff;font-size:.68rem;padding:3px 8px;border-radius:4px;text-decoration:none;z-index:5"
+                           title="网络错误，点击前往B站">在 Bilibili 观看 →</a>
+                    `;
+                });
             } else {
                 // Fallback for demo
                 this.playerContainer.innerHTML = `
