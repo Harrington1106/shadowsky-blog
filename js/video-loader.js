@@ -477,6 +477,9 @@ class VideoLoader {
                         allow="autoplay; fullscreen"
                         class="w-full h-full absolute top-0 left-0"
                     ></iframe>
+                    <a href="https://www.bilibili.com/video/${video.bvid}" target="_blank"
+                       style="position:absolute;bottom:8px;right:8px;background:rgba(0,0,0,.75);color:#fff;font-size:.68rem;padding:3px 8px;border-radius:4px;text-decoration:none;z-index:5"
+                       title="无法播放？点击前往B站观看">在 Bilibili 观看 →</a>
                 `;
             } else {
                 // Fallback for demo
