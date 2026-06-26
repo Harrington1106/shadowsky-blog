@@ -744,36 +744,43 @@ app.get('/api/feeds', (req, res) => {
 app.post('/api/test_feed', requireAdminToken, rateLimit(60_000, 5), async (req, res) => {
     const { url } = req.body;
     if (!url) return res.status(400).json({ success: false, error: '缺少 URL' });
-    try {
-        const resp = await axios.get(url, {
-            timeout: 8000,
-            maxContentLength: 1 * 1024 * 1024,
-            headers: { 'User-Agent': 'ShadowQuake/1.0 RSS Reader', 'Accept': 'application/rss+xml, application/atom+xml, text/xml, application/xml' }
-        });
-        const xml = resp.data;
+
+    const parseXml = (xml) => {
         const $ = cheerio.load(xml, { xmlMode: true });
-        // RSS 2.0
         let title = $('rss > channel > title').first().text() || $('rss > channel > title').text();
         let articles = $('rss > channel > item');
-        // Atom
         if (!title) {
             title = $('feed > title').first().text() || $('feed > title').text();
             articles = $('feed > entry');
         }
-        // 提取网站 favicon
+        return { title, articleCount: articles.length || 0 };
+    };
+
+    const fetchOpts = {
+        timeout: 8000,
+        maxContentLength: 1 * 1024 * 1024,
+        headers: { 'User-Agent': 'ShadowQuake/1.0 RSS Reader', 'Accept': 'application/rss+xml, application/atom+xml, text/xml, application/xml' }
+    };
+
+    // 1) 直连
+    try {
+        const resp = await axios.get(url, fetchOpts);
+        const data = parseXml(resp.data);
         let iconUrl = '';
+        try { iconUrl = `https://www.google.com/s2/favicons?domain=${new URL(url).hostname}&sz=64`; } catch (e) {}
+        return res.json({ success: true, ...data, iconUrl });
+    } catch (directErr) {
+        // 2) 走 Cloudflare Worker 代理（RSSHub 等境外源）
         try {
-            const siteUrl = new URL(url);
-            iconUrl = `https://www.google.com/s2/favicons?domain=${siteUrl.hostname}&sz=64`;
-        } catch (e) {}
-        res.json({
-            success: true,
-            title: title || '(未命名)',
-            articleCount: articles.length || 0,
-            iconUrl
-        });
-    } catch (e) {
-        res.json({ success: false, error: e.message || '无法获取 RSS 源' });
+            const proxyUrl = `https://bangumi.shadowquake.top/fetch?url=${encodeURIComponent(url)}`;
+            const resp = await axios.get(proxyUrl, { ...fetchOpts, timeout: 15000 });
+            const data = parseXml(resp.data);
+            let iconUrl = '';
+            try { iconUrl = `https://www.google.com/s2/favicons?domain=${new URL(url).hostname}&sz=64`; } catch (e) {}
+            return res.json({ success: true, ...data, iconUrl, proxied: true });
+        } catch (proxyErr) {
+            return res.json({ success: false, error: proxyErr.message || '直连和代理均无法获取' });
+        }
     }
 });
 
