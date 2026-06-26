@@ -441,6 +441,7 @@ html:not(.dark) .blog-card-media-shade {
     color: #2dd4bf;
     margin-bottom: 10px;
     align-self: flex-start;
+    order: 0;
 }
 html:not(.dark) .blog-card-badge {
     background: rgba(13, 148, 136, 0.08);
@@ -451,6 +452,7 @@ html:not(.dark) .blog-card-badge {
 
 /* 标签行 */
 .blog-card-tags {
+    order: 5;
     display: flex; flex-wrap: wrap; gap: 6px;
     margin-bottom: 10px;
 }
