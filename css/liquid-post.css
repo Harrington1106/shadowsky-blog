@@ -197,3 +197,25 @@ html.lenis, html.lenis body { height: auto; }
 @media (min-width: 901px) {
     #toc-drawer, #toc-overlay { display: none !important; }
 }
+
+/* ═══ Image Lightbox ═══ */
+.lightbox-overlay {
+    position: fixed; inset: 0; z-index: 999;
+    background: rgba(0,0,0,.92);
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; visibility: hidden; pointer-events: none;
+    transition: opacity .3s, visibility .3s;
+}
+.lightbox-overlay.active {
+    opacity: 1; visibility: visible; pointer-events: auto;
+}
+.lightbox-close {
+    position: absolute; top: 20px; right: 24px;
+    background: none; border: none; color: #fff;
+    cursor: pointer; padding: 8px; z-index: 10;
+}
+.lightbox-close:hover { opacity: .7; }
+.lightbox-img {
+    max-width: 90vw; max-height: 85vh;
+    object-fit: contain; border-radius: 8px;
+}
