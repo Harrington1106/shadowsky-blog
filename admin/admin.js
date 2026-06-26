@@ -44,8 +44,8 @@ function showToast(msg, type = 'info') {
     container.appendChild(el);
     if (typeof lucide !== 'undefined') lucide.createIcons();
 
-    const duration = msg.includes('静态预览模式') ? 10000 : 3000;
-    setTimeout(() => { el.style.animation = 'toastOut .3s ease forwards'; setTimeout(() => { if (el.parentNode) el.remove(); }, 300); }, duration);
+    const priority = type === 'error' ? 8000 : (type === 'warning' ? 6000 : (msg.includes('静态预览模式') ? 10000 : 4000));
+    setTimeout(() => { el.style.animation = 'toastOut .3s ease forwards'; setTimeout(() => { if (el.parentNode) el.remove(); }, 300); }, priority);
 }
 
 async function safeFetch(endpoint, options = {}) {
@@ -1409,31 +1409,20 @@ const PicGoClient = {
 
     /** 通过 PicGo 上传图片，返回 CDN URL 列表 */
     async upload(file) {
-        // 读成 base64 data URL，避免 multipart 解析兼容问题
-        const dataUrl = await new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = () => resolve(reader.result);
-            reader.onerror = () => reject(new Error('读取文件失败'));
-            reader.readAsDataURL(file);
+        // 发送原始二进制 — PicGo 通常用 koa-body 同时支持 raw body 和 multipart
+        const resp = await fetch(`${this.baseUrl}/upload`, {
+            method: 'POST',
+            headers: { 'Content-Type': file.type || 'image/png' },
+            body: file
         });
-
-        let resp;
-        try {
-            resp = await fetch(`${this.baseUrl}/upload`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ list: [dataUrl] })
-            });
-        } catch (e) {
-            throw new Error(`PicGo 通信失败: ${e.message || '请检查 PicGo 是否运行'}`);
-        }
         if (!resp.ok) {
-            const errText = await resp.text().catch(() => '');
-            throw new Error(`PicGo 返回 ${resp.status}: ${errText || resp.statusText}`);
+            let errMsg = `${resp.status}`;
+            try { errMsg = await resp.text(); } catch (e) {}
+            throw new Error(`PicGo ${errMsg}`);
         }
         const result = await resp.json();
         if (!result.success) {
-            throw new Error(result.error || result.message || 'PicGo 上传失败，请检查图床配置');
+            throw new Error(result.error || result.message || 'PicGo 上传失败');
         }
         return Array.isArray(result.result) ? result.result : [];
     },
@@ -1522,11 +1511,8 @@ const ImageUploader = {
             if (dropzone) dropzone.style.display = '';
             if (urlArea) urlArea.style.display = 'none';
         }
-        // PicGo 状态始终可见，切换后刷新提示
+        // PicGo 状态始终可见，切换后刷新
         PicGoClient.updateUI();
-        if (method === 'picgo' && !PicGoClient.available) {
-            showToast('⚠️ PicGo 未连接 — 请启动桌面端，或切换到"直传服务器"模式', 'warning');
-        }
     },
 
     /** 拖拽事件 */
