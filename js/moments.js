@@ -1,459 +1,354 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const momentsContainer = document.querySelector('#moments-grid');
-    const searchInput = document.querySelector('#search-input');
-    const tagFiltersContainer = document.querySelector('#tag-filters');
+/**
+ * Liquid Moments v4 — Professional Photography Gallery
+ * 模块化 IIFE 架构，与全站 unified.css 设计系统集成
+ * 数据源: public/data/moments.json (admin 后台共享)
+ */
+const MomentsApp = (function() {
+    'use strict';
 
-    // Stats Elements
-    const statsCount = document.getElementById('stats-count');
-    const statsDays = document.getElementById('stats-days');
-    const statsLocations = document.getElementById('stats-locations');
-    const statsLatest = document.getElementById('stats-latest');
-
-    // Lightbox Elements
-    const lightbox = document.getElementById('lightbox');
-    const lightboxImg = document.getElementById('lightbox-img');
-    const lightboxContent = document.getElementById('lightbox-content');
-    const lightboxDate = document.getElementById('lightbox-date');
-    const lightboxLocation = document.getElementById('lightbox-location');
-    const lightboxLocationContainer = document.getElementById('lightbox-location-container');
-    const lightboxTags = document.getElementById('lightbox-tags');
-    const lightboxClose = document.getElementById('lightbox-close');
-    const lightboxShare = document.getElementById('lightbox-share');
-    const lightboxPrev = document.getElementById('lightbox-prev');
-    const lightboxNext = document.getElementById('lightbox-next');
-
-    // EXIF Elements
-    const lightboxExif = document.getElementById('lightbox-exif');
-    const exifCamera = document.getElementById('exif-camera');
-    const exifLens = document.getElementById('exif-lens');
-    const exifIso = document.getElementById('exif-iso');
-    const exifAperture = document.getElementById('exif-aperture');
-    const exifShutter = document.getElementById('exif-shutter');
-
-    // UI Elements
-    const backToTopBtn = document.getElementById('back-to-top');
-    const viewGridBtn = document.getElementById('view-grid');
-    const viewTimelineBtn = document.getElementById('view-timeline');
-    const btnRandom = document.getElementById('btn-random');
-    const heatmapContainer = document.getElementById('heatmap-container');
-
+    /* ═══════════════════════════════════════════════
+       STATE
+       ═══════════════════════════════════════════════ */
     let allMoments = [];
     let currentLightboxIndex = -1;
     let activeTag = null;
-    let currentView = 'grid'; // 'grid' or 'timeline'
-    let onlyWithImage = false;
+    let currentView = 'grid';
+    let currentHeatmapYear = new Date().getFullYear();
+    let heatmapInstance = null;
+    let searchDebounceTimer = null;
 
-    // --- Helper Functions ---
-    function safeLucideCreateIcons() {
-        if (window.lucide && typeof window.lucide.createIcons === 'function') {
-            try {
-                window.lucide.createIcons();
-            } catch (e) {
-                console.warn('Lucide createIcons failed:', e);
-            }
-        }
+    /* ═══════════════════════════════════════════════
+       DOM REFS (lazy — grabbed on init)
+       ═══════════════════════════════════════════════ */
+    const $ = (sel) => document.querySelector(sel);
+    const $$ = (sel) => document.querySelectorAll(sel);
+
+    let dom = {};
+
+    function cacheDom() {
+        dom.gallery = $('#moments-grid');
+        dom.searchInput = $('#search-input');
+        dom.tagFilters = $('#tag-filters');
+        dom.statsCount = $('#stat-count');
+        dom.statsDays = $('#stat-days');
+        dom.statsLocations = $('#stat-locations');
+        dom.statsLatest = $('#stat-latest');
+        dom.lightbox = $('#lightbox');
+        dom.lightboxImg = $('#lightbox-img');
+        dom.lightboxContent = $('#lightbox-content');
+        dom.lightboxDate = $('#lightbox-date');
+        dom.lightboxLocation = $('#lightbox-location');
+        dom.lightboxLocationWrap = $('#lightbox-location-wrap');
+        dom.lightboxTags = $('#lightbox-tags');
+        dom.lightboxInfoCard = $('#lightbox-info-card');
+        dom.lightboxExif = $('#lightbox-exif');
+        dom.exifCamera = $('#exif-camera');
+        dom.exifLens = $('#exif-lens');
+        dom.exifIso = $('#exif-iso');
+        dom.exifAperture = $('#exif-aperture');
+        dom.exifShutter = $('#exif-shutter');
+        dom.btnGrid = $('#view-grid');
+        dom.btnTimeline = $('#view-timeline');
+        dom.btnRandom = $('#btn-random');
+        dom.btt = $('#back-to-top');
+        dom.activityContainer = $('#activity-container');
+        dom.heatmapContainer = $('#heatmap-container');
+        dom.heatmapYears = $('#heatmap-years');
+        dom.lbClose = $('#lightbox-close');
+        dom.lbShare = $('#lightbox-share');
+        dom.lbPrev = $('#lightbox-prev');
+        dom.lbNext = $('#lightbox-next');
     }
 
+    /* ═══════════════════════════════════════════════
+       UTILITIES
+       ═══════════════════════════════════════════════ */
+
+    /** Safari 兼容日期解析 */
     function safeDate(dateStr) {
         if (!dateStr) return new Date();
-        // Handle ISO string or simple YYYY-MM-DD
-        let date = new Date(dateStr);
-        if (!isNaN(date.getTime())) return date;
-
-        // Safari fallback
-        date = new Date(dateStr.replace(/-/g, '/'));
-        return isNaN(date.getTime()) ? new Date() : date;
+        let d = new Date(dateStr);
+        if (!isNaN(d.getTime())) return d;
+        d = new Date(dateStr.replace(/-/g, '/'));
+        return isNaN(d.getTime()) ? new Date() : d;
     }
 
+    /** 中文相对时间 */
     function timeSince(date) {
-        const seconds = Math.floor((new Date() - date) / 1000);
-        let interval = seconds / 31536000;
-        if (interval > 1) return Math.floor(interval) + " 年前";
+        var seconds = Math.floor((new Date() - date) / 1000);
+        var interval = seconds / 31536000;
+        if (interval > 1) return Math.floor(interval) + ' 年前';
         interval = seconds / 2592000;
-        if (interval > 1) return Math.floor(interval) + " 个月前";
+        if (interval > 1) return Math.floor(interval) + ' 个月前';
         interval = seconds / 86400;
-        if (interval > 1) return Math.floor(interval) + " 天前";
+        if (interval > 1) return Math.floor(interval) + ' 天前';
         interval = seconds / 3600;
-        if (interval > 1) return Math.floor(interval) + " 小时前";
+        if (interval > 1) return Math.floor(interval) + ' 小时前';
         interval = seconds / 60;
-        if (interval > 1) return Math.floor(interval) + " 分钟前";
-        return "刚刚";
+        if (interval > 1) return Math.floor(interval) + ' 分钟前';
+        return '刚刚';
     }
 
-    function getGreeting() {
-        const hour = new Date().getHours();
-        if (hour < 5) return "夜深了，";
-        if (hour < 11) return "早上好，";
-        if (hour < 13) return "中午好，";
-        if (hour < 18) return "下午好，";
-        return "晚上好，";
-    }
-
-    // --- UI Logic ---
-    function initGreeting() {
-        const titleDesc = document.querySelector('h1 + p');
-        if (titleDesc) {
-            const greeting = getGreeting();
-            // Don't overwrite completely if it's already set
-            if (!titleDesc.textContent.includes(greeting)) {
-                titleDesc.innerHTML = `<span class="text-blue-500 font-medium">${greeting}</span> ${titleDesc.textContent}`;
-            }
-        }
-    }
-
-    function initBackToTop() {
-        if (!backToTopBtn) return;
-
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > 300) {
-                backToTopBtn.classList.remove('opacity-0', 'translate-y-10');
-            } else {
-                backToTopBtn.classList.add('opacity-0', 'translate-y-10');
-            }
-        });
-
-        backToTopBtn.addEventListener('click', () => {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        });
-    }
-
-    // --- Stats & Filters ---
-    function updateStats(moments) {
-        // Count
-        animateValue(statsCount, 0, moments.length, 1000);
-
-        // Days
-        const uniqueDays = new Set(moments.map(m => safeDate(m.date).toDateString()));
-        animateValue(statsDays, 0, uniqueDays.size, 1000);
-
-        // Locations
-        const uniqueLocations = new Set(moments.filter(m => m.location).map(m => m.location));
-        animateValue(statsLocations, 0, uniqueLocations.size, 1000);
-
-        // Latest
-        if (moments.length > 0) {
-            const latestDate = safeDate(moments[0].date);
-            statsLatest.textContent = timeSince(latestDate);
-        }
-    }
-
-    function animateValue(obj, start, end, duration) {
-        let startTimestamp = null;
-        const step = (timestamp) => {
-            if (!startTimestamp) startTimestamp = timestamp;
-            const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-            obj.innerHTML = Math.floor(progress * (end - start) + start);
-            if (progress < 1) {
-                window.requestAnimationFrame(step);
-            }
-        };
-        window.requestAnimationFrame(step);
-    }
-
-    function renderTags(moments) {
-        const tagCounts = {};
-        moments.forEach(m => {
-            if (m.tags) {
-                m.tags.forEach(t => {
-                    tagCounts[t] = (tagCounts[t] || 0) + 1;
-                });
-            }
-        });
-
-        const sortedTags = Object.keys(tagCounts).sort((a, b) => tagCounts[b] - tagCounts[a]);
-
-        tagFiltersContainer.innerHTML = `
-            <button class="tag-chip glass-pill px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap flex-shrink-0 transition-all border ${!activeTag ? 'bg-blue-600 text-white border-blue-600 shadow-md' : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700'}" data-tag="all">
-                全部 <span class="opacity-80 text-xs ml-1">(${moments.length})</span>
-            </button>
-            ${sortedTags.map(tag => `
-                <button class="tag-chip glass-pill px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap flex-shrink-0 transition-all border ${activeTag === tag ? 'bg-blue-600 text-white border-blue-600 shadow-md' : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700'}" data-tag="${tag}">
-                    #${tag} <span class="opacity-60 text-xs ml-1">(${tagCounts[tag]})</span>
-                </button>
-            `).join('')}
-        `;
-
-        // Add event listeners
-        document.querySelectorAll('.tag-chip').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const tag = btn.getAttribute('data-tag');
-                activeTag = tag === 'all' ? null : tag;
-                filterMoments();
-                renderTags(allMoments); // Re-render to update active state
-            });
-        });
-    }
-
-    // --- Heatmap Logic ---
-    let heatmapInstance = null;
-    let currentHeatmapYear = 2026;
-
-    function getDateKey(date) {
-        return `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
-    }
-
-    function renderActivityChart(moments) {
-        const c = document.getElementById('activity-container');
-        if (!c || !window.ActivityChart) return;
-        const chart = new ActivityChart(c, { height: 64 });
-        chart.render(moments);
-    }
-
-    function renderHeatmapControls(moments) {
-        const container = document.getElementById('heatmap-years');
-        if (!container) return;
-
-        const years = new Set(moments.map(m => safeDate(m.date).getFullYear()));
-        const currentYear = new Date().getFullYear();
-        years.add(currentYear);
-        years.add(2026); // Explicitly add 2026 for forward planning
-
-        const sortedYears = Array.from(years).sort((a, b) => b - a);
-
-        // Button styles
-        const activeClass = "mm-year-btn active";
-        const inactiveClass = "mm-year-btn";
-
-        let html = '';
-
-        sortedYears.forEach(year => {
-             html += `
-                <button class="${currentHeatmapYear == year ? activeClass : inactiveClass}" onclick="switchHeatmap('${year}')">
-                    ${year}
-                </button>
-             `;
-        });
-
-        container.innerHTML = html;
-    }
-
-    function renderHeatmap(moments, yearOverride) {
-        const container = document.getElementById('heatmap-container');
-        if (!container || !window.HeatmapChart) return;
-
-        const yearToUse = typeof yearOverride !== 'undefined' ? yearOverride : currentHeatmapYear;
-
-        if (!heatmapInstance) {
-            heatmapInstance = new HeatmapChart(container, {
-                year: yearToUse,
-                onClick: null,
-                tooltipFn: null
-            });
-        }
-
-        if (typeof heatmapInstance.render === 'function') {
-            heatmapInstance.render(moments, yearToUse);
-        }
-    }
-
-    window.switchHeatmap = (year) => {
-        currentHeatmapYear = year;
-        renderHeatmap(allMoments, year);
-        renderHeatmapControls(allMoments);
-    };
-
-    function openRandomLightbox() {
-        if (allMoments.length === 0) return;
-        const randomIndex = Math.floor(Math.random() * allMoments.length);
-        openLightboxByIndex(randomIndex);
-    }
-
-    // Expose openLightbox to global scope for inline onclick
-    window.openLightbox = (id) => {
-        const index = allMoments.findIndex(m => String(m.id) === String(id));
-        if (index !== -1) {
-            openLightboxByIndex(index);
-        }
-    };
-
-    function filterMoments() {
-        const searchTerm = searchInput ? searchInput.value.toLowerCase().trim() : '';
-        const filtered = allMoments.filter(m => {
-            const matchesSearch = !searchTerm ||
-                (m.content && m.content.toLowerCase().includes(searchTerm)) ||
-                (m.tags && m.tags.some(t => t.toLowerCase().includes(searchTerm))) ||
-                (m.location && m.location.toLowerCase().includes(searchTerm));
-
-            const matchesTag = !activeTag || (m.tags && m.tags.includes(activeTag));
-            const matchesImage = !onlyWithImage || !!m.image;
-
-            return matchesSearch && matchesTag && matchesImage;
-        });
-
-        updateStats(filtered);
-        renderActivityChart(filtered);
-        renderHeatmap(filtered);
-        renderMoments(filtered);
-    }
-
-    // --- View Switching Logic ---
-    function switchView(view) {
-        if (currentView === view) return;
-        currentView = view;
-
-        // Update Buttons
-        if (view === 'grid') {
-            viewGridBtn.className = "mm-view-btn active";
-            viewTimelineBtn.className = "mm-view-btn";
-        } else {
-            viewTimelineBtn.className = "mm-view-btn active";
-            viewGridBtn.className = "mm-view-btn";
-        }
-
-        const url = new URL(window.location);
-        url.searchParams.set('view', view);
-        window.history.replaceState({}, '', url);
-        filterMoments();
-    }
-
-    if (viewGridBtn && viewTimelineBtn) {
-        viewGridBtn.addEventListener('click', () => switchView('grid'));
-        viewTimelineBtn.addEventListener('click', () => switchView('timeline'));
-    }
-
-    const hasImageBtn = document.getElementById('filter-has-image');
-    if (hasImageBtn) {
-        const activeClass = "p-2.5 rounded-xl bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 transition-all shadow-sm border border-blue-300 dark:border-blue-500/40";
-        const inactiveClass = "p-2.5 rounded-xl bg-white dark:bg-neutral-900 text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400 transition-all hover:scale-105 active:scale-95 shadow-sm border border-gray-100 dark:border-gray-800";
-        const updateBtn = () => { hasImageBtn.className = onlyWithImage ? activeClass : inactiveClass; };
-        updateBtn();
-        hasImageBtn.addEventListener('click', () => {
-            onlyWithImage = !onlyWithImage;
-            updateBtn();
-            const url = new URL(window.location);
-            url.searchParams.set('img', onlyWithImage ? '1' : '0');
-            window.history.replaceState({}, '', url);
-            filterMoments();
-        });
-    }
-
-    // --- Rendering Logic ---
-
-    function renderSkeleton() {
-        momentsContainer.className = "columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6";
-        // 半透明骨架 — 亮暗模式自适应，不再写死 dark:bg-gray-800
-        const sk = (h) => `<div style="height:${h};background:rgba(128,128,128,.12);border-radius:8px;animation:skPulse 1.5s ease-in-out infinite"></div>`;
-        momentsContainer.innerHTML = Array(6).fill(0).map((_, i) => `
-            <div class="break-inside-avoid mb-6" style="background:rgba(128,128,128,.04);border-radius:16px;box-shadow:0 0 0 1px rgba(128,128,128,.06);overflow:hidden">
-                ${sk('180px')}
-                <div style="padding:16px;display:flex;flex-direction:column;gap:10px">
-                    ${sk('14px')}
-                    ${sk('18px')}
-                </div>
-            </div>
-        `).join('');
-    }
-
-    async function fetchMoments() {
-        renderSkeleton();
-        try {
-            await new Promise(resolve => setTimeout(resolve, 600));
-
-            // 1. Fetch Local Data — admin 管理的主要数据源
-            let localMoments = [];
-
-            try {
-                const localResponse = await fetch(`public/data/moments.json?v=${Date.now()}`);
-                if (localResponse.ok) {
-                    localMoments = await localResponse.json();
-                }
-            } catch (e) {
-                console.warn('Failed to fetch local moments:', e);
-            }
-
-
-                        // 2. 本地数据为唯一数据源（与 admin 同一来源，增删即时生效）
-            allMoments = Array.isArray(localMoments) ? [...localMoments] : [];
-
-            // Sort by date descending
-            allMoments.sort((a, b) => safeDate(b.date) - safeDate(a.date));
-
-            renderTags(allMoments);
-            renderHeatmapControls(allMoments);
-
-            const params = new URLSearchParams(window.location.search);
-            const initialView = params.get('view');
-            const initialTag = params.get('tag');
-            const initialQ = params.get('q');
-            const initialImg = params.get('img');
-
-            if (initialView === 'timeline' || initialView === 'grid') {
-                currentView = initialView;
-                if (initialView === 'timeline') {
-                    viewTimelineBtn.click();
-                } else {
-                    viewGridBtn.click();
-                }
-            }
-            if (initialTag) {
-                activeTag = initialTag;
-            }
-            if (initialQ && searchInput) {
-                searchInput.value = initialQ;
-            }
-            if (initialImg === '1') {
-                onlyWithImage = true;
-                const hasImageBtn = document.getElementById('filter-has-image');
-                if (hasImageBtn) hasImageBtn.click();
-            }
-
-            filterMoments();
-
-            // Handle Deep Link
-            // 清除 URL 残留的 id 参数，不自动打开 lightbox
-            if (window.location.search.includes('id=')) {
-                const u = new URL(window.location);
-                u.searchParams.delete('id');
-                window.history.replaceState({}, '', u);
-            }
-
-        } catch (error) {
-            console.error('Error fetching moments:', error);
-            momentsContainer.className = "col-span-full";
-            momentsContainer.innerHTML = `
-                <div class="text-center py-10">
-                    <div class="inline-block p-4 rounded-full bg-red-50 dark:bg-red-900/20 mb-4">
-                        <i data-lucide="alert-circle" class="w-8 h-8 text-red-500"></i>
-                    </div>
-                    <p class="text-gray-500 dark:text-gray-400">加载失败，请稍后重试。</p>
-                    <button onclick="location.reload()" class="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-colors">
-                        刷新页面
-                    </button>
-                </div>
-            `;
-            safeLucideCreateIcons();
-        }
-    }
-
-    function optimizeGithubImage(url) {
+    /** GitHub raw → jsDelivr CDN 优化 */
+    function optimizeImage(url) {
         if (!url) return url;
-        // Replace raw.githubusercontent.com with jsdelivr CDN for better performance in some regions
         if (url.includes('raw.githubusercontent.com')) {
             return url.replace('raw.githubusercontent.com', 'cdn.jsdelivr.net/gh')
-                      .replace('/main/', '@main/')
-                      .replace('/master/', '@master/');
+                .replace('/main/', '@main/')
+                .replace('/master/', '@master/');
         }
         return url;
     }
 
-    function renderMoments(moments) {
+    /** 防抖 */
+    function debounce(fn, ms) {
+        return function() {
+            var ctx = this, args = arguments;
+            clearTimeout(searchDebounceTimer);
+            searchDebounceTimer = setTimeout(function() { fn.apply(ctx, args); }, ms);
+        };
+    }
+
+    /** 安全的 Lucide 图标刷新 */
+    function refreshIcons() {
+        if (window.lucide && typeof window.lucide.createIcons === 'function') {
+            try { window.lucide.createIcons(); } catch (e) { /* ignore */ }
+        }
+    }
+
+    /** 数字滚动动画 */
+    function animateValue(el, start, end, duration) {
+        var startTime = null;
+        function step(timestamp) {
+            if (!startTime) startTime = timestamp;
+            var progress = Math.min((timestamp - startTime) / duration, 1);
+            el.textContent = Math.floor(progress * (end - start) + start);
+            if (progress < 1) requestAnimationFrame(step);
+        }
+        requestAnimationFrame(step);
+    }
+
+    /** 格式化日期 */
+    function formatDate(dateStr, options) {
+        return safeDate(dateStr).toLocaleDateString('zh-CN', options);
+    }
+
+    /* ═══════════════════════════════════════════════
+       DATA LAYER
+       ═══════════════════════════════════════════════ */
+
+    async function fetchMoments() {
+        try {
+            var resp = await fetch('public/data/moments.json?v=' + Date.now());
+            if (!resp.ok) throw new Error('HTTP ' + resp.status);
+            var data = await resp.json();
+            if (!Array.isArray(data)) data = [];
+            // 按日期倒序
+            data.sort(function(a, b) { return safeDate(b.date) - safeDate(a.date); });
+            return data;
+        } catch (e) {
+            console.error('Failed to fetch moments:', e);
+            return null;
+        }
+    }
+
+    function getFilteredMoments() {
+        var searchTerm = dom.searchInput ? dom.searchInput.value.toLowerCase().trim() : '';
+        return allMoments.filter(function(m) {
+            var matchSearch = !searchTerm ||
+                (m.content && m.content.toLowerCase().indexOf(searchTerm) !== -1) ||
+                (m.tags && m.tags.some(function(t) { return t.toLowerCase().indexOf(searchTerm) !== -1; })) ||
+                (m.location && m.location.toLowerCase().indexOf(searchTerm) !== -1);
+
+            var matchTag = !activeTag || (m.tags && m.tags.indexOf(activeTag) !== -1);
+
+            return matchSearch && matchTag;
+        });
+    }
+
+    function getStats(moments) {
+        var uniqueDays = new Set();
+        var uniqueLocations = new Set();
+        moments.forEach(function(m) {
+            uniqueDays.add(safeDate(m.date).toDateString());
+            if (m.location) uniqueLocations.add(m.location);
+        });
+        return {
+            count: moments.length,
+            days: uniqueDays.size,
+            locations: uniqueLocations.size,
+            latest: moments.length > 0 ? timeSince(safeDate(moments[0].date)) : '--'
+        };
+    }
+
+    function getTagCounts(moments) {
+        var counts = {};
+        moments.forEach(function(m) {
+            if (m.tags) {
+                m.tags.forEach(function(t) {
+                    counts[t] = (counts[t] || 0) + 1;
+                });
+            }
+        });
+        return counts;
+    }
+
+    /* ═══════════════════════════════════════════════
+       UI RENDERING
+       ═══════════════════════════════════════════════ */
+
+    function renderSkeleton() {
+        if (!dom.gallery) return;
+        dom.gallery.className = 'mm-gallery';
+        dom.gallery.innerHTML = Array(6).fill(0).map(function() {
+            return '<div class="mm-skeleton-card">' +
+                '<div class="mm-skeleton-img"></div>' +
+                '<div class="mm-skeleton-body">' +
+                '<div class="mm-skeleton-line mm-skeleton-line--medium"></div>' +
+                '<div class="mm-skeleton-line mm-skeleton-line--short"></div>' +
+                '</div></div>';
+        }).join('');
+    }
+
+    function renderEmpty() {
+        if (!dom.gallery) return;
+        dom.gallery.className = 'mm-gallery';
+        dom.gallery.innerHTML =
+            '<div class="mm-empty">' +
+            '<div class="mm-empty-icon"><i data-lucide="camera-off"></i></div>' +
+            '<h3>暂无瞬间</h3>' +
+            '<p>没有找到匹配的记录，换个关键词试试？</p>' +
+            '</div>';
+        refreshIcons();
+    }
+
+    function renderError(msg) {
+        if (!dom.gallery) return;
+        dom.gallery.className = 'mm-gallery';
+        dom.gallery.innerHTML =
+            '<div class="mm-empty">' +
+            '<div class="mm-empty-icon"><i data-lucide="alert-circle"></i></div>' +
+            '<h3>加载失败</h3>' +
+            '<p>' + (msg || '数据加载出错，请稍后重试') + '</p>' +
+            '<button class="mm-error-btn" onclick="location.reload()">刷新页面</button>' +
+            '</div>';
+        refreshIcons();
+    }
+
+    function renderStats(stats) {
+        if (dom.statsCount) animateValue(dom.statsCount, 0, stats.count, 800);
+        if (dom.statsDays) animateValue(dom.statsDays, 0, stats.days, 800);
+        if (dom.statsLocations) animateValue(dom.statsLocations, 0, stats.locations, 800);
+        if (dom.statsLatest) dom.statsLatest.textContent = stats.latest;
+    }
+
+    function renderTags(tagCounts, totalCount) {
+        if (!dom.tagFilters) return;
+        var sorted = Object.keys(tagCounts).sort(function(a, b) { return tagCounts[b] - tagCounts[a]; });
+
+        var html = '<button class="mm-tag-chip' + (!activeTag ? ' active' : '') + '" data-tag="">全部 <span>(' + totalCount + ')</span></button>';
+
+        sorted.forEach(function(tag) {
+            html += '<button class="mm-tag-chip' + (activeTag === tag ? ' active' : '') + '" data-tag="' + tag + '">#' + tag + ' <span>(' + tagCounts[tag] + ')</span></button>';
+        });
+
+        dom.tagFilters.innerHTML = html;
+
+        // 绑定点击事件
+        Array.prototype.forEach.call(dom.tagFilters.querySelectorAll('.mm-tag-chip'), function(btn) {
+            btn.addEventListener('click', function() {
+                var tag = this.getAttribute('data-tag');
+                activeTag = tag || null;
+                refresh();
+            });
+        });
+    }
+
+    function renderGrid(moments) {
+        if (!dom.gallery) return;
+        dom.gallery.className = 'mm-gallery';
+
+        dom.gallery.innerHTML = moments.map(function(m, i) {
+            var date = formatDate(m.date, { month: 'short', day: 'numeric' });
+            var hasImage = !!m.image;
+            var imgSrc = optimizeImage(m.image || '');
+            var tagsHtml = (m.tags || []).map(function(t) {
+                return '<span class="mm-card-tag">#' + t + '</span>';
+            }).join('');
+
+            // 每 6 张中有一张跨两行（仅当有图片时）
+            var spanClass = (hasImage && i % 6 === 0) ? ' mm-card-span' : '';
+
+            if (hasImage) {
+                return '<div class="mm-card' + spanClass + '" style="animation-delay:' + (i * 0.04) + 's" onclick="MomentsApp.openLightbox(\'' + m.id + '\')">' +
+                    '<img src="' + imgSrc + '" alt="' + (m.content || '') + '" loading="lazy">' +
+                    '<div class="mm-card-overlay">' +
+                    (m.content ? '<p>' + m.content + '</p>' : '') +
+                    '<div class="mm-card-meta">' +
+                    '<span><i data-lucide="calendar"></i>' + date + '</span>' +
+                    (m.location ? '<span><i data-lucide="map-pin"></i>' + m.location + '</span>' : '') +
+                    '</div>' +
+                    (tagsHtml ? '<div class="mm-card-tags">' + tagsHtml + '</div>' : '') +
+                    '</div></div>';
+            }
+
+            // 无图片文字卡
+            return '<div class="mm-card mm-card--text" style="animation-delay:' + (i * 0.04) + 's" onclick="MomentsApp.openLightbox(\'' + m.id + '\')">' +
+                '<div class="mm-card-overlay">' +
+                (m.content ? '<p>' + m.content + '</p>' : '<p style="opacity:.5">无内容</p>') +
+                '<div class="mm-card-meta">' +
+                '<span><i data-lucide="calendar"></i>' + date + '</span>' +
+                (m.location ? '<span><i data-lucide="map-pin"></i>' + m.location + '</span>' : '') +
+                '</div>' +
+                (tagsHtml ? '<div class="mm-card-tags">' + tagsHtml + '</div>' : '') +
+                '</div></div>';
+        }).join('');
+
+        refreshIcons();
+    }
+
+    function renderTimeline(moments) {
+        if (!dom.gallery) return;
+        dom.gallery.className = 'mm-timeline';
+
+        var lastYearMonth = '';
+
+        dom.gallery.innerHTML = moments.map(function(m, i) {
+            var dateObj = safeDate(m.date);
+            var yearMonth = dateObj.toLocaleDateString('zh-CN', { year: 'numeric', month: 'long' });
+            var day = dateObj.getDate();
+            var timeStr = dateObj.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+            var imgSrc = optimizeImage(m.image || '');
+            var tagsHtml = (m.tags || []).map(function(t) { return '#' + t; }).join(' ');
+
+            var monthHtml = '';
+            if (yearMonth !== lastYearMonth) {
+                lastYearMonth = yearMonth;
+                monthHtml = '<div class="mm-tl-month"><div class="mm-tl-month-dot"></div><span class="mm-tl-month-label">' + yearMonth + '</span></div>';
+            }
+
+            return '<div class="mm-tl-item" style="animation-delay:' + (i * 0.03) + 's">' +
+                monthHtml +
+                '<div class="mm-tl-card">' +
+                '<div class="mm-tl-day">' + day + '</div>' +
+                (m.image ? '<div class="mm-tl-thumb" onclick="MomentsApp.openLightbox(\'' + m.id + '\')"><img src="' + imgSrc + '" alt="" loading="lazy"></div>' : '') +
+                '<div class="mm-tl-body">' +
+                '<p>' + (m.content || '') + '</p>' +
+                '<div class="mm-tl-foot">' +
+                '<span class="mm-tl-time">' + timeStr + '</span>' +
+                (m.location ? '<a href="https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(m.location) + '" target="_blank" class="mm-tl-loc" onclick="event.stopPropagation()"><i data-lucide="map-pin"></i>' + m.location + '</a>' : '') +
+                (m.tags && m.tags.length ? '<span class="mm-tl-tags">' + tagsHtml + '</span>' : '') +
+                '</div></div></div></div>';
+        }).join('');
+
+        refreshIcons();
+    }
+
+    function renderGallery(moments) {
         if (moments.length === 0) {
-            momentsContainer.className = "col-span-full";
-            momentsContainer.innerHTML = `
-                <div class="text-center py-20 animate-fade-in flex flex-col items-center justify-center">
-                    <div class="w-24 h-24 bg-gray-50 dark:bg-gray-800/50 rounded-full flex items-center justify-center mb-6">
-                        <i data-lucide="camera-off" class="w-10 h-10 text-gray-400"></i>
-                    </div>
-                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">暂无瞬间</h3>
-                    <p class="text-gray-500 dark:text-gray-400 max-w-md mx-auto">
-                        没有找到匹配的记录，换个关键词试试？
-                    </p>
-                </div>
-            `;
-            safeLucideCreateIcons();
+            renderEmpty();
             return;
         }
-
         if (currentView === 'grid') {
             renderGrid(moments);
         } else {
@@ -461,300 +356,420 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function renderGrid(moments) {
-        momentsContainer.className = "columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6";
-        momentsContainer.innerHTML = moments.map((moment, index) => {
-            const date = safeDate(moment.date).toLocaleDateString('zh-CN', {
-                year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
+    /* ═══════════════════════════════════════════════
+       CHARTS
+       ═══════════════════════════════════════════════ */
+
+    function renderActivityChart(moments) {
+        if (!dom.activityContainer || !window.ActivityChart) return;
+        var chart = new window.ActivityChart(dom.activityContainer, { height: 48 });
+        chart.render(moments);
+    }
+
+    function renderHeatmap(moments, yearOverride) {
+        if (!dom.heatmapContainer || !window.HeatmapChart) return;
+        var year = typeof yearOverride !== 'undefined' ? yearOverride : currentHeatmapYear;
+
+        if (!heatmapInstance) {
+            heatmapInstance = new window.HeatmapChart(dom.heatmapContainer, {
+                year: year,
+                onClick: null,
+                tooltipFn: null
             });
+        }
 
-            const imageHtml = moment.image ? `
-                <div class="relative overflow-hidden rounded-xl mb-4 group cursor-zoom-in" onclick="openLightbox('${moment.id}')">
-                    <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10 flex items-center justify-center">
-                        <i data-lucide="maximize-2" class="w-8 h-8 text-white drop-shadow-lg transform scale-75 group-hover:scale-100 transition-transform"></i>
-                    </div>
-                    <img
-                        src="${optimizeGithubImage(moment.image)}"
-                        alt="Moment"
-                        loading="lazy"
-                        class="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-105"
-                    />
-                    ${moment.exif ? `
-                        <div class="absolute bottom-2 right-2 bg-black/60 backdrop-blur-sm text-white text-[10px] px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 font-mono">
-                            ${moment.exif.camera || 'Camera'}
-                        </div>
-                    ` : ''}
-                </div>
-            ` : '';
-
-            const locationHtml = moment.location ? `
-                <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(moment.location)}" target="_blank" class="flex items-center text-xs text-gray-400 mt-3 hover:text-blue-500 transition-colors" onclick="event.stopPropagation()">
-                    <i data-lucide="map-pin" class="w-3 h-3 mr-1"></i>
-                    ${moment.location}
-                </a>
-            ` : '';
-
-            return `
-            <div
-                class="moment-card glass-card break-inside-avoid bg-white dark:bg-neutral-900 rounded-2xl shadow-sm hover:shadow-lg border border-gray-100 dark:border-gray-800 p-5 transition-all duration-300 hover:-translate-y-1 animate-fade-in"
-                style="animation-delay: ${index * 0.05}s"
-            >
-                ${imageHtml}
-
-                <div class="relative">
-                    <div class="text-xs font-medium text-gray-400 mb-2 flex items-center">
-                        <i data-lucide="clock" class="w-3 h-3 mr-1.5 text-blue-500"></i>
-                        ${date}
-                    </div>
-
-                    <p class="text-gray-700 dark:text-gray-300 leading-relaxed font-serif text-lg">
-                        ${moment.content}
-                    </p>
-
-                    ${locationHtml}
-
-                    ${moment.tags ? `
-                        <div class="flex flex-wrap gap-2 mt-4">
-                            ${moment.tags.map(tag => `
-                                <span class="px-2 py-1 bg-gray-100 dark:bg-gray-800 text-xs text-gray-500 dark:text-gray-400 rounded-md">#${tag}</span>
-                            `).join('')}
-                        </div>
-                    ` : ''}
-                </div>
-            </div>
-            `;
-        }).join('');
-
-        safeLucideCreateIcons();
+        if (typeof heatmapInstance.render === 'function') {
+            heatmapInstance.render(moments, year);
+        }
     }
 
-    function renderTimeline(moments) {
-        momentsContainer.className = "tl-container";
+    function renderHeatmapControls(moments) {
+        if (!dom.heatmapYears) return;
+        var yearsSet = new Set();
+        moments.forEach(function(m) { yearsSet.add(safeDate(m.date).getFullYear()); });
+        yearsSet.add(new Date().getFullYear());
 
-        let lastYearMonth = '';
-
-        momentsContainer.innerHTML = moments.map((moment, index) => {
-            const dateObj = safeDate(moment.date);
-            const yearMonth = dateObj.toLocaleDateString('zh-CN', { year: 'numeric', month: 'long' });
-            const day = dateObj.getDate();
-            const timeStr = dateObj.toLocaleDateString('zh-CN', { hour:'2-digit', minute:'2-digit' }).split(' ').pop() || '';
-
-            let monthLabel = '';
-            if (yearMonth !== lastYearMonth) {
-                lastYearMonth = yearMonth;
-                monthLabel = `<div class="tl-month"><div class="tl-month-dot"></div><span class="tl-month-label">${yearMonth}</span></div>`;
-            }
-
-            const imageHtml = moment.image ? `
-                <div class="tl-thumb" onclick="openLightbox('${moment.id}')">
-                    <img src="${optimizeGithubImage(moment.image)}" alt="" loading="lazy" />
-                </div>
-            ` : '';
-
-            return `
-            <div class="tl-item" style="animation-delay:${index * 0.05}s">
-                ${monthLabel}
-                <div class="tl-card">
-                    <div class="tl-day"><span>${day}</span></div>
-                    ${imageHtml}
-                    <div class="tl-body">
-                        <p class="tl-text">${moment.content}</p>
-                        <div class="tl-foot">
-                            <span class="tl-time">${timeStr}</span>
-                            ${moment.location ? `<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(moment.location)}" target="_blank" class="tl-loc" onclick="event.stopPropagation()"><i data-lucide="map-pin"></i>${moment.location}</a>` : ''}
-                            ${moment.tags ? `<span class="tl-tags">${moment.tags.map(t => `#${t}`).join(' ')}</span>` : ''}
-                        </div>
-                    </div>
-                </div>
-            </div>
-            `;
+        var years = Array.from(yearsSet).sort(function(a, b) { return b - a; });
+        dom.heatmapYears.innerHTML = years.map(function(y) {
+            return '<button class="' + (y === currentHeatmapYear ? 'active' : '') + '" data-year="' + y + '">' + y + '</button>';
         }).join('');
 
-        safeLucideCreateIcons();
+        Array.prototype.forEach.call(dom.heatmapYears.querySelectorAll('button'), function(btn) {
+            btn.addEventListener('click', function() {
+                currentHeatmapYear = parseInt(this.getAttribute('data-year'));
+                renderHeatmap(allMoments, currentHeatmapYear);
+                renderHeatmapControls(allMoments);
+            });
+        });
     }
 
-    // --- Lightbox Logic ---
+    /* ═══════════════════════════════════════════════
+       LIGHTBOX
+       ═══════════════════════════════════════════════ */
 
-    function preloadImage(url) {
-        if (!url) return;
-        const img = new Image();
-        img.src = url;
+    function openLightbox(id) {
+        var index = -1;
+        for (var i = 0; i < allMoments.length; i++) {
+            if (String(allMoments[i].id) === String(id)) { index = i; break; }
+        }
+        if (index === -1) return;
+        openLightboxByIndex(index);
     }
 
     function openLightboxByIndex(index) {
         currentLightboxIndex = index;
-        const moment = allMoments[index];
-        if (!moment) return;
+        var m = allMoments[index];
+        if (!m) return;
 
-        lightboxImg.src = moment.image ? optimizeGithubImage(moment.image) : '';
-        lightboxContent.textContent = moment.content;
-        lightboxDate.textContent = safeDate(moment.date).toLocaleDateString('zh-CN', {
+        // 图片
+        dom.lightboxImg.src = m.image ? optimizeImage(m.image) : '';
+
+        // 内容
+        dom.lightboxContent.textContent = m.content || '';
+        dom.lightboxDate.textContent = formatDate(m.date, {
             year: 'numeric', month: 'long', day: 'numeric', weekday: 'long'
         });
 
-        if (moment.location) {
-            lightboxLocation.textContent = moment.location;
-            lightboxLocationContainer.classList.remove('hidden');
-            // Update click handler for map
-            lightboxLocationContainer.onclick = () => {
-                const query = encodeURIComponent(moment.location);
-                window.open(`https://www.google.com/maps/search/?api=1&query=${query}`, '_blank');
+        // 地点
+        if (m.location) {
+            dom.lightboxLocation.textContent = m.location;
+            dom.lightboxLocationWrap.classList.remove('mm-hidden');
+            dom.lightboxLocationWrap.onclick = function() {
+                window.open('https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(m.location), '_blank');
             };
-            lightboxLocationContainer.title = "在地图中查看";
+            dom.lightboxLocationWrap.title = '在地图中查看';
         } else {
-            lightboxLocationContainer.classList.add('hidden');
-            lightboxLocationContainer.onclick = null;
+            dom.lightboxLocationWrap.classList.add('mm-hidden');
         }
 
-        // Tags
-        if (moment.tags && moment.tags.length > 0) {
-            lightboxTags.innerHTML = moment.tags.map(tag =>
-                `<span class="text-xs font-medium text-blue-600 dark:text-blue-300 bg-blue-50 dark:bg-blue-500/10 px-2.5 py-1 rounded-full border border-blue-100 dark:border-blue-500/20">#${tag}</span>`
-            ).join('');
-            lightboxTags.classList.remove('hidden');
+        // 标签
+        if (m.tags && m.tags.length > 0) {
+            dom.lightboxTags.innerHTML = m.tags.map(function(t) {
+                return '<span>#' + t + '</span>';
+            }).join('');
+            dom.lightboxTags.classList.remove('mm-hidden');
         } else {
-            lightboxTags.classList.add('hidden');
+            dom.lightboxTags.classList.add('mm-hidden');
         }
 
         // EXIF
-        if (moment.exif) {
-            exifCamera.textContent = moment.exif.camera || '--';
-            exifLens.textContent = moment.exif.lens || '--';
-            exifIso.textContent = `ISO ${moment.exif.iso || '--'}`;
-            exifAperture.textContent = moment.exif.aperture || '--';
-            exifShutter.textContent = moment.exif.shutter || '--';
-            lightboxExif.classList.remove('hidden');
+        if (m.exif && (m.exif.camera || m.exif.lens || m.exif.iso || m.exif.aperture || m.exif.shutter)) {
+            dom.exifCamera.textContent = m.exif.camera || '--';
+            dom.exifLens.textContent = m.exif.lens || '--';
+            dom.exifIso.textContent = m.exif.iso ? 'ISO ' + m.exif.iso : '--';
+            dom.exifAperture.textContent = m.exif.aperture || '--';
+            dom.exifShutter.textContent = m.exif.shutter || '--';
+            dom.lightboxExif.classList.remove('mm-hidden');
         } else {
-            lightboxExif.classList.add('hidden');
+            dom.lightboxExif.classList.add('mm-hidden');
         }
 
-        // Update URL without reloading (Deep Linking)
-        const newUrl = new URL(window.location);
-        newUrl.searchParams.set('id', moment.id);
-        window.history.pushState({}, '', newUrl);
+        // URL 更新
+        var url = new URL(window.location);
+        url.searchParams.set('id', m.id);
+        window.history.pushState({}, '', url);
 
-        // Preload next image
+        // 预加载下一张
         if (index + 1 < allMoments.length && allMoments[index + 1].image) {
-            preloadImage(allMoments[index + 1].image);
+            var preload = new Image();
+            preload.src = optimizeImage(allMoments[index + 1].image);
         }
 
-        // Show Lightbox
-        lightbox.classList.remove('hidden');
-        // Small delay to allow display:block to apply before opacity transition
-        setTimeout(() => {
-            lightbox.classList.remove('opacity-0');
-        }, 10);
-        document.body.style.overflow = 'hidden'; // Prevent scrolling
+        // 显示
+        dom.lightbox.classList.add('open');
+        document.body.style.overflow = 'hidden';
     }
 
     function closeLightbox() {
-        lightbox.classList.add('opacity-0');
-        setTimeout(() => {
-            lightbox.classList.add('hidden');
-            lightboxImg.src = '';
+        dom.lightbox.classList.remove('open');
+        setTimeout(function() {
+            dom.lightboxImg.src = '';
         }, 300);
         document.body.style.overflow = '';
 
-        // Remove ID from URL
-        const newUrl = new URL(window.location);
-        newUrl.searchParams.delete('id');
-        window.history.pushState({}, '', newUrl);
+        var url = new URL(window.location);
+        url.searchParams.delete('id');
+        window.history.pushState({}, '', url);
     }
 
     function nextImage() {
-        let nextIndex = currentLightboxIndex + 1;
-        while (nextIndex < allMoments.length && !allMoments[nextIndex].image) {
-            nextIndex++;
-        }
-        if (nextIndex < allMoments.length) {
-            openLightboxByIndex(nextIndex);
-        }
+        if (allMoments.length === 0) return;
+        var next = (currentLightboxIndex + 1) % allMoments.length;
+        openLightboxByIndex(next);
     }
 
     function prevImage() {
-        let prevIndex = currentLightboxIndex - 1;
-        while (prevIndex >= 0 && !allMoments[prevIndex].image) {
-            prevIndex--;
-        }
-        if (prevIndex >= 0) {
-            openLightboxByIndex(prevIndex);
+        if (allMoments.length === 0) return;
+        var prev = (currentLightboxIndex - 1 + allMoments.length) % allMoments.length;
+        openLightboxByIndex(prev);
+    }
+
+    function shareLightbox() {
+        var url = window.location.href;
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(url).then(function() {
+                var btn = dom.lbShare;
+                var orig = btn.innerHTML;
+                btn.innerHTML = '<i data-lucide="check"></i>';
+                btn.style.color = '#2DD4BF';
+                refreshIcons();
+                setTimeout(function() {
+                    btn.innerHTML = orig;
+                    btn.style.color = '';
+                    refreshIcons();
+                }, 2000);
+            }).catch(function() { /* ignore */ });
         }
     }
 
-    // Event Listeners for Lightbox
-    lightboxClose.addEventListener('click', closeLightbox);
+    function isLightboxOpen() {
+        return dom.lightbox && dom.lightbox.classList.contains('open');
+    }
 
-    // Share Button
-    if (lightboxShare) {
-        lightboxShare.addEventListener('click', async () => {
-            const url = window.location.href;
-            try {
-                await navigator.clipboard.writeText(url);
+    /* ═══════════════════════════════════════════════
+       VIEW MANAGEMENT
+       ═══════════════════════════════════════════════ */
 
-                // Visual feedback
-                const originalIcon = lightboxShare.innerHTML;
-                lightboxShare.innerHTML = '<i data-lucide="check" class="w-6 h-6 text-green-600 dark:text-green-400"></i>';
-                setTimeout(() => {
-                    lightboxShare.innerHTML = originalIcon;
-                    safeLucideCreateIcons();
-                }, 2000);
-            } catch (err) {
-                console.error('Failed to copy: ', err);
-            }
+    function switchView(view) {
+        if (currentView === view) return;
+        currentView = view;
+
+        if (dom.btnGrid) dom.btnGrid.classList.toggle('active', view === 'grid');
+        if (dom.btnTimeline) dom.btnTimeline.classList.toggle('active', view === 'timeline');
+
+        var url = new URL(window.location);
+        url.searchParams.set('view', view);
+        window.history.replaceState({}, '', url);
+
+        refresh();
+    }
+
+    /* ═══════════════════════════════════════════════
+       REFRESH (main render pipeline)
+       ═══════════════════════════════════════════════ */
+
+    function refresh() {
+        var filtered = getFilteredMoments();
+        var stats = getStats(filtered);
+        var tagCounts = getTagCounts(allMoments);
+
+        renderStats(stats);
+        renderTags(tagCounts, allMoments.length);
+        renderGallery(filtered);
+        renderActivityChart(filtered);
+        renderHeatmap(filtered);
+    }
+
+    /* ═══════════════════════════════════════════════
+       EVENT BINDING
+       ═══════════════════════════════════════════════ */
+
+    function bindToolbar() {
+        // 搜索 (防抖)
+        if (dom.searchInput) {
+            dom.searchInput.addEventListener('input', debounce(function() {
+                refresh();
+            }, 300));
+        }
+
+        // 视图切换
+        if (dom.btnGrid) {
+            dom.btnGrid.addEventListener('click', function() { switchView('grid'); });
+        }
+        if (dom.btnTimeline) {
+            dom.btnTimeline.addEventListener('click', function() { switchView('timeline'); });
+        }
+
+        // 随机漫游
+        if (dom.btnRandom) {
+            dom.btnRandom.addEventListener('click', function() {
+                if (allMoments.length === 0) return;
+                var idx = Math.floor(Math.random() * allMoments.length);
+                openLightboxByIndex(idx);
+            });
+        }
+
+        // 标签拖动滚动
+        if (dom.tagFilters) {
+            var isDown = false, startX, scrollLeft;
+            dom.tagFilters.addEventListener('mousedown', function(e) {
+                isDown = true;
+                startX = e.pageX - dom.tagFilters.offsetLeft;
+                scrollLeft = dom.tagFilters.scrollLeft;
+            });
+            dom.tagFilters.addEventListener('mouseleave', function() { isDown = false; });
+            dom.tagFilters.addEventListener('mouseup', function() { isDown = false; });
+            dom.tagFilters.addEventListener('mousemove', function(e) {
+                if (!isDown) return;
+                e.preventDefault();
+                dom.tagFilters.scrollLeft = scrollLeft - (e.pageX - dom.tagFilters.offsetLeft - startX) * 1.5;
+            });
+        }
+    }
+
+    function bindLightbox() {
+        if (dom.lbClose) dom.lbClose.addEventListener('click', closeLightbox);
+        if (dom.lbShare) dom.lbShare.addEventListener('click', shareLightbox);
+        if (dom.lbPrev) dom.lbPrev.addEventListener('click', function(e) { e.stopPropagation(); prevImage(); });
+        if (dom.lbNext) dom.lbNext.addEventListener('click', function(e) { e.stopPropagation(); nextImage(); });
+
+        // 点击背景关闭
+        if (dom.lightbox) {
+            dom.lightbox.addEventListener('click', function(e) {
+                if (e.target === dom.lightbox) closeLightbox();
+            });
+        }
+
+        // 键盘导航
+        document.addEventListener('keydown', function(e) {
+            if (!isLightboxOpen()) return;
+            if (e.key === 'Escape') { closeLightbox(); return; }
+            if (e.key === 'ArrowRight') { nextImage(); return; }
+            if (e.key === 'ArrowLeft') { prevImage(); return; }
+        });
+
+        // 触摸滑动
+        var touchStartX = 0, touchEndX = 0;
+        if (dom.lightboxImg) {
+            dom.lightboxImg.addEventListener('touchstart', function(e) {
+                touchStartX = e.changedTouches[0].screenX;
+            }, { passive: true });
+
+            dom.lightboxImg.addEventListener('touchend', function(e) {
+                touchEndX = e.changedTouches[0].screenX;
+                var diff = touchStartX - touchEndX;
+                if (Math.abs(diff) > 50) {
+                    if (diff > 0) nextImage();
+                    else prevImage();
+                }
+            }, { passive: true });
+        }
+    }
+
+    function bindBackToTop() {
+        if (!dom.btt) return;
+
+        // 滚动监听：显示/隐藏按钮
+        function onScroll(scrollTop) {
+            if (!scrollTop) scrollTop = window.scrollY || document.documentElement.scrollTop;
+            if (dom.btt.classList.contains('launching')) return;
+            dom.btt.classList.toggle('visible', scrollTop > 500);
+        }
+        window.addEventListener('scroll', function() { onScroll(); });
+
+        // Lenis 支持
+        if (window.lenis) {
+            window.lenis.on('scroll', function(e) { onScroll(e.scroll); });
+        }
+
+        // 点击：火箭动画 + 回到顶部
+        dom.btt.addEventListener('click', function() {
+            dom.btt.classList.add('launching');
+            setTimeout(function() {
+                if (window.lenis) {
+                    window.lenis.scrollTo(0, { duration: 1.2 });
+                } else {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+            }, 300);
+            setTimeout(function() {
+                dom.btt.classList.remove('launching', 'visible');
+            }, 1000);
         });
     }
 
-    lightbox.addEventListener('click', (e) => {
-        if (e.target === lightbox) closeLightbox();
-    });
-
-    lightboxNext.addEventListener('click', (e) => {
-        e.stopPropagation();
-        nextImage();
-    });
-    lightboxPrev.addEventListener('click', (e) => {
-        e.stopPropagation();
-        prevImage();
-    });
-
-    // Keyboard navigation
-    document.addEventListener('keydown', (e) => {
-        if (lightbox.classList.contains('hidden')) return;
-
-        if (e.key === 'Escape') closeLightbox();
-        if (e.key === 'ArrowRight') nextImage();
-        if (e.key === 'ArrowLeft') prevImage();
-    });
-
-    // Touch Gestures (Swipe)
-    let touchStartX = 0;
-    let touchEndX = 0;
-
-    lightboxImg.addEventListener('touchstart', e => {
-        touchStartX = e.changedTouches[0].screenX;
-    }, { passive: true });
-
-    lightboxImg.addEventListener('touchend', e => {
-        touchEndX = e.changedTouches[0].screenX;
-        handleSwipe();
-    }, { passive: true });
-
-    function handleSwipe() {
-        if (touchEndX < touchStartX - 50) nextImage(); // Swipe Left -> Next
-        if (touchEndX > touchStartX + 50) prevImage(); // Swipe Right -> Prev
+    function initLenis() {
+        if (typeof Lenis === 'undefined') return;
+        var lenis = new Lenis({
+            duration: 0.5,
+            easing: function(t) { return Math.min(1, 1.001 - Math.pow(2, -6 * t)); },
+            smooth: true,
+            smoothTouch: false,
+            touchMultiplier: 2
+        });
+        function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
+        requestAnimationFrame(raf);
+        window.lenis = lenis;
     }
 
-    // --- Search Event Listeners ---
-    if (searchInput) {
-        searchInput.addEventListener('input', filterMoments);
+    function readURLParams() {
+        var params = new URLSearchParams(window.location.search);
+        var view = params.get('view');
+        var tag = params.get('tag');
+        var q = params.get('q');
+
+        if (view === 'timeline' || view === 'grid') {
+            currentView = view;
+            if (dom.btnGrid) dom.btnGrid.classList.toggle('active', view === 'grid');
+            if (dom.btnTimeline) dom.btnTimeline.classList.toggle('active', view === 'timeline');
+        }
+        if (tag) activeTag = tag;
+        if (q && dom.searchInput) dom.searchInput.value = q;
     }
 
-    if (btnRandom) {
-        btnRandom.addEventListener('click', openRandomLightbox);
+    /* ═══════════════════════════════════════════════
+       INIT
+       ═══════════════════════════════════════════════ */
+
+    async function init() {
+        cacheDom();
+
+        // 读取 URL 参数
+        readURLParams();
+
+        // 绑定事件
+        bindToolbar();
+        bindLightbox();
+        bindBackToTop();
+
+        // Lenis 平滑滚动
+        initLenis();
+
+        // 显示骨架屏
+        renderSkeleton();
+
+        // 加载数据
+        var data = await fetchMoments();
+        if (data === null) {
+            renderError('数据加载失败，请稍后重试。');
+            return;
+        }
+
+        allMoments = data;
+
+        // 渲染热力图年份选择器
+        renderHeatmapControls(data);
+
+        // 首次渲染
+        refresh();
+
+        // 清理 URL 残留的 id 参数（不自动打开 lightbox）
+        if (window.location.search.indexOf('id=') !== -1) {
+            var url = new URL(window.location);
+            url.searchParams.delete('id');
+            window.history.replaceState({}, '', url);
+        }
+
+        // 初始图标渲染
+        refreshIcons();
     }
 
-    // Initialization
-    initGreeting();
-    initBackToTop();
-    fetchMoments();
-});
+    /* ═══════════════════════════════════════════════
+       PUBLIC API
+       ═══════════════════════════════════════════════ */
+
+    return {
+        init: init,
+        openLightbox: openLightbox,
+        closeLightbox: closeLightbox,
+        nextImage: nextImage,
+        prevImage: prevImage
+    };
+
+})();
+
+// 自动启动
+document.addEventListener('DOMContentLoaded', MomentsApp.init);
+
+// 暴露到全局（供 HTML onclick 调用）
+window.MomentsApp = MomentsApp;

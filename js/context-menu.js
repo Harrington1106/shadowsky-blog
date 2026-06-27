@@ -260,7 +260,7 @@
             {   // 片刻
                 check: () => window.location.pathname.includes('moments.html'),
                 getItems: () => [
-                    { label: '随机漫游', icon: 'shuffle', action: () => { const btn=document.getElementById('random- stroll-btn')||document.querySelector('[onclick*=\"random\"]');if(btn)btn.click();else{const imgs=document.querySelectorAll('.moment-card img');if(imgs.length)imgs[Math.floor(Math.random()*imgs.length)].scrollIntoView({behavior:'smooth'})} } },
+                    { label: '随机漫游', icon: 'shuffle', action: () => { const btn=document.getElementById('btn-random');if(btn)btn.click();else if(window.MomentsApp&&window.MomentsApp.openLightbox){const allMoments=document.querySelectorAll('.mm-card img');if(allMoments.length)allMoments[Math.floor(Math.random()*allMoments.length)].scrollIntoView({behavior:'smooth'})} } },
                 ]
             },
             {   // 关于
