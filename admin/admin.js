@@ -3402,7 +3402,7 @@ const StatsManager = {
 const Dashboard = {
     switchTab: function(tabId) {
         console.log('Switching to tab:', tabId);
-        ['bookmarks', 'snapshots', 'media', 'feeds', 'videos', 'stats', 'settings', 'posts', 'greetings'].forEach(id => {
+        ['bookmarks', 'snapshots', 'media', 'feeds', 'videos', 'stats', 'settings', 'posts', 'greetings', 'social'].forEach(id => {
             const section = document.getElementById(`view-${id}`);
             if (section) {
                 section.classList.add('hidden');
@@ -3431,7 +3431,7 @@ const Dashboard = {
         const TAB_TITLES = {
             bookmarks: '书签收藏', snapshots: '片刻动态', media: '追番追漫',
             feeds: 'RSS 订阅', videos: '视频推荐', stats: '访问统计', settings: '站点设置',
-            posts: '博客文章', greetings: '打招呼记录'
+            posts: '博客文章', greetings: '打招呼记录', social: '社交链接'
         };
         const pageTitle = document.getElementById('page-title');
         if (pageTitle) pageTitle.textContent = TAB_TITLES[tabId] || '概览';
