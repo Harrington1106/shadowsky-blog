@@ -3,41 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#0B1120" media="(prefers-color-scheme: dark)">
-    <meta name="theme-color" content="#F5F7FA" media="(prefers-color-scheme: light)">
-    <title>网页收藏 - 夏日科技探索</title>
+    <title>收藏 — 夏日科技探索</title>
+    <script>
+        (function(){try{var t=localStorage.getItem('theme');if(t==='light')document.documentElement.classList.remove('dark');else if(!t&&matchMedia('(prefers-color-scheme:light)').matches)document.documentElement.classList.remove('dark')}catch(e){}})();
+    </script>
+    <meta name="theme-color" content="#08080c" media="(prefers-color-scheme: dark)">
+    <meta name="theme-color" content="#f8f9fa" media="(prefers-color-scheme: light)">
     <link rel="icon" type="image/png" href="public/img/favicon256.png">
-
-    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.loli.net">
     <link rel="preconnect" href="https://gstatic.loli.net" crossorigin>
-    <link href="https://fonts.loli.net/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
-
-    <!-- Liquid Glass System -->
+    <link href="https://fonts.loli.net/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link href="css/unified.css?v=2606270700" rel="stylesheet">
-    <link href="css/liquid-ambient.css?v=20260624v5" rel="stylesheet">
-    <link href="css/liquid-bookmarks.css?v=20260626a" rel="stylesheet">
-
-    <!-- Lucide Icons -->
-    <script src="js/vendor/lucide.min.js?v=20260624v5"></script>
-
-    <!-- Theme: FOUC prevention -->
+    <link href="css/liquid-ambient.css?v=20260626m" rel="stylesheet">
+    <link href="css/liquid-bookmarks.css?v=5" rel="stylesheet">
+    <script src="js/vendor/lucide.min.js?v=20260626m"></script>
     <style>
         html:not(.dark) .dark-only{display:none!important}
         html.dark .light-only{display:none!important}
     </style>
 </head>
-<body class="font-sans">
+<body>
 
-    <!-- ═══════ 流体光斑层 ═══════ -->
+    <!-- Fluid ambient -->
     <div class="liquid-ambient ambient-gentle" aria-hidden="true">
         <div class="liquid-blob liquid-blob--1"></div>
         <div class="liquid-blob liquid-blob--2"></div>
         <div class="liquid-blob liquid-blob--3"></div>
-        <div class="liquid-blob liquid-blob--4"></div>
     </div>
 
-    <!-- ═══════ 导航栏 ═══════ -->
+    <!-- NAVBAR -->
     <nav id="navbar" class="homepage-cover-nav-shell" data-ui-region="home-nav-shell">
         <div class="nav-inner">
             <div class="nav-left">
@@ -58,222 +52,73 @@
                 </div>
             </div>
             <div class="nav-actions">
-                <button id="theme-toggle" class="theme-toggle" aria-label="切换主题">
-                    <span id="theme-icon-wrap"><i data-lucide="sun"></i></span>
-                </button>
-                <button id="nav-hamburger" class="nav-hamburger" aria-label="菜单" aria-expanded="false">
-                    <i data-lucide="menu"></i>
-                </button>
+                <button id="theme-toggle" class="theme-toggle" aria-label="切换主题"><span id="theme-icon-wrap"><i data-lucide="sun"></i></span></button>
+                <button id="nav-hamburger" class="nav-hamburger" aria-label="菜单" aria-expanded="false"><i data-lucide="menu"></i></button>
             </div>
         </div>
     </nav>
 
-    <!-- ═══════ 移动端菜单 ═══════ -->
     <div id="mobile-menu" role="dialog" aria-label="导航菜单" aria-modal="true">
-        <div class="mobile-menu-header">
-            <span class="mobile-menu-brand">夏日科技探索</span>
-            <button class="mobile-menu-close" aria-label="关闭菜单">
-                <i data-lucide="x"></i>
-            </button>
-        </div>
+        <div class="mobile-menu-header"><span class="mobile-menu-brand">夏日科技探索</span><button class="mobile-menu-close" aria-label="关闭菜单"><i data-lucide="x"></i></button></div>
         <div class="mobile-menu-links">
-            <a href="index.html" class="mobile-nav-link homepage-mobile-menu-link"><i data-lucide="house"></i><span>首页</span></a>
-            <a href="blog.html" class="mobile-nav-link homepage-mobile-menu-link"><i data-lucide="file-text"></i><span>笔记</span></a>
-            <a href="moments.html" class="mobile-nav-link homepage-mobile-menu-link"><i data-lucide="camera"></i><span>片刻</span></a>
-            <a href="bookmarks.html" class="mobile-nav-link active homepage-mobile-menu-link"><i data-lucide="bookmark"></i><span>收藏</span></a>
-            <a href="rss.html" class="mobile-nav-link homepage-mobile-menu-link"><i data-lucide="rss"></i><span>订阅</span></a>
-            <a href="acg.html" class="mobile-nav-link homepage-mobile-menu-link"><i data-lucide="film"></i><span>ACG</span></a>
-            <a href="about.html" class="mobile-nav-link homepage-mobile-menu-link"><i data-lucide="user-circle"></i><span>关于</span></a>
+            <a href="index.html" class="mobile-nav-link"><i data-lucide="house"></i><span>首页</span></a>
+            <a href="blog.html" class="mobile-nav-link"><i data-lucide="file-text"></i><span>笔记</span></a>
+            <a href="moments.html" class="mobile-nav-link"><i data-lucide="camera"></i><span>片刻</span></a>
+            <a href="bookmarks.html" class="mobile-nav-link active"><i data-lucide="bookmark"></i><span>收藏</span></a>
+            <a href="rss.html" class="mobile-nav-link"><i data-lucide="rss"></i><span>订阅</span></a>
+            <a href="acg.html" class="mobile-nav-link"><i data-lucide="film"></i><span>ACG</span></a>
+            <a href="about.html" class="mobile-nav-link"><i data-lucide="user-circle"></i><span>关于</span></a>
         </div>
     </div>
 
-    <!-- ═══════ 主内容区 ═══════ -->
-    <main class="bm-page">
-        <div id="bookmarks-container" class="bm-container animate-fade-in-up">
-
-            <!-- Hero -->
-            <section class="bm-hero">
-                <h1>网页收藏</h1>
-                <p class="bm-hero-desc">精心挑选的各领域优质资源，连接广阔宇宙与数字世界的传送门。</p>
-                <div class="bm-hero-stats">
-                    <div class="bm-stat-pill">
-                        <i data-lucide="bookmark" class="bm-stat-icon"></i>
-                        <span class="bm-stat-value" id="bm-total-count">—</span>
-                        <span>个书签</span>
-                    </div>
-                    <div class="bm-stat-pill">
-                        <i data-lucide="folder-tree" class="bm-stat-icon"></i>
-                        <span class="bm-stat-value" id="bm-cat-count">—</span>
-                        <span>个分类</span>
-                    </div>
+    <!-- ═══════ MAIN ═══════ -->
+    <main class="bk-page">
+        <!-- Header bar -->
+        <div class="bk-header" id="bk-header">
+            <div class="bk-header-inner">
+                <div class="bk-stats" id="bk-stats">
+                    <span>共 <strong id="stat-total">0</strong> 个收藏</span>
+                    <span class="bk-stat-sep"></span>
+                    <span><strong id="stat-cats">0</strong> 个分类</span>
                 </div>
-            </section>
-
-            <!-- Search -->
-            <div class="bm-search-wrapper" data-ui-toolbar="bookmarks-search">
-                <i data-lucide="search" class="bm-search-icon"></i>
-                <input type="text" id="bookmark-search"
-                    class="bm-search-input"
-                    placeholder="搜索收藏的网站、工具或资源...">
-                <kbd class="bm-search-kbd">/</kbd>
-            </div>
-
-            <!-- Category Navigation -->
-            <div class="bm-cat-bar" data-ui-panel="bookmarks-categories">
-                <div id="category-nav" class="bm-cat-nav">
-                    <!-- Dynamic categories injected by js/bookmarks.js -->
+                <div class="bk-search">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                    <input type="text" id="search-input" placeholder="搜索收藏...">
                 </div>
+                <div class="bk-cats" id="cat-filters"></div>
             </div>
-
-            <!-- Category Sections Container -->
-            <div id="category-list" class="bm-cat-list"></div>
-
-            <!-- No Results -->
-            <div id="no-results" class="bm-no-results hidden">
-                <div class="bm-no-results-icon">
-                    <i data-lucide="search-x"></i>
-                </div>
-                <h3>未找到相关结果</h3>
-                <p>尝试更换关键词，或者浏览分类寻找灵感。</p>
-            </div>
-
         </div>
+
+        <!-- Card grid -->
+        <div class="bk-grid" id="bk-grid"></div>
     </main>
 
-    <!-- Back to Top Button -->
-<footer class="site-footer"><span class="visit-count"><span class="pulse-dot"></span><span id="visit-count">—</span> 来过</span><span class="footer-dot">·</span><span>&copy; 2026 夏日科技探索 — Designed with <span class="footer-heart">❤️</span></span></footer>
-    <button id="back-to-top" aria-label="Back to top">
-        <i data-lucide="chevron-up"></i>
-    </button>
+    <!-- FOOTER -->
+    <footer class="site-footer">
+        <span class="visit-count"><span class="pulse-dot"></span><span id="visit-count">--</span> 来过</span>
+        <span class="footer-dot">·</span>
+        <span>&copy; 2026 夏日科技探索 — Designed with <span class="footer-heart">❤️</span></span>
+    </footer>
 
-    <!-- Footer -->
+    <button class="bk-btt" id="back-to-top" aria-label="回到顶部"><i data-lucide="chevron-up"></i></button>
 
-    <!-- Custom Context Menu -->
-    <div id="context-menu" class="bm-context-menu hidden">
-        <button onclick="window.location.reload()" class="bm-context-menu-item">
-            <i data-lucide="rotate-cw"></i>
-            刷新页面
-        </button>
-        <button id="ctx-back-to-top" class="bm-context-menu-item">
-            <i data-lucide="chevron-up"></i>
-            回到顶部
-        </button>
-        <div class="bm-context-menu-divider"></div>
-        <button onclick="document.getElementById('bookmark-search').focus()" class="bm-context-menu-item">
-            <i data-lucide="search"></i>
-            快速搜索
-        </button>
-        <div class="bm-context-menu-divider"></div>
-        <button onclick="window.location.href='index.html'" class="bm-context-menu-item">
-            <i data-lucide="house"></i>
-            返回首页
-        </button>
-    </div>
-
-    <!-- Scripts -->
-    <script src="js/api.js?v=20260624v5"></script>
+    <!-- ═══════ SCRIPTS ═══════ -->
+    <script src="js/api.js?v=20260626m"></script>
     <script src="js/navbar.js?v=20260626b"></script>
-    <script src="js/click-effect.js?v=20260624v5"></script>
+    <script src="js/bookmarks.js?v=5"></script>
+    <script src="js/click-effect.js?v=20260626m"></script>
     <script src="https://unpkg.com/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
+    <script src="js/context-menu.js?v=2606270200"></script>
+    <script src="js/tracker.js?v=20260626m"></script>
     <script>
-        lucide.createIcons();
-
-        // Smooth Scroll (Lenis)
-        const lenis = new Lenis({
-            duration: 0.5,
-            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -6 * t)),
-            direction: 'vertical',
-            gestureDirection: 'vertical',
-            smooth: true,
-            mouseMultiplier: 1,
-            smoothTouch: false,
-            touchMultiplier: 2,
-        });
-
-        let rafId;
-        function raf(time) {
-            lenis.raf(time);
-            rafId = requestAnimationFrame(raf);
-        }
-        rafId = requestAnimationFrame(raf);
-
-        window.addEventListener('pageshow', (event) => {
-            if (event.persisted) {
-                lenis.start();
-                cancelAnimationFrame(rafId);
-                rafId = requestAnimationFrame(raf);
-            }
-        });
-
-        // ── Theme: 单图标动态切换（与 blog.html 一致）──
-        const themeIconWrap = document.getElementById('theme-icon-wrap');
-        function updateThemeUI() {
-            const isDark = document.documentElement.classList.contains('dark');
-            // Logo 图片
-            document.querySelectorAll('img.dark-only').forEach(i => i.style.display = isDark ? '' : 'none');
-            document.querySelectorAll('img.light-only').forEach(i => i.style.display = isDark ? 'none' : '');
-            // 主题图标 — 重建 <i> 绕过 lucide 状态缓存
-            if (themeIconWrap) {
-                themeIconWrap.innerHTML = `<i data-lucide="${isDark ? 'sun' : 'moon'}"></i>`;
-                if (window.lucide) lucide.createIcons();
-            }
-            // Meta theme-color
-            const meta = document.querySelector('meta[name="theme-color"]');
-            if (meta) meta.content = isDark ? '#0B1120' : '#F5F7FA';
-        }
-        window.addEventListener('themechange', updateThemeUI);
-        updateThemeUI();
-
-        // ── Visit Counter ──
-        (function() {
-            const el = document.getElementById('visit-count');
-            if (!el) return;
-            if (window.api && window.api.fetchVisitCount) {
-                const tid = setTimeout(() => { if (el.textContent === '—') el.textContent = '—'; }, 3000);
-                window.api.fetchVisitCount('bookmarks').then(d => {
-                    clearTimeout(tid);
-                    el.textContent = d.count;
-                }).catch(() => { clearTimeout(tid); });
-            }
+        (function(){
+            var el=document.getElementById('visit-count');if(!el)return;var r=0;
+            var l=function(){
+                if(window.api&&window.api.fetchVisitCount){window.api.fetchVisitCount('bookmarks').then(function(d){if(d&&d.count)el.textContent=d.count}).catch(function(){})}
+                else if(r++<20)setTimeout(l,500);
+            };
+            if(document.readyState==='complete')l();else window.addEventListener('load',l);
         })();
     </script>
-    <script src="js/back-to-top.js?v=20260624v5"></script>
-    <script src="js/bookmarks.js?v=20260624v5"></script>
-
-    <script>
-        // ── Custom Context Menu ──
-        const contextMenu = document.getElementById('context-menu');
-
-        document.addEventListener('contextmenu', (e) => {
-            e.preventDefault();
-            const { clientX: mouseX, clientY: mouseY } = e;
-            const menuWidth = contextMenu.offsetWidth || 180;
-            const menuHeight = contextMenu.offsetHeight || 200;
-            const winWidth = window.innerWidth;
-            const winHeight = window.innerHeight;
-
-            let posX = mouseX;
-            let posY = mouseY;
-            if (posX + menuWidth > winWidth) posX = winWidth - menuWidth - 10;
-            if (posY + menuHeight > winHeight) posY = winHeight - menuHeight - 10;
-
-            contextMenu.style.left = `${posX}px`;
-            contextMenu.style.top = `${posY}px`;
-            contextMenu.classList.remove('hidden');
-            requestAnimationFrame(() => contextMenu.classList.add('visible'));
-        });
-
-        document.addEventListener('click', (e) => {
-            if (!contextMenu.contains(e.target)) hideContextMenu();
-        });
-        lenis.on('scroll', hideContextMenu);
-
-        function hideContextMenu() {
-            if (contextMenu.classList.contains('hidden')) return;
-            contextMenu.classList.remove('visible');
-            setTimeout(() => contextMenu.classList.add('hidden'), 200);
-        }
-    </script>
-    <script src="js/tracker.js?v=20260624v5"></script>
 </body>
 </html>
