@@ -151,6 +151,26 @@
     <script>
         lucide.createIcons();
 
+        // 主题切换修复
+        const themeBtn = document.getElementById('theme-toggle');
+        if (themeBtn) {
+            themeBtn.onclick = function(e) {
+                e.preventDefault();
+                const html = document.documentElement;
+                const isDark = !html.classList.contains('dark');
+                if (isDark) html.classList.add('dark'); else html.classList.remove('dark');
+                localStorage.setItem('theme', isDark ? 'dark' : 'light');
+                themeBtn.innerHTML = isDark ? '<i data-lucide="sun"></i>' : '<i data-lucide="moon"></i>';
+                lucide.createIcons();
+                window.dispatchEvent(new CustomEvent('themechange'));
+                window.dispatchEvent(new CustomEvent('themeChange', { detail: { isDark } }));
+            };
+            // 初始图标
+            const initDark = document.documentElement.classList.contains('dark');
+            themeBtn.innerHTML = initDark ? '<i data-lucide="sun"></i>' : '<i data-lucide="moon"></i>';
+            lucide.createIcons();
+        }
+
         const lenis = new Lenis({ duration: 0.5, easing: t => Math.min(1, 1.001 - Math.pow(2, -6 * t)), smoothTouch: false, touchMultiplier: 2 });
         window.lenis = lenis;
         function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
