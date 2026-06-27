@@ -341,6 +341,9 @@
                     <button onclick="Dashboard.switchTab('stats')" id="nav-stats" class="nav-item w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium" role="tab" aria-selected="false" aria-controls="view-stats" tabindex="-1">
                         <i data-lucide="bar-chart-2" class="w-4 h-4"></i> 访问统计
                     </button>
+                    <button onclick="Dashboard.switchTab('greetings')" id="nav-greetings" class="nav-item w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium" role="tab" aria-selected="false" aria-controls="view-greetings" tabindex="-1">
+                        <i data-lucide="hand" class="w-4 h-4"></i> 打招呼记录
+                    </button>
                     <button onclick="Dashboard.switchTab('settings')" id="nav-settings" class="nav-item w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium" role="tab" aria-selected="false" aria-controls="view-settings" tabindex="-1">
                         <i data-lucide="settings" class="w-4 h-4"></i> 站点设置
                     </button>
@@ -752,6 +755,26 @@
                     </form>
                 </div>
                 <div id="videos-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+            </section>
+
+            <!-- ═══════ VIEW: GREETINGS ═══════ -->
+            <section id="view-greetings" class="view-section space-y-6 hidden">
+                <div class="admin-card p-6">
+                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+                        <h3 class="text-lg font-bold flex items-center gap-2" style="color:inherit">
+                            <i data-lucide="hand" class="w-5 h-5" style="color:var(--color-primary,#14B8A6)"></i> 打招呼记录
+                        </h3>
+                        <button onclick="GreetingsManager.fetch()" class="admin-btn admin-btn-ghost" style="padding:6px 14px;font-size:.78rem">
+                            <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> 刷新
+                        </button>
+                    </div>
+                    <p style="font-size:.8rem;color:#64748b;margin-bottom:16px">
+                        访客在「关于」页面点击「打招呼」按钮后，记录会出现在这里。
+                    </p>
+                    <div id="greetings-list" style="max-height:60vh;overflow-y:auto">
+                        <div style="text-align:center;padding:32px;color:#94a3b8">加载中...</div>
+                    </div>
+                </div>
             </section>
 
             <!-- ═══════ VIEW: STATS ═══════ -->

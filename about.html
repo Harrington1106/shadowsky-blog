@@ -187,13 +187,6 @@
             btt.addEventListener('click', () => lenis.scrollTo(0, { duration: 0.8 }));
         }
 
-        // Visit counter
-        (function() {
-            const el = document.getElementById('visit-count');
-            if (!el || !window.api || !window.api.fetchVisitCount) return;
-            window.api.fetchVisitCount('about').then(d => { el.textContent = d.count; }).catch(() => {});
-        })();
-
         // Wave button + confetti
         const waveBtn = document.getElementById('wave-btn');
         const waveText = document.getElementById('wave-text');

@@ -2053,6 +2053,37 @@ const ImageUploader = {
     }
 };
 
+// ═══════ 打招呼管理器 ═══════
+const GreetingsManager = {
+    async fetch() {
+        const list = document.getElementById('greetings-list');
+        if (!list) return;
+        list.innerHTML = '<div style="text-align:center;padding:32px;color:#94a3b8">加载中...</div>';
+        try {
+            const res = await safeFetch(`${API_BASE}/wave`);
+            if (Array.isArray(res)) {
+                if (res.length === 0) {
+                    list.innerHTML = '<div style="text-align:center;padding:48px;color:#94a3b8"><i data-lucide="hand" style="width:32px;height:32px;opacity:.3;margin-bottom:12px;display:block;margin:0 auto"></i>暂无打招呼记录</div>';
+                } else {
+                    list.innerHTML = res.reverse().map((g, i) => {
+                        const t = new Date(g.time);
+                        const ds = t.toLocaleString('zh-CN');
+                        return `<div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);border-radius:10px;margin-bottom:6px;font-size:.8rem">
+                            <span style="font-size:1.2rem;flex-shrink:0">👋</span>
+                            <span style="color:var(--color-primary,#14B8A6);font-weight:500">#${res.length - i}</span>
+                            <span style="color:#94a3b8;flex:1">${ds}</span>
+                            <span style="font-size:.7rem;color:#64748b;max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${g.ua||''}">${(g.ua||'').substring(0,60)}</span>
+                        </div>`;
+                    }).join('');
+                }
+                if (typeof lucide !== 'undefined') lucide.createIcons();
+            }
+        } catch (e) {
+            list.innerHTML = '<div style="text-align:center;padding:32px;color:#ef4444">加载失败</div>';
+        }
+    }
+};
+
 // ═══════ 博客文章管理器 ═══════
 const PostsManager = {
     data: [],
@@ -3229,6 +3260,7 @@ const Dashboard = {
         if (tabId === 'media') { MediaManager.fetch(); MediaManager.updateFilterUI(); }
         if (tabId === 'feeds') FeedsManager.fetch();
         if (tabId === 'videos') VideosManager.fetch();
+        if (tabId === 'greetings') GreetingsManager.fetch();
         if (tabId === 'stats') StatsManager.fetch();
         if (tabId === 'settings') { fetchSettings(); }
     }

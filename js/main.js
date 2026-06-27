@@ -212,7 +212,7 @@ function updateVisitCount() {
             .then(data => {
                 clearTimeout(timeoutId);
                 const title = data.total ? `全站访问：${data.total}` : '';
-                setVisitCountText(countElement, `访问 ${data.count}`, title);
+                setVisitCountText(countElement, String(data.count || 0), title);
             })
             .catch(err => {
                 clearTimeout(timeoutId);
