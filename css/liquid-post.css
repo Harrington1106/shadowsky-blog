@@ -71,7 +71,7 @@ body { background: var(--bg); color: var(--rs-text-body); }
 #progress-bar { height: 100%; background: linear-gradient(90deg, var(--rs-accent), #6366f1); width: 0; transition: width .1s linear; }
 
 /* ── Hero 头部 ── */
-.post-hero { position: relative; display: flex; align-items: flex-end; min-height: 360px; padding: 120px 0 48px; overflow: hidden; }
+/* .post-hero 样式由 post.html 内联定义，此处不再重复避免冲突 */
 .post-hero-bg { position: absolute; inset: 0; background-size: cover; background-position: center; z-index: 0; transition: transform .7s; }
 .post-hero:hover .post-hero-bg { transform: scale(1.03); }
 .post-hero-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,.85) 0%, rgba(0,0,0,.3) 60%, rgba(0,0,0,.1) 100%); z-index: 1; }
