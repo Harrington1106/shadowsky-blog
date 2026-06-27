@@ -2125,6 +2125,8 @@ const SocialManager = {
     async fetch() {
         this._populateDropdown();
         const list = document.getElementById('social-list');
+        if (!list) return;
+        try {
             const res = await safeFetch(API_BASE + '/social');
             if (Array.isArray(res)) { this.data = res; this.render(); }
             else { list.innerHTML = '<div style="text-align:center;padding:32px;color:#ef4444">加载失败</div>'; }
