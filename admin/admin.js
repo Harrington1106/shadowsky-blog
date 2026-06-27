@@ -3943,9 +3943,12 @@ document.addEventListener('DOMContentLoaded', async () => {
             confirmBtn.disabled = true;
 
             if (editMode === 'rename') {
-                const oldKey = editTarget === 'sub' ? ctx.subVal : ctx.catVal;
-                const newKeyVal = key !== oldKey ? key : null;
-                await BookmarksManager.renameCategory(oldKey, name, editTarget === 'sub' ? ctx.subVal : null, newKeyVal);
+                // 子分类重命名: key=父key, childKey=子key
+                // 主分类重命名: key=分类key, childKey=null
+                const catKey = editTarget === 'sub' ? ctx.catVal : ctx.subVal || ctx.catVal;
+                const childKeyVal = editTarget === 'sub' ? ctx.subVal : null;
+                const newKeyVal = key !== (childKeyVal || catKey) ? key : null;
+                await BookmarksManager.renameCategory(catKey, name, childKeyVal, newKeyVal);
             } else {
                 if (!key) { showToast('请输入分类ID', 'warning'); confirmBtn.disabled = false; return; }
                 if (!/^[a-z0-9_]+$/i.test(key)) { showToast('分类ID只能包含字母、数字和下划线', 'warning'); confirmBtn.disabled = false; return; }
