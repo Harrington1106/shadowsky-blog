@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>随手拍 — 夏日科技探索</title>
+    <script>
+        (function(){
+            try{var t=localStorage.getItem('theme');if(t==='light')document.documentElement.classList.remove('dark');else if(!t&&matchMedia('(prefers-color-scheme:light)').matches)document.documentElement.classList.remove('dark')}catch(e){}
+        })();
+    </script>
+    <meta name="theme-color" content="#0B1120" media="(prefers-color-scheme: dark)">
+    <meta name="theme-color" content="#F5F7FA" media="(prefers-color-scheme: light)">
+    <link rel="icon" type="image/png" href="public/img/favicon256.png">
+    <link rel="preconnect" href="https://fonts.loli.net">
+    <link rel="preconnect" href="https://gstatic.loli.net" crossorigin>
+    <link href="https://fonts.loli.net/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="css/unified.css?v=2606270700" rel="stylesheet">
+    <link href="css/liquid-ambient.css?v=20260626m" rel="stylesheet">
+    <script src="js/vendor/lucide.min.js?v=20260626m"></script>
+    <style>
+        html:not(.dark) .dark-only{display:none!important}
+        html.dark .light-only{display:none!important}
+
+        :root{
+            --h:'Space Grotesk','Noto Sans SC',sans-serif;--b:'Inter','Noto Sans SC',sans-serif;
+            --c-bg:#0B1120;--c-s:rgba(255,255,255,.03);--c-bd:rgba(255,255,255,.06);
+            --c-t1:#F1F5F9;--c-t2:rgba(241,245,249,.5);--c-t3:rgba(241,245,249,.28);
+            --c-a:#2DD4BF;--c-ab:rgba(45,212,191,.08)
+        }
+        html:not(.dark){
+            --c-bg:#F8FAFC;--c-s:rgba(255,255,255,.85);--c-bd:rgba(0,0,0,.06);
+            --c-t1:#0F172A;--c-t2:rgba(15,23,42,.45);--c-t3:rgba(15,23,42,.25);
+            --c-a:#0D9488;--c-ab:rgba(13,148,136,.06)
+        }
+        body{font-family:var(--b);background:var(--c-bg);color:var(--c-t1)}
+        h1,h2,h3{font-family:var(--h);letter-spacing:-.01em}
+        i[data-lucide]{width:16px;height:16px}
+
+        /* ── Hero ── */
+        .mm-hero{text-align:center;padding:100px 20px 32px}
+        .mm-hero-kicker{font-size:.55rem;font-weight:700;letter-spacing:.15em;color:var(--c-a);text-transform:uppercase;margin:0 0 8px}
+        .mm-hero h1{font-size:clamp(1.8rem,4vw,2.6rem);font-weight:700;letter-spacing:-.02em;margin:0 0 6px;color:var(--c-t1)}
+        .mm-hero-desc{font-size:.78rem;color:var(--c-t2);margin:0}
+
+        /* ── Stats inline ── */
+        .mm-hero-stats{display:flex;justify-content:center;align-items:center;gap:0;flex-wrap:wrap;margin-bottom:10px;font-size:.72rem;color:var(--c-t2)}
+        .mm-hero-stats .mhs-item{display:inline-flex;align-items:center;gap:4px}
+        .mm-hero-stats .mhs-item strong{color:var(--c-t1);font-weight:700;font-family:var(--h)}
+        .mhs-dot{margin:0 8px;opacity:.3;font-weight:700}
+
+        /* ── Sparkline ── */
+        .mm-hero-spark{max-width:400px;margin:0 auto 16px;height:40px}
+        .mm-hero-spark canvas{width:100%!important;height:40px!important}
+
+        /* ── Heatmap ── */
+        .mm-hm{max-width:900px;margin:0 16px 20px;padding:16px 20px;background:var(--c-s);border:1px solid var(--c-bd);border-radius:12px}
+        @media(min-width:932px){.mm-hm{margin-left:auto;margin-right:auto}}
+        .mm-hm-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+        .mm-hm-head span{font-size:.7rem;font-weight:600;color:var(--c-t2);letter-spacing:.02em}
+        .mm-hm-head div{display:flex;gap:3px}
+        .mm-hm-head button{padding:3px 10px;border-radius:6px;border:1px solid var(--c-bd);background:transparent;color:var(--c-t3);font-size:.62rem;cursor:pointer;font-family:inherit}
+        .mm-hm-head button.active,.mm-hm-head button:hover{background:var(--c-ab);border-color:var(--c-a);color:var(--c-a)}
+        .mm-hm-wrap{overflow-x:auto}
+        .mm-hm-leg{display:flex;align-items:center;gap:6px;justify-content:flex-end;margin-top:8px;font-size:.58rem;color:var(--c-t3)}
+        .mm-hm-leg div{width:50px;height:3px;border-radius:2px;background:linear-gradient(90deg,var(--c-s),var(--c-a))}
+
+        /* ── Toolbar ── */
+        .mm-tb{max-width:900px;margin:0 auto 14px;padding:0 16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+        .mm-srch{flex:1;max-width:260px;display:flex;align-items:center;gap:8px;background:var(--c-s);border:1px solid var(--c-bd);border-radius:10px;padding:7px 12px}
+        .mm-srch i{width:14px;height:14px;opacity:.3;color:var(--c-t3)}
+        .mm-srch input{flex:1;border:none;background:transparent;color:var(--c-t1);font-size:.78rem;outline:none;font-family:var(--b)}
+        .mm-srch input::placeholder{color:var(--c-t3)}
+        .mm-tags-wrap{display:flex;gap:5px;overflow-x:auto;scrollbar-width:none;flex:1}
+        .mm-tags-wrap::-webkit-scrollbar{display:none}
+
+        /* Tags use inline styles from JS — see below for fallback */
+        .mm-acts{display:flex;gap:4px;align-items:center;margin-left:auto}
+        .mm-acts button{width:34px;height:34px;border-radius:10px;border:1px solid var(--c-bd);background:transparent;color:var(--c-t3);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s}
+        .mm-acts button:hover,.mm-acts button.active{background:var(--c-ab);border-color:var(--c-a);color:var(--c-a)}
+        @media(max-width:640px){.mm-tb{flex-direction:column;align-items:stretch}.mm-srch{max-width:100%}}
+
+        /* ── Grid ── */
+        #moments-grid{max-width:900px;margin:0 auto;padding:0 16px 48px;columns:3;column-gap:14px}
+        @media(max-width:800px){#moments-grid{columns:2}}@media(max-width:500px){#moments-grid{columns:1}}
+
+        .mm-card{display:inline-block;width:100%;margin-bottom:14px;border-radius:12px;overflow:hidden;background:var(--c-s);border:1px solid var(--c-bd);break-inside:avoid;transition:all .2s}
+        .mm-card:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(0,0,0,.12);border-color:rgba(45,212,191,.15)}
+        .mm-card img{width:100%;display:block}
+        .mm-card-body{padding:12px 14px}
+        .mm-card-body p{font-size:.78rem;line-height:1.5;margin:0 0 6px;color:var(--c-t1)}
+        .mm-card-meta{font-size:.64rem;color:var(--c-t3);display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:5px}
+        .mm-card-meta i{width:11px;height:11px;opacity:.35}
+        .mm-card-tags{display:flex;gap:3px;flex-wrap:wrap}
+        .mm-card-tags span{padding:2px 6px;border-radius:4px;font-size:.56rem;background:var(--c-ab);color:var(--c-a)}
+        .mm-noimg .mm-card-body{background:linear-gradient(135deg,rgba(45,212,191,.04),rgba(139,92,246,.04))}
+        .mm-noimg .mm-card-body p{color:var(--c-a)}
+
+        /* ── Timeline ── */
+        .tl-container{max-width:640px!important;margin:0 auto;padding:0 16px 48px;columns:1!important;display:flex!important;flex-direction:column;gap:0}
+        .tl-month{display:flex;align-items:center;gap:10px;margin:24px 0 12px}
+        .tl-month-dot{width:8px;height:8px;border-radius:50%;background:var(--c-a);flex-shrink:0}
+        .tl-month-label{font-family:var(--h);font-size:.8rem;font-weight:600;color:var(--c-t2)}
+        .tl-item{margin-bottom:0}
+        .tl-card{display:flex;gap:16px;padding:16px 0;border-bottom:1px solid var(--c-bd);align-items:flex-start}
+        .tl-day{min-width:36px;font-family:var(--h);font-size:1.1rem;font-weight:700;color:var(--c-a);text-align:center}
+        .tl-thumb{width:80px;height:56px;border-radius:8px;overflow:hidden;flex-shrink:0;cursor:pointer}
+        .tl-thumb img{width:100%;height:100%;object-fit:cover}
+        .tl-body{flex:1;min-width:0}
+        .tl-text{font-size:.8rem;line-height:1.5;color:var(--c-t1);margin:0 0 4px}
+        .tl-foot{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:.65rem;color:var(--c-t3)}
+        .tl-loc{color:var(--c-t3);text-decoration:none;display:flex;align-items:center;gap:3px}
+        .tl-loc i{width:10px;height:10px;opacity:.4}
+        .tl-loc:hover{color:var(--c-a)}
+        .tl-tags{color:var(--c-a)}
+        @media(max-width:800px){.tl-container{max-width:100%!important}}
+
+        /* ── Lightbox ── */
+        #lightbox{position:fixed;inset:0;z-index:999;background:rgba(0,0,0,.92);display:flex;flex-direction:column;align-items:center;justify-content:center}
+        #lightbox.hidden{display:none}
+        #lightbox.opacity-0{opacity:0}
+        .lb-top{position:absolute;top:16px;right:16px;z-index:10;display:flex;gap:8px}
+        .lb-top button{width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.1);border:none;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center}
+        .lb-stage{display:flex;gap:24px;align-items:flex-start;max-width:1100px;width:100%;padding:60px 24px}
+        .lb-image{flex:1;display:flex;align-items:center;justify-content:center;position:relative;min-height:300px}
+        .lb-image img{max-width:100%;max-height:70vh;object-fit:contain;border-radius:8px}
+        .lb-arrow{position:absolute;top:50%;transform:translateY(-50%);width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.1);border:none;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.2rem}
+        .lb-prev{left:-56px}.lb-next{right:-56px}
+        .lb-side{width:300px;flex-shrink:0;display:flex;flex-direction:column;gap:12px;max-height:70vh;overflow-y:auto}
+        .lb-card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:16px}
+        .lb-card .lb-meta{font-size:.75rem;color:rgba(255,255,255,.5);display:flex;align-items:center;gap:6px;margin-bottom:8px}
+        .lb-card p{font-size:.85rem;color:#fff;line-height:1.6;margin:0}
+        .lb-card--info{font-size:.75rem;color:rgba(255,255,255,.5)}
+        .lb-card--info div{display:flex;align-items:center;gap:6px;margin-bottom:4px}
+        .lb-card--info i{width:14px;height:14px;opacity:.4}
+        .lb-card--exif .lb-exif-row{display:flex;justify-content:space-between;font-size:.7rem;color:rgba(255,255,255,.4);padding:3px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+        .lb-card--exif .lb-exif-row:last-child{border-bottom:none}
+        #lightbox-tags{display:flex;gap:4px;flex-wrap:wrap;margin-top:4px}
+        @media(max-width:800px){.lb-stage{flex-direction:column;padding:20px}.lb-side{width:100%}.lb-arrow{display:none}.lb-image img{max-height:50vh}}
+
+        /* ── BTT ── */
+        .mm-btt{position:fixed;bottom:28px;right:28px;width:44px;height:44px;border-radius:50%;background:var(--c-a);color:#fff;border:none;cursor:pointer;z-index:50;opacity:0;transform:translateY(12px);transition:all .3s;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(45,212,191,.3)}
+        .mm-btt.visible{opacity:1;transform:translateY(0)}
+    </style>
+</head>
+<body class="font-sans">
+
+    <div class="liquid-ambient ambient-subtle" aria-hidden="true">
+        <div class="liquid-blob liquid-blob--1"></div>
+        <div class="liquid-blob liquid-blob--2"></div>
+        <div class="liquid-blob liquid-blob--3"></div>
+        <div class="liquid-blob liquid-blob--4"></div>
+    </div>
+
+    <!-- NAVBAR -->
+    <nav id="navbar" class="homepage-cover-nav-shell" data-ui-region="home-nav-shell">
+        <div class="nav-inner">
+            <div class="nav-left">
+                <a href="index.html" class="nav-brand" aria-label="夏日科技探索 Home">
+                    <img src="public/img/black256.png" alt="Logo" class="dark-only">
+                    <img src="public/img/favicon256.png" alt="Logo" class="light-only">
+                    <span>夏日科技探索</span>
+                </a>
+                <span class="nav-divider" aria-hidden="true"></span>
+                <div class="nav-links homepage-cover-nav-actions" role="navigation" aria-label="Main">
+                    <a href="index.html" class="nav-link" title="首页"><i data-lucide="house"></i><span class="nav-text">首页</span></a>
+                    <a href="blog.html" class="nav-link" title="笔记"><i data-lucide="file-text"></i><span class="nav-text">笔记</span></a>
+                    <a href="moments.html" class="nav-link active" aria-current="page" title="片刻"><i data-lucide="camera"></i><span class="nav-text">片刻</span></a>
+                    <a href="bookmarks.html" class="nav-link" title="收藏"><i data-lucide="bookmark"></i><span class="nav-text">收藏</span></a>
+                    <a href="rss.html" class="nav-link" title="订阅"><i data-lucide="rss"></i><span class="nav-text">订阅</span></a>
+                    <a href="acg.html" class="nav-link" title="ACG"><i data-lucide="film"></i><span class="nav-text">ACG</span></a>
+                    <a href="about.html" class="nav-link" title="关于"><i data-lucide="user-circle"></i><span class="nav-text">关于</span></a>
+                </div>
+            </div>
+            <div class="nav-actions">
+                <button id="theme-toggle" class="theme-toggle" aria-label="切换主题"></button>
+                <button id="nav-hamburger" class="nav-hamburger" aria-label="菜单" aria-expanded="false"><i data-lucide="menu"></i></button>
+            </div>
+        </div>
+    </nav>
+
+    <div id="mobile-menu" role="dialog" aria-label="导航菜单" aria-modal="true">
+        <div class="mobile-menu-header"><span class="mobile-menu-brand">夏日科技探索</span><button class="mobile-menu-close" aria-label="关闭菜单"><i data-lucide="x"></i></button></div>
+        <div class="mobile-menu-links">
+            <a href="index.html" class="mobile-nav-link homepage-mobile-menu-link"><i data-lucide="house"></i><span>首页</span></a>
+            <a href="blog.html" class="mobile-nav-link homepage-mobile-menu-link"><i data-lucide="file-text"></i><span>笔记</span></a>
+            <a href="moments.html" class="mobile-nav-link active homepage-mobile-menu-link"><i data-lucide="camera"></i><span>片刻</span></a>
+            <a href="bookmarks.html" class="mobile-nav-link homepage-mobile-menu-link"><i data-lucide="bookmark"></i><span>收藏</span></a>
+            <a href="rss.html" class="mobile-nav-link homepage-mobile-menu-link"><i data-lucide="rss"></i><span>订阅</span></a>
+            <a href="acg.html" class="mobile-nav-link homepage-mobile-menu-link"><i data-lucide="film"></i><span>ACG</span></a>
+            <a href="about.html" class="mobile-nav-link homepage-mobile-menu-link"><i data-lucide="user-circle"></i><span>关于</span></a>
+        </div>
+    </div>
+
+    <!-- MAIN -->
+    <main class="mm-page">
+        <div class="mm-container">
+            <section class="mm-hero">
+                <h1>生活瞬间</h1>
+                <p>用镜头捕捉美好，用一句话记录当下。</p>
+            </section>
+
+            <div class="mm-hero-stats" id="mm-stats">
+                <span class="mhs-item"><strong id="stats-count">0</strong> 瞬间</span>
+                <span class="mhs-dot">·</span>
+                <span class="mhs-item"><strong id="stats-days">0</strong> 天</span>
+                <span class="mhs-dot">·</span>
+                <span class="mhs-item"><strong id="stats-locations">0</strong> 足迹</span>
+                <span class="mhs-dot">·</span>
+                <span class="mhs-item"><span id="stats-latest">--</span></span>
+            </div>
+            <div class="mm-hero-spark" id="activity-container"></div>
+
+            <div class="mm-hm">
+                <div class="mm-hm-head">
+                    <span>热力图</span>
+                    <div id="heatmap-years"></div>
+                </div>
+                <div class="mm-hm-wrap"><div id="heatmap-container"></div></div>
+                <div class="mm-hm-leg"><span>少</span><div></div><span>多</span></div>
+            </div>
+
+            <div class="mm-tb" id="filter-bar">
+                <div class="mm-srch">
+                    <i data-lucide="search"></i>
+                    <input type="text" id="search-input" placeholder="搜索瞬间、标签或地点...">
+                </div>
+                <div class="mm-tags-wrap" id="tag-filters"></div>
+                <div class="mm-acts">
+                    <button id="btn-random" title="随机漫游"><i data-lucide="shuffle"></i></button>
+                    <button id="view-grid" class="active"><i data-lucide="layout-grid"></i></button>
+                    <button id="view-timeline"><i data-lucide="list"></i></button>
+                </div>
+            </div>
+
+            <div id="moments-grid"></div>
+        </div>
+    </main>
+
+<footer class="site-footer"><span class="visit-count"><span class="pulse-dot"></span><span id="visit-count">—</span> 来过</span><span class="footer-dot">·</span><span>&copy; 2026 夏日科技探索 — Designed with <span class="footer-heart">❤️</span></span></footer>
+
+    <button id="back-to-top" class="mm-btt" aria-label="回到顶部"><i data-lucide="chevron-up"></i></button>
+
+    <!-- LIGHTBOX -->
+    <div id="lightbox" class="hidden opacity-0">
+        <div class="lb-top">
+            <button id="lightbox-share"><i data-lucide="share-2"></i></button>
+            <button id="lightbox-close"><i data-lucide="x"></i></button>
+        </div>
+        <div class="lb-stage">
+            <div class="lb-image">
+                <img id="lightbox-img" src="" alt="">
+                <button id="lightbox-prev" class="lb-arrow lb-prev"><i data-lucide="chevron-left"></i></button>
+                <button id="lightbox-next" class="lb-arrow lb-next"><i data-lucide="chevron-right"></i></button>
+            </div>
+            <div class="lb-side">
+                <div class="lb-card lb-card--main">
+                    <div class="lb-meta"><i data-lucide="calendar"></i><span id="lightbox-date"></span></div>
+                    <p id="lightbox-content"></p>
+                </div>
+                <div class="lb-card lb-card--info">
+                    <div id="lightbox-location-container"><i data-lucide="map-pin"></i><span id="lightbox-location"></span></div>
+                    <div id="lightbox-tags"></div>
+                </div>
+                <div class="lb-card lb-card--exif" id="lightbox-exif">
+                    <div class="lb-exif-row"><span>Camera</span><span id="exif-camera">--</span></div>
+                    <div class="lb-exif-row"><span>Lens</span><span id="exif-lens">--</span></div>
+                    <div class="lb-exif-row"><span>ISO</span><span id="exif-iso">--</span></div>
+                    <div class="lb-exif-row"><span>Aperture</span><span id="exif-aperture">--</span></div>
+                    <div class="lb-exif-row"><span>Shutter</span><span id="exif-shutter">--</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/api.js?v=20260626m"></script>
+    <script src="js/main.js?v=20260626b"></script>
+    <script src="js/navbar.js?v=20260626b"></script>
+    <script src="js/activity_chart.js?v=20260626m"></script>
+    <script src="js/heatmap.js?v=20260626m"></script>
+    <script src="js/moments.js?v=fresh5"></script>
+    <script src="js/click-effect.js?v=20260626m"></script>
+    <script src="https://unpkg.com/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
+    <script src="js/context-menu.js?v=2606270200"></script>
+    <script>
+        lucide.createIcons();
+        const lenis = new Lenis({duration:.5,easing:t=>Math.min(1,1.001-Math.pow(2,-6*t)),smooth:true,smoothTouch:false,touchMultiplier:2});
+        function raf(time){lenis.raf(time);requestAnimationFrame(raf)}
+        requestAnimationFrame(raf);window.lenis=lenis;
+
+        const btt=document.getElementById('back-to-top');
+        window.addEventListener('scroll',()=>btt.classList.toggle('visible',window.scrollY>500));
+        btt.addEventListener('click',()=>lenis.scrollTo(0));
+
+        // 主题：直接 onclick，不依赖 navbar.js/lucide
+        const themeBtn = document.getElementById('theme-toggle');
+        function updateThemeUI() {
+            const isDark = document.documentElement.classList.contains('dark');
+            document.querySelectorAll('img.dark-only').forEach(i => i.style.display = isDark ? '' : 'none');
+            document.querySelectorAll('img.light-only').forEach(i => i.style.display = isDark ? 'none' : '');
+            if (themeBtn) {
+                themeBtn.innerHTML = isDark
+                    ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>'
+                    : '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>';
+            }
+            const meta = document.querySelector('meta[name="theme-color"]');
+            if (meta) meta.content = isDark ? '#0B1120' : '#F5F7FA';
+        }
+        themeBtn.onclick = function(e) {
+            e.preventDefault(); e.stopPropagation();
+            const h = document.documentElement;
+            const isDark = !h.classList.contains('dark');
+            if (isDark) h.classList.add('dark'); else h.classList.remove('dark');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            updateThemeUI();
+            window.dispatchEvent(new CustomEvent('themechange'));
+        };
+        window.toggleTheme = function() { themeBtn.onclick({preventDefault:()=>{},stopPropagation:()=>{}}); };
+        updateThemeUI();
+
+        // Tags drag scroll
+        document.addEventListener('DOMContentLoaded',function(){setTimeout(function(){var r=document.getElementById('tag-filters');if(!r)return;var d=false,sx,sl;r.addEventListener('mousedown',function(e){d=true;sx=e.pageX-r.offsetLeft;sl=r.scrollLeft});r.addEventListener('mouseleave',function(){d=false});r.addEventListener('mouseup',function(){d=false});r.addEventListener('mousemove',function(e){if(!d)return;e.preventDefault();r.scrollLeft=sl-(e.pageX-r.offsetLeft-sx)*1.5})},800)});
+    </script>
+    <script src="js/back-to-top.js?v=20260626m"></script>
+    <script src="js/tracker.js?v=20260626m"></script>
+
+    <script>
+        (function() {
+            var el = document.getElementById('visit-count');
+            if (!el) return;
+            var retry = 0;
+            var load = function() {
+                if (window.api && window.api.fetchVisitCount) {
+                    window.api.fetchVisitCount('moments').then(function(d) {
+                        if (d && d.count) el.textContent = d.count;
+                    }).catch(function() {});
+                } else if (retry++ < 20) {
+                    setTimeout(load, 500);
+                }
+            };
+            if (document.readyState === 'complete') load();
+            else window.addEventListener('load', load);
+        })();
+    </script>
+</body>
+</html>

@@ -67,7 +67,8 @@
     "children": [
       { "id": "languages", "name": "语言学习" },
       { "id": "courses", "name": "在线课程" },
-      { "id": "exams", "name": "考试考证" }
+      { "id": "exams", "name": "考试考证" },
+      { "id": "open_source_book", "name": "开源书籍" }
     ]
   },
   "blogs_tutorials": {
@@ -92,7 +93,8 @@
     "order": 10,
     "children": [
       { "id": "assets", "name": "剪辑素材" },
-      { "id": "tutorials_edit", "name": "剪辑教程" }
+      { "id": "tutorials_edit", "name": "剪辑教程" },
+      { "id": "editing_tools", "name": "剪辑工具" }
     ]
   },
   "personal": {

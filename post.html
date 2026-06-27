@@ -11,7 +11,7 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.loli.net">
     <link rel="preconnect" href="https://gstatic.loli.net" crossorigin>
-    <link href="https://fonts.loli.net/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&family=ZCOOL+KuaiLe&display=swap" rel="stylesheet">
+    <link href="https://fonts.loli.net/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
     
     <!-- Unified CSS -->
     <link href="css/unified.css?v=2606270700" rel="stylesheet">
@@ -31,6 +31,72 @@
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
 
     <link href="css/liquid-post.css?v=2606270900" rel="stylesheet">
+    <style>
+        :root{--h:'Space Grotesk','Noto Sans SC',sans-serif;--b:'Inter','Noto Sans SC',sans-serif}
+        body{font-family:var(--b)}
+
+        /* Hero */
+        .post-hero{display:block!important;padding:0!important;min-height:420px!important;background:var(--rs-surface);border-bottom:1px solid var(--rs-card-border)}
+        .post-hero-bg{opacity:.5;filter:saturate(1.1) brightness(.9);transform:scale(1);transition:transform 8s ease}
+        .post-hero:hover .post-hero-bg{transform:scale(1.05)}
+        .post-hero-overlay{background:linear-gradient(to bottom,rgba(11,17,32,.25) 0%,rgba(11,17,32,.45) 40%,var(--rs-surface) 100%)}
+        .post-hero-row{max-width:1040px;margin:0 auto;padding:120px 24px 48px;position:relative;z-index:2;width:100%;box-sizing:border-box}
+        .post-hero-text{max-width:660px}
+        @media(max-width:900px){.post-hero-text{max-width:100%}.post-hero-row{padding:100px 24px 40px}}
+        .post-hero-back{display:inline-flex;align-items:center;gap:6px;font-size:.78rem;color:var(--rs-text-dim);text-decoration:none;margin-bottom:20px;transition:color .15s;font-family:var(--b)}
+        .post-hero-back:hover{color:var(--rs-accent)}
+        .post-hero-title{font-family:var(--h);font-size:clamp(1.5rem,3vw,2rem);font-weight:700;letter-spacing:-.02em;line-height:1.25;color:var(--rs-text-title);margin:12px 0}
+        .post-hero-meta time,.post-hero-meta a{color:var(--rs-text-dim)}
+        .post-hero-meta{font-size:.78rem;color:var(--rs-text-dim);display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:12px}
+        .post-hero-meta i{width:14px;height:14px;opacity:.5}
+        .post-hero-tags{display:flex;gap:6px;flex-wrap:wrap}
+        .post-tag{font-size:.65rem;padding:3px 10px;border-radius:6px;background:var(--rs-accent-soft);color:var(--rs-accent);font-weight:500}
+
+        /* Shell: body left, sidebar right */
+        .post-shell{max-width:1040px;margin:0 auto;padding:32px 24px 0;display:flex;gap:56px;align-items:flex-start}
+        .post-body{flex:1;min-width:0;max-width:660px}
+        .post-sidebar{width:260px;flex-shrink:0;position:sticky;top:100px}
+        @media(max-width:900px){.post-shell{flex-direction:column}.post-sidebar{display:none}}
+
+        /* Prose */
+        .prose h1,.prose h2,.prose h3,.prose h4{font-family:var(--h);font-weight:600;letter-spacing:-.01em;color:var(--rs-text-title);margin:32px 0 14px;line-height:1.3}
+        .prose h2{font-size:1.25rem}.prose h3{font-size:1.05rem}
+        .prose a{color:var(--rs-accent)}
+
+        /* TOC */
+        .post-toc-card,.post-reco-card{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.05);border-radius:14px;padding:20px;margin-bottom:16px;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+        html:not(.dark) .post-toc-card,html:not(.dark) .post-reco-card{background:rgba(0,0,0,.015);border:1px solid rgba(0,0,0,.04)}
+        .post-toc-card{max-height:calc(100vh - 180px);display:flex;flex-direction:column}
+        .post-toc-card .post-toc-nav{overflow-y:auto;flex:1;scrollbar-width:thin;scrollbar-color:var(--rs-card-border) transparent}
+        .post-toc-card .post-toc-nav::-webkit-scrollbar{width:3px}
+        .post-toc-card .post-toc-nav::-webkit-scrollbar-thumb{background:var(--rs-card-border);border-radius:3px}
+        .post-toc-card h3,.post-reco-card h3{font-size:.68rem;font-weight:700;color:var(--rs-text-dim);text-transform:uppercase;letter-spacing:.1em;display:flex;align-items:center;gap:6px;margin:0 0 16px;padding-bottom:12px;border-bottom:1px solid var(--rs-card-border)}
+        .post-toc-card h3 i,.post-reco-card h3 i{width:12px;height:12px;opacity:.35}
+        .post-toc-nav .toc-list,.post-toc-nav .toc-sublist{list-style:none;padding:0;margin:0}
+        .post-toc-nav .toc-sublist{margin:2px 0 2px 14px;padding:2px 0;border-left:1px solid var(--rs-accent-soft);border-radius:0}
+        .post-toc-nav .toc-link{display:block;font-size:.72rem;color:var(--rs-text-dim);text-decoration:none;padding:4px 0 4px 12px;transition:all .15s;border-left:2px solid transparent;line-height:1.45;border-radius:0 4px 4px 0;margin-bottom:1px}
+        .post-toc-nav .toc-h1{font-weight:700;color:var(--rs-text-title);font-size:.78rem;padding:6px 0 6px 12px}
+        .post-toc-nav .toc-h2{font-weight:600;color:var(--rs-text-body);font-size:.73rem;padding:5px 0 5px 12px}
+        .post-toc-nav .toc-h3{padding:3px 0 3px 10px;font-size:.67rem;border-left:none;margin-left:0}
+        .post-toc-nav .toc-link:hover{color:var(--rs-accent);background:var(--rs-accent-soft);border-left-color:var(--rs-accent);padding-left:16px}
+        .post-toc-nav .toc-link.active{color:var(--rs-accent);background:var(--rs-accent-soft);border-left-color:var(--rs-accent);font-weight:600;padding-left:16px}
+
+        /* Reco & Nav */
+        .post-reco-card .reco-item{display:flex;align-items:flex-start;gap:10px;font-size:.7rem;color:var(--rs-text-dim);text-decoration:none;padding:8px 10px;border-radius:8px;transition:all .15s;margin-bottom:2px;line-height:1.4}
+        .post-reco-card .reco-item:hover{background:var(--rs-accent-soft);color:var(--rs-text-body)}
+        .post-reco-card .reco-item .reco-dot{width:5px;height:5px;border-radius:50%;background:var(--rs-accent);flex-shrink:0;margin-top:6px;opacity:.5}
+        .post-reco-card .reco-item:hover .reco-dot{opacity:1}
+        .post-reco-card .reco-item .reco-title{color:var(--rs-text-body);font-weight:500;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+        .post-nav{display:flex;justify-content:space-between;gap:16px;margin:24px 0 40px}
+        .post-nav a{display:flex;flex-direction:column;gap:2px;font-size:.78rem;text-decoration:none;padding:12px 16px;border-radius:10px;background:var(--rs-card-bg);border:1px solid var(--rs-card-border);transition:all .15s;flex:1;min-width:0}
+        .post-nav a:hover{border-color:var(--rs-accent)}
+        .post-nav a span:first-child{font-size:.65rem;color:var(--rs-text-dim)}
+        .post-nav a span:last-child{color:var(--rs-text-title);font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+        .post-nav a.next{text-align:right}
+        .post-back{max-width:680px;margin:40px 0 32px;padding-top:20px;border-top:1px solid var(--rs-card-border)}
+        .post-back a{display:inline-flex;align-items:center;gap:6px;font-size:.8rem;color:var(--rs-text-dim);text-decoration:none;transition:color .15s;font-family:var(--b)}
+        .post-back a:hover{color:var(--rs-accent)}
+    </style>
 </head>
 <body class="font-sans" data-force-scrolled-nav>
     <!-- ═══════ 流体光斑层 ═══════ -->
@@ -97,15 +163,16 @@
 
     <!-- Main Content -->
     <article>
-        <!-- Hero -->
         <header class="post-hero">
             <div id="header-bg" class="post-hero-bg"></div>
             <div class="post-hero-overlay"></div>
-            <div class="post-hero-content">
-                <a href="blog.html" class="post-hero-back"><i data-lucide="arrow-left"></i> 返回文章列表</a>
-                <div class="post-hero-meta" id="post-meta"></div>
-                <h1 class="post-hero-title" id="post-title">加载中…</h1>
-                <div class="post-hero-tags" id="post-tags"></div>
+            <div class="post-hero-row">
+                <div class="post-hero-text">
+                    <a href="blog.html" class="post-hero-back"><i data-lucide="arrow-left"></i> 返回文章列表</a>
+                    <div class="post-hero-meta" id="post-meta"></div>
+                    <h1 class="post-hero-title" id="post-title">加载中…</h1>
+                    <div class="post-hero-tags" id="post-tags"></div>
+                </div>
             </div>
         </header>
 
@@ -116,9 +183,9 @@
                         <div class="rs-spinner"></div>
                     </div>
                 </div>
+                <div id="post-navigation" class="post-nav"></div>
                 <div class="post-back"><a href="blog.html"><i data-lucide="arrow-left"></i> 返回文章列表</a></div>
             </div>
-
             <aside class="post-sidebar">
                 <div class="post-toc-card">
                     <h3><i data-lucide="list"></i> 目录</h3>
@@ -166,7 +233,7 @@
     <script src="js/navbar.js?v=2606250600"></script>
     <script src="js/api.js?v=20260624v5"></script>
     <script src="js/main.js?v=2606250600"></script>
-    <script src="js/post-viewer.js?v=2606271000"></script>
+    <script src="js/post-viewer.js?v=2606290011"></script>
     <script src="js/click-effect.js?v=20260624v5"></script>
     <script src="https://unpkg.com/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
     <script src="js/context-menu.js?v=2606270200"></script>

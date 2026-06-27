@@ -313,6 +313,131 @@ app.post('/api/categories', requireAdminToken, (req, res) => {
     }
 });
 
+// 添加分类/子分类
+app.post('/api/categories/add', requireAdminToken, (req, res) => {
+    try {
+        const { key, name, parentKey } = req.body;
+        if (!key || !name) return res.status(400).json({ error: '缺少 key 或 name' });
+        if (!/^[a-z0-9_]+$/i.test(key)) return res.status(400).json({ error: 'key 只能包含字母数字下划线' });
+
+        const cats = JSON.parse(fs.readFileSync(categoriesPath, 'utf8'));
+
+        if (parentKey) {
+            if (!cats[parentKey]) return res.status(404).json({ error: '父分类不存在' });
+            if (!cats[parentKey].children) cats[parentKey].children = [];
+            if (cats[parentKey].children.find(c => c.id === key))
+                return res.status(409).json({ error: '子分类ID已存在' });
+            cats[parentKey].children.push({ id: key, name });
+        } else {
+            if (cats[key]) return res.status(409).json({ error: '分类ID已存在' });
+            cats[key] = { name, order: 999, children: [] };
+        }
+
+        fs.writeFileSync(categoriesPath, JSON.stringify(cats, null, 2));
+        res.json({ success: true });
+    } catch (e) {
+        console.error('Add category error:', e);
+        res.status(500).json({ error: 'Failed to add category' });
+    }
+});
+
+// 删除分类/子分类
+app.delete('/api/categories', requireAdminToken, (req, res) => {
+    try {
+        const { key, childKey } = req.query;
+        if (!key) return res.status(400).json({ error: '缺少 key' });
+
+        const cats = JSON.parse(fs.readFileSync(categoriesPath, 'utf8'));
+
+        if (childKey) {
+            if (!cats[key]?.children) return res.status(404).json({ error: '分类不存在' });
+            const idx = cats[key].children.findIndex(c => c.id === childKey);
+            if (idx === -1) return res.status(404).json({ error: '子分类不存在' });
+            cats[key].children.splice(idx, 1);
+        } else {
+            if (!cats[key]) return res.status(404).json({ error: '分类不存在' });
+            delete cats[key];
+        }
+
+        fs.writeFileSync(categoriesPath, JSON.stringify(cats, null, 2));
+        res.json({ success: true });
+    } catch (e) {
+        console.error('Delete category error:', e);
+        res.status(500).json({ error: 'Failed to delete category' });
+    }
+});
+
+// 重命名分类/子分类（支持改 key）
+app.put('/api/categories/rename', requireAdminToken, (req, res) => {
+    try {
+        const { key, newKey, newName, childKey } = req.body;
+        if (!key || !newName) return res.status(400).json({ error: '缺少 key 或 newName' });
+        const targetKey = newKey || key; // 没传 newKey 则不改 key
+
+        if (targetKey !== key && !/^[a-z0-9_]+$/i.test(targetKey)) {
+            return res.status(400).json({ error: '新 key 只能包含字母数字下划线' });
+        }
+
+        const cats = JSON.parse(fs.readFileSync(categoriesPath, 'utf8'));
+
+        if (childKey) {
+            // 重命名子分类
+            if (!cats[key]?.children) return res.status(404).json({ error: '父分类不存在' });
+            const childIdx = cats[key].children.findIndex(c => c.id === childKey);
+            if (childIdx === -1) return res.status(404).json({ error: '子分类不存在' });
+            const oldId = cats[key].children[childIdx].id;
+            cats[key].children[childIdx].name = newName;
+            if (targetKey !== oldId) {
+                if (cats[key].children.find(c => c.id === targetKey && c.id !== oldId)) {
+                    return res.status(409).json({ error: '子分类ID已存在' });
+                }
+                cats[key].children[childIdx].id = targetKey;
+            }
+        } else {
+            // 重命名一级分类
+            if (!cats[key]) return res.status(404).json({ error: '分类不存在' });
+            cats[key].name = newName;
+            if (targetKey !== key) {
+                if (cats[targetKey]) return res.status(409).json({ error: '分类ID已存在' });
+                cats[targetKey] = cats[key];
+                delete cats[key];
+            }
+        }
+
+        fs.writeFileSync(categoriesPath, JSON.stringify(cats, null, 2));
+
+        // 同步更新书签中的 category/subcategory 引用
+        const bmPath = path.join(__dirname, '../public/data/bookmarks.json');
+        if (fs.existsSync(bmPath)) {
+            let bms = JSON.parse(fs.readFileSync(bmPath, 'utf8'));
+            let updated = false;
+            bms = bms.map(b => {
+                const bm = { ...b };
+                if (childKey) {
+                    if (bm.category === key && bm.subcategory === childKey) {
+                        bm.subcategory = targetKey;
+                        updated = true;
+                    }
+                } else {
+                    if (bm.category === key) {
+                        bm.category = targetKey;
+                        updated = true;
+                    }
+                }
+                return bm;
+            });
+            if (updated) {
+                fs.writeFileSync(bmPath, JSON.stringify(bms, null, 2));
+            }
+        }
+
+        res.json({ success: true, newKey: targetKey !== key ? targetKey : undefined });
+    } catch (e) {
+        console.error('Rename category error:', e);
+        res.status(500).json({ error: 'Failed to rename category' });
+    }
+});
+
 function rateLimit(windowMs, max) {
   const store = new Map();
   return (req, res, next) => {

@@ -1,0 +1,722 @@
+document.addEventListener('DOMContentLoaded', () => {
+    const momentsContainer = document.querySelector('#moments-grid');
+    const searchInput = document.querySelector('#search-input');
+    const tagFiltersContainer = document.querySelector('#tag-filters');
+
+    // Stats Elements
+    const statsCount = document.getElementById('stats-count');
+    const statsDays = document.getElementById('stats-days');
+    const statsLocations = document.getElementById('stats-locations');
+    const statsLatest = document.getElementById('stats-latest');
+
+    // Lightbox Elements
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImg = document.getElementById('lightbox-img');
+    const lightboxContent = document.getElementById('lightbox-content');
+    const lightboxDate = document.getElementById('lightbox-date');
+    const lightboxLocation = document.getElementById('lightbox-location');
+    const lightboxLocationContainer = document.getElementById('lightbox-location-container');
+    const lightboxTags = document.getElementById('lightbox-tags');
+    const lightboxClose = document.getElementById('lightbox-close');
+    const lightboxShare = document.getElementById('lightbox-share');
+    const lightboxPrev = document.getElementById('lightbox-prev');
+    const lightboxNext = document.getElementById('lightbox-next');
+
+    // EXIF Elements
+    const lightboxExif = document.getElementById('lightbox-exif');
+    const exifCamera = document.getElementById('exif-camera');
+    const exifLens = document.getElementById('exif-lens');
+    const exifIso = document.getElementById('exif-iso');
+    const exifAperture = document.getElementById('exif-aperture');
+    const exifShutter = document.getElementById('exif-shutter');
+
+    // UI Elements
+    const backToTopBtn = document.getElementById('back-to-top');
+    const viewGridBtn = document.getElementById('view-grid');
+    const viewTimelineBtn = document.getElementById('view-timeline');
+    const btnRandom = document.getElementById('btn-random');
+    const heatmapContainer = document.getElementById('heatmap-container');
+
+    let allMoments = [];
+    let currentLightboxIndex = -1;
+    let activeTag = null;
+    let currentView = 'grid'; // 'grid' or 'timeline'
+    let onlyWithImage = false;
+
+    // --- Helper Functions ---
+    function safeLucideCreateIcons() {
+        if (window.lucide && typeof window.lucide.createIcons === 'function') {
+            try {
+                window.lucide.createIcons();
+            } catch (e) {
+                console.warn('Lucide createIcons failed:', e);
+            }
+        }
+    }
+
+    function safeDate(dateStr) {
+        if (!dateStr) return new Date();
+        // Handle ISO string or simple YYYY-MM-DD
+        let date = new Date(dateStr);
+        if (!isNaN(date.getTime())) return date;
+
+        // Safari fallback
+        date = new Date(dateStr.replace(/-/g, '/'));
+        return isNaN(date.getTime()) ? new Date() : date;
+    }
+
+    function timeSince(date) {
+        const seconds = Math.floor((new Date() - date) / 1000);
+        let interval = seconds / 31536000;
+        if (interval > 1) return Math.floor(interval) + " 年前";
+        interval = seconds / 2592000;
+        if (interval > 1) return Math.floor(interval) + " 个月前";
+        interval = seconds / 86400;
+        if (interval > 1) return Math.floor(interval) + " 天前";
+        interval = seconds / 3600;
+        if (interval > 1) return Math.floor(interval) + " 小时前";
+        interval = seconds / 60;
+        if (interval > 1) return Math.floor(interval) + " 分钟前";
+        return "刚刚";
+    }
+
+    function getGreeting() {
+        const hour = new Date().getHours();
+        if (hour < 5) return "夜深了，";
+        if (hour < 11) return "早上好，";
+        if (hour < 13) return "中午好，";
+        if (hour < 18) return "下午好，";
+        return "晚上好，";
+    }
+
+    // --- UI Logic ---
+    function initGreeting() {
+        const titleDesc = document.querySelector('h1 + p');
+        if (titleDesc) {
+            const greeting = getGreeting();
+            // Don't overwrite completely if it's already set
+            if (!titleDesc.textContent.includes(greeting)) {
+                titleDesc.innerHTML = `<span class="text-blue-500 font-medium">${greeting}</span> ${titleDesc.textContent}`;
+            }
+        }
+    }
+
+    function initBackToTop() {
+        if (!backToTopBtn) return;
+
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) {
+                backToTopBtn.classList.remove('opacity-0', 'translate-y-10');
+            } else {
+                backToTopBtn.classList.add('opacity-0', 'translate-y-10');
+            }
+        });
+
+        backToTopBtn.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    }
+
+    // --- Stats & Filters ---
+    function updateStats(moments) {
+        // Count
+        animateValue(statsCount, 0, moments.length, 1000);
+
+        // Days
+        const uniqueDays = new Set(moments.map(m => safeDate(m.date).toDateString()));
+        animateValue(statsDays, 0, uniqueDays.size, 1000);
+
+        // Locations
+        const uniqueLocations = new Set(moments.filter(m => m.location).map(m => m.location));
+        animateValue(statsLocations, 0, uniqueLocations.size, 1000);
+
+        // Latest
+        if (moments.length > 0) {
+            const latestDate = safeDate(moments[0].date);
+            statsLatest.textContent = timeSince(latestDate);
+        }
+    }
+
+    function animateValue(obj, start, end, duration) {
+        let startTimestamp = null;
+        const step = (timestamp) => {
+            if (!startTimestamp) startTimestamp = timestamp;
+            const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+            obj.innerHTML = Math.floor(progress * (end - start) + start);
+            if (progress < 1) {
+                window.requestAnimationFrame(step);
+            }
+        };
+        window.requestAnimationFrame(step);
+    }
+
+    function renderTags(moments) {
+        const tagCounts = {};
+        moments.forEach(m => {
+            if (m.tags) {
+                m.tags.forEach(t => {
+                    tagCounts[t] = (tagCounts[t] || 0) + 1;
+                });
+            }
+        });
+
+        const sortedTags = Object.keys(tagCounts).sort((a, b) => tagCounts[b] - tagCounts[a]);
+
+        const tagStyle = 'padding:4px 10px;border-radius:14px;font-size:.63rem;border:1px solid var(--mm-bd);color:var(--mm-t2);background:transparent;cursor:pointer;white-space:nowrap;font-family:inherit;transition:all .15s;flex-shrink:0';
+        const tagActiveStyle = 'padding:4px 10px;border-radius:14px;font-size:.63rem;border:1px solid var(--mm-a);color:var(--mm-a);background:rgba(45,212,191,.1);cursor:pointer;white-space:nowrap;font-family:inherit;transition:all .15s;flex-shrink:0;font-weight:600';
+
+        tagFiltersContainer.innerHTML = `
+            <button class="mm-tag ${!activeTag ? 'active' : ''}" data-tag="all" style="${!activeTag ? tagActiveStyle : tagStyle}">
+                全部 <span>(${moments.length})</span>
+            </button>
+            ${sortedTags.map(tag => `
+                <button class="mm-tag ${activeTag === tag ? 'active' : ''}" data-tag="${tag}" style="${activeTag === tag ? tagActiveStyle : tagStyle}">
+                    #${tag} <span>(${tagCounts[tag]})</span>
+                </button>
+            `).join('')}
+        `;
+
+        // Add event listeners
+        document.querySelectorAll('.mm-tag').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const tag = btn.getAttribute('data-tag');
+                activeTag = tag === 'all' ? null : tag;
+                filterMoments();
+                renderTags(allMoments); // Re-render to update active state
+            });
+        });
+    }
+
+    // --- Heatmap Logic ---
+    let heatmapInstance = null;
+    let currentHeatmapYear = 2026;
+
+    function getDateKey(date) {
+        return `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
+    }
+
+    function renderActivityChart(moments) {
+        const c = document.getElementById('activity-container');
+        if (!c || !window.ActivityChart) return;
+        const chart = new ActivityChart(c, { height: 64 });
+        chart.render(moments);
+    }
+
+    function renderHeatmapControls(moments) {
+        const container = document.getElementById('heatmap-years');
+        if (!container) return;
+
+        const years = new Set(moments.map(m => safeDate(m.date).getFullYear()));
+        const currentYear = new Date().getFullYear();
+        years.add(currentYear);
+        years.add(2026); // Explicitly add 2026 for forward planning
+
+        const sortedYears = Array.from(years).sort((a, b) => b - a);
+
+        // Button styles
+        const activeClass = "mm-year-btn active";
+        const inactiveClass = "mm-year-btn";
+
+        let html = '';
+
+        sortedYears.forEach(year => {
+             html += `
+                <button class="${currentHeatmapYear == year ? 'active' : ''}" onclick="switchHeatmap('${year}')" style="padding:2px 8px;border-radius:5px;border:1px solid var(--c-bd, rgba(255,255,255,.06));background:${currentHeatmapYear == year ? 'var(--c-ab, rgba(45,212,191,.08))' : 'transparent'};color:${currentHeatmapYear == year ? 'var(--c-a, #2DD4BF)' : 'var(--c-t3, rgba(241,245,249,.28))'};font-size:.6rem;cursor:pointer;font-family:inherit">
+                    ${year}
+                </button>
+             `;
+        });
+
+        container.innerHTML = html;
+    }
+
+    function renderHeatmap(moments, yearOverride) {
+        const container = document.getElementById('heatmap-container');
+        if (!container || !window.HeatmapChart) return;
+
+        const yearToUse = typeof yearOverride !== 'undefined' ? yearOverride : currentHeatmapYear;
+
+        if (!heatmapInstance) {
+            heatmapInstance = new HeatmapChart(container, {
+                year: yearToUse,
+                onClick: null,
+                tooltipFn: null
+            });
+        }
+
+        if (typeof heatmapInstance.render === 'function') {
+            heatmapInstance.render(moments, yearToUse);
+        }
+    }
+
+    window.switchHeatmap = (year) => {
+        currentHeatmapYear = year;
+        renderHeatmap(allMoments, year);
+        renderHeatmapControls(allMoments);
+    };
+
+    function openRandomLightbox() {
+        if (allMoments.length === 0) return;
+        const randomIndex = Math.floor(Math.random() * allMoments.length);
+        openLightboxByIndex(randomIndex);
+    }
+
+    // Expose openLightbox to global scope for inline onclick
+    window.openLightbox = (id) => {
+        const index = allMoments.findIndex(m => String(m.id) === String(id));
+        if (index !== -1) {
+            openLightboxByIndex(index);
+        }
+    };
+
+    function filterMoments() {
+        const searchTerm = searchInput ? searchInput.value.toLowerCase().trim() : '';
+        const filtered = allMoments.filter(m => {
+            const matchesSearch = !searchTerm ||
+                (m.content && m.content.toLowerCase().includes(searchTerm)) ||
+                (m.tags && m.tags.some(t => t.toLowerCase().includes(searchTerm))) ||
+                (m.location && m.location.toLowerCase().includes(searchTerm));
+
+            const matchesTag = !activeTag || (m.tags && m.tags.includes(activeTag));
+            const matchesImage = !onlyWithImage || !!m.image;
+
+            return matchesSearch && matchesTag && matchesImage;
+        });
+
+        updateStats(filtered);
+        renderActivityChart(filtered);
+        renderHeatmap(filtered);
+        renderMoments(filtered);
+    }
+
+    // --- View Switching Logic ---
+    function switchView(view) {
+        if (currentView === view) return;
+        currentView = view;
+
+        // Update Buttons
+        if (view === 'grid') {
+            viewGridBtn.classList.add('active'); viewTimelineBtn.classList.remove('active');
+        } else {
+            viewTimelineBtn.classList.add('active'); viewGridBtn.classList.remove('active');
+        }
+
+        const url = new URL(window.location);
+        url.searchParams.set('view', view);
+        window.history.replaceState({}, '', url);
+        filterMoments();
+    }
+
+    if (viewGridBtn && viewTimelineBtn) {
+        viewGridBtn.addEventListener('click', () => switchView('grid'));
+        viewTimelineBtn.addEventListener('click', () => switchView('timeline'));
+    }
+
+    const hasImageBtn = document.getElementById('filter-has-image');
+    if (hasImageBtn) {
+        const activeClass = "p-2.5 rounded-xl bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 transition-all shadow-sm border border-blue-300 dark:border-blue-500/40";
+        const inactiveClass = "p-2.5 rounded-xl bg-white dark:bg-neutral-900 text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400 transition-all hover:scale-105 active:scale-95 shadow-sm border border-gray-100 dark:border-gray-800";
+        const updateBtn = () => { hasImageBtn.className = onlyWithImage ? activeClass : inactiveClass; };
+        updateBtn();
+        hasImageBtn.addEventListener('click', () => {
+            onlyWithImage = !onlyWithImage;
+            updateBtn();
+            const url = new URL(window.location);
+            url.searchParams.set('img', onlyWithImage ? '1' : '0');
+            window.history.replaceState({}, '', url);
+            filterMoments();
+        });
+    }
+
+    // --- Rendering Logic ---
+
+    function renderSkeleton() {
+        momentsContainer.className = "";
+        // 半透明骨架 — 亮暗模式自适应，不再写死 dark:bg-gray-800
+        const sk = (h) => `<div style="height:${h};background:rgba(128,128,128,.12);border-radius:8px;animation:skPulse 1.5s ease-in-out infinite"></div>`;
+        momentsContainer.innerHTML = Array(6).fill(0).map((_, i) => `
+            <div class="break-inside-avoid mb-6" style="background:rgba(128,128,128,.04);border-radius:16px;box-shadow:0 0 0 1px rgba(128,128,128,.06);overflow:hidden">
+                ${sk('180px')}
+                <div style="padding:16px;display:flex;flex-direction:column;gap:10px">
+                    ${sk('14px')}
+                    ${sk('18px')}
+                </div>
+            </div>
+        `).join('');
+    }
+
+    async function fetchMoments() {
+        renderSkeleton();
+        try {
+            await new Promise(resolve => setTimeout(resolve, 600));
+
+            // 1. Fetch Local Data — admin 管理的主要数据源
+            let localMoments = [];
+
+            try {
+                const localResponse = await fetch(`public/data/moments.json?v=${Date.now()}`);
+                if (localResponse.ok) {
+                    localMoments = await localResponse.json();
+                }
+            } catch (e) {
+                console.warn('Failed to fetch local moments:', e);
+            }
+
+
+                        // 2. 本地数据为唯一数据源（与 admin 同一来源，增删即时生效）
+            allMoments = Array.isArray(localMoments) ? [...localMoments] : [];
+
+            // Sort by date descending
+            allMoments.sort((a, b) => safeDate(b.date) - safeDate(a.date));
+
+            renderTags(allMoments);
+            renderHeatmapControls(allMoments);
+
+            const params = new URLSearchParams(window.location.search);
+            const initialView = params.get('view');
+            const initialTag = params.get('tag');
+            const initialQ = params.get('q');
+            const initialImg = params.get('img');
+
+            if (initialView === 'timeline' || initialView === 'grid') {
+                currentView = initialView;
+                if (initialView === 'timeline') {
+                    viewTimelineBtn.click();
+                } else {
+                    viewGridBtn.click();
+                }
+            }
+            if (initialTag) {
+                activeTag = initialTag;
+            }
+            if (initialQ && searchInput) {
+                searchInput.value = initialQ;
+            }
+            if (initialImg === '1') {
+                onlyWithImage = true;
+                const hasImageBtn = document.getElementById('filter-has-image');
+                if (hasImageBtn) hasImageBtn.click();
+            }
+
+            filterMoments();
+
+            // Handle Deep Link
+            // 清除 URL 残留的 id 参数，不自动打开 lightbox
+            if (window.location.search.includes('id=')) {
+                const u = new URL(window.location);
+                u.searchParams.delete('id');
+                window.history.replaceState({}, '', u);
+            }
+
+        } catch (error) {
+            console.error('Error fetching moments:', error);
+            momentsContainer.className = "col-span-full";
+            momentsContainer.innerHTML = `
+                <div class="text-center py-10">
+                    <div class="inline-block p-4 rounded-full bg-red-50 dark:bg-red-900/20 mb-4">
+                        <i data-lucide="alert-circle" class="w-8 h-8 text-red-500"></i>
+                    </div>
+                    <p class="text-gray-500 dark:text-gray-400">加载失败，请稍后重试。</p>
+                    <button onclick="location.reload()" class="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-colors">
+                        刷新页面
+                    </button>
+                </div>
+            `;
+            safeLucideCreateIcons();
+        }
+    }
+
+    function optimizeGithubImage(url) {
+        if (!url) return url;
+        // Replace raw.githubusercontent.com with jsdelivr CDN for better performance in some regions
+        if (url.includes('raw.githubusercontent.com')) {
+            return url.replace('raw.githubusercontent.com', 'cdn.jsdelivr.net/gh')
+                      .replace('/main/', '@main/')
+                      .replace('/master/', '@master/');
+        }
+        return url;
+    }
+
+    function renderMoments(moments) {
+        if (moments.length === 0) {
+            momentsContainer.className = "col-span-full";
+            momentsContainer.innerHTML = `
+                <div class="text-center py-20 animate-fade-in flex flex-col items-center justify-center">
+                    <div class="w-24 h-24 bg-gray-50 dark:bg-gray-800/50 rounded-full flex items-center justify-center mb-6">
+                        <i data-lucide="camera-off" class="w-10 h-10 text-gray-400"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">暂无瞬间</h3>
+                    <p class="text-gray-500 dark:text-gray-400 max-w-md mx-auto">
+                        没有找到匹配的记录，换个关键词试试？
+                    </p>
+                </div>
+            `;
+            safeLucideCreateIcons();
+            return;
+        }
+
+        if (currentView === 'grid') {
+            renderGrid(moments);
+        } else {
+            renderTimeline(moments);
+        }
+    }
+
+    function renderGrid(moments) {
+        momentsContainer.className = "";
+        momentsContainer.innerHTML = moments.map((moment, index) => {
+            const date = safeDate(moment.date).toLocaleDateString('zh-CN', {
+                month: 'short', day: 'numeric'
+            });
+
+            const hasImage = !!moment.image;
+            const cardClass = hasImage ? 'mm-card' : 'mm-card mm-no-image';
+
+            return `
+            <div class="${cardClass}" style="animation-delay:${index * 0.04}s">
+                ${hasImage ? `<img src="${optimizeGithubImage(moment.image)}" alt="" loading="lazy" onclick="openLightbox('${moment.id}')" style="cursor:zoom-in">` : ''}
+                <div class="mm-card-body">
+                    ${!hasImage ? `<p class="mm-card-content" onclick="openLightbox('${moment.id}')" style="cursor:pointer">${moment.content || '(无内容)'}</p>` : ''}
+                    ${hasImage && moment.content ? `<p class="mm-card-content">${moment.content}</p>` : ''}
+                    <div class="mm-card-meta">
+                        <i data-lucide="calendar"></i><span>${date}</span>
+                        ${moment.location ? `<span style="margin-left:auto"><i data-lucide="map-pin"></i> ${moment.location}</span>` : ''}
+                    </div>
+                    ${(moment.tags || []).length ? `<div class="mm-card-tags">${moment.tags.map(t => `<span class="mm-card-tag">#${t}</span>`).join('')}</div>` : ''}
+                </div>
+            </div>`;
+        }).join('');
+
+        safeLucideCreateIcons();
+    }
+
+    function renderTimeline(moments) {
+        momentsContainer.className = "tl-container";
+
+        let lastYearMonth = '';
+
+        momentsContainer.innerHTML = moments.map((moment, index) => {
+            const dateObj = safeDate(moment.date);
+            const yearMonth = dateObj.toLocaleDateString('zh-CN', { year: 'numeric', month: 'long' });
+            const day = dateObj.getDate();
+            const timeStr = dateObj.toLocaleDateString('zh-CN', { hour:'2-digit', minute:'2-digit' }).split(' ').pop() || '';
+
+            let monthLabel = '';
+            if (yearMonth !== lastYearMonth) {
+                lastYearMonth = yearMonth;
+                monthLabel = `<div class="tl-month"><div class="tl-month-dot"></div><span class="tl-month-label">${yearMonth}</span></div>`;
+            }
+
+            const imageHtml = moment.image ? `
+                <div class="tl-thumb" onclick="openLightbox('${moment.id}')">
+                    <img src="${optimizeGithubImage(moment.image)}" alt="" loading="lazy" />
+                </div>
+            ` : '';
+
+            return `
+            <div class="tl-item" style="animation-delay:${index * 0.05}s">
+                ${monthLabel}
+                <div class="tl-card">
+                    <div class="tl-day"><span>${day}</span></div>
+                    ${imageHtml}
+                    <div class="tl-body">
+                        <p class="tl-text">${moment.content}</p>
+                        <div class="tl-foot">
+                            <span class="tl-time">${timeStr}</span>
+                            ${moment.location ? `<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(moment.location)}" target="_blank" class="tl-loc" onclick="event.stopPropagation()"><i data-lucide="map-pin"></i>${moment.location}</a>` : ''}
+                            ${moment.tags ? `<span class="tl-tags">${moment.tags.map(t => `#${t}`).join(' ')}</span>` : ''}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            `;
+        }).join('');
+
+        safeLucideCreateIcons();
+    }
+
+    // --- Lightbox Logic ---
+
+    function preloadImage(url) {
+        if (!url) return;
+        const img = new Image();
+        img.src = url;
+    }
+
+    function openLightboxByIndex(index) {
+        currentLightboxIndex = index;
+        const moment = allMoments[index];
+        if (!moment) return;
+
+        lightboxImg.src = moment.image ? optimizeGithubImage(moment.image) : '';
+        lightboxContent.textContent = moment.content;
+        lightboxDate.textContent = safeDate(moment.date).toLocaleDateString('zh-CN', {
+            year: 'numeric', month: 'long', day: 'numeric', weekday: 'long'
+        });
+
+        if (moment.location) {
+            lightboxLocation.textContent = moment.location;
+            lightboxLocationContainer.classList.remove('hidden');
+            // Update click handler for map
+            lightboxLocationContainer.onclick = () => {
+                const query = encodeURIComponent(moment.location);
+                window.open(`https://www.google.com/maps/search/?api=1&query=${query}`, '_blank');
+            };
+            lightboxLocationContainer.title = "在地图中查看";
+        } else {
+            lightboxLocationContainer.classList.add('hidden');
+            lightboxLocationContainer.onclick = null;
+        }
+
+        // Tags
+        if (moment.tags && moment.tags.length > 0) {
+            lightboxTags.innerHTML = moment.tags.map(tag =>
+                `<span class="text-xs font-medium text-blue-600 dark:text-blue-300 bg-blue-50 dark:bg-blue-500/10 px-2.5 py-1 rounded-full border border-blue-100 dark:border-blue-500/20">#${tag}</span>`
+            ).join('');
+            lightboxTags.classList.remove('hidden');
+        } else {
+            lightboxTags.classList.add('hidden');
+        }
+
+        // EXIF
+        if (moment.exif) {
+            exifCamera.textContent = moment.exif.camera || '--';
+            exifLens.textContent = moment.exif.lens || '--';
+            exifIso.textContent = `ISO ${moment.exif.iso || '--'}`;
+            exifAperture.textContent = moment.exif.aperture || '--';
+            exifShutter.textContent = moment.exif.shutter || '--';
+            lightboxExif.classList.remove('hidden');
+        } else {
+            lightboxExif.classList.add('hidden');
+        }
+
+        // Update URL without reloading (Deep Linking)
+        const newUrl = new URL(window.location);
+        newUrl.searchParams.set('id', moment.id);
+        window.history.pushState({}, '', newUrl);
+
+        // Preload next image
+        if (index + 1 < allMoments.length && allMoments[index + 1].image) {
+            preloadImage(allMoments[index + 1].image);
+        }
+
+        // Show Lightbox
+        lightbox.classList.remove('hidden');
+        // Small delay to allow display:block to apply before opacity transition
+        setTimeout(() => {
+            lightbox.classList.remove('opacity-0');
+        }, 10);
+        document.body.style.overflow = 'hidden'; // Prevent scrolling
+    }
+
+    function closeLightbox() {
+        lightbox.classList.add('opacity-0');
+        setTimeout(() => {
+            lightbox.classList.add('hidden');
+            lightboxImg.src = '';
+        }, 300);
+        document.body.style.overflow = '';
+
+        // Remove ID from URL
+        const newUrl = new URL(window.location);
+        newUrl.searchParams.delete('id');
+        window.history.pushState({}, '', newUrl);
+    }
+
+    function nextImage() {
+        let nextIndex = currentLightboxIndex + 1;
+        while (nextIndex < allMoments.length && !allMoments[nextIndex].image) {
+            nextIndex++;
+        }
+        if (nextIndex < allMoments.length) {
+            openLightboxByIndex(nextIndex);
+        }
+    }
+
+    function prevImage() {
+        let prevIndex = currentLightboxIndex - 1;
+        while (prevIndex >= 0 && !allMoments[prevIndex].image) {
+            prevIndex--;
+        }
+        if (prevIndex >= 0) {
+            openLightboxByIndex(prevIndex);
+        }
+    }
+
+    // Event Listeners for Lightbox
+    lightboxClose.addEventListener('click', closeLightbox);
+
+    // Share Button
+    if (lightboxShare) {
+        lightboxShare.addEventListener('click', async () => {
+            const url = window.location.href;
+            try {
+                await navigator.clipboard.writeText(url);
+
+                // Visual feedback
+                const originalIcon = lightboxShare.innerHTML;
+                lightboxShare.innerHTML = '<i data-lucide="check" class="w-6 h-6 text-green-600 dark:text-green-400"></i>';
+                setTimeout(() => {
+                    lightboxShare.innerHTML = originalIcon;
+                    safeLucideCreateIcons();
+                }, 2000);
+            } catch (err) {
+                console.error('Failed to copy: ', err);
+            }
+        });
+    }
+
+    lightbox.addEventListener('click', (e) => {
+        if (e.target === lightbox) closeLightbox();
+    });
+
+    lightboxNext.addEventListener('click', (e) => {
+        e.stopPropagation();
+        nextImage();
+    });
+    lightboxPrev.addEventListener('click', (e) => {
+        e.stopPropagation();
+        prevImage();
+    });
+
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+        if (lightbox.classList.contains('hidden')) return;
+
+        if (e.key === 'Escape') closeLightbox();
+        if (e.key === 'ArrowRight') nextImage();
+        if (e.key === 'ArrowLeft') prevImage();
+    });
+
+    // Touch Gestures (Swipe)
+    let touchStartX = 0;
+    let touchEndX = 0;
+
+    lightboxImg.addEventListener('touchstart', e => {
+        touchStartX = e.changedTouches[0].screenX;
+    }, { passive: true });
+
+    lightboxImg.addEventListener('touchend', e => {
+        touchEndX = e.changedTouches[0].screenX;
+        handleSwipe();
+    }, { passive: true });
+
+    function handleSwipe() {
+        if (touchEndX < touchStartX - 50) nextImage(); // Swipe Left -> Next
+        if (touchEndX > touchStartX + 50) prevImage(); // Swipe Right -> Prev
+    }
+
+    // --- Search Event Listeners ---
+    if (searchInput) {
+        searchInput.addEventListener('input', filterMoments);
+    }
+
+    if (btnRandom) {
+        btnRandom.addEventListener('click', openRandomLightbox);
+    }
+
+    // Initialization
+    initGreeting();
+    initBackToTop();
+    fetchMoments();
+});

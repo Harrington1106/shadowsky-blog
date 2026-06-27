@@ -726,6 +726,15 @@ const BookmarksManager = {
             const normalizedApi = Array.isArray(apiData) ? apiData : [];
             this.data = this.mergeBookmarks(normalizedApi, publicData);
             bookmarks = this.data;
+
+            // 恢复持久化的检测结果
+            try {
+                const saved = localStorage.getItem('bm_access_status');
+                if (saved) { this.accessStatus = JSON.parse(saved); }
+                const savedIds = localStorage.getItem('bm_invalid_ids');
+                if (savedIds) { this.invalidIds = JSON.parse(savedIds); }
+            } catch {}
+
             this.render();
             // Re-populate categories dropdown whenever we fetch new data
             this.populateCategories();
@@ -774,21 +783,25 @@ const BookmarksManager = {
                 ? item.tags.map((t, i) => `<span style="display:inline-block;padding:2px 8px;border-radius:9999px;font-size:.68rem;background:${tagColors[i%tagColors.length]}15;color:${tagColors[i%tagColors.length]};border:1px solid ${tagColors[i%tagColors.length]}30">${t}</span>`).join('')
                 : '';
 
-            // 状态徽章
+            // 状态徽章 + 失效书签灰化
+            const isDead = status && status.status !== 'ok';
             let statusHtml = '';
             if (status) {
-                statusHtml = status.status === 'ok'
-                    ? `<span class="admin-badge admin-badge-ok" style="font-size:.65rem"><i data-lucide="check" style="width:11px;height:11px"></i></span>`
-                    : `<span class="admin-badge admin-badge-err" style="font-size:.65rem"><i data-lucide="x-circle" style="width:11px;height:11px"></i> ${status.code}</span>`;
+                if (isDead) {
+                    const codeLabel = typeof status.code === 'number' ? status.code : status.code;
+                    statusHtml = `<span class="admin-badge admin-badge-err" style="font-size:.65rem"><i data-lucide="x-circle" style="width:11px;height:11px"></i> ${codeLabel}</span>`;
+                } else {
+                    statusHtml = `<span class="admin-badge admin-badge-ok" style="font-size:.65rem"><i data-lucide="check" style="width:11px;height:11px"></i></span>`;
+                }
             }
 
             el.innerHTML = `
                 <div style="flex-shrink:0;width:28px;height:28px;border-radius:6px;overflow:hidden;background:rgba(255,255,255,.04);display:flex;align-items:center;justify-content:center;margin-top:2px">
-                    ${favicon ? `<img src="${favicon}" style="width:18px;height:18px" onerror="this.style.display='none'" alt="">` : `<i data-lucide="link-2" style="width:14px;height:14px;opacity:.4"></i>`}
+                    ${favicon ? `<img src="${favicon}" style="width:18px;height:18px;opacity:${isDead ? 0.3 : 1}" onerror="this.style.display='none'" alt="">` : `<i data-lucide="link-2" style="width:14px;height:14px;opacity:.4"></i>`}
                 </div>
-                <div style="flex:1;min-width:0">
+                <div style="flex:1;min-width:0;${isDead ? 'opacity:0.55' : ''}">
                     <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">
-                        <span style="font-weight:600;font-size:.88rem;color:inherit;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${item.title || '无标题'}</span>
+                        <span style="font-weight:600;font-size:.88rem;color:inherit;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;${isDead ? 'text-decoration:line-through;text-decoration-color:rgba(239,68,68,.4);text-decoration-thickness:1px' : ''}">${item.title || '无标题'}</span>
                         ${statusHtml}
                     </div>
                     <a href="${item.url}" target="_blank" style="font-size:.78rem;color:#64748b;text-decoration:none;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block;max-width:420px" title="${item.url}">${item.url}</a>
@@ -1172,7 +1185,11 @@ const BookmarksManager = {
                     this.invalidIds.push(r.id);
                 }
             });
-            
+
+            // 持久化检测结果
+            try { localStorage.setItem('bm_access_status', JSON.stringify(this.accessStatus)); } catch {}
+            try { localStorage.setItem('bm_invalid_ids', JSON.stringify(this.invalidIds)); } catch {}
+
             this.render();
             
             if (this.invalidIds.length > 0) {
@@ -1218,6 +1235,7 @@ const BookmarksManager = {
                     showToast(`成功删除 ${res.deleted} 个书签`, 'success');
                     this.invalidIds = [];
                     this.accessStatus = {};
+                    try { localStorage.removeItem('bm_access_status'); localStorage.removeItem('bm_invalid_ids'); } catch {}
                     document.getElementById('btn-delete-invalid').disabled = true;
                     document.getElementById('btn-delete-invalid').classList.add('text-slate-300', 'cursor-not-allowed');
                     document.getElementById('btn-delete-invalid').classList.remove('text-red-500', 'hover:text-red-600', 'hover:bg-red-50');
@@ -1342,6 +1360,168 @@ const BookmarksManager = {
                     o.classList.toggle('selected', o.dataset.value === currentSecondary);
                 });
             }
+        }
+    },
+
+    /** 添加分类/子分类 */
+    async addCategory(key, name, parentKey = null) {
+        try {
+            if (!key || !name) { showToast('请输入分类ID和名称', 'warning'); return false; }
+            if (!/^[a-z0-9_]+$/i.test(key)) { showToast('分类ID只能包含字母、数字和下划线', 'warning'); return false; }
+
+            const body = { key, name };
+            if (parentKey) body.parentKey = parentKey;
+
+            if (USE_MOCK) {
+                if (parentKey) {
+                    if (!this.categories[parentKey]) { this.categories[parentKey] = { name: parentKey, order: 999, children: [] }; }
+                    if (!this.categories[parentKey].children) this.categories[parentKey].children = [];
+                    if (this.categories[parentKey].children.find(c => c.id === key)) { showToast('子分类ID已存在', 'error'); return false; }
+                    this.categories[parentKey].children.push({ id: key, name });
+                } else {
+                    if (this.categories[key]) { showToast('分类ID已存在', 'error'); return false; }
+                    this.categories[key] = { name, order: 999, children: [] };
+                }
+                this.populateCategories();
+                showToast(`分类 "${name}" 已添加`, 'success');
+                return true;
+            }
+
+            const data = await safeFetch(`${API_BASE}/categories/add`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body)
+            });
+            if (data && data.success) {
+                if (parentKey) {
+                    if (!this.categories[parentKey]) this.categories[parentKey] = { name: parentKey, order: 999, children: [] };
+                    if (!this.categories[parentKey].children) this.categories[parentKey].children = [];
+                    this.categories[parentKey].children.push({ id: key, name });
+                } else {
+                    this.categories[key] = { name, order: 999, children: [] };
+                }
+                this.populateCategories();
+                showToast(`分类 "${name}" 已添加`, 'success');
+                return true;
+            }
+            showToast(data?.error || '添加分类失败', 'error');
+            return false;
+        } catch (e) {
+            showToast('添加分类失败: ' + e.message, 'error');
+            return false;
+        }
+    },
+
+    /** 删除分类/子分类 */
+    deleteCategory(categoryKey, childKey = null) {
+        const bmData = this.data || [];
+        const affectedCount = childKey
+            ? bmData.filter(b => b.category === categoryKey && b.subcategory === childKey).length
+            : bmData.filter(b => b.category === categoryKey).length;
+
+        const cName = this.categories[categoryKey]?.name || categoryKey;
+        const sName = childKey
+            ? (this.categories[categoryKey]?.children?.find(c => c.id === childKey)?.name || childKey)
+            : '';
+        const targetName = childKey ? `${cName} › ${sName}` : cName;
+
+        let msg = `确定要删除分类 "${targetName}" 吗？`;
+        if (childKey) {
+            // 检查子分类数量
+            const subCount = this.categories[categoryKey]?.children?.length || 0;
+            if (subCount <= 1) msg += `\n\n⚠️ 这是「${cName}」的最后一个子分类。`;
+        } else {
+            const subCount = this.categories[categoryKey]?.children?.length || 0;
+            if (subCount > 0) msg += `\n\n⚠️ 该分类下 ${subCount} 个子分类将被一起删除。`;
+        }
+        if (affectedCount > 0) {
+            msg += `\n\n⚠️ ${affectedCount} 个书签将被保留（分类字段不受影响）。`;
+        }
+
+        ConfirmationDialog.show(msg, async () => {
+            try {
+                if (USE_MOCK) {
+                    if (childKey) {
+                        if (this.categories[categoryKey]?.children) {
+                            this.categories[categoryKey].children = this.categories[categoryKey].children.filter(c => c.id !== childKey);
+                        }
+                    } else {
+                        delete this.categories[categoryKey];
+                    }
+                    this.populateCategories();
+                    showToast(`分类 "${targetName}" 已删除`, 'success');
+                    return;
+                }
+
+                const params = new URLSearchParams();
+                params.set('key', categoryKey);
+                if (childKey) params.set('childKey', childKey);
+                const data = await safeFetch(`${API_BASE}/categories?${params.toString()}`, { method: 'DELETE' });
+                if (data && data.success) {
+                    if (childKey) {
+                        if (this.categories[categoryKey]?.children) {
+                            this.categories[categoryKey].children = this.categories[categoryKey].children.filter(c => c.id !== childKey);
+                        }
+                    } else {
+                        delete this.categories[categoryKey];
+                    }
+                    this.populateCategories();
+                    showToast(`分类 "${targetName}" 已删除`, 'success');
+                } else {
+                    showToast(data?.error || '删除失败', 'error');
+                }
+            } catch (e) {
+                showToast('删除失败: ' + e.message, 'error');
+            }
+        });
+    },
+
+    /** 重命名分类/子分类（支持改 key） */
+    async renameCategory(key, newName, childKey = null, newKey = null) {
+        try {
+            if (!key || !newName) { showToast('请输入名称', 'warning'); return false; }
+            const targetKey = newKey || key;
+
+            if (USE_MOCK) {
+                if (childKey) {
+                    const child = this.categories[key]?.children?.find(c => c.id === childKey);
+                    if (child) { child.name = newName; if (newKey) child.id = newKey; }
+                } else {
+                    if (this.categories[key]) {
+                        this.categories[key].name = newName;
+                        if (newKey && newKey !== key) {
+                            this.categories[newKey] = this.categories[key];
+                            delete this.categories[key];
+                        }
+                    }
+                }
+                this.populateCategories();
+                showToast(`已重命名为 "${newName}"`, 'success');
+                return true;
+            }
+
+            const data = await safeFetch(`${API_BASE}/categories/rename`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ key, newKey: targetKey !== key ? targetKey : undefined, newName, childKey })
+            });
+            if (data && data.success) {
+                const finalKey = data.newKey || targetKey;
+                if (childKey) {
+                    const child = this.categories[finalKey]?.children?.find(c => c.id === (data.newKey ? finalKey : childKey));
+                    if (child) child.name = newName;
+                } else {
+                    if (this.categories[finalKey]) this.categories[finalKey].name = newName;
+                }
+                this.populateCategories();
+                showToast(`已重命名为 "${newName}"`, 'success');
+                return true;
+            }
+            showToast(data?.error || '重命名失败', 'error');
+            return false;
+        } catch (e) {
+            showToast('重命名失败: ' + e.message, 'error');
+            return false;
         }
     }
 };
@@ -3623,6 +3803,157 @@ document.addEventListener('DOMContentLoaded', async () => {
              if (overlay) overlay.classList.toggle('hidden');
         };
     }
+
+    // ═══════ 分类管理按钮 ═══════
+    const btnAddCat = document.getElementById('btn-add-category');
+    const btnEditCat = document.getElementById('btn-edit-category');
+    const btnDelCat = document.getElementById('btn-delete-category');
+    const promptDiv = document.getElementById('category-edit-prompt');
+    const modeTopBtn = document.getElementById('edit-mode-top');
+    const modeSubBtn = document.getElementById('edit-mode-sub');
+    const keyInput = document.getElementById('category-edit-key');
+    const nameInput = document.getElementById('category-edit-name');
+    const confirmBtn = document.getElementById('btn-confirm-edit-cat');
+    const cancelBtn = document.getElementById('btn-cancel-edit-cat');
+    const editHint = document.getElementById('category-edit-hint');
+
+    let editMode = 'add'; // 'add' | 'rename'
+    let editTarget = 'top'; // 'top' | 'sub'
+
+    const getEditContext = () => {
+        const catVal = document.getElementById('bm-category').value;
+        const subVal = document.getElementById('bm-subcategory').value;
+        const catName = BookmarksManager.categories[catVal]?.name || catVal;
+        const subName = subVal ? (BookmarksManager.categories[catVal]?.children?.find(c => c.id === subVal)?.name || subVal) : '';
+        return { catVal, subVal, catName, subName };
+    };
+
+    const updateModeUI = () => {
+        if (editTarget === 'sub') {
+            modeTopBtn.style.background = 'transparent';
+            modeTopBtn.style.color = '#94a3b8';
+            modeSubBtn.style.background = 'rgba(20,184,166,.15)';
+            modeSubBtn.style.color = '#2dd4bf';
+        } else {
+            modeTopBtn.style.background = 'rgba(20,184,166,.15)';
+            modeTopBtn.style.color = '#2dd4bf';
+            modeSubBtn.style.background = 'transparent';
+            modeSubBtn.style.color = '#94a3b8';
+        }
+    };
+
+    const showPrompt = (mode) => {
+        editMode = mode;
+        const ctx = getEditContext();
+
+        // 控制模式切换按钮是否可见
+        if (mode === 'add') {
+            confirmBtn.textContent = '添加';
+            modeSubBtn.style.display = ctx.catVal ? '' : 'none';
+            editTarget = ctx.catVal ? 'sub' : 'top';
+            keyInput.disabled = false;
+            keyInput.placeholder = '英文ID';
+            keyInput.value = '';
+            nameInput.value = '';
+        } else {
+            confirmBtn.textContent = '保存';
+            modeSubBtn.style.display = ctx.subVal ? '' : 'none';
+            editTarget = ctx.subVal ? 'sub' : 'top';
+            // 预填当前值（可编辑）
+            keyInput.disabled = false;
+            keyInput.placeholder = '英文ID';
+            if (editTarget === 'sub') {
+                keyInput.value = ctx.subVal;
+                nameInput.value = ctx.subName;
+            } else if (ctx.catVal) {
+                keyInput.value = ctx.catVal;
+                nameInput.value = ctx.catName;
+            } else {
+                keyInput.value = '';
+                nameInput.value = '';
+            }
+        }
+
+        updateModeUI();
+        updateHint();
+        promptDiv.classList.remove('hidden');
+        keyInput.focus();
+    };
+
+    const hidePrompt = () => {
+        promptDiv.classList.add('hidden');
+        keyInput.value = '';
+        nameInput.value = '';
+        keyInput.disabled = false;
+    };
+
+    const updateHint = () => {
+        const ctx = getEditContext();
+        if (editMode === 'rename') {
+            editHint.textContent = editTarget === 'sub'
+                ? `重命名子分类「${ctx.subName}」`
+                : (ctx.catVal ? `重命名分类「${ctx.catName}」` : '请先选择要重命名的分类');
+        } else {
+            editHint.textContent = editTarget === 'sub'
+                ? `添加子分类到「${ctx.catName}」`
+                : '添加为一级分类';
+        }
+    };
+
+    if (modeTopBtn) modeTopBtn.addEventListener('click', () => { editTarget = 'top'; updateModeUI(); updateHint(); keyInput.disabled = false; keyInput.placeholder = '英文ID'; keyInput.value = editMode === 'rename' ? getEditContext().catVal : ''; nameInput.value = editMode === 'rename' ? getEditContext().catName : ''; });
+    if (modeSubBtn) modeSubBtn.addEventListener('click', () => { editTarget = 'sub'; updateModeUI(); updateHint(); keyInput.disabled = false; keyInput.placeholder = '英文ID'; keyInput.value = editMode === 'rename' ? getEditContext().subVal : ''; nameInput.value = editMode === 'rename' ? getEditContext().subName : ''; });
+
+    // 新增按钮
+    if (btnAddCat) btnAddCat.addEventListener('click', () => { keyInput.disabled = false; keyInput.placeholder = '英文ID'; nameInput.placeholder = '中文名'; showPrompt('add'); });
+
+    // 重命名按钮
+    if (btnEditCat) btnEditCat.addEventListener('click', () => {
+        const ctx = getEditContext();
+        if (!ctx.catVal) { showToast('请先在左侧下拉框中选择要重命名的分类', 'warning'); return; }
+        nameInput.placeholder = '新名称';
+        showPrompt('rename');
+    });
+
+    // 取消
+    if (cancelBtn) cancelBtn.addEventListener('click', hidePrompt);
+
+    // 确认
+    if (confirmBtn) {
+        confirmBtn.addEventListener('click', async () => {
+            const key = keyInput.value.trim();
+            const name = nameInput.value.trim();
+            if (!name) { showToast('请输入名称', 'warning'); return; }
+
+            const ctx = getEditContext();
+            confirmBtn.disabled = true;
+
+            if (editMode === 'rename') {
+                const oldKey = editTarget === 'sub' ? ctx.subVal : ctx.catVal;
+                const newKeyVal = key !== oldKey ? key : null;
+                await BookmarksManager.renameCategory(oldKey, name, editTarget === 'sub' ? ctx.subVal : null, newKeyVal);
+            } else {
+                if (!key) { showToast('请输入分类ID', 'warning'); confirmBtn.disabled = false; return; }
+                if (!/^[a-z0-9_]+$/i.test(key)) { showToast('分类ID只能包含字母、数字和下划线', 'warning'); confirmBtn.disabled = false; return; }
+                await BookmarksManager.addCategory(key, name, editTarget === 'sub' ? ctx.catVal : null);
+            }
+
+            confirmBtn.disabled = false;
+            hidePrompt();
+        });
+    }
+
+    // 删除按钮
+    if (btnDelCat) {
+        btnDelCat.addEventListener('click', () => {
+            const ctx = getEditContext();
+            if (!ctx.catVal) { showToast('请先在左侧下拉框中选择要删除的分类', 'warning'); return; }
+            BookmarksManager.deleteCategory(ctx.catVal, ctx.subVal || null);
+        });
+    }
+
+    // Enter key
+    if (keyInput) keyInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') confirmBtn?.click(); });
+    if (nameInput) nameInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') confirmBtn?.click(); });
 });
 
 console.log('Admin script loaded.');

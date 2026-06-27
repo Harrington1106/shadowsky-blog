@@ -118,45 +118,23 @@
             const nextPost = currentIndex > 0 ? posts[currentIndex - 1] : null; // Newer
             const prevPost = currentIndex < posts.length - 1 ? posts[currentIndex + 1] : null; // Older
 
-            let navHTML = '<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">';
-            
-            // Previous Post (Older) - visually on left or bottom
+            // Previous Post (Older) - left
             if (prevPost) {
-                navHTML += `
-                    <a href="post.html?file=${prevPost.file}" class="flex flex-col p-4 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-blue-500 dark:hover:border-blue-500 bg-white dark:bg-gray-800 transition-all group text-left">
-                        <span class="text-xs text-gray-500 dark:text-gray-400 mb-1 group-hover:text-blue-500 transition-colors">
-                            <i data-lucide="arrow-left" class="w-3 h-3 inline mr-1"></i> 上一篇
-                        </span>
-                        <span class="font-medium text-gray-900 dark:text-gray-100 line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                            ${prevPost.title}
-                        </span>
-                    </a>
-                `;
-            } else {
-                navHTML += `<div></div>`; // Spacer
-            }
+                navContainer.innerHTML += `
+                    <a href="post.html?file=${prevPost.file}">
+                        <span>← 上一篇</span>
+                        <span>${prevPost.title}</span>
+                    </a>`;
+            } else { navContainer.innerHTML += '<div></div>'; }
 
-            // Next Post (Newer) - visually on right or top
+            // Next Post (Newer) - right
             if (nextPost) {
-                navHTML += `
-                    <a href="post.html?file=${nextPost.file}" class="flex flex-col p-4 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-blue-500 dark:hover:border-blue-500 bg-white dark:bg-gray-800 transition-all group text-right items-end">
-                        <span class="text-xs text-gray-500 dark:text-gray-400 mb-1 group-hover:text-blue-500 transition-colors">
-                            下一篇 <i data-lucide="arrow-right" class="w-3 h-3 inline ml-1"></i>
-                        </span>
-                        <span class="font-medium text-gray-900 dark:text-gray-100 line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                            ${nextPost.title}
-                        </span>
-                    </a>
-                `;
-            } else {
-                 navHTML += `<div></div>`; // Spacer
-            }
-            
-            navHTML += '</div>';
-
-            // Prepend to the existing content (which has the "Back to Blog" link)
-            const backLink = navContainer.innerHTML;
-            navContainer.innerHTML = navHTML + backLink;
+                navContainer.innerHTML += `
+                    <a href="post.html?file=${nextPost.file}" class="next">
+                        <span>下一篇 →</span>
+                        <span>${nextPost.title}</span>
+                    </a>`;
+            } else { navContainer.innerHTML += '<div></div>'; }
             
             lucide.createIcons();
 
@@ -285,7 +263,76 @@
 
     async function loadPost() {
         let file = getQueryParam('file');
-        
+
+        // ═══ 返回链接恢复视图 ═══
+        const params = new URLSearchParams(window.location.search);
+        const ref = params.get('ref');
+        if (ref) {
+            document.querySelectorAll('a[href="blog.html"]').forEach(a => { a.href = 'blog.html' + ref; });
+        }
+
+        // ═══ AI 日报入口 ═══
+        const aiId = params.get('ai');
+        if (aiId) {
+            try {
+                const aiRes = await fetch('../public/data/ai-daily.json');
+                if (!aiRes.ok) throw new Error('HTTP ' + aiRes.status);
+                const aiData = await aiRes.json();
+                const item = aiData.find(d => d.id === aiId);
+                if (!item) throw new Error('未找到日报 ' + aiId);
+
+                // 所有返回链接指向 AI 日报
+                document.querySelectorAll('a[href="blog.html"]').forEach(a => { a.href = 'blog.html#aidaily'; });
+
+                // 填充元数据
+                document.title = item.title || 'AI日报';
+                postTitle.textContent = item.title || 'AI日报';
+                const d = item.date ? new Date(item.date) : new Date();
+                const dateStr = d.toLocaleDateString('zh-CN', { year:'numeric', month:'long', day:'numeric' });
+                postMeta.innerHTML = `
+                    <i data-lucide="calendar" class="w-4 h-4 opacity-60"></i>
+                    <span>${dateStr}</span>
+                    <span class="meta-divider">·</span>
+                    <span style="display:inline-flex;align-items:center;gap:3px">🤖 AI日报</span>
+                    ${item.projectCount ? `<span class="meta-divider">·</span><span>📦 ${item.projectCount} 个项目</span>` : ''}
+                `;
+                postTags.innerHTML = (item.tags || []).map(t =>
+                    `<span class="post-tag">#${t}</span>`
+                ).join('');
+
+                // 设置封面
+                if (headerBg) {
+                    headerBg.style.backgroundImage = 'url(https://images.unsplash.com/photo-1677442136019-21780ecad995?w=1200&q=80)';
+                }
+
+                // 直接注入 HTML
+                postContent.innerHTML = item.content || '<p>暂无内容</p>';
+
+                // 运行后处理
+                if (typeof renderMathInElement === 'function') {
+                    try { renderMathInElement(postContent); } catch {}
+                }
+                generateTOC();
+                addCopyButtons();
+                setupImageLightbox();
+                setupProgressBar();
+                loadRecommendations();
+                if (typeof lucide !== 'undefined') lucide.createIcons();
+                return;
+            } catch (e) {
+                console.error('[AI Daily] 加载失败:', e);
+                postContent.innerHTML = `
+                    <div style="text-align:center;padding:60px 20px">
+                        <p style="font-size:1.1rem;color:#ef4444;margin-bottom:8px">AI 日报加载失败</p>
+                        <p style="color:#64748b;margin-bottom:24px">${e.message}</p>
+                        <a href="blog.html" style="color:#2dd4bf">← 返回博客</a>
+                    </div>`;
+                postTitle.textContent = '加载失败';
+                lucide.createIcons();
+                return;
+            }
+        }
+
         // Debug info
         console.log('Loading post file:', file);
 
@@ -521,8 +568,15 @@
                 langPrefix: 'hljs language-'
             });
 
+            // 封面作 hero 背景
+            if (metadata.coverImage && headerBg) {
+                headerBg.style.backgroundImage = `url('${metadata.coverImage}')`;
+                headerBg.style.backgroundSize = 'cover';
+                headerBg.style.backgroundPosition = 'center';
+            }
+
             postContent.innerHTML = marked.parse(content);
-            
+
             // Render Math (KaTeX)
             renderMathInElement(postContent, {
                 delimiters: [
@@ -613,7 +667,7 @@
                 const level = parseInt(header.tagName.substring(1));
                 if (level > prevLevel) html += '<ul class="toc-sublist">';
                 if (level < prevLevel) html += '</ul>'.repeat(prevLevel - level);
-                html += `<li class="toc-item"><a href="#${header.id}" class="toc-link" data-target="${header.id}">${header.textContent}</a></li>`;
+                html += `<li class="toc-item"><a href="#${header.id}" class="toc-link toc-h${level}" data-target="${header.id}">${header.textContent}</a></li>`;
                 prevLevel = level;
             });
             html += '</ul>'.repeat(prevLevel);
@@ -640,7 +694,18 @@
                 if (entry.isIntersecting) {
                     document.querySelectorAll('.toc-link').forEach(l => l.classList.remove('active'));
                     const links = document.querySelectorAll(`.toc-link[data-target="${entry.target.id}"]`);
-                    links.forEach(l => l.classList.add('active'));
+                    links.forEach(l => {
+                        l.classList.add('active');
+                        // 自动滚动 TOC 使当前项可见
+                        const nav = l.closest('.post-toc-nav');
+                        if (nav) {
+                            const navRect = nav.getBoundingClientRect();
+                            const linkRect = l.getBoundingClientRect();
+                            if (linkRect.bottom > navRect.bottom || linkRect.top < navRect.top) {
+                                l.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+                            }
+                        }
+                    });
                 }
             });
         }, observerOptions);
@@ -774,9 +839,9 @@
             if (scoredPosts.length === 0) return;
 
             const renderList = (items) => items.map(item => `
-                <a href="post.html?file=${item.post.file}" class="post-reco-item">
-                    <span class="post-reco-title">${item.post.title}</span>
-                    <span class="post-reco-meta">${new Date(item.post.date).toLocaleDateString()} · 匹配${item.score}标签</span>
+                <a href="post.html?file=${item.post.file}" class="reco-item">
+                    <span class="reco-dot"></span>
+                    <span class="reco-title">${item.post.title}</span>
                 </a>
             `).join('');
 
