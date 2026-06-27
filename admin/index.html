@@ -859,6 +859,18 @@
                         </table>
                     </div>
                 </div>
+                <!-- IP 排除管理 -->
+                <div class="admin-card p-5" style="margin-top:16px">
+                    <h3 style="font-size:.9rem;font-weight:700;margin-bottom:12px;color:inherit">排除 IP</h3>
+                    <p style="font-size:.75rem;color:#64748b;margin-bottom:12px">这些 IP 的访问不计入统计。</p>
+                    <div style="display:flex;gap:8px;margin-bottom:12px">
+                        <input id="exclude-ip-input" class="admin-input" placeholder="输入要排除的 IP 地址" style="flex:1;padding:7px 12px">
+                        <button onclick="ExcludeIPs.add()" class="admin-btn admin-btn-primary" style="padding:7px 16px;font-size:.8rem">添加</button>
+                    </div>
+                    <div id="exclude-ip-list" style="display:flex;flex-wrap:wrap;gap:6px;font-size:.78rem">
+                        <span style="color:#94a3b8">加载中...</span>
+                    </div>
+                </div>
             </section>
 
             <!-- ═══════ VIEW: SETTINGS ═══════ -->

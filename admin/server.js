@@ -714,14 +714,30 @@ app.get('/api/visit-count', (req, res) => {
     res.json({ count });
 });
 
-// 排除的 IP 列表
-const EXCLUDED_IPS = ['2406:da14:1ad9:3400:b85e:2e4f:7de3:754f'];
+// 排除的 IP 列表（存储在文件中，admin可管理）
+const excludedIPsPath = path.join(__dirname, '../public/data/excluded_ips.json');
+function loadExcludedIPs() {
+    try { if (fs.existsSync(excludedIPsPath)) return JSON.parse(fs.readFileSync(excludedIPsPath, 'utf8')); } catch {}
+    return [];
+}
+app.get('/api/excluded-ips', requireAdminToken, (req, res) => { res.json(loadExcludedIPs()); });
+app.post('/api/excluded-ips', requireAdminToken, (req, res) => {
+    try { fs.writeFileSync(excludedIPsPath, JSON.stringify(req.body.ips || [], null, 2)); res.json({ success: true }); }
+    catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+// 兜底：文件不存在时包含用户自己的IP
+const DEFAULT_EXCLUDED = ['2406:da14:1ad9:3400:b85e:2e4f:7de3:754f'];
+function getExcludedIPs() {
+    const fromFile = loadExcludedIPs();
+    return fromFile.length ? fromFile : DEFAULT_EXCLUDED;
+}
 
 // 页面访问追踪（tracker.js 调用）
 app.post('/api/page-visit', (req, res) => {
     try {
         const clientIP = req.ip || req.connection.remoteAddress || '';
-        if (EXCLUDED_IPS.includes(clientIP) || clientIP === '127.0.0.1' || clientIP === '::1') {
+        if (getExcludedIPs().includes(clientIP) || clientIP === '127.0.0.1' || clientIP === '::1') {
             return res.json({ success: true, skipped: true });
         }
         const { url } = req.body;

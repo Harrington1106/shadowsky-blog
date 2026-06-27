@@ -2056,6 +2056,32 @@ const ImageUploader = {
     }
 };
 
+// ═══════ IP 排除管理器 ═══════
+const ExcludeIPs = {
+    list: [],
+    async fetch() { try { const r = await safeFetch(API_BASE + '/excluded-ips'); if (Array.isArray(r)) { this.list = r; this.render(); } } catch {} },
+    render() {
+        const el = document.getElementById('exclude-ip-list');
+        if (!el) return;
+        el.innerHTML = this.list.length ? this.list.map(ip => '<span style="display:inline-flex;align-items:center;gap:6px;padding:4px 10px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:6px">' + ip + ' <button onclick="ExcludeIPs.remove(\'' + ip + '\')" style="background:none;border:none;color:#ef4444;cursor:pointer;font-size:.9rem;line-height:1">&times;</button></span>').join('') : '<span style="color:#64748b">暂无排除IP</span>';
+    },
+    async add() {
+        const ip = document.getElementById('exclude-ip-input').value.trim();
+        if (!ip) return showToast('请输入IP', 'warning');
+        if (this.list.includes(ip)) return showToast('已存在', 'warning');
+        this.list.push(ip);
+        await this.save();
+        document.getElementById('exclude-ip-input').value = '';
+    },
+    async remove(ip) {
+        this.list = this.list.filter(i => i !== ip);
+        await this.save();
+    },
+    async save() {
+        try { await safeFetch(API_BASE + '/excluded-ips', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ips: this.list }) }); this.render(); } catch {}
+    }
+};
+
 // ═══════ 社交链接管理器 ═══════
 const SOCIAL_PRESETS = {
     'GitHub':       { url: 'https://github.com/', icon: 'simple:github' },
@@ -3298,8 +3324,7 @@ const StatsManager = {
         if (!container) return;
         // 用日志表格展示 IP 分布
         const ipMap = {};
-        const excludedIPs = ['2406:da14:1ad9:3400:b85e:2e4f:7de3:754f'];
-        const isLocal = ip => ip === '127.0.0.1' || ip === '::1' || ip === '::ffff:127.0.0.1' || ip.startsWith('192.168.') || ip.startsWith('10.') || ip.startsWith('172.16.') || excludedIPs.includes(ip);
+        const isLocal = ip => ip === '127.0.0.1' || ip === '::1' || ip === '::ffff:127.0.0.1' || ip.startsWith('192.168.') || ip.startsWith('10.') || ip.startsWith('172.16.');
         Object.values(this.data.raw).forEach(day => {
             if (day.ip_locations) {
                 Object.entries(day.ip_locations).forEach(([ip, c]) => {
@@ -3445,7 +3470,7 @@ const Dashboard = {
         if (tabId === 'media') { MediaManager.fetch(); MediaManager.updateFilterUI(); }
         if (tabId === 'feeds') FeedsManager.fetch();
         if (tabId === 'videos') VideosManager.fetch();
-        if (tabId === 'stats') StatsManager.fetch();
+        if (tabId === 'stats') { StatsManager.fetch(); ExcludeIPs.fetch(); }
         if (tabId === 'settings') { fetchSettings(); }
     }
 };
