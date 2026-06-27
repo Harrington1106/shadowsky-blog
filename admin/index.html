@@ -766,12 +766,12 @@
                     <h3 class="text-lg font-bold flex items-center gap-2 mb-4" style="color:inherit">
                         <i data-lucide="link" class="w-5 h-5" style="color:var(--color-primary,#14B8A6)"></i> 社交链接管理
                     </h3>
-                    <p style="font-size:.8rem;color:#64748b;margin-bottom:16px">管理关于页面底部的社交链接。图标可用: github, twitter, youtube, mail, send, link, globe, gamepad2, play, camera, music, rss, message-circle 等。</p>
+                    <p style="font-size:.8rem;color:#64748b;margin-bottom:16px">管理关于页面底部的社交链接。输入平台名称自动填充链接和图标。支持: 微博/B站/知乎/小红书/GitHub/Twitter/Bilibili 等。</p>
                     <!-- 内联表单 -->
                     <div style="display:flex;align-items:flex-end;gap:12px;padding:14px 16px;background:rgba(20,184,166,.05);border:1px solid rgba(20,184,166,.15);border-radius:12px;margin-bottom:16px;flex-wrap:wrap">
                         <div style="flex:1;min-width:120px">
                             <label style="font-size:.7rem;color:#94a3b8;display:block;margin-bottom:4px">名称</label>
-                            <input id="social-form-name" class="admin-input" placeholder="如 GitHub" style="padding:7px 12px">
+                            <input id="social-form-name" class="admin-input" placeholder="如 GitHub / 微博" style="padding:7px 12px" oninput="SocialManager.autoFill()">
                         </div>
                         <div style="flex:2;min-width:200px">
                             <label style="font-size:.7rem;color:#94a3b8;display:block;margin-bottom:4px">链接</label>

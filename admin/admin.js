@@ -2057,6 +2057,35 @@ const ImageUploader = {
 };
 
 // ═══════ 社交链接管理器 ═══════
+const SOCIAL_PRESETS = {
+    'github':     { url: 'https://github.com/', icon: 'github' },
+    'twitter':    { url: 'https://twitter.com/', icon: 'twitter' },
+    '微博':       { url: 'https://weibo.com/', icon: 'globe' },
+    'bilibili':   { url: 'https://space.bilibili.com/', icon: 'play' },
+    '哔哩哔哩':    { url: 'https://space.bilibili.com/', icon: 'play' },
+    'B站':        { url: 'https://space.bilibili.com/', icon: 'play' },
+    'youtube':    { url: 'https://www.youtube.com/', icon: 'youtube' },
+    'steam':      { url: 'https://steamcommunity.com/', icon: 'gamepad2' },
+    'telegram':   { url: 'https://t.me/', icon: 'send' },
+    'discord':    { url: 'https://discord.gg/', icon: 'message-circle' },
+    'email':      { url: 'mailto:', icon: 'mail' },
+    '邮箱':       { url: 'mailto:', icon: 'mail' },
+    'instagram':  { url: 'https://instagram.com/', icon: 'camera' },
+    'reddit':     { url: 'https://reddit.com/', icon: 'message-circle' },
+    'linkedin':   { url: 'https://linkedin.com/in/', icon: 'linkedin' },
+    'facebook':   { url: 'https://facebook.com/', icon: 'facebook' },
+    'twitch':     { url: 'https://twitch.tv/', icon: 'twitch' },
+    'spotify':    { url: 'https://open.spotify.com/', icon: 'music' },
+    'tiktok':     { url: 'https://tiktok.com/', icon: 'music-2' },
+    '抖音':       { url: 'https://www.douyin.com/', icon: 'music-2' },
+    '知乎':       { url: 'https://www.zhihu.com/', icon: 'message-square' },
+    '豆瓣':       { url: 'https://www.douban.com/', icon: 'book-open' },
+    '小红书':      { url: 'https://www.xiaohongshu.com/', icon: 'bookmark' },
+    'rss':        { url: '', icon: 'rss' },
+    'website':    { url: '', icon: 'globe' },
+    '网站':       { url: '', icon: 'globe' },
+};
+
 const SocialManager = {
     data: [],
     editingIdx: -1,
@@ -2111,6 +2140,15 @@ const SocialManager = {
         document.getElementById('social-form-cancel').style.display = i >= 0 ? '' : 'none';
     },
     cancelEdit() { this.editingIdx = -1; this.startEdit(-1); },
+    autoFill() {
+        if (this.editingIdx >= 0) return; // 编辑模式不自动填充
+        const name = document.getElementById('social-form-name').value.trim();
+        const preset = SOCIAL_PRESETS[name] || SOCIAL_PRESETS[name.toLowerCase()];
+        if (preset) {
+            if (preset.url) document.getElementById('social-form-url').value = preset.url;
+            document.getElementById('social-form-icon').value = preset.icon;
+        }
+    },
     submitForm() {
         const name = document.getElementById('social-form-name').value.trim();
         const url = document.getElementById('social-form-url').value.trim();
