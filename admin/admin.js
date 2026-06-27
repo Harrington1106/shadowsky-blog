@@ -2059,6 +2059,7 @@ const ImageUploader = {
 // ═══════ 社交链接管理器 ═══════
 const SocialManager = {
     data: [],
+    editingIdx: -1,
     async fetch() {
         const list = document.getElementById('social-list');
         if (!list) return;
@@ -2071,48 +2072,58 @@ const SocialManager = {
     render() {
         const list = document.getElementById('social-list');
         if (!list) return;
-        if (!this.data.length) { list.innerHTML = '<div style="text-align:center;padding:48px;color:#94a3b8">暂无链接，点击上方添加</div>'; return; }
-        list.innerHTML = this.data.map((s, i) =>
-            '<div style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);border-radius:12px;margin-bottom:8px">' +
-            '<i data-lucide="' + (s.icon||'link') + '" style="width:18px;height:18px;color:#14B8A6;flex-shrink:0"></i>' +
-            '<span style="font-weight:500;flex:1;color:inherit">' + (s.name||'') + '</span>' +
-            '<span style="font-size:.75rem;color:#64748b;max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + (s.url||'') + '</span>' +
-            '<button onclick="SocialManager.edit('+i+')" style="background:none;border:none;cursor:pointer;padding:4px 8px;color:#94a3b8;font-size:.75rem">编辑</button>' +
-            '<button onclick="SocialManager.remove('+i+')" style="background:none;border:none;cursor:pointer;padding:4px 8px;color:#ef4444;font-size:.75rem">删除</button>' +
-            '</div>'
-        ).join('');
+        if (!this.data.length) {
+            list.innerHTML = '<div style="text-align:center;padding:48px;color:#94a3b8">暂无链接，用下方表单添加</div>';
+        } else {
+            list.innerHTML = this.data.map((s, i) =>
+                '<div style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);border-radius:12px;margin-bottom:8px">' +
+                '<i data-lucide="' + this._icon(s.icon) + '" style="width:20px;height:20px;color:#14B8A6;flex-shrink:0"></i>' +
+                '<span style="font-weight:500;flex:1;color:inherit;font-size:.85rem">' + (s.name||'') + '</span>' +
+                '<span style="font-size:.7rem;color:#64748b;max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:monospace">' + (s.url||'') + '</span>' +
+                '<button onclick="SocialManager.startEdit('+i+')" style="background:none;border:none;cursor:pointer;padding:4px 8px;color:#94a3b8;font-size:.75rem">编辑</button>' +
+                '<button onclick="SocialManager.remove('+i+')" style="background:none;border:none;cursor:pointer;padding:4px 8px;color:#ef4444;font-size:.75rem">删除</button>' +
+                '</div>'
+            ).join('');
+        }
         if (typeof lucide !== 'undefined') lucide.createIcons();
+    },
+    _icon(name) {
+        // Lucide 支持的常见图标映射
+        const map = {github:'github',twitter:'twitter',youtube:'youtube',bilibili:'play',steam:'gamepad2',telegram:'send',email:'mail',discord:'message-circle',wechat:'message-square',instagram:'camera',reddit:'message-circle',linkedin:'linkedin',facebook:'facebook',twitch:'twitch',spotify:'music',tiktok:'music-2',rss:'rss',website:'globe',link:'link'};
+        return map[name] || name || 'link';
     },
     async save() {
         try {
             const res = await safeFetch(API_BASE + '/social', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(this.data)
             });
             if (res && res.success) { showToast('已保存', 'success'); this.render(); }
         } catch (e) { showToast('保存失败', 'error'); }
     },
-    add() {
-        const name = prompt('平台名称（如 GitHub、Bilibili）:');
-        if (!name) return;
-        const url = prompt('链接地址:');
-        if (!url) return;
-        const icon = prompt('Lucide 图标名（如 github、mail、link）:', 'link');
-        this.data.push({ name, url, icon: icon || 'link' });
-        this.save();
+    startEdit(i) {
+        this.editingIdx = i;
+        const s = i >= 0 ? this.data[i] : { name: '', url: '', icon: 'link' };
+        document.getElementById('social-form-name').value = s.name || '';
+        document.getElementById('social-form-url').value = s.url || '';
+        document.getElementById('social-form-icon').value = s.icon || 'link';
+        document.getElementById('social-form-btn').textContent = i >= 0 ? '保存修改' : '添加链接';
+        document.getElementById('social-form-cancel').style.display = i >= 0 ? '' : 'none';
     },
-    edit(i) {
-        const s = this.data[i];
-        if (!s) return;
-        const name = prompt('平台名称:', s.name);
-        if (name === null) return;
-        const url = prompt('链接地址:', s.url);
-        if (url === null) return;
-        const icon = prompt('Lucide 图标名:', s.icon || 'link');
-        if (icon === null) return;
-        this.data[i] = { name, url, icon: icon || 'link' };
+    cancelEdit() { this.editingIdx = -1; this.startEdit(-1); },
+    submitForm() {
+        const name = document.getElementById('social-form-name').value.trim();
+        const url = document.getElementById('social-form-url').value.trim();
+        const icon = document.getElementById('social-form-icon').value.trim() || 'link';
+        if (!name || !url) { showToast('名称和链接不能为空', 'warning'); return; }
+        if (this.editingIdx >= 0) {
+            this.data[this.editingIdx] = { name, url, icon };
+        } else {
+            this.data.push({ name, url, icon });
+        }
+        this.editingIdx = -1;
         this.save();
+        this.cancelEdit();
     },
     remove(i) {
         if (!confirm('删除 "' + (this.data[i]?.name||'') + '"？')) return;
