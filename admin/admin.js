@@ -2135,10 +2135,11 @@ const SocialManager = {
     render() {
         const list = document.getElementById('social-list');
         if (!list) return;
-        if (!this.data.length) {
+        const items = this.data.filter(Boolean);
+        if (!items.length) {
             list.innerHTML = '<div style="text-align:center;padding:48px;color:#94a3b8">暂无链接</div>';
         } else {
-            list.innerHTML = this.data.map((s, i) =>
+            list.innerHTML = items.map((s, i) =>
                 '<div style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);border-radius:12px;margin-bottom:8px">' +
                 '<span style="flex-shrink:0">' + this._iconHtml(s.icon) + '</span>' +
                 '<span style="font-weight:500;flex:1;color:inherit;font-size:.85rem">' + (s.name||'') + '</span>' +
@@ -2178,6 +2179,49 @@ const SocialManager = {
         document.getElementById('social-preset-select').value = '';
         document.getElementById('social-form-btn').textContent = i >= 0 ? '保存修改' : '添加';
         document.getElementById('social-form-cancel').style.display = i >= 0 ? '' : 'none';
+    },
+    showIconPicker() {
+        // 常用 Simple Icons
+        const icons = [
+            'github','gitlab','bitbucket','stackoverflow','devdotto','codepen','codesandbox',
+            'x','twitter','facebook','instagram','threads','bluesky','mastodon',
+            'youtube','twitch','tiktok','bilibili','douyin','xiaohongshu',
+            'weibo','zhihu','douban','v2ex','nga','tieba',
+            'discord','telegram','signal','slack','teams','zoom',
+            'steam','epicgames','playstation','xbox','nintendo','pixiv',
+            'spotify','applemusic','soundcloud','netflix','appletv',
+            'linkedin','reddit','medium','substack','patreon','kofi',
+            'notion','figma','dribbble','behance','producthunt',
+            'rss','gmail','protonmail','mailboxdotorg',
+            'amazon','alibaba','taobao','jd','mi','huawei',
+            'paypal','wechat','alipay','line','kakaotalk',
+            'visualstudiocode','vim','neovim','android','apple','linux','windows',
+            'npm','pnpm','yarn','bun','deno','nodejs','python','rust','go','swift','kotlin',
+            'docker','kubernetes','terraform','nginx','cloudflare','vercel','netlify',
+        ];
+        let html = '<div style="position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.7)" onclick="this.remove()">';
+        html += '<div style="background:#1a1f2e;border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:20px;max-width:600px;max-height:70vh;overflow-y:auto;width:90%" onclick="event.stopPropagation()">';
+        html += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px"><h3 style="margin:0;color:inherit;font-size:.95rem">选择图标 (Simple Icons)</h3><button onclick="this.closest(\'div[style]\').parentElement.remove()" style="background:none;border:none;color:#94a3b8;cursor:pointer;font-size:1.2rem">&times;</button></div>';
+        html += '<input id="icon-search" placeholder="搜索图标..." style="width:100%;padding:8px 12px;margin-bottom:14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;font-size:.8rem;outline:none" oninput="SocialManager._filterIcons()">';
+        html += '<div id="icon-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(70px,1fr));gap:6px">';
+        icons.forEach(slug => {
+            html += '<div class="icon-opt" data-slug="' + slug + '" style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 4px;border-radius:8px;cursor:pointer;border:1px solid transparent;font-size:.6rem;color:#94a3b8" onclick="SocialManager._pickIcon(\'' + slug + '\')" onmouseenter="this.style.background=\'rgba(255,255,255,.06)\';this.style.borderColor=\'rgba(255,255,255,.1)\'" onmouseleave="this.style.background=\'transparent\';this.style.borderColor=\'transparent\'">';
+            html += '<img src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/' + slug + '.svg" width="24" height="24" style="filter:invert(.7)" onerror="this.parentElement.style.display=\'none\'">';
+            html += '<span style="text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%">' + slug + '</span>';
+            html += '</div>';
+        });
+        html += '</div></div></div>';
+        document.body.insertAdjacentHTML('beforeend', html);
+    },
+    _filterIcons() {
+        const q = (document.getElementById('icon-search')?.value || '').toLowerCase();
+        document.querySelectorAll('.icon-opt').forEach(el => {
+            el.style.display = q ? (el.dataset.slug.includes(q) ? '' : 'none') : '';
+        });
+    },
+    _pickIcon(slug) {
+        document.getElementById('social-form-icon').value = 'simple:' + slug;
+        document.querySelector('#icon-grid')?.closest('div[style]')?.parentElement?.remove();
     },
     cancelEdit() { this.editingIdx = -1; this.startEdit(-1); },
     autoFill() {
