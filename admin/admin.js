@@ -2056,6 +2056,78 @@ const ImageUploader = {
     }
 };
 
+// ═══════ 打招呼管理器 ═══════
+const GreetingsManager = {
+    async fetch() {
+        const list = document.getElementById('greetings-list');
+        if (!list) return;
+        list.innerHTML = '<div style="text-align:center;padding:32px;color:#94a3b8">加载中...</div>';
+        try {
+            const res = await safeFetch(API_BASE + '/wave');
+            if (Array.isArray(res)) {
+                if (res.length === 0) {
+                    list.innerHTML = '<div style="text-align:center;padding:48px;color:#94a3b8">暂无打招呼记录<br><span style="font-size:.75rem">访客在关于页点击打招呼后出现</span></div>';
+                } else {
+                    list.innerHTML = res.reverse().map((g, i) => {
+                        const t = new Date(g.time);
+                        return '<div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);border-radius:10px;margin-bottom:6px;font-size:.8rem">' +
+                            '<span style="font-size:1.2rem">&#x1F44B;</span>' +
+                            '<span style="color:#14B8A6;font-weight:500">#' + (res.length - i) + '</span>' +
+                            '<span style="color:#94a3b8;flex:1">' + t.toLocaleString('zh-CN') + '</span>' +
+                            '<span style="font-size:.65rem;color:#64748b;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="' + (g.ua||'') + '">' + (g.ua||'').substring(0,50) + '</span>' +
+                            '</div>';
+                    }).join('');
+                }
+                if (typeof lucide !== 'undefined') lucide.createIcons();
+            }
+        } catch (e) { list.innerHTML = '<div style="text-align:center;padding:32px;color:#ef4444">加载失败</div>'; }
+    }
+};
+
+// ═══════ 博客文章管理器 ═══════
+const PostsManager = {
+    data: [],
+    async fetch() {
+        const list = document.getElementById('posts-list');
+        if (!list) return;
+        list.innerHTML = '<div style="text-align:center;padding:32px;color:#94a3b8">加载中...</div>';
+        try {
+            const res = await safeFetch(API_BASE + '/posts');
+            if (Array.isArray(res)) { this.data = res; this.render(); }
+            else { list.innerHTML = '<div style="text-align:center;padding:32px;color:#ef4444">加载失败</div>'; }
+        } catch (e) { list.innerHTML = '<div style="text-align:center;padding:32px;color:#ef4444">加载失败</div>'; }
+    },
+    render() {
+        const list = document.getElementById('posts-list');
+        const countEl = document.getElementById('posts-count');
+        if (!list) return;
+        if (countEl) countEl.textContent = this.data.length + ' 篇文章';
+        if (!this.data.length) { list.innerHTML = '<div style="text-align:center;padding:48px;color:#94a3b8">暂无文章</div>'; return; }
+        list.innerHTML = this.data.map(p => {
+            const tags = (p.tags||[]).slice(0,5).map(t => '<span style="display:inline-block;padding:1px 7px;border-radius:4px;font-size:.65rem;background:rgba(45,212,191,.1);color:#2DD4BF">'+t+'</span>').join('');
+            return '<div style="display:flex;align-items:flex-start;gap:14px;padding:14px 16px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);border-radius:12px;margin-bottom:8px">' +
+                '<div style="flex:1;min-width:0">' +
+                '<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><span style="font-weight:600;font-size:.9rem;color:inherit">'+ (p.title||'无标题') +'</span><span style="font-size:.7rem;color:#64748b">'+ (p.date||'') +'</span></div>' +
+                '<div style="font-size:.75rem;color:#94a3b8;margin-bottom:4px"><span>'+ (p.category||'未分类') +'</span> <span style="margin:0 6px;opacity:.3">|</span> <span style="font-family:monospace;font-size:.7rem">'+ (p._file||'') +'</span> <span style="margin:0 6px;opacity:.3">|</span> '+ (p.readTime||5) +' min</div>' +
+                (p.excerpt ? '<p style="font-size:.75rem;color:#64748b;line-height:1.5;margin-bottom:6px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">'+p.excerpt+'</p>' : '') +
+                (tags ? '<div style="display:flex;gap:4px;flex-wrap:wrap">'+tags+'</div>' : '') +
+                '</div>' +
+                '<div style="display:flex;align-items:center;gap:4px;flex-shrink:0">' +
+                '<button onclick="PostsManager.confirmDelete(\''+(p._file||'').replace(/'/g,"\\'")+'\',\''+(p.title||'').replace(/'/g,"\\'")+'\')" style="background:none;border:none;cursor:pointer;padding:6px;border-radius:8px;color:#ef4444" title="删除"><i data-lucide="trash-2" style="width:15px;height:15px"></i></button>' +
+                '</div></div>';
+        }).join('');
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+    },
+    async confirmDelete(file, title) {
+        if (!confirm('确定删除文章 "'+title+'"？\n\n服务器上的 '+file+' 将被删除。')) return;
+        try {
+            const res = await safeFetch(API_BASE + '/posts?file=' + encodeURIComponent(file), { method: 'DELETE' });
+            if (res && res.success) { showToast('已删除', 'success'); this.fetch(); }
+            else { showToast(res?.error || '删除失败', 'error'); }
+        } catch (e) { showToast('删除失败: ' + e.message, 'error'); }
+    }
+};
+
 // ═══════ 随手拍管理器 ═══════
 const SnapshotsManager = {
     data: [],
@@ -3115,13 +3187,13 @@ const StatsManager = {
             if (res && res.success && res.data) {
                 needLookup.forEach(c => {
                     const loc = res.data[c.dataset.ip];
-                    c.textContent = loc || '未知';
-                    if (loc) locs[c.dataset.ip] = loc;
+                    c.textContent = loc && loc !== '查询失败' ? loc : '无数据';
+                    if (loc && loc !== '查询失败') locs[c.dataset.ip] = loc;
                 });
                 localStorage.setItem('ip_locs', JSON.stringify(locs));
             }
         } catch (e) {
-            needLookup.forEach(c => { if (c.textContent === '...') c.textContent = ''; });
+            needLookup.forEach(c => { if (c.textContent === '...') c.textContent = '无数据'; });
         }
     }
 };
@@ -3157,13 +3229,16 @@ const Dashboard = {
         }
         const TAB_TITLES = {
             bookmarks: '书签收藏', snapshots: '片刻动态', media: '追番追漫',
-            feeds: 'RSS 订阅', videos: '视频推荐', stats: '访问统计', settings: '站点设置'
+            feeds: 'RSS 订阅', videos: '视频推荐', stats: '访问统计', settings: '站点设置',
+            posts: '博客文章', greetings: '打招呼记录'
         };
         const pageTitle = document.getElementById('page-title');
         if (pageTitle) pageTitle.textContent = TAB_TITLES[tabId] || '概览';
 
+        if (tabId === 'posts') PostsManager.fetch();
         if (tabId === 'bookmarks') { BookmarksManager.fetch(); BookmarksManager.populateCategories(); }
         if (tabId === 'snapshots') { SnapshotsManager.fetch(); ImageUploader.init(); }
+        if (tabId === 'greetings') GreetingsManager.fetch();
         if (tabId === 'media') { MediaManager.fetch(); MediaManager.updateFilterUI(); }
         if (tabId === 'feeds') FeedsManager.fetch();
         if (tabId === 'videos') VideosManager.fetch();
