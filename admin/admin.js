@@ -2976,6 +2976,8 @@ const StatsManager = {
         this.renderChart();
         this.renderLocations();
         this.renderPageBreakdown();
+        // 自动查询 IP 地址
+        setTimeout(() => this.lookupIPs(), 500);
     },
     renderChart() {
         const ctx = document.getElementById('visitsChart');

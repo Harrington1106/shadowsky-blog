@@ -35,6 +35,16 @@
         // Log to console for debugging
         console.log('[Tracker] Sending visit data to:', TRACKER_ENDPOINT);
 
+        // 同时通知 Node 服务器更新页面访问计数
+        try {
+            fetch('/api/page-visit', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ url: data.url }),
+                keepalive: true
+            }).catch(function(){});
+        } catch(e) {}
+
         // Send beacon or fetch
         if (navigator.sendBeacon) {
             const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });

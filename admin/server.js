@@ -700,6 +700,33 @@ app.get('/api/stats', requireAdminToken, (req, res) => {
 });
 
 // API to get page visit breakdown
+// 页面访问追踪（tracker.js 调用）
+app.post('/api/page-visit', (req, res) => {
+    try {
+        const { url } = req.body;
+        if (!url) return res.status(400).json({ error: 'missing url' });
+        // 提取页面名
+        let page = 'home';
+        try {
+            const pathname = new URL(url).pathname;
+            const file = pathname.split('/').pop() || 'index.html';
+            page = file.replace('.html', '');
+            if (!page || page === '/' || page === 'index') page = 'home';
+        } catch {}
+        // 更新 page_visits.json
+        let data = { pages: {} };
+        if (fs.existsSync(pageVisitsPath)) {
+            try { data = JSON.parse(fs.readFileSync(pageVisitsPath, 'utf8')); } catch {}
+        }
+        if (!data.pages) data.pages = {};
+        data.pages[page] = (data.pages[page] || 0) + 1;
+        fs.writeFileSync(pageVisitsPath, JSON.stringify(data));
+        res.json({ success: true });
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
 app.get('/api/page_visits', requireAdminToken, (req, res) => {
     if (fs.existsSync(pageVisitsPath)) {
         try {
@@ -1892,15 +1919,26 @@ app.post('/api/ip-lookup', requireAdminToken, async (req, res) => {
             if (ipCache.has(ip)) { results[ip] = ipCache.get(ip); }
             else { toFetch.push(ip); }
         }
-        for (let i = 0; i < toFetch.length; i++) {
-            const ip = toFetch[i];
-            try {
-                const resp = await axios.get('http://ip-api.com/json/' + ip + '?lang=zh-CN&fields=country,regionName,city,isp', { timeout: 5000 });
-                const info = [resp.data.country, resp.data.regionName, resp.data.city].filter(Boolean).join(' ') || resp.data.isp || '未知';
-                results[ip] = info;
-                ipCache.set(ip, info);
-            } catch (e) { results[ip] = '查询失败'; }
-            if (i > 0 && i % 40 === 0) await new Promise(r => setTimeout(r, 1000));
+        // 并行分批查询（每批 5 个，大幅提速）
+        const BATCH = 5;
+        for (let i = 0; i < toFetch.length; i += BATCH) {
+            const batch = toFetch.slice(i, i + BATCH);
+            const results2 = await Promise.allSettled(batch.map(ip =>
+                axios.get('http://ip-api.com/json/' + ip + '?lang=zh-CN&fields=country,regionName,city,isp', { timeout: 3000 })
+                    .then(resp => ({ ip, data: resp.data }))
+            ));
+            results2.forEach((r, ri) => {
+                if (r.status === 'fulfilled') {
+                    const { ip, data } = r.value;
+                    const info = [data.country, data.regionName, data.city].filter(Boolean).join(' ') || data.isp || '未知';
+                    results[ip] = info;
+                    ipCache.set(ip, info);
+                } else {
+                    results[batch[ri]] = '查询失败';
+                }
+            });
+            // 小延迟避免被限流
+            if (i + BATCH < toFetch.length) await new Promise(r => setTimeout(r, 200));
         }
         res.json({ success: true, data: results });
     } catch (e) { res.status(500).json({ error: e.message }); }
