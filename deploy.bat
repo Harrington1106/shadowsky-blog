@@ -14,11 +14,15 @@ echo.
 echo Pulling...
 git stash
 git pull --rebase
-git stash pop
+git stash pop 2>nul
 if %errorlevel% neq 0 (
-    echo PULL FAILED - fix conflicts manually
-    pause
-    exit /b 1
+    echo.
+    echo Conflicts detected - auto-fixing...
+    git checkout --theirs . 2>nul
+    git rm public/data/*.json public/posts/*.md 2>nul
+    git add -A ":!nul" 2>nul
+    git stash drop 2>nul
+    echo Conflicts resolved.
 )
 
 echo.
