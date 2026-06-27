@@ -813,16 +813,16 @@ const BookmarksManager = {
                     ${item.description ? `<p style="font-size:.75rem;color:#64748b;margin-top:4px;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${item.description}</p>` : ''}
                 </div>
                 <div style="display:flex;align-items:center;gap:4px;flex-shrink:0">
-                    <button onclick="navigator.clipboard.writeText('${item.url.replace(/'/g, "\\'")}');showToast('链接已复制','success')" style="background:none;border:none;cursor:pointer;padding:6px;border-radius:8px;color:#94a3b8" title="复制链接">
+                    <button data-bm-action="copy" data-bm-url="${item.url.replace(/"/g, '&quot;').replace(/'/g, '&#39;')}" style="background:none;border:none;cursor:pointer;padding:6px;border-radius:8px;color:#94a3b8" title="复制链接">
                         <i data-lucide="copy" style="width:15px;height:15px"></i>
                     </button>
-                    <a href="${item.url}" target="_blank" style="padding:6px;border-radius:8px;color:#94a3b8;text-decoration:none" title="打开链接">
+                    <a href="${item.url.replace(/"/g, '&quot;')}" target="_blank" style="padding:6px;border-radius:8px;color:#94a3b8;text-decoration:none" title="打开链接">
                         <i data-lucide="external-link" style="width:15px;height:15px"></i>
-                    </a>
-                    <button onclick="BookmarksManager.edit('${item.id}')" style="background:none;border:none;cursor:pointer;padding:6px;border-radius:8px;color:#94a3b8" title="编辑">
+                    </button>
+                    <button data-bm-action="edit" data-bm-id="${String(item.id).replace(/"/g, '&quot;').replace(/'/g, '&#39;')}" style="background:none;border:none;cursor:pointer;padding:6px;border-radius:8px;color:#94a3b8" title="编辑">
                         <i data-lucide="edit-2" style="width:15px;height:15px"></i>
                     </button>
-                    <button onclick="BookmarksManager.delete('${item.id || item.url}')" style="background:none;border:none;cursor:pointer;padding:6px;border-radius:8px;color:#94a3b8" title="删除">
+                    <button data-bm-action="delete" data-bm-id="${String(item.id || item.url).replace(/"/g, '&quot;').replace(/'/g, '&#39;')}" style="background:none;border:none;cursor:pointer;padding:6px;border-radius:8px;color:#94a3b8" title="删除">
                         <i data-lucide="trash-2" style="width:15px;height:15px"></i>
                     </button>
                 </div>`;
@@ -966,11 +966,29 @@ const BookmarksManager = {
             return;
         }
         const lower = query.toLowerCase();
-        const filtered = this.data.filter(b =>
-            (b.title && b.title.toLowerCase().includes(lower)) ||
-            (b.url && b.url.toLowerCase().includes(lower)) ||
-            (b.category && b.category.toLowerCase().includes(lower))
-        );
+        const filtered = this.data.filter(b => {
+            // 标题 / URL
+            if (b.title && b.title.toLowerCase().includes(lower)) return true;
+            if (b.url && b.url.toLowerCase().includes(lower)) return true;
+            // 分类中文名
+            if (b.category) {
+                const catObj = this.categories[b.category];
+                const catName = (catObj?.name || b.category).toLowerCase();
+                if (catName.includes(lower)) return true;
+            }
+            // 子分类
+            if (b.subcategory) {
+                const parent = this.categories[b.category];
+                const child = parent?.children?.find(c => c.id === b.subcategory);
+                const subName = (child?.name || b.subcategory).toLowerCase();
+                if (subName.includes(lower)) return true;
+            }
+            // 描述
+            if (b.description && b.description.toLowerCase().includes(lower)) return true;
+            // 标签
+            if (b.tags && b.tags.some(t => t.toLowerCase().includes(lower))) return true;
+            return false;
+        });
         this.render(filtered);
     },
     sort(mode) {
@@ -1393,14 +1411,7 @@ const BookmarksManager = {
                 body: JSON.stringify(body)
             });
             if (data && data.success) {
-                if (parentKey) {
-                    if (!this.categories[parentKey]) this.categories[parentKey] = { name: parentKey, order: 999, children: [] };
-                    if (!this.categories[parentKey].children) this.categories[parentKey].children = [];
-                    this.categories[parentKey].children.push({ id: key, name });
-                } else {
-                    this.categories[key] = { name, order: 999, children: [] };
-                }
-                this.populateCategories();
+                await this.fetchCategories();  // 从服务器同步权威数据
                 showToast(`分类 "${name}" 已添加`, 'success');
                 return true;
             }
@@ -1458,14 +1469,7 @@ const BookmarksManager = {
                 if (childKey) params.set('childKey', childKey);
                 const data = await safeFetch(`${API_BASE}/categories?${params.toString()}`, { method: 'DELETE' });
                 if (data && data.success) {
-                    if (childKey) {
-                        if (this.categories[categoryKey]?.children) {
-                            this.categories[categoryKey].children = this.categories[categoryKey].children.filter(c => c.id !== childKey);
-                        }
-                    } else {
-                        delete this.categories[categoryKey];
-                    }
-                    this.populateCategories();
+                    await this.fetchCategories();  // 从服务器同步权威数据
                     showToast(`分类 "${targetName}" 已删除`, 'success');
                 } else {
                     showToast(data?.error || '删除失败', 'error');
@@ -1506,14 +1510,7 @@ const BookmarksManager = {
                 body: JSON.stringify({ key, newKey: targetKey !== key ? targetKey : undefined, newName, childKey })
             });
             if (data && data.success) {
-                const finalKey = data.newKey || targetKey;
-                if (childKey) {
-                    const child = this.categories[finalKey]?.children?.find(c => c.id === (data.newKey ? finalKey : childKey));
-                    if (child) child.name = newName;
-                } else {
-                    if (this.categories[finalKey]) this.categories[finalKey].name = newName;
-                }
-                this.populateCategories();
+                await this.fetchCategories();  // 从服务器同步权威数据
                 showToast(`已重命名为 "${newName}"`, 'success');
                 return true;
             }
@@ -3663,6 +3660,24 @@ document.addEventListener('DOMContentLoaded', async () => {
         const el = document.getElementById(id);
         if (el) el.addEventListener('submit', handler);
     };
+
+    // 书签列表点击委托（安全，无内联 onclick XSS 风险）
+    const bmList = document.getElementById('bookmarks-list');
+    if (bmList) {
+        bmList.addEventListener('click', (e) => {
+            const btn = e.target.closest('[data-bm-action]');
+            if (!btn) return;
+            const action = btn.dataset.bmAction;
+            if (action === 'copy') {
+                const url = btn.dataset.bmUrl;
+                if (url) navigator.clipboard.writeText(url).then(() => showToast('链接已复制', 'success'));
+            } else if (action === 'edit') {
+                BookmarksManager.edit(btn.dataset.bmId);
+            } else if (action === 'delete') {
+                BookmarksManager.delete(btn.dataset.bmId);
+            }
+        });
+    }
 
     bindListener('add-bookmark-form', handleAddBookmark);
     bindListener('add-snapshot-form', handleAddSnapshot);
