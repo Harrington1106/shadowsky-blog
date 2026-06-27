@@ -3,6 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const axios = require('axios');
 const cheerio = require('cheerio');
+const { execSync } = require('child_process');
 const dns = require('dns').promises;
 const net = require('net');
 const crypto = require('crypto');
@@ -943,6 +944,8 @@ app.delete('/api/posts', requireAdminToken, (req, res) => {
         if (!fs.existsSync(filePath)) return res.status(404).json({ error: '文件不存在' });
         fs.unlinkSync(filePath);
         _postsCache = null; // 清除缓存
+        // 自动 git 提交，本地 pull 可同步
+        try { execSync('cd ' + path.join(__dirname, '..') + ' && git add -A && git commit -m "admin: 删除文章 ' + file + '" 2>/dev/null || true', { timeout: 5000 }); } catch {}
         res.json({ success: true });
     } catch (e) {
         res.status(500).json({ error: e.message });
@@ -990,6 +993,8 @@ app.put('/api/posts', requireAdminToken, (req, res) => {
 
         fs.writeFileSync(filePath, '---\n' + fm + '\n---' + rest);
         _postsCache = null;
+        // 自动 git 提交，本地 pull 可同步
+        try { execSync('cd ' + path.join(__dirname, '..') + ' && git add -A && git commit -m "admin: 更新文章 ' + file + '" 2>/dev/null || true', { timeout: 5000 }); } catch {}
         res.json({ success: true });
     } catch (e) {
         res.status(500).json({ error: e.message });
