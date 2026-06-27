@@ -22,12 +22,18 @@ for f in $CHANGED; do
 done
 
 echo ""
-echo "=== 2. 提交 ==="
+echo "=== 2. 拉取远程 ==="
+git stash
+git pull --rebase
+git stash pop 2>/dev/null
+
+echo ""
+echo "=== 3. 提交 ==="
 git add -A
 git commit -m "$MSG" || { echo "Nothing to commit"; exit 0; }
 
 echo ""
-echo "=== 3. 推送 ==="
+echo "=== 4. 推送 ==="
 if git push 2>&1; then
     echo "✓ 部署完成"
 else

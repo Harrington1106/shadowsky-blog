@@ -12,7 +12,9 @@ if "%MSG%"=="" set MSG=deploy
 
 echo.
 echo Pulling...
+git stash
 git pull --rebase
+git stash pop
 if %errorlevel% neq 0 (
     echo PULL FAILED - fix conflicts manually
     pause
@@ -21,7 +23,7 @@ if %errorlevel% neq 0 (
 
 echo.
 echo Adding all changes...
-git add -A
+git add -A ":!nul"
 
 echo.
 echo Committing: %MSG%
