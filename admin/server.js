@@ -78,6 +78,27 @@ app.use((req, res, next) => {
 
 app.use((req, res, next) => { next(); });
 
+// ── IP 黑名单 ──
+const blockedIpsPath = path.join(__dirname, '../public/data/blocked_ips.json');
+function loadBlockedIps() {
+    try { return JSON.parse(fs.readFileSync(blockedIpsPath, 'utf8')); } catch { return []; }
+}
+function saveBlockedIps(list) {
+    const dir = path.dirname(blockedIpsPath);
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    fs.writeFileSync(blockedIpsPath, JSON.stringify(list, null, 2));
+}
+app.use((req, res, next) => {
+    const blocked = loadBlockedIps();
+    const clientIp = req.ip || req.connection.remoteAddress;
+    // 兼容 IPv6-mapped IPv4
+    const ip = clientIp && clientIp.startsWith('::ffff:') ? clientIp.slice(7) : clientIp;
+    if (blocked.includes(ip)) {
+        return res.status(403).send('Forbidden');
+    }
+    next();
+});
+
 app.use(express.json({ limit: '256kb' }));
 app.use(express.urlencoded({ extended: true, limit: '256kb' }));
 
@@ -724,6 +745,21 @@ app.get('/api/excluded-ips', requireAdminToken, (req, res) => { res.json(loadExc
 app.post('/api/excluded-ips', requireAdminToken, (req, res) => {
     try { fs.writeFileSync(excludedIPsPath, JSON.stringify(req.body.ips || [], null, 2)); res.json({ success: true }); }
     catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+// IP 黑名单管理
+app.get('/api/blocked-ips', requireAdminToken, (req, res) => { res.json(loadBlockedIps()); });
+app.post('/api/blocked-ips', requireAdminToken, (req, res) => {
+    const { ip, action } = req.body;
+    if (!ip) return res.status(400).json({ error: 'ip required' });
+    const list = loadBlockedIps();
+    if (action === 'remove') {
+        saveBlockedIps(list.filter(i => i !== ip));
+    } else {
+        if (!list.includes(ip)) list.push(ip);
+        saveBlockedIps(list);
+    }
+    res.json({ success: true, blocked: loadBlockedIps() });
 });
 
 // 兜底：文件不存在时包含用户自己的IP

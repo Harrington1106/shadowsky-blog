@@ -2082,6 +2082,34 @@ const ExcludeIPs = {
     }
 };
 
+const BlockedIPs = {
+    list: [],
+    async fetch() { try { const r = await safeFetch(API_BASE + '/blocked-ips'); if (Array.isArray(r)) { this.list = r; this.render(); } } catch {} },
+    render() {
+        const el = document.getElementById('blocked-ip-list');
+        if (!el) return;
+        el.innerHTML = this.list.length ? this.list.map(ip => '<span style="display:inline-flex;align-items:center;gap:6px;padding:4px 10px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);border-radius:6px;color:#fca5a5">' + ip + ' <button onclick="BlockedIPs.remove(\'' + ip + '\')" style="background:none;border:none;color:#ef4444;cursor:pointer;font-size:.9rem;line-height:1">&times;</button></span>').join('') : '<span style="color:#64748b">暂无屏蔽IP</span>';
+    },
+    async add() {
+        const ip = document.getElementById('block-ip-input').value.trim();
+        if (!ip) return showToast('请输入IP', 'warning');
+        if (this.list.includes(ip)) return showToast('已存在', 'warning');
+        try {
+            const r = await safeFetch(API_BASE + '/blocked-ips', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ip, action: 'add' }) });
+            if (r && r.blocked) { this.list = r.blocked; this.render(); }
+            document.getElementById('block-ip-input').value = '';
+            showToast('已屏蔽 ' + ip, 'success');
+        } catch { showToast('操作失败', 'error'); }
+    },
+    async remove(ip) {
+        try {
+            const r = await safeFetch(API_BASE + '/blocked-ips', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ip, action: 'remove' }) });
+            if (r && r.blocked) { this.list = r.blocked; this.render(); }
+            showToast('已解除屏蔽 ' + ip, 'success');
+        } catch { showToast('操作失败', 'error'); }
+    }
+};
+
 // ═══════ 社交链接管理器 ═══════
 const SOCIAL_PRESETS = {
     'GitHub':       { url: 'https://github.com/', icon: 'simple:github' },
@@ -3470,7 +3498,7 @@ const Dashboard = {
         if (tabId === 'media') { MediaManager.fetch(); MediaManager.updateFilterUI(); }
         if (tabId === 'feeds') FeedsManager.fetch();
         if (tabId === 'videos') VideosManager.fetch();
-        if (tabId === 'stats') { StatsManager.fetch(); ExcludeIPs.fetch(); }
+        if (tabId === 'stats') { StatsManager.fetch(); ExcludeIPs.fetch(); BlockedIPs.fetch(); }
         if (tabId === 'settings') { fetchSettings(); }
     }
 };

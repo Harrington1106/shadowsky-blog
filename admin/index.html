@@ -871,6 +871,20 @@
                         <span style="color:#94a3b8">加载中...</span>
                     </div>
                 </div>
+                <!-- IP 黑名单 -->
+                <div class="admin-card p-5" style="margin-top:16px">
+                    <h3 style="font-size:.9rem;font-weight:700;margin-bottom:12px;color:inherit">
+                        <i data-lucide="shield-ban" class="w-4 h-4" style="display:inline;vertical-align:-2px;color:#EF4444"></i> IP 黑名单
+                    </h3>
+                    <p style="font-size:.75rem;color:#64748b;margin-bottom:12px">被屏蔽的 IP 将无法访问整个网站，返回 403。</p>
+                    <div style="display:flex;gap:8px;margin-bottom:12px">
+                        <input id="block-ip-input" class="admin-input" placeholder="输入要屏蔽的 IP 地址" style="flex:1;padding:7px 12px">
+                        <button onclick="BlockedIPs.add()" class="admin-btn admin-btn-primary" style="padding:7px 16px;font-size:.8rem;background:#EF4444;border-color:#EF4444">屏蔽</button>
+                    </div>
+                    <div id="blocked-ip-list" style="display:flex;flex-wrap:wrap;gap:6px;font-size:.78rem">
+                        <span style="color:#94a3b8">加载中...</span>
+                    </div>
+                </div>
             </section>
 
             <!-- ═══════ VIEW: SETTINGS ═══════ -->
