@@ -1845,6 +1845,41 @@ app.get('/api/notice', (req, res) => {
 });
 
 // API to save notice
+// 打招呼通知 — 存储并通知站长
+const greetingsPath = path.join(__dirname, '../public/data/greetings.json');
+app.post('/api/wave', (req, res) => {
+    try {
+        let greetings = [];
+        if (fs.existsSync(greetingsPath)) {
+            greetings = JSON.parse(fs.readFileSync(greetingsPath, 'utf8'));
+        }
+        greetings.push({
+            time: new Date().toISOString(),
+            ip: req.ip || req.connection.remoteAddress || '',
+            ua: (req.headers['user-agent'] || '').substring(0, 200)
+        });
+        // 只保留最近 50 条
+        if (greetings.length > 50) greetings = greetings.slice(-50);
+        fs.writeFileSync(greetingsPath, JSON.stringify(greetings, null, 2));
+        res.json({ success: true, count: greetings.length });
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
+// 获取打招呼列表 (admin用)
+app.get('/api/wave', requireAdminToken, (req, res) => {
+    try {
+        if (fs.existsSync(greetingsPath)) {
+            res.json(JSON.parse(fs.readFileSync(greetingsPath, 'utf8')));
+        } else {
+            res.json([]);
+        }
+    } catch (e) {
+        res.json([]);
+    }
+});
+
 app.post('/api/notice', requireAdminToken, rateLimit(60_000, 30), (req, res) => {
     const data = req.body;
     fs.writeFileSync(noticePath, JSON.stringify(data, null, 2));
