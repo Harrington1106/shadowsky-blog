@@ -222,7 +222,7 @@ function renderDirView(container, posts) {
         <div class="article-list">${items.map(p => {
             const d = new Date(p.date);
             const ds = isNaN(d) ? '' : d.toLocaleDateString('zh-CN', { month: 'short', day: 'numeric' });
-            return `<a href="post.html?file=${encodeURIComponent(p.file)}&ref=%23directory" class="article-item">
+            return `<a href="post.html?file=${encodeURIComponent(p.file)}&ref=%23directory" class="dir-item">
                 <span class="article-date">${ds}</span>
                 <div class="article-body">
                     <h3 class="article-title">${p.title}</h3>
