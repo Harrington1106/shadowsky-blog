@@ -2109,7 +2109,7 @@ const SocialManager = {
         if (!iconKey) return '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg>';
         if (iconKey.startsWith('simple:')) {
             const slug = iconKey.replace('simple:', '');
-            return '<img src="https://cdn.simpleicons.org/' + slug + '/888" width="20" height="20" style="filter:grayscale(1)" onerror="this.style.display=\'none\'">';
+            return '<img src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/' + slug + '.svg" width="20" height="20" style="filter:invert(.6)" onerror="this.style.display=\'none\'">';
         }
         return '<i data-lucide="' + iconKey.replace('lucide:', '') + '" style="width:20px;height:20px"></i>';
     },
