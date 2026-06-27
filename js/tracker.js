@@ -57,4 +57,43 @@
     } else {
         window.addEventListener('load', track);
     }
+
+    // ═══════════════════════════════════════════
+    // 动态标题：离开时撒娇，回来时欢迎
+    // ═══════════════════════════════════════════
+    if (!window.__title_switch_loaded) {
+        window.__title_switch_loaded = true;
+        var baseTitle = document.title;
+        var leaveMessages = [
+            '别走嘛 😢',
+            '快回来！页面想你了 💕',
+            '真的要离开吗... 🥺',
+            '再待一会嘛~ ✨',
+            '等你回来哦 👋',
+            '呜呜呜别走 😭',
+            '记得回来看看我 🫣',
+            '页面独守空房了... 🏠'
+        ];
+        var backMessages = [
+            '欢迎回来！🎉',
+            '你回来啦~ 💖',
+            '等你好久了 💕',
+            '终于回来了！🌟',
+            '想你啦~ ✨'
+        ];
+        var msgIdx = 0;
+
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden) {
+                baseTitle = document.title;
+                document.title = leaveMessages[msgIdx % leaveMessages.length];
+                msgIdx++;
+            } else {
+                document.title = backMessages[Math.floor(Math.random() * backMessages.length)];
+                setTimeout(function() {
+                    document.title = baseTitle;
+                }, 1500);
+            }
+        });
+    }
 })();
