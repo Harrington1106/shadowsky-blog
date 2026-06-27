@@ -2053,6 +2053,116 @@ const ImageUploader = {
     }
 };
 
+// ═══════ 博客文章管理器 ═══════
+const PostsManager = {
+    data: [],
+    async fetch() {
+        const list = document.getElementById('posts-list');
+        if (!list) return;
+        list.innerHTML = '<div style="text-align:center;padding:32px;color:#94a3b8">加载中...</div>';
+        try {
+            const res = await safeFetch(`${API_BASE}/posts`);
+            if (Array.isArray(res)) {
+                this.data = res;
+                this.render();
+            } else {
+                list.innerHTML = '<div style="text-align:center;padding:32px;color:#ef4444">加载失败</div>';
+            }
+        } catch (e) {
+            list.innerHTML = '<div style="text-align:center;padding:32px;color:#ef4444">加载失败: ' + e.message + '</div>';
+        }
+    },
+    render() {
+        const list = document.getElementById('posts-list');
+        const countEl = document.getElementById('posts-count');
+        if (!list) return;
+        if (countEl) countEl.textContent = '共 ' + this.data.length + ' 篇文章';
+
+        if (this.data.length === 0) {
+            list.innerHTML = '<div style="text-align:center;padding:48px;color:#94a3b8">暂无文章，请在本地用 Obsidian 创建后推送</div>';
+            return;
+        }
+
+        list.innerHTML = this.data.map(p => {
+            const date = p.date || '';
+            const file = p._file || '';
+            const tags = (p.tags || []).slice(0, 5);
+            const tagsHtml = tags.map(t => `<span style="display:inline-block;padding:1px 7px;border-radius:4px;font-size:.65rem;background:rgba(45,212,191,.1);color:#2DD4BF;border:1px solid rgba(45,212,191,.15)">${t}</span>`).join('');
+
+            return `<div style="display:flex;align-items:flex-start;gap:14px;padding:14px 16px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);border-radius:12px;margin-bottom:8px">
+                <div style="flex:1;min-width:0">
+                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+                        <span style="font-weight:600;font-size:.9rem;color:inherit">${p.title || '无标题'}</span>
+                        <span style="font-size:.7rem;color:#64748b">${date}</span>
+                    </div>
+                    <div style="font-size:.75rem;color:#94a3b8;margin-bottom:4px">
+                        <span>${p.category || '未分类'}</span>
+                        <span style="margin:0 6px">·</span>
+                        <span style="font-family:monospace;font-size:.7rem;opacity:.6">${file}</span>
+                        <span style="margin:0 6px">·</span>
+                        <span>${p.readTime || 5} min</span>
+                    </div>
+                    ${p.excerpt ? `<p style="font-size:.75rem;color:#64748b;line-height:1.5;margin-bottom:6px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${p.excerpt}</p>` : ''}
+                    ${tagsHtml ? `<div style="display:flex;gap:4px;flex-wrap:wrap">${tagsHtml}</div>` : ''}
+                </div>
+                <div style="display:flex;align-items:center;gap:4px;flex-shrink:0">
+                    <button onclick="PostsManager.editFrontmatter('${file.replace(/'/g, "\\'")}')" style="background:none;border:none;cursor:pointer;padding:6px;border-radius:8px;color:#94a3b8" title="编辑信息">
+                        <i data-lucide="edit-2" style="width:15px;height:15px"></i>
+                    </button>
+                    <button onclick="PostsManager.confirmDelete('${file.replace(/'/g, "\\'")}','${(p.title || '').replace(/'/g, "\\'")}')" style="background:none;border:none;cursor:pointer;padding:6px;border-radius:8px;color:#ef4444" title="删除文章">
+                        <i data-lucide="trash-2" style="width:15px;height:15px"></i>
+                    </button>
+                </div>
+            </div>`;
+        }).join('');
+
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+    },
+    async confirmDelete(file, title) {
+        ConfirmationDialog.show(
+            `确定要删除文章 "${title}" 吗？\n\n⚠️ 这将永久删除服务器上的 ${file} 文件。\n本地文件不受影响（需要手动 git rm）。`,
+            async () => {
+                try {
+                    const res = await safeFetch(`${API_BASE}/posts?file=${encodeURIComponent(file)}`, { method: 'DELETE' });
+                    if (res && res.success) {
+                        showToast(`文章 "${title}" 已删除`, 'success');
+                        this.fetch();
+                    } else {
+                        showToast(res?.error || '删除失败', 'error');
+                    }
+                } catch (e) {
+                    showToast('删除失败: ' + e.message, 'error');
+                }
+            }
+        );
+    },
+    editFrontmatter(file) {
+        const post = this.data.find(p => p._file === file);
+        if (!post) return;
+        // 简易弹窗编辑
+        const title = prompt('标题', post.title || '');
+        if (title === null) return;
+        const category = prompt('分类', post.category || '');
+        if (category === null) return;
+        const tags = prompt('标签（逗号分隔）', (post.tags || []).join(', '));
+        if (tags === null) return;
+        const excerpt = prompt('摘要', post.excerpt || '');
+        if (excerpt === null) return;
+
+        const body = { file, title, category, tags: tags.split(/[,，]/).map(t => t.trim()).filter(Boolean), excerpt };
+        safeFetch(`${API_BASE}/posts`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+            .then(res => {
+                if (res && res.success) {
+                    showToast('文章信息已更新', 'success');
+                    this.fetch();
+                } else {
+                    showToast(res?.error || '更新失败', 'error');
+                }
+            })
+            .catch(e => showToast('更新失败: ' + e.message, 'error'));
+    }
+};
+
 // ═══════ 随手拍管理器 ═══════
 const SnapshotsManager = {
     data: [],
@@ -3113,6 +3223,7 @@ const Dashboard = {
         const pageTitle = document.getElementById('page-title');
         if (pageTitle) pageTitle.textContent = TAB_TITLES[tabId] || '概览';
 
+        if (tabId === 'posts') PostsManager.fetch();
         if (tabId === 'bookmarks') { BookmarksManager.fetch(); BookmarksManager.populateCategories(); }
         if (tabId === 'snapshots') { SnapshotsManager.fetch(); ImageUploader.init(); }
         if (tabId === 'media') { MediaManager.fetch(); MediaManager.updateFilterUI(); }

@@ -319,6 +319,9 @@
                     <button onclick="Dashboard.switchTab('bookmarks')" id="nav-bookmarks" class="nav-item w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium" role="tab" aria-selected="false" aria-controls="view-bookmarks" tabindex="0">
                         <i data-lucide="bookmark" class="w-4 h-4"></i> 书签收藏
                     </button>
+                    <button onclick="Dashboard.switchTab('posts')" id="nav-posts" class="nav-item w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium" role="tab" aria-selected="false" aria-controls="view-posts" tabindex="-1">
+                        <i data-lucide="file-text" class="w-4 h-4"></i> 博客文章
+                    </button>
                     <button onclick="Dashboard.switchTab('snapshots')" id="nav-snapshots" class="nav-item w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium" role="tab" aria-selected="false" aria-controls="view-snapshots" tabindex="-1">
                         <i data-lucide="camera" class="w-4 h-4"></i> 片刻动态
                     </button>
@@ -384,6 +387,27 @@
                     </div>
                 </div>
             </header>
+
+            <!-- ═══════ VIEW: POSTS ═══════ -->
+            <section id="view-posts" class="view-section space-y-6 hidden">
+                <div class="admin-card p-6">
+                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+                        <h3 class="text-lg font-bold flex items-center gap-2" style="color:inherit">
+                            <i data-lucide="file-text" class="w-5 h-5" style="color:var(--color-primary,#14B8A6)"></i> 博客文章管理
+                        </h3>
+                        <div style="display:flex;align-items:center;gap:12px">
+                            <span id="posts-count" style="font-size:.85rem;color:#94a3b8"></span>
+                            <button onclick="PostsManager.fetch()" class="admin-btn admin-btn-ghost" style="padding:6px 14px;font-size:.78rem">
+                                <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> 刷新
+                            </button>
+                        </div>
+                    </div>
+                    <p style="font-size:.8rem;color:#64748b;margin-bottom:16px">
+                        ⚠️ 删除操作直接移除服务器 .md 文件。本地修改文章请用 Obsidian 编辑后 git push。
+                    </p>
+                    <div id="posts-list" class="space-y-2" style="max-height:70vh;overflow-y:auto"></div>
+                </div>
+            </section>
 
             <!-- ═══════ VIEW: BOOKMARKS ═══════ -->
             <section id="view-bookmarks" class="view-section space-y-6">

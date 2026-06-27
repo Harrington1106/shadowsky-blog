@@ -911,6 +911,91 @@ app.get('/public/posts/posts.json', (req, res) => {
     res.json(getPostsIndex());
 });
 
+// ═══════ 博客文章管理 API ═══════
+
+// 列出所有文章
+app.get('/api/posts', (req, res) => {
+    try {
+        const posts = getPostsIndex();
+        // 附加文件名信息（前端需要用来删除/编辑）
+        const postsDir = path.join(__dirname, '../public/posts');
+        const files = fs.readdirSync(postsDir).filter(f => f.endsWith('.md') && !f.includes('templates/'));
+        const postsWithFile = posts.map(p => {
+            const file = files.find(f => f.endsWith(p.file + '.md') || f === p.file);
+            return { ...p, _file: file || p.file };
+        });
+        res.json(postsWithFile);
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
+// 删除文章
+app.delete('/api/posts', requireAdminToken, (req, res) => {
+    try {
+        const { file } = req.query;
+        if (!file) return res.status(400).json({ error: '缺少 file 参数' });
+        // 安全检查：只允许删除 .md 文件
+        if (!file.endsWith('.md') || file.includes('..') || file.includes('/')) {
+            return res.status(400).json({ error: '无效的文件名' });
+        }
+        const filePath = path.join(__dirname, '../public/posts', file);
+        if (!fs.existsSync(filePath)) return res.status(404).json({ error: '文件不存在' });
+        fs.unlinkSync(filePath);
+        _postsCache = null; // 清除缓存
+        res.json({ success: true });
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
+// 更新文章 frontmatter
+app.put('/api/posts', requireAdminToken, (req, res) => {
+    try {
+        const { file, title, category, tags, excerpt, coverImage } = req.body;
+        if (!file) return res.status(400).json({ error: '缺少 file 参数' });
+        if (!file.endsWith('.md') || file.includes('..') || file.includes('/')) {
+            return res.status(400).json({ error: '无效的文件名' });
+        }
+        const filePath = path.join(__dirname, '../public/posts', file);
+        if (!fs.existsSync(filePath)) return res.status(404).json({ error: '文件不存在' });
+
+        let content = fs.readFileSync(filePath, 'utf-8');
+        // 解析 frontmatter（第一个 --- 块）
+        const fmMatch = content.match(/^---\n([\s\S]*?)\n---/);
+        if (!fmMatch) return res.status(400).json({ error: '未找到 frontmatter' });
+
+        let fm = fmMatch[1];
+        const rest = content.substring(fmMatch[0].length);
+
+        // 更新字段
+        const updateField = (fm, key, value) => {
+            const regex = new RegExp(`^${key}:.*$`, 'm');
+            if (value !== undefined && value !== null) {
+                const newLine = Array.isArray(value)
+                    ? `${key}: [${value.map(v => `"${v}"`).join(', ')}]`
+                    : `${key}: "${value}"`;
+                if (fm.match(regex)) return fm.replace(regex, newLine);
+                return fm + '\n' + newLine;
+            }
+            return fm;
+        };
+
+        if (title) fm = updateField(fm, 'title', title);
+        if (category) fm = updateField(fm, 'category', category);
+        if (tags) fm = updateField(fm, 'tags', tags);
+        if (excerpt !== undefined) fm = updateField(fm, 'excerpt', excerpt);
+        if (coverImage !== undefined) fm = updateField(fm, 'coverImage', coverImage);
+        fm = updateField(fm, 'lastModified', new Date().toISOString().split('T')[0]);
+
+        fs.writeFileSync(filePath, '---\n' + fm + '\n---' + rest);
+        _postsCache = null;
+        res.json({ success: true });
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
 app.get('/api/feeds', (req, res) => {
     if (fs.existsSync(feedsPath)) {
         try {
