@@ -818,7 +818,7 @@ const BookmarksManager = {
                     </button>
                     <a href="${item.url.replace(/"/g, '&quot;')}" target="_blank" style="padding:6px;border-radius:8px;color:#94a3b8;text-decoration:none" title="打开链接">
                         <i data-lucide="external-link" style="width:15px;height:15px"></i>
-                    </button>
+                    </a>
                     <button data-bm-action="edit" data-bm-id="${String(item.id).replace(/"/g, '&quot;').replace(/'/g, '&#39;')}" style="background:none;border:none;cursor:pointer;padding:6px;border-radius:8px;color:#94a3b8" title="编辑">
                         <i data-lucide="edit-2" style="width:15px;height:15px"></i>
                     </button>
