@@ -898,20 +898,23 @@
         
         if (!toggleBtn || !drawer || !overlay) return;
 
+        // 移动端(<900px)且有目录内容时显示按钮
+        if (window.innerWidth <= 900 && document.querySelector('.toc-link')) {
+            toggleBtn.style.display = 'flex';
+        }
+
         function openDrawer() {
-            drawer.classList.remove('translate-x-full');
-            overlay.classList.remove('hidden');
-            // Force reflow
-            void overlay.offsetWidth;
-            overlay.classList.remove('opacity-0');
+            drawer.style.transform = 'translateX(0)';
+            overlay.style.display = 'block';
+            overlay.style.opacity = '1';
             document.body.style.overflow = 'hidden';
         }
 
         function closeDrawer() {
-            drawer.classList.add('translate-x-full');
-            overlay.classList.add('opacity-0');
+            drawer.style.transform = 'translateX(100%)';
+            overlay.style.opacity = '0';
             setTimeout(() => {
-                overlay.classList.add('hidden');
+                overlay.style.display = 'none';
                 document.body.style.overflow = '';
             }, 300);
         }
