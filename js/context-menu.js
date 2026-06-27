@@ -44,8 +44,18 @@
         create();
         menu.innerHTML = items.map(itemHTML).join('');
 
-        var els = menu.querySelectorAll('.ctx-item');
-        els.forEach(function(el, i) { el.addEventListener('click', function(e) { e.stopPropagation(); hide(); var it = items[i]; if (it && it.action) it.action(); }); });
+        // 只给有 action 的 item 绑定事件，用闭包直接引用
+        var actionItems = items.filter(function(it) { return it.action; });
+        var actionEls = menu.querySelectorAll('.ctx-item');
+        actionItems.forEach(function(it, i) {
+            if (actionEls[i]) {
+                actionEls[i].addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    hide();
+                    it.action();
+                });
+            }
+        });
 
         var mw = menu.offsetWidth || 200, mh = menu.offsetHeight || 300;
         if (x + mw > window.innerWidth) x = window.innerWidth - mw - 8;
