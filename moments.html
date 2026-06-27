@@ -4,52 +4,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>随手拍 — 夏日科技探索</title>
-
-    <!-- Theme FOUC prevention -->
     <script>
         (function(){
-            try {
-                var t = localStorage.getItem('theme');
-                if (t === 'light') document.documentElement.classList.remove('dark');
-                else if (!t && matchMedia('(prefers-color-scheme: light)').matches) document.documentElement.classList.remove('dark');
-            } catch(e) {}
+            try{var t=localStorage.getItem('theme');if(t==='light')document.documentElement.classList.remove('dark');else if(!t&&matchMedia('(prefers-color-scheme:light)').matches)document.documentElement.classList.remove('dark')}catch(e){}
         })();
     </script>
-
-    <meta name="theme-color" content="#0B1120" media="(prefers-color-scheme: dark)">
-    <meta name="theme-color" content="#F8FAFC" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: dark)">
+    <meta name="theme-color" content="#f5f5f5" media="(prefers-color-scheme: light)">
     <link rel="icon" type="image/png" href="public/img/favicon256.png">
-
-    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.loli.net">
     <link rel="preconnect" href="https://gstatic.loli.net" crossorigin>
-    <link href="https://fonts.loli.net/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&family=Space+Grotesk:wght@400;500;600;700&family=Noto+Serif+SC:wght@400;500;700&display=swap" rel="stylesheet">
-
-    <!-- Styles -->
+    <link href="https://fonts.loli.net/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&family=Space+Grotesk:wght@400;500;600;700&family=Noto+Serif+SC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link href="css/unified.css?v=2606270700" rel="stylesheet">
     <link href="css/liquid-ambient.css?v=20260626m" rel="stylesheet">
-    <link href="css/liquid-moments-v4.css?v=1" rel="stylesheet">
-
-    <!-- Lucide Icons -->
+    <link href="css/liquid-moments.css?v=5" rel="stylesheet">
     <script src="js/vendor/lucide.min.js?v=20260626m"></script>
-
-    <!-- Critical inline: theme-dependent visibility -->
     <style>
-        html:not(.dark) .dark-only { display: none !important; }
-        html.dark .light-only { display: none !important; }
+        html:not(.dark) .dark-only{display:none!important}
+        html.dark .light-only{display:none!important}
     </style>
 </head>
-<body class="font-sans">
+<body>
 
-    <!-- ═══════════ Fluid Ambient Background ═══════════ -->
-    <div class="liquid-ambient ambient-subtle" aria-hidden="true">
-        <div class="liquid-blob liquid-blob--1"></div>
-        <div class="liquid-blob liquid-blob--2"></div>
-        <div class="liquid-blob liquid-blob--3"></div>
-        <div class="liquid-blob liquid-blob--4"></div>
-    </div>
-
-    <!-- ═══════════ NAVBAR ═══════════ -->
+    <!-- NAVBAR (identical to all pages) -->
     <nav id="navbar" class="homepage-cover-nav-shell" data-ui-region="home-nav-shell">
         <div class="nav-inner">
             <div class="nav-left">
@@ -75,8 +52,6 @@
             </div>
         </div>
     </nav>
-
-    <!-- ═══════════ Mobile Menu ═══════════ -->
     <div id="mobile-menu" role="dialog" aria-label="导航菜单" aria-modal="true">
         <div class="mobile-menu-header"><span class="mobile-menu-brand">夏日科技探索</span><button class="mobile-menu-close" aria-label="关闭菜单"><i data-lucide="x"></i></button></div>
         <div class="mobile-menu-links">
@@ -90,147 +65,84 @@
         </div>
     </div>
 
-    <!-- ═══════════ MAIN ═══════════ -->
-    <main class="mm-page">
-        <div class="mm-shell">
-
-            <!-- Hero -->
-            <section class="mm-hero">
-                <h1>随手拍</h1>
-                <p>用镜头捕捉生活的光与影，记录每一个值得铭记的瞬间</p>
-            </section>
-
-            <!-- Stats -->
-            <div class="mm-stats" id="mm-stats">
-                <div class="mm-stat">
-                    <span class="mm-stat-label"><i data-lucide="image"></i> 瞬间</span>
-                    <span class="mm-stat-value" id="stat-count">0</span>
+    <!-- ═══════════ MAIN: Gallery starts immediately ═══════════ -->
+    <main class="gallery-page">
+        <!-- Floating header bar -->
+        <div class="gallery-header" id="gallery-header">
+            <div class="gallery-header-inner">
+                <div class="gallery-stats" id="gallery-stats">
+                    <span><strong id="stat-count">0</strong> 张</span>
+                    <span class="stat-sep"></span>
+                    <span><strong id="stat-days">0</strong> 天</span>
+                    <span class="stat-sep"></span>
+                    <span><strong id="stat-locs">0</strong> 地</span>
                 </div>
-                <div class="mm-stat">
-                    <span class="mm-stat-label"><i data-lucide="calendar-days"></i> 天数</span>
-                    <span class="mm-stat-value" id="stat-days">0</span>
+                <div class="gallery-search">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                    <input type="text" id="search-input" placeholder="搜索...">
                 </div>
-                <div class="mm-stat">
-                    <span class="mm-stat-label"><i data-lucide="map-pin"></i> 足迹</span>
-                    <span class="mm-stat-value" id="stat-locations">0</span>
-                </div>
-                <div class="mm-stat">
-                    <span class="mm-stat-label"><i data-lucide="clock"></i> 最近</span>
-                    <span class="mm-stat-value mm-stat-value--sm" id="stat-latest">--</span>
+                <div class="gallery-tags" id="tag-filters"></div>
+                <div class="gallery-actions">
+                    <button class="g-act" id="btn-random" title="随机漫游"><i data-lucide="shuffle"></i></button>
+                    <button class="g-act on" id="btn-grid" title="网格"><i data-lucide="layout-grid"></i></button>
+                    <button class="g-act" id="btn-timeline" title="时间线"><i data-lucide="list"></i></button>
                 </div>
             </div>
-
-            <!-- Charts -->
-            <div class="mm-charts">
-                <div class="mm-chart-box">
-                    <h3><i data-lucide="activity"></i> 活动</h3>
-                    <div class="mm-sparkline" id="activity-container"></div>
-                </div>
-                <div class="mm-chart-box">
-                    <div class="mm-heatmap-header">
-                        <h3><i data-lucide="grid-3x3"></i> 热力图</h3>
-                        <div class="mm-heatmap-years" id="heatmap-years"></div>
-                    </div>
-                    <div class="mm-heatmap-wrap"><div id="heatmap-container"></div></div>
-                    <div class="mm-heatmap-legend"><span>少</span><div class="mm-legend-bar"></div><span>多</span></div>
-                </div>
-            </div>
-
-            <!-- Toolbar -->
-            <div class="mm-toolbar" id="mm-toolbar">
-                <div class="mm-search">
-                    <i data-lucide="search"></i>
-                    <input type="text" id="search-input" placeholder="搜索瞬间、标签或地点...">
-                </div>
-                <div class="mm-tags" id="tag-filters"></div>
-                <div class="mm-actions">
-                    <button class="mm-act-btn" id="btn-random" title="随机漫游"><i data-lucide="shuffle"></i></button>
-                    <div class="mm-view-switch">
-                        <button class="mm-view-btn active" id="view-grid" title="网格视图"><i data-lucide="layout-grid"></i><span>网格</span></button>
-                        <button class="mm-view-btn" id="view-timeline" title="时间线"><i data-lucide="list"></i><span>时间线</span></button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Gallery Container -->
-            <div class="mm-gallery" id="moments-grid"></div>
-
         </div>
+
+        <!-- Gallery Grid -->
+        <div class="gallery-grid" id="gallery-grid"></div>
     </main>
 
-    <!-- ═══════════ FOOTER ═══════════ -->
+    <!-- FOOTER -->
     <footer class="site-footer">
         <span class="visit-count"><span class="pulse-dot"></span><span id="visit-count">--</span> 来过</span>
         <span class="footer-dot">·</span>
         <span>&copy; 2026 夏日科技探索 — Designed with <span class="footer-heart">❤️</span></span>
     </footer>
 
-    <!-- ═══════════ Back to Top ═══════════ -->
-    <button id="back-to-top" class="mm-btt" aria-label="回到顶部"><i data-lucide="rocket"></i></button>
+    <!-- Back to Top -->
+    <button class="g-btt" id="back-to-top" aria-label="回到顶部"><i data-lucide="chevron-up"></i></button>
 
     <!-- ═══════════ LIGHTBOX ═══════════ -->
-    <div id="lightbox">
-        <div class="lb-top">
-            <button id="lightbox-share" title="分享链接"><i data-lucide="share-2"></i></button>
-            <button id="lightbox-close" title="关闭"><i data-lucide="x"></i></button>
-        </div>
-        <div class="lb-stage">
-            <div class="lb-image-area">
-                <img id="lightbox-img" src="" alt="">
-                <button id="lightbox-prev" class="lb-arrow lb-prev" title="上一张"><i data-lucide="chevron-left"></i></button>
-                <button id="lightbox-next" class="lb-arrow lb-next" title="下一张"><i data-lucide="chevron-right"></i></button>
+    <div class="lightbox" id="lightbox">
+        <div class="lb-bg-click" id="lb-bg"></div>
+        <div class="lb-image-wrap"><img id="lb-img" src="" alt=""></div>
+        <button class="lb-close" id="lb-close"><i data-lucide="x"></i></button>
+        <button class="lb-share" id="lb-share"><i data-lucide="share-2"></i></button>
+        <button class="lb-nav lb-prev" id="lb-prev"><i data-lucide="chevron-left"></i></button>
+        <button class="lb-nav lb-next" id="lb-next"><i data-lucide="chevron-right"></i></button>
+        <div class="lb-info" id="lb-info">
+            <p id="lb-text"></p>
+            <div class="lb-info-meta">
+                <span id="lb-date"></span>
+                <span id="lb-loc-wrap" style="display:none;cursor:pointer"><i data-lucide="map-pin" style="width:12px;height:12px"></i> <span id="lb-loc"></span></span>
             </div>
-            <div class="lb-side">
-                <div class="lb-card lb-card--main">
-                    <div class="lb-meta"><i data-lucide="calendar"></i><span id="lightbox-date"></span></div>
-                    <p id="lightbox-content"></p>
-                </div>
-                <div class="lb-card lb-card--info" id="lightbox-info-card">
-                    <div class="lb-location" id="lightbox-location-wrap">
-                        <i data-lucide="map-pin"></i><span id="lightbox-location"></span>
-                    </div>
-                    <div class="lb-tags" id="lightbox-tags"></div>
-                </div>
-                <div class="lb-card lb-card--exif" id="lightbox-exif">
-                    <div class="lb-exif-row"><span>Camera</span><span id="exif-camera">--</span></div>
-                    <div class="lb-exif-row"><span>Lens</span><span id="exif-lens">--</span></div>
-                    <div class="lb-exif-row"><span>ISO</span><span id="exif-iso">--</span></div>
-                    <div class="lb-exif-row"><span>Aperture</span><span id="exif-aperture">--</span></div>
-                    <div class="lb-exif-row"><span>Shutter</span><span id="exif-shutter">--</span></div>
-                </div>
-            </div>
+            <div class="lb-info-tags" id="lb-tags"></div>
+            <div class="lb-exif" id="lb-exif"></div>
         </div>
     </div>
 
     <!-- ═══════════ SCRIPTS ═══════════ -->
     <script src="js/api.js?v=20260626m"></script>
-    <script src="js/main.js?v=20260626b"></script>
     <script src="js/navbar.js?v=20260626b"></script>
-    <script src="js/activity_chart.js?v=20260626m"></script>
-    <script src="js/heatmap.js?v=20260626m"></script>
-    <script src="js/moments.js?v=20260627a"></script>
+    <script src="js/moments.js?v=5"></script>
     <script src="js/click-effect.js?v=20260626m"></script>
     <script src="https://unpkg.com/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
     <script src="js/context-menu.js?v=2606270200"></script>
     <script src="js/tracker.js?v=20260626m"></script>
-
-    <!-- Visit Counter -->
     <script>
-        (function() {
-            var el = document.getElementById('visit-count');
-            if (!el) return;
-            var retry = 0;
-            var load = function() {
-                if (window.api && window.api.fetchVisitCount) {
-                    window.api.fetchVisitCount('moments').then(function(d) {
-                        if (d && d.count) el.textContent = d.count;
-                    }).catch(function() {});
-                } else if (retry++ < 20) {
-                    setTimeout(load, 500);
-                }
+        (function(){
+            var el=document.getElementById('visit-count');
+            if(!el)return;
+            var r=0;
+            var l=function(){
+                if(window.api&&window.api.fetchVisitCount){
+                    window.api.fetchVisitCount('moments').then(function(d){if(d&&d.count)el.textContent=d.count}).catch(function(){});
+                }else if(r++<20)setTimeout(l,500);
             };
-            if (document.readyState === 'complete') load();
-            else window.addEventListener('load', load);
+            if(document.readyState==='complete')l();
+            else window.addEventListener('load',l);
         })();
     </script>
 </body>
