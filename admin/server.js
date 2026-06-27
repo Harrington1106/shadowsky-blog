@@ -1907,8 +1907,22 @@ app.get('/api/wave', requireAdminToken, (req, res) => {
     }
 });
 
-// IP 地理位置批量查询（带缓存）
-const ipCache = new Map();
+// IP 地理位置持久存储
+const ipLocPath = path.join(__dirname, '../public/data/ip_locations.json');
+function loadIPLocations() {
+    try { if (fs.existsSync(ipLocPath)) return JSON.parse(fs.readFileSync(ipLocPath, 'utf8')); } catch {}
+    return {};
+}
+function saveIPLocation(ip, loc) {
+    try {
+        const data = loadIPLocations();
+        data[ip] = loc;
+        fs.writeFileSync(ipLocPath, JSON.stringify(data, null, 2));
+    } catch {}
+}
+// 已持久化的 IP 位置缓存
+const ipCache = new Map(Object.entries(loadIPLocations()));
+
 app.post('/api/ip-lookup', requireAdminToken, async (req, res) => {
     try {
         const { ips } = req.body;
@@ -1933,6 +1947,7 @@ app.post('/api/ip-lookup', requireAdminToken, async (req, res) => {
                     const info = [data.country, data.regionName, data.city].filter(Boolean).join(' ') || data.isp || '未知';
                     results[ip] = info;
                     ipCache.set(ip, info);
+                    saveIPLocation(ip, info);
                 } else {
                     results[batch[ri]] = '查询失败';
                 }
@@ -1942,6 +1957,11 @@ app.post('/api/ip-lookup', requireAdminToken, async (req, res) => {
         }
         res.json({ success: true, data: results });
     } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+// 获取已存储的 IP 位置
+app.get('/api/ip-locations', requireAdminToken, (req, res) => {
+    res.json(loadIPLocations());
 });
 
 app.post('/api/notice', requireAdminToken, rateLimit(60_000, 30), (req, res) => {

@@ -3036,13 +3036,17 @@ const StatsManager = {
         });
         const sorted = Object.entries(ipMap).sort((a,b) => b[1] - a[1]).slice(0, 20);
         if (!sorted.length) {
-            container.innerHTML = '<tr><td colspan="3" style="padding:32px;text-align:center;color:#64748b">暂无访问数据</td></tr>';
+            container.innerHTML = '<tr><td colspan="4" style="padding:32px;text-align:center;color:#64748b">暂无访问数据</td></tr>';
             return;
         }
         const max = sorted[0][1];
+        // 从localStorage读取已持久化的IP位置
+        let knownLocs = {};
+        try { knownLocs = JSON.parse(localStorage.getItem('ip_locs') || '{}'); } catch {}
         container.innerHTML = sorted.map(([ip, count]) => `
             <tr>
                 <td style="padding:8px 16px;font-size:.8rem;color:#94a3b8">${ip}</td>
+                <td class="ip-loc-cell" data-ip="${ip}" style="padding:8px 16px;font-size:.78rem;color:#14B8A6">${knownLocs[ip] || ''}</td>
                 <td style="padding:8px 16px;font-size:.8rem;color:#e2e8f0;font-weight:500">${count}</td>
                 <td style="padding:8px 16px">
                     <div style="height:4px;background:rgba(255,255,255,.06);border-radius:2px;min-width:60px">
@@ -3079,13 +3083,53 @@ const StatsManager = {
                 </div>
             </div>
         `).join('');
+    },
+    async lookupIPs() {
+        const cells = document.querySelectorAll('.ip-loc-cell');
+        if (!cells.length) return;
+        // 1. 先从服务器加载持久化的位置
+        let locs = {};
+        try {
+            const stored = await safeFetch(API_BASE + '/ip-locations');
+            if (stored && typeof stored === 'object') {
+                locs = stored;
+                localStorage.setItem('ip_locs', JSON.stringify(locs));
+            }
+        } catch {}
+        // 2. 预填已知位置
+        let needLookup = [];
+        cells.forEach(c => {
+            const ip = c.dataset.ip;
+            if (locs[ip]) { c.textContent = locs[ip]; }
+            else if (!c.textContent.trim()) { needLookup.push(c); }
+        });
+        if (!needLookup.length) return;
+        // 3. 查询未知IP
+        needLookup.forEach(c => { c.textContent = '...'; });
+        try {
+            const res = await safeFetch(API_BASE + '/ip-lookup', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ips: needLookup.map(c => c.dataset.ip) })
+            });
+            if (res && res.success && res.data) {
+                needLookup.forEach(c => {
+                    const loc = res.data[c.dataset.ip];
+                    c.textContent = loc || '未知';
+                    if (loc) locs[c.dataset.ip] = loc;
+                });
+                localStorage.setItem('ip_locs', JSON.stringify(locs));
+            }
+        } catch (e) {
+            needLookup.forEach(c => { if (c.textContent === '...') c.textContent = ''; });
+        }
     }
 };
 
 const Dashboard = {
     switchTab: function(tabId) {
         console.log('Switching to tab:', tabId);
-        ['bookmarks', 'snapshots', 'media', 'feeds', 'videos', 'stats', 'settings'].forEach(id => {
+        ['bookmarks', 'snapshots', 'media', 'feeds', 'videos', 'stats', 'settings', 'posts', 'greetings'].forEach(id => {
             const section = document.getElementById(`view-${id}`);
             if (section) {
                 section.classList.add('hidden');
