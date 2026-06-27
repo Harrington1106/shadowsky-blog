@@ -3665,8 +3665,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     const bmList = document.getElementById('bookmarks-list');
     if (bmList) {
         bmList.addEventListener('click', (e) => {
-            const btn = e.target.closest('[data-bm-action]');
-            if (!btn) return;
+            // closest 可能因 SVG namespace 失败，手动向上查找
+            let btn = e.target;
+            while (btn && btn !== bmList) {
+                if (btn.dataset && btn.dataset.bmAction) break;
+                btn = btn.parentElement;
+            }
+            if (!btn || btn === bmList) return;
             const action = btn.dataset.bmAction;
             if (action === 'copy') {
                 const url = btn.dataset.bmUrl;
