@@ -235,9 +235,21 @@ html:not(.dark) {
     .bk-header { top: 68px; padding: 8px 12px; }
     .bk-stats { font-size: .7rem; gap: 10px; }
     .bk-search { max-width: 100%; }
+    .bk-grid { columns: 2; column-gap: 8px; padding: 8px 12px 60px; }
+    .bk-card { padding: 14px; }
+    .bk-cat-head { margin-top: 20px; }
+    .bk-cat-head h2 { font-size: .8rem; }
 }
 @media (max-width: 480px) {
-    .bk-grid { columns: 1; padding: 8px 8px 60px; }
+    .bk-grid { columns: 1; padding: 6px 8px 60px; }
+    .bk-header { padding: 6px 10px; }
+    .bk-header-inner { gap: 6px; }
+    .bk-stats { gap: 6px; font-size: .65rem; }
+    .bk-card { padding: 12px 14px; border-radius: 10px; }
+    .bk-card-top { gap: 8px; }
+    .bk-title { font-size: .8rem; }
+    .bk-desc { font-size: .7rem; }
+    .bk-btt { bottom: 16px; right: 16px; width: 38px; height: 38px; }
 }
 @media (prefers-reduced-motion: reduce) {
     .bk-card { animation: none; }
