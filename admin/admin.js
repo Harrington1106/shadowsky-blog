@@ -813,16 +813,16 @@ const BookmarksManager = {
                     ${item.description ? `<p style="font-size:.75rem;color:#64748b;margin-top:4px;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${item.description}</p>` : ''}
                 </div>
                 <div style="display:flex;align-items:center;gap:4px;flex-shrink:0">
-                    <button data-bm-action="copy" data-bm-url="${item.url.replace(/"/g, '&quot;').replace(/'/g, '&#39;')}" style="background:none;border:none;cursor:pointer;padding:6px;border-radius:8px;color:#94a3b8" title="复制链接">
+                    <button onclick="navigator.clipboard.writeText('${item.url.replace(/'/g, "\\'")}');showToast('链接已复制','success')" style="background:none;border:none;cursor:pointer;padding:6px;border-radius:8px;color:#94a3b8" title="复制链接">
                         <i data-lucide="copy" style="width:15px;height:15px"></i>
                     </button>
-                    <a href="${item.url.replace(/"/g, '&quot;')}" target="_blank" style="padding:6px;border-radius:8px;color:#94a3b8;text-decoration:none" title="打开链接">
+                    <a href="${item.url}" target="_blank" style="padding:6px;border-radius:8px;color:#94a3b8;text-decoration:none" title="打开链接">
                         <i data-lucide="external-link" style="width:15px;height:15px"></i>
                     </a>
-                    <button data-bm-action="edit" data-bm-id="${String(item.id).replace(/"/g, '&quot;').replace(/'/g, '&#39;')}" style="background:none;border:none;cursor:pointer;padding:6px;border-radius:8px;color:#94a3b8" title="编辑">
+                    <button onclick="BookmarksManager.edit('${item.id}')" style="background:none;border:none;cursor:pointer;padding:6px;border-radius:8px;color:#94a3b8" title="编辑">
                         <i data-lucide="edit-2" style="width:15px;height:15px"></i>
                     </button>
-                    <button data-bm-action="delete" data-bm-id="${String(item.id || item.url).replace(/"/g, '&quot;').replace(/'/g, '&#39;')}" style="background:none;border:none;cursor:pointer;padding:6px;border-radius:8px;color:#94a3b8" title="删除">
+                    <button onclick="BookmarksManager.delete('${item.id || item.url}')" style="background:none;border:none;cursor:pointer;padding:6px;border-radius:8px;color:#94a3b8" title="删除">
                         <i data-lucide="trash-2" style="width:15px;height:15px"></i>
                     </button>
                 </div>`;
@@ -966,29 +966,11 @@ const BookmarksManager = {
             return;
         }
         const lower = query.toLowerCase();
-        const filtered = this.data.filter(b => {
-            // 标题 / URL
-            if (b.title && b.title.toLowerCase().includes(lower)) return true;
-            if (b.url && b.url.toLowerCase().includes(lower)) return true;
-            // 分类中文名
-            if (b.category) {
-                const catObj = this.categories[b.category];
-                const catName = (catObj?.name || b.category).toLowerCase();
-                if (catName.includes(lower)) return true;
-            }
-            // 子分类
-            if (b.subcategory) {
-                const parent = this.categories[b.category];
-                const child = parent?.children?.find(c => c.id === b.subcategory);
-                const subName = (child?.name || b.subcategory).toLowerCase();
-                if (subName.includes(lower)) return true;
-            }
-            // 描述
-            if (b.description && b.description.toLowerCase().includes(lower)) return true;
-            // 标签
-            if (b.tags && b.tags.some(t => t.toLowerCase().includes(lower))) return true;
-            return false;
-        });
+        const filtered = this.data.filter(b =>
+            (b.title && b.title.toLowerCase().includes(lower)) ||
+            (b.url && b.url.toLowerCase().includes(lower)) ||
+            (b.category && b.category.toLowerCase().includes(lower))
+        );
         this.render(filtered);
     },
     sort(mode) {
@@ -1411,7 +1393,14 @@ const BookmarksManager = {
                 body: JSON.stringify(body)
             });
             if (data && data.success) {
-                await this.fetchCategories();  // 从服务器同步权威数据
+                if (parentKey) {
+                    if (!this.categories[parentKey]) this.categories[parentKey] = { name: parentKey, order: 999, children: [] };
+                    if (!this.categories[parentKey].children) this.categories[parentKey].children = [];
+                    this.categories[parentKey].children.push({ id: key, name });
+                } else {
+                    this.categories[key] = { name, order: 999, children: [] };
+                }
+                this.populateCategories();
                 showToast(`分类 "${name}" 已添加`, 'success');
                 return true;
             }
@@ -1469,7 +1458,14 @@ const BookmarksManager = {
                 if (childKey) params.set('childKey', childKey);
                 const data = await safeFetch(`${API_BASE}/categories?${params.toString()}`, { method: 'DELETE' });
                 if (data && data.success) {
-                    await this.fetchCategories();  // 从服务器同步权威数据
+                    if (childKey) {
+                        if (this.categories[categoryKey]?.children) {
+                            this.categories[categoryKey].children = this.categories[categoryKey].children.filter(c => c.id !== childKey);
+                        }
+                    } else {
+                        delete this.categories[categoryKey];
+                    }
+                    this.populateCategories();
                     showToast(`分类 "${targetName}" 已删除`, 'success');
                 } else {
                     showToast(data?.error || '删除失败', 'error');
@@ -1510,7 +1506,14 @@ const BookmarksManager = {
                 body: JSON.stringify({ key, newKey: targetKey !== key ? targetKey : undefined, newName, childKey })
             });
             if (data && data.success) {
-                await this.fetchCategories();  // 从服务器同步权威数据
+                const finalKey = data.newKey || targetKey;
+                if (childKey) {
+                    const child = this.categories[finalKey]?.children?.find(c => c.id === (data.newKey ? finalKey : childKey));
+                    if (child) child.name = newName;
+                } else {
+                    if (this.categories[finalKey]) this.categories[finalKey].name = newName;
+                }
+                this.populateCategories();
                 showToast(`已重命名为 "${newName}"`, 'success');
                 return true;
             }
@@ -2050,147 +2053,6 @@ const ImageUploader = {
         document.getElementById('exif-shutter').value = '';
         document.getElementById('exif-panel').style.display = 'none';
         document.getElementById('exif-chevron').style.transform = '';
-    }
-};
-
-// ═══════ 打招呼管理器 ═══════
-const GreetingsManager = {
-    async fetch() {
-        const list = document.getElementById('greetings-list');
-        if (!list) return;
-        list.innerHTML = '<div style="text-align:center;padding:32px;color:#94a3b8">加载中...</div>';
-        try {
-            const res = await safeFetch(`${API_BASE}/wave`);
-            if (Array.isArray(res)) {
-                if (res.length === 0) {
-                    list.innerHTML = '<div style="text-align:center;padding:48px;color:#94a3b8"><i data-lucide="hand" style="width:32px;height:32px;opacity:.3;margin-bottom:12px;display:block;margin:0 auto"></i>暂无打招呼记录</div>';
-                } else {
-                    list.innerHTML = res.reverse().map((g, i) => {
-                        const t = new Date(g.time);
-                        const ds = t.toLocaleString('zh-CN');
-                        return `<div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);border-radius:10px;margin-bottom:6px;font-size:.8rem">
-                            <span style="font-size:1.2rem;flex-shrink:0">👋</span>
-                            <span style="color:var(--color-primary,#14B8A6);font-weight:500">#${res.length - i}</span>
-                            <span style="color:#94a3b8;flex:1">${ds}</span>
-                            <span style="font-size:.7rem;color:#64748b;max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${g.ua||''}">${(g.ua||'').substring(0,60)}</span>
-                        </div>`;
-                    }).join('');
-                }
-                if (typeof lucide !== 'undefined') lucide.createIcons();
-            }
-        } catch (e) {
-            list.innerHTML = '<div style="text-align:center;padding:32px;color:#ef4444">加载失败</div>';
-        }
-    }
-};
-
-// ═══════ 博客文章管理器 ═══════
-const PostsManager = {
-    data: [],
-    async fetch() {
-        const list = document.getElementById('posts-list');
-        if (!list) return;
-        list.innerHTML = '<div style="text-align:center;padding:32px;color:#94a3b8">加载中...</div>';
-        try {
-            const res = await safeFetch(`${API_BASE}/posts`);
-            if (Array.isArray(res)) {
-                this.data = res;
-                this.render();
-            } else {
-                list.innerHTML = '<div style="text-align:center;padding:32px;color:#ef4444">加载失败</div>';
-            }
-        } catch (e) {
-            list.innerHTML = '<div style="text-align:center;padding:32px;color:#ef4444">加载失败: ' + e.message + '</div>';
-        }
-    },
-    render() {
-        const list = document.getElementById('posts-list');
-        const countEl = document.getElementById('posts-count');
-        if (!list) return;
-        if (countEl) countEl.textContent = '共 ' + this.data.length + ' 篇文章';
-
-        if (this.data.length === 0) {
-            list.innerHTML = '<div style="text-align:center;padding:48px;color:#94a3b8">暂无文章，请在本地用 Obsidian 创建后推送</div>';
-            return;
-        }
-
-        list.innerHTML = this.data.map(p => {
-            const date = p.date || '';
-            const file = p._file || '';
-            const tags = (p.tags || []).slice(0, 5);
-            const tagsHtml = tags.map(t => `<span style="display:inline-block;padding:1px 7px;border-radius:4px;font-size:.65rem;background:rgba(45,212,191,.1);color:#2DD4BF;border:1px solid rgba(45,212,191,.15)">${t}</span>`).join('');
-
-            return `<div style="display:flex;align-items:flex-start;gap:14px;padding:14px 16px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);border-radius:12px;margin-bottom:8px">
-                <div style="flex:1;min-width:0">
-                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
-                        <span style="font-weight:600;font-size:.9rem;color:inherit">${p.title || '无标题'}</span>
-                        <span style="font-size:.7rem;color:#64748b">${date}</span>
-                    </div>
-                    <div style="font-size:.75rem;color:#94a3b8;margin-bottom:4px">
-                        <span>${p.category || '未分类'}</span>
-                        <span style="margin:0 6px">·</span>
-                        <span style="font-family:monospace;font-size:.7rem;opacity:.6">${file}</span>
-                        <span style="margin:0 6px">·</span>
-                        <span>${p.readTime || 5} min</span>
-                    </div>
-                    ${p.excerpt ? `<p style="font-size:.75rem;color:#64748b;line-height:1.5;margin-bottom:6px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${p.excerpt}</p>` : ''}
-                    ${tagsHtml ? `<div style="display:flex;gap:4px;flex-wrap:wrap">${tagsHtml}</div>` : ''}
-                </div>
-                <div style="display:flex;align-items:center;gap:4px;flex-shrink:0">
-                    <button onclick="PostsManager.editFrontmatter('${file.replace(/'/g, "\\'")}')" style="background:none;border:none;cursor:pointer;padding:6px;border-radius:8px;color:#94a3b8" title="编辑信息">
-                        <i data-lucide="edit-2" style="width:15px;height:15px"></i>
-                    </button>
-                    <button onclick="PostsManager.confirmDelete('${file.replace(/'/g, "\\'")}','${(p.title || '').replace(/'/g, "\\'")}')" style="background:none;border:none;cursor:pointer;padding:6px;border-radius:8px;color:#ef4444" title="删除文章">
-                        <i data-lucide="trash-2" style="width:15px;height:15px"></i>
-                    </button>
-                </div>
-            </div>`;
-        }).join('');
-
-        if (typeof lucide !== 'undefined') lucide.createIcons();
-    },
-    async confirmDelete(file, title) {
-        ConfirmationDialog.show(
-            `确定要删除文章 "${title}" 吗？\n\n⚠️ 这将永久删除服务器上的 ${file} 文件。\n本地文件不受影响（需要手动 git rm）。`,
-            async () => {
-                try {
-                    const res = await safeFetch(`${API_BASE}/posts?file=${encodeURIComponent(file)}`, { method: 'DELETE' });
-                    if (res && res.success) {
-                        showToast(`文章 "${title}" 已删除`, 'success');
-                        this.fetch();
-                    } else {
-                        showToast(res?.error || '删除失败', 'error');
-                    }
-                } catch (e) {
-                    showToast('删除失败: ' + e.message, 'error');
-                }
-            }
-        );
-    },
-    editFrontmatter(file) {
-        const post = this.data.find(p => p._file === file);
-        if (!post) return;
-        // 简易弹窗编辑
-        const title = prompt('标题', post.title || '');
-        if (title === null) return;
-        const category = prompt('分类', post.category || '');
-        if (category === null) return;
-        const tags = prompt('标签（逗号分隔）', (post.tags || []).join(', '));
-        if (tags === null) return;
-        const excerpt = prompt('摘要', post.excerpt || '');
-        if (excerpt === null) return;
-
-        const body = { file, title, category, tags: tags.split(/[,，]/).map(t => t.trim()).filter(Boolean), excerpt };
-        safeFetch(`${API_BASE}/posts`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
-            .then(res => {
-                if (res && res.success) {
-                    showToast('文章信息已更新', 'success');
-                    this.fetch();
-                } else {
-                    showToast(res?.error || '更新失败', 'error');
-                }
-            })
-            .catch(e => showToast('更新失败: ' + e.message, 'error'));
     }
 };
 
@@ -3172,14 +3034,13 @@ const StatsManager = {
         });
         const sorted = Object.entries(ipMap).sort((a,b) => b[1] - a[1]).slice(0, 20);
         if (!sorted.length) {
-            container.innerHTML = '<tr><td colspan="4" style="padding:32px;text-align:center;color:#64748b">暂无访问数据</td></tr>';
+            container.innerHTML = '<tr><td colspan="3" style="padding:32px;text-align:center;color:#64748b">暂无访问数据</td></tr>';
             return;
         }
         const max = sorted[0][1];
         container.innerHTML = sorted.map(([ip, count]) => `
             <tr>
                 <td style="padding:8px 16px;font-size:.8rem;color:#94a3b8">${ip}</td>
-                <td class="ip-loc-cell" data-ip="${ip}" style="padding:8px 16px;font-size:.78rem;color:#64748b">-</td>
                 <td style="padding:8px 16px;font-size:.8rem;color:#e2e8f0;font-weight:500">${count}</td>
                 <td style="padding:8px 16px">
                     <div style="height:4px;background:rgba(255,255,255,.06);border-radius:2px;min-width:60px">
@@ -3216,38 +3077,13 @@ const StatsManager = {
                 </div>
             </div>
         `).join('');
-    },
-    async lookupIPs() {
-        const cells = document.querySelectorAll('.ip-loc-cell');
-        if (!cells.length) return;
-        const ips = Array.from(cells).map(c => c.dataset.ip);
-        // 先标记加载中
-        cells.forEach(c => { if (c.textContent === '-') c.textContent = '查询中...'; });
-
-        try {
-            const res = await safeFetch(`${API_BASE}/ip-lookup`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ ips })
-            });
-            if (res && res.success && res.data) {
-                cells.forEach(c => {
-                    const loc = res.data[c.dataset.ip];
-                    if (loc) c.textContent = loc;
-                });
-                showToast('IP地址查询完成', 'success');
-            }
-        } catch (e) {
-            cells.forEach(c => { if (c.textContent === '查询中...') c.textContent = '-'; });
-            showToast('查询失败: ' + e.message, 'error');
-        }
     }
 };
 
 const Dashboard = {
     switchTab: function(tabId) {
         console.log('Switching to tab:', tabId);
-        ['bookmarks', 'snapshots', 'media', 'feeds', 'videos', 'stats', 'settings', 'posts', 'greetings'].forEach(id => {
+        ['bookmarks', 'snapshots', 'media', 'feeds', 'videos', 'stats', 'settings'].forEach(id => {
             const section = document.getElementById(`view-${id}`);
             if (section) {
                 section.classList.add('hidden');
@@ -3275,19 +3111,16 @@ const Dashboard = {
         }
         const TAB_TITLES = {
             bookmarks: '书签收藏', snapshots: '片刻动态', media: '追番追漫',
-            feeds: 'RSS 订阅', videos: '视频推荐', stats: '访问统计', settings: '站点设置',
-            posts: '博客文章', greetings: '打招呼记录'
+            feeds: 'RSS 订阅', videos: '视频推荐', stats: '访问统计', settings: '站点设置'
         };
         const pageTitle = document.getElementById('page-title');
         if (pageTitle) pageTitle.textContent = TAB_TITLES[tabId] || '概览';
 
-        if (tabId === 'posts') PostsManager.fetch();
         if (tabId === 'bookmarks') { BookmarksManager.fetch(); BookmarksManager.populateCategories(); }
         if (tabId === 'snapshots') { SnapshotsManager.fetch(); ImageUploader.init(); }
         if (tabId === 'media') { MediaManager.fetch(); MediaManager.updateFilterUI(); }
         if (tabId === 'feeds') FeedsManager.fetch();
         if (tabId === 'videos') VideosManager.fetch();
-        if (tabId === 'greetings') GreetingsManager.fetch();
         if (tabId === 'stats') StatsManager.fetch();
         if (tabId === 'settings') { fetchSettings(); }
     }
@@ -3831,29 +3664,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (el) el.addEventListener('submit', handler);
     };
 
-    // 书签列表点击委托（安全，无内联 onclick XSS 风险）
-    const bmList = document.getElementById('bookmarks-list');
-    if (bmList) {
-        bmList.addEventListener('click', (e) => {
-            // closest 可能因 SVG namespace 失败，手动向上查找
-            let btn = e.target;
-            while (btn && btn !== bmList) {
-                if (btn.dataset && btn.dataset.bmAction) break;
-                btn = btn.parentElement;
-            }
-            if (!btn || btn === bmList) return;
-            const action = btn.dataset.bmAction;
-            if (action === 'copy') {
-                const url = btn.dataset.bmUrl;
-                if (url) navigator.clipboard.writeText(url).then(() => showToast('链接已复制', 'success'));
-            } else if (action === 'edit') {
-                BookmarksManager.edit(btn.dataset.bmId);
-            } else if (action === 'delete') {
-                BookmarksManager.delete(btn.dataset.bmId);
-            }
-        });
-    }
-
     bindListener('add-bookmark-form', handleAddBookmark);
     bindListener('add-snapshot-form', handleAddSnapshot);
     bindListener('add-media-form', handleAddMedia);
@@ -4040,7 +3850,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (mode === 'add') {
             confirmBtn.textContent = '添加';
             modeSubBtn.style.display = ctx.catVal ? '' : 'none';
-            editTarget = 'top';  // 默认添加顶级分类，按需切子分类
+            editTarget = ctx.catVal ? 'sub' : 'top';
             keyInput.disabled = false;
             keyInput.placeholder = '英文ID';
             keyInput.value = '';
@@ -4118,12 +3928,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             confirmBtn.disabled = true;
 
             if (editMode === 'rename') {
-                // 子分类重命名: key=父key, childKey=子key
-                // 主分类重命名: key=分类key, childKey=null
-                const catKey = editTarget === 'sub' ? ctx.catVal : ctx.subVal || ctx.catVal;
-                const childKeyVal = editTarget === 'sub' ? ctx.subVal : null;
-                const newKeyVal = key !== (childKeyVal || catKey) ? key : null;
-                await BookmarksManager.renameCategory(catKey, name, childKeyVal, newKeyVal);
+                const oldKey = editTarget === 'sub' ? ctx.subVal : ctx.catVal;
+                const newKeyVal = key !== oldKey ? key : null;
+                await BookmarksManager.renameCategory(oldKey, name, editTarget === 'sub' ? ctx.subVal : null, newKeyVal);
             } else {
                 if (!key) { showToast('请输入分类ID', 'warning'); confirmBtn.disabled = false; return; }
                 if (!/^[a-z0-9_]+$/i.test(key)) { showToast('分类ID只能包含字母、数字和下划线', 'warning'); confirmBtn.disabled = false; return; }

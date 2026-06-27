@@ -3,11 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#08080c" media="(prefers-color-scheme: dark)">
+    <meta name="theme-color" content="#0B1120" media="(prefers-color-scheme: dark)">
     <meta name="theme-color" content="#F8FAFC" media="(prefers-color-scheme: light)">
-    <title>星空笔记 | 夏日科技探索</title>
-    <link rel="icon" type="image/png" href="public/img/black32.png" media="(prefers-color-scheme: dark)">
-    <link rel="icon" type="image/png" href="public/img/favicon32.png" media="(prefers-color-scheme: light)">
+    <title>星空笔记 — 夏日科技探索</title>
+    <link rel="icon" type="image/png" href="public/img/favicon256.png">
 
     <link rel="preconnect" href="https://fonts.loli.net">
     <link rel="preconnect" href="https://gstatic.loli.net" crossorigin>
@@ -21,7 +20,7 @@
 
 
 </head>
-<body data-page="笔记" class="font-sans">
+<body class="font-sans">
 
     <!-- ═══════════ 流体光斑 ═══════════ -->
     <div class="liquid-ambient ambient-gentle" aria-hidden="true">
@@ -142,20 +141,13 @@ body{font-family:var(--f);background:var(--bg);color:var(--t);padding-top:0}
 .article-item--featured{padding:28px 0}
 .article-item--featured .article-title{font-size:1.1rem}
 .article-item--featured .article-excerpt{-webkit-line-clamp:3}
-
-/* Directory items (no thumbnail — 2 col grid) */
-.dir-item{display:grid;grid-template-columns:80px 1fr;gap:20px;padding:20px 0;border-bottom:1px solid var(--b);text-decoration:none;color:inherit;transition:all .15s;cursor:pointer;align-items:start}
-.dir-item:hover{padding-left:8px}
-.dir-item:hover .article-title{color:var(--a)}
-@media(max-width:640px){.dir-item{grid-template-columns:60px 1fr;gap:10px}}
 @media(max-width:640px){.article-item{grid-template-columns:60px 70px 1fr;gap:10px}.article-thumb{width:70px;height:50px}}
 
 /* ══ AI Daily ══ */
-.ai-daily-item{display:grid;grid-template-columns:80px 1fr;gap:20px;padding:18px 0;border-bottom:1px solid var(--b);text-decoration:none;color:inherit;transition:all .15s;cursor:pointer;align-items:start}
+.ai-daily-item{display:flex;align-items:baseline;gap:16px;padding:18px 0;border-bottom:1px solid var(--b);text-decoration:none;color:inherit;transition:all .15s;cursor:pointer}
 .ai-daily-item:hover{padding-left:8px}
 .ai-daily-item:hover .article-title{color:var(--a)}
 .ai-daily-item .ai-badge{display:inline-block;padding:2px 8px;border-radius:4px;background:var(--ab);color:var(--a);font-size:.6rem;font-weight:700;margin-right:8px}
-@media(max-width:640px){.ai-daily-item{grid-template-columns:60px 1fr;gap:10px}}
 
 /* ══ Pagination ══ */
 .blog-pagination{display:flex;justify-content:center;gap:8px;padding:40px 0 20px}
@@ -207,7 +199,7 @@ body{font-family:var(--f);background:var(--bg);color:var(--t);padding-top:0}
     </section>
 </main>
 
-<footer class="site-footer"><span class="visit-count"><i data-lucide="eye" style="width:14px;height:14px"></i> <span id="visit-count">—</span></span><span class="footer-dot">·</span><span>&copy; 2026 夏日科技探索 — Designed with <span class="footer-heart">❤️</span></span></footer>
+<footer class="site-footer"><span class="visit-count"><span class="pulse-dot"></span><span id="visit-count">—</span> 来过</span><span class="footer-dot">·</span><span>&copy; 2026 夏日科技探索 — Designed with <span class="footer-heart">❤️</span></span></footer>
 
 <button id="back-to-top" aria-label="回到顶部"><i data-lucide="chevron-up" style="width:22px;height:22px"></i></button>
 
