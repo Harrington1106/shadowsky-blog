@@ -700,6 +700,20 @@ app.get('/api/stats', requireAdminToken, (req, res) => {
 });
 
 // API to get page visit breakdown
+// 统一访问量查询（前端使用）
+app.get('/api/visit-count', (req, res) => {
+    const page = (req.query.page || 'home').replace('.html', '');
+    let count = 0;
+    // 从 page_visits.json 读取
+    if (fs.existsSync(pageVisitsPath)) {
+        try {
+            const data = JSON.parse(fs.readFileSync(pageVisitsPath, 'utf8'));
+            count = (data.pages || {})[page] || 0;
+        } catch {}
+    }
+    res.json({ count });
+});
+
 // 页面访问追踪（tracker.js 调用）
 app.post('/api/page-visit', (req, res) => {
     try {

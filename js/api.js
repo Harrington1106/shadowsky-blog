@@ -331,8 +331,8 @@ const apiClient = new ApiClient();
  */
 async function fetchVisitCount(pageId) {
     try {
-        // Try primary endpoint (visit.php)
-        const response = await apiClient.get('visit.php', { page: pageId });
+        // 使用 Node API（更可靠）
+        const response = await apiClient.get('visit-count', { page: pageId });
         if (response.success) {
             // Handle potentially different response structures
             const data = response.data || {};
