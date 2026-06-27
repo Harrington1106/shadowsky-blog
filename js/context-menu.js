@@ -6,11 +6,26 @@
     'use strict';
     var menu = null, shown = false;
 
+    function isDark() { return document.documentElement.classList.contains('dark'); }
+    function menuStyle() {
+        if (isDark()) {
+            return 'background:rgba(15,20,30,.96);border:1px solid rgba(255,255,255,.1);box-shadow:0 12px 48px rgba(0,0,0,.5)';
+        }
+        return 'background:rgba(255,255,255,.96);border:1px solid rgba(0,0,0,.08);box-shadow:0 12px 48px rgba(0,0,0,.12)';
+    }
+    function itemStyle() {
+        return isDark() ? 'color:rgba(255,255,255,.65)' : 'color:rgba(0,0,0,.65)';
+    }
+    function itemHoverBg() { return isDark() ? 'rgba(255,255,255,.06)' : 'rgba(0,0,0,.04)'; }
+    function itemHoverColor() { return isDark() ? '#fff' : '#000'; }
+    function sepColor() { return isDark() ? 'rgba(255,255,255,.07)' : 'rgba(0,0,0,.06)'; }
+    function titleColor() { return isDark() ? 'rgba(255,255,255,.25)' : 'rgba(0,0,0,.35)'; }
+
     function create() {
         if (menu) return;
         menu = document.createElement('div');
         menu.id = 'ctx-menu';
-        menu.style.cssText = 'position:fixed;z-index:9999;min-width:200px;padding:8px;border-radius:16px;background:rgba(15,20,30,.96);backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);border:1px solid rgba(255,255,255,.1);box-shadow:0 12px 48px rgba(0,0,0,.5);opacity:0;pointer-events:none;transform:scale(.92) translateY(-8px);transition:opacity .18s,transform .18s;font-size:.84rem;font-family:Inter,Noto Sans SC,sans-serif';
+        menu.style.cssText = 'position:fixed;z-index:9999;min-width:200px;padding:8px;border-radius:16px;backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);opacity:0;pointer-events:none;transform:scale(.92) translateY(-8px);transition:opacity .18s,transform .18s;font-size:.84rem;font-family:Inter,Noto Sans SC,sans-serif;' + menuStyle();
         document.body.appendChild(menu);
     }
 
@@ -33,15 +48,17 @@
     function iconSVG(name) { return ICONS[name] || ''; }
 
     function itemHTML(it) {
-        if (it.type === 'sep') return '<div style="height:1px;background:rgba(255,255,255,.07);margin:5px 10px"></div>';
-        if (it.type === 'title') return '<div style="padding:6px 10px 4px;font-size:.65rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:rgba(255,255,255,.25)">' + it.label + '</div>';
+        if (it.type === 'sep') return '<div style="height:1px;background:' + sepColor() + ';margin:5px 10px"></div>';
+        if (it.type === 'title') return '<div style="padding:6px 10px 4px;font-size:.65rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:' + titleColor() + '">' + it.label + '</div>';
+        var iClr = itemStyle(), iBg = itemHoverBg(), iClrH = itemHoverColor();
         var icon = it.icon ? '<span style="opacity:.5;flex-shrink:0;display:flex">' + iconSVG(it.icon) + '</span>' : '<span style="width:16px;flex-shrink:0"></span>';
         var sc = it.shortcut ? '<span style="margin-left:auto;font-size:.65rem;opacity:.25;padding-left:16px">' + it.shortcut + '</span>' : '';
-        return '<div class="ctx-item" style="display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:10px;cursor:pointer;color:rgba(255,255,255,.65);transition:all .12s;margin:1px 0" onmouseenter="this.style.background=\'rgba(255,255,255,.06)\';this.style.color=\'#fff\'" onmouseleave="this.style.background=\'transparent\';this.style.color=\'rgba(255,255,255,.65)\'">' + icon + '<span>' + it.label + '</span>' + sc + '</div>';
+        return '<div class="ctx-item" style="display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:10px;cursor:pointer;transition:all .12s;margin:1px 0;color:' + iClr + '" onmouseenter="this.style.background=\'' + iBg + '\';this.style.color=\'' + iClrH + '\'" onmouseleave="this.style.background=\'transparent\';this.style.color=\'' + iClr + '\'">' + icon + '<span>' + it.label + '</span>' + sc + '</div>';
     }
 
     function show(x, y, items) {
         create();
+        menu.style.cssText = menu.style.cssText.replace(/background:[^;]+;border:[^;]+;box-shadow:[^;]+;/, menuStyle());
         menu.innerHTML = items.map(itemHTML).join('');
 
         // 只给有 action 的 item 绑定事件，用闭包直接引用
