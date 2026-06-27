@@ -1880,6 +1880,32 @@ app.get('/api/wave', requireAdminToken, (req, res) => {
     }
 });
 
+// IP 地理位置批量查询（带缓存）
+const ipCache = new Map();
+app.post('/api/ip-lookup', requireAdminToken, async (req, res) => {
+    try {
+        const { ips } = req.body;
+        if (!Array.isArray(ips) || ips.length === 0) return res.status(400).json({ error: '缺少 ips' });
+        const results = {};
+        const toFetch = [];
+        for (const ip of ips) {
+            if (ipCache.has(ip)) { results[ip] = ipCache.get(ip); }
+            else { toFetch.push(ip); }
+        }
+        for (let i = 0; i < toFetch.length; i++) {
+            const ip = toFetch[i];
+            try {
+                const resp = await axios.get('http://ip-api.com/json/' + ip + '?lang=zh-CN&fields=country,regionName,city,isp', { timeout: 5000 });
+                const info = [resp.data.country, resp.data.regionName, resp.data.city].filter(Boolean).join(' ') || resp.data.isp || '未知';
+                results[ip] = info;
+                ipCache.set(ip, info);
+            } catch (e) { results[ip] = '查询失败'; }
+            if (i > 0 && i % 40 === 0) await new Promise(r => setTimeout(r, 1000));
+        }
+        res.json({ success: true, data: results });
+    } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
 app.post('/api/notice', requireAdminToken, rateLimit(60_000, 30), (req, res) => {
     const data = req.body;
     fs.writeFileSync(noticePath, JSON.stringify(data, null, 2));

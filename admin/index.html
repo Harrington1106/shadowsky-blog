@@ -799,9 +799,15 @@
                 </div>
                 <div class="admin-card overflow-hidden">
                     <div class="p-6" style="border-bottom:1px solid rgba(255,255,255,.05)"><h3 class="text-lg font-bold" style="color:inherit">访客 IP 分布</h3></div>
+                    <div style="margin-bottom:12px">
+                        <button onclick="StatsManager.lookupIPs()" class="admin-btn admin-btn-ghost" style="padding:6px 14px;font-size:.78rem">
+                            <i data-lucide="map-pin" class="w-3.5 h-3.5"></i> 查询IP地址
+                        </button>
+                        <span style="font-size:.7rem;color:#64748b;margin-left:8px">将IP转换为地理位置</span>
+                    </div>
                     <div class="overflow-x-auto">
                         <table class="admin-table">
-                            <thead><tr><th>IP 地址</th><th style="width:60px">次数</th><th>占比</th></tr></thead>
+                            <thead><tr><th>IP 地址</th><th>地址</th><th style="width:60px">次数</th><th>占比</th></tr></thead>
                             <tbody id="visits-log-body"></tbody>
                         </table>
                     </div>

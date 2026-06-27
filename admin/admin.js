@@ -3172,13 +3172,14 @@ const StatsManager = {
         });
         const sorted = Object.entries(ipMap).sort((a,b) => b[1] - a[1]).slice(0, 20);
         if (!sorted.length) {
-            container.innerHTML = '<tr><td colspan="3" style="padding:32px;text-align:center;color:#64748b">暂无访问数据</td></tr>';
+            container.innerHTML = '<tr><td colspan="4" style="padding:32px;text-align:center;color:#64748b">暂无访问数据</td></tr>';
             return;
         }
         const max = sorted[0][1];
         container.innerHTML = sorted.map(([ip, count]) => `
             <tr>
                 <td style="padding:8px 16px;font-size:.8rem;color:#94a3b8">${ip}</td>
+                <td class="ip-loc-cell" data-ip="${ip}" style="padding:8px 16px;font-size:.78rem;color:#64748b">-</td>
                 <td style="padding:8px 16px;font-size:.8rem;color:#e2e8f0;font-weight:500">${count}</td>
                 <td style="padding:8px 16px">
                     <div style="height:4px;background:rgba(255,255,255,.06);border-radius:2px;min-width:60px">
@@ -3215,6 +3216,31 @@ const StatsManager = {
                 </div>
             </div>
         `).join('');
+    },
+    async lookupIPs() {
+        const cells = document.querySelectorAll('.ip-loc-cell');
+        if (!cells.length) return;
+        const ips = Array.from(cells).map(c => c.dataset.ip);
+        // 先标记加载中
+        cells.forEach(c => { if (c.textContent === '-') c.textContent = '查询中...'; });
+
+        try {
+            const res = await safeFetch(`${API_BASE}/ip-lookup`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ips })
+            });
+            if (res && res.success && res.data) {
+                cells.forEach(c => {
+                    const loc = res.data[c.dataset.ip];
+                    if (loc) c.textContent = loc;
+                });
+                showToast('IP地址查询完成', 'success');
+            }
+        } catch (e) {
+            cells.forEach(c => { if (c.textContent === '查询中...') c.textContent = '-'; });
+            showToast('查询失败: ' + e.message, 'error');
+        }
     }
 };
 
