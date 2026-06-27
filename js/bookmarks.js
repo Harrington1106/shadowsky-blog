@@ -59,13 +59,34 @@
     }
 
     function subName(key, parentCat) {
+        // categories.json lookup
         var c = categories[parentCat];
         if (c && c.children) {
             for (var i = 0; i < c.children.length; i++) {
                 if (c.children[i].id === key) return c.children[i].name;
             }
         }
-        return key;
+        // 拼音缩写回退
+        var subFallbacks = {
+            'aitool': 'AI工具',
+            'gjgj': '工具集合',
+            'gjzy': '工具资源',
+            'dns': 'DNS',
+            'ip': 'IP工具',
+            'tc': '图床',
+            'ym': '域名',
+            'wygj': '网页工具',
+            'zmgj': '桌面工具',
+            'cj': '创作',
+            'yxxg': '游戏相关',
+            'kyck': '开源仓库',
+            'qdbs': '前端部署',
+            'gngw': '云服务商',
+            'wpzy': '网盘资源',
+            'uncategorized': '未分类',
+            'top': '置顶常用'
+        };
+        return subFallbacks[key] || key;
     }
 
     /* ═══════ UTILS ═══════ */
