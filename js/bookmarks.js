@@ -30,6 +30,7 @@
         if (c && c.name) return c.name;
         // Hardcoded fallbacks for known keys
         var fallbacks = {
+            // categories.json keys
             'dev_tech': '开发与技术',
             'ai_tools': 'AI与工具类',
             'resources': '资源下载与搜索',
@@ -41,8 +42,18 @@
             'blogs_tutorials': '博客与教程',
             'system_resources': '系统与资源',
             'video_editing': '视频与剪辑',
-            'personal': '个人',
-            'others': '其他'
+            'personal': '个人兴趣',
+            'others': '其他',
+            // 拼音缩写映射 (bookmarks.json 实际使用的 key)
+            'kfxm': '开发项目',
+            'gjx': '工具箱',
+            'yfw': '云服务',
+            'zy': '资源',
+            'gr': '个人',
+            'ai': 'AI工具',
+            'bkyw': '博客运维',
+            'azgj': '资源站',
+            'r18': 'R18'
         };
         return fallbacks[key] || key;
     }
