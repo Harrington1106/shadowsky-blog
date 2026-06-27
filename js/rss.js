@@ -143,7 +143,9 @@ async function loadFeedsWithCache() {
         // Always render after loading (regardless of source)
         renderFeedList(currentFeeds);
         updateStats();
-        
+        // 默认加载第一个订阅源
+        if (currentFeeds.length > 0) setTimeout(function(){ loadFeedArticles(currentFeeds[0]); }, 100);
+
     } catch (e) {
         console.error('[RSS] Failed to load feeds:', e);
         container.innerHTML = `
