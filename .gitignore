@@ -2,3 +2,6 @@
 api/data/
 node_modules/
 public/data/*.json
+public/posts/.obsidian/plugins/
+public/posts/*-auto_write.md
+nul
