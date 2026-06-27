@@ -2106,10 +2106,9 @@ const SocialManager = {
     data: [],
     editingIdx: -1,
     _iconHtml(iconKey) {
-        if (!iconKey) return '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg>';
+        if (!iconKey) return '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg>';
         if (iconKey.startsWith('simple:')) {
-            const slug = iconKey.replace('simple:', '');
-            return '<img src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/' + slug + '.svg" width="20" height="20" style="filter:invert(.6)" onerror="this.style.display=\'none\'">';
+            return '<img src="https://cdn.simpleicons.org/' + iconKey.replace('simple:', '') + '/888" width="20" height="20" onerror="this.style.display=\'none\'">';
         }
         return '<i data-lucide="' + iconKey.replace('lucide:', '') + '" style="width:20px;height:20px"></i>';
     },
@@ -2209,7 +2208,7 @@ const SocialManager = {
         html += '<div id="icon-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(68px,1fr));gap:6px">';
         icons.forEach(slug => {
             html += '<div class="icon-opt" data-slug="' + slug + '" style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 4px;border-radius:8px;cursor:pointer;border:1px solid transparent;font-size:.6rem;color:#94a3b8;transition:all .1s" onclick="SocialManager._pickIcon(\'' + slug + '\')">';
-            html += '<img src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/' + slug + '.svg" width="22" height="22" style="pointer-events:none">';
+            html += '<img src="https://cdn.simpleicons.org/' + slug + '/888" width="22" height="22" style="pointer-events:none" onerror="this.src=\'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2222%22 height=%2222%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%2394a3b8%22 stroke-width=%222%22><circle cx=%2212%22 cy=%2212%22 r=%2210%22/></svg>\'">';
             html += '<span style="text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;pointer-events:none">' + slug + '</span>';
             html += '</div>';
         });

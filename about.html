@@ -181,7 +181,7 @@
                     var inner;
                     if (icon.indexOf('simple:') === 0) {
                         var slug = icon.replace('simple:', '');
-                        inner = '<img src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/' + slug + '.svg" width="22" height="22" style="filter:invert(' + (isDark ? '1' : '0') + ')" alt="">';
+                        inner = '<img src="https://cdn.simpleicons.org/' + slug + '/' + (isDark ? 'white' : '333') + '" width="22" height="22" alt="">';
                     } else {
                         inner = '<i data-lucide="' + icon.replace('lucide:', '') + '"></i>';
                     }
