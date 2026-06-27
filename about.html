@@ -169,26 +169,30 @@
 
         // 动态加载社交链接（Simple Icons 品牌图标 + Lucide 通用图标）
         (function() {
-            var isDark = document.documentElement.classList.contains('dark');
-            var iconColor = isDark ? 'white' : '333';
-            fetch('/api/social').then(function(r){return r.json()}).then(function(data){
+            var socialData = [];
+            function renderSocial() {
                 var container = document.getElementById('about-social');
-                if (!container || !Array.isArray(data)) return;
-                container.innerHTML = data.map(function(s){
+                if (!container || !socialData.length) return;
+                var isDark = document.documentElement.classList.contains('dark');
+                container.innerHTML = socialData.map(function(s){
                     var isMail = s.url && s.url.indexOf('mailto:') === 0;
                     var target = isMail ? '' : ' target="_blank" rel="noopener"';
                     var icon = s.icon || 'lucide:link';
-                    var inner;
                     if (icon.indexOf('simple:') === 0) {
-                        var slug = icon.replace('simple:', '');
-                        inner = '<img src="https://cdn.simpleicons.org/' + slug + '/' + (isDark ? 'white' : '333') + '" width="22" height="22" alt="">';
-                    } else {
-                        inner = '<i data-lucide="' + icon.replace('lucide:', '') + '"></i>';
+                        return '<a href="' + s.url + '"' + target + ' aria-label="' + s.name + '" title="' + s.name + '"><img src="https://cdn.simpleicons.org/' + icon.replace('simple:', '') + '/' + (isDark ? 'white' : '333') + '" width="22" height="22" alt=""></a>';
                     }
-                    return '<a href="' + s.url + '"' + target + ' aria-label="' + s.name + '" title="' + s.name + '">' + inner + '</a>';
+                    return '<a href="' + s.url + '"' + target + ' aria-label="' + s.name + '" title="' + s.name + '"><i data-lucide="' + icon.replace('lucide:', '') + '"></i></a>';
                 }).join('');
                 if (window.lucide) lucide.createIcons();
+            }
+            fetch('/api/social').then(function(r){return r.json()}).then(function(data){
+                if (!Array.isArray(data)) return;
+                socialData = data.filter(Boolean);
+                renderSocial();
             }).catch(function(){});
+            // 监听主题切换，重绘图标
+            window.addEventListener('themechange', renderSocial);
+            window.addEventListener('themeChange', renderSocial);
         })();
 
         // Wave button + confetti
