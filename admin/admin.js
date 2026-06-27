@@ -2181,7 +2181,10 @@ const SocialManager = {
         document.getElementById('social-form-cancel').style.display = i >= 0 ? '' : 'none';
     },
     showIconPicker() {
-        // 常用 Simple Icons
+        // 移除旧弹窗
+        const old = document.getElementById('icon-picker-modal');
+        if (old) old.remove();
+
         const icons = [
             'github','gitlab','bitbucket','stackoverflow','devdotto','codepen','codesandbox',
             'x','twitter','facebook','instagram','threads','bluesky','mastodon',
@@ -2199,15 +2202,15 @@ const SocialManager = {
             'npm','pnpm','yarn','bun','deno','nodejs','python','rust','go','swift','kotlin',
             'docker','kubernetes','terraform','nginx','cloudflare','vercel','netlify',
         ];
-        let html = '<div style="position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.7)" onclick="this.remove()">';
-        html += '<div style="background:#1a1f2e;border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:20px;max-width:600px;max-height:70vh;overflow-y:auto;width:90%" onclick="event.stopPropagation()">';
-        html += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px"><h3 style="margin:0;color:inherit;font-size:.95rem">选择图标 (Simple Icons)</h3><button onclick="this.closest(\'div[style]\').parentElement.remove()" style="background:none;border:none;color:#94a3b8;cursor:pointer;font-size:1.2rem">&times;</button></div>';
-        html += '<input id="icon-search" placeholder="搜索图标..." style="width:100%;padding:8px 12px;margin-bottom:14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;font-size:.8rem;outline:none" oninput="SocialManager._filterIcons()">';
-        html += '<div id="icon-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(70px,1fr));gap:6px">';
+        let html = '<div id="icon-picker-modal" style="position:fixed;inset:0;z-index:10000;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.8)">';
+        html += '<div style="background:#111827;border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:20px;max-width:620px;max-height:75vh;overflow-y:auto;width:92%">';
+        html += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px"><h3 style="margin:0;color:#e2e8f0;font-size:.95rem">选择图标 <span style="font-size:.7rem;color:#64748b;font-weight:400">85+ 品牌</span></h3><button onclick="document.getElementById(\'icon-picker-modal\').remove()" style="background:none;border:none;color:#94a3b8;cursor:pointer;font-size:1.4rem;line-height:1">&times;</button></div>';
+        html += '<input id="icon-search" placeholder="搜索..." style="width:100%;padding:8px 12px;margin-bottom:14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#e2e8f0;font-size:.8rem;outline:none;box-sizing:border-box" oninput="SocialManager._filterIcons()">';
+        html += '<div id="icon-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(68px,1fr));gap:6px">';
         icons.forEach(slug => {
-            html += '<div class="icon-opt" data-slug="' + slug + '" style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 4px;border-radius:8px;cursor:pointer;border:1px solid transparent;font-size:.6rem;color:#94a3b8" onclick="SocialManager._pickIcon(\'' + slug + '\')" onmouseenter="this.style.background=\'rgba(255,255,255,.06)\';this.style.borderColor=\'rgba(255,255,255,.1)\'" onmouseleave="this.style.background=\'transparent\';this.style.borderColor=\'transparent\'">';
-            html += '<img src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/' + slug + '.svg" width="24" height="24" style="filter:invert(.7)" onerror="this.parentElement.style.display=\'none\'">';
-            html += '<span style="text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%">' + slug + '</span>';
+            html += '<div class="icon-opt" data-slug="' + slug + '" style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 4px;border-radius:8px;cursor:pointer;border:1px solid transparent;font-size:.6rem;color:#94a3b8;transition:all .1s" onclick="SocialManager._pickIcon(\'' + slug + '\')">';
+            html += '<img src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/' + slug + '.svg" width="22" height="22" style="pointer-events:none">';
+            html += '<span style="text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;pointer-events:none">' + slug + '</span>';
             html += '</div>';
         });
         html += '</div></div></div>';
@@ -2216,12 +2219,13 @@ const SocialManager = {
     _filterIcons() {
         const q = (document.getElementById('icon-search')?.value || '').toLowerCase();
         document.querySelectorAll('.icon-opt').forEach(el => {
-            el.style.display = q ? (el.dataset.slug.includes(q) ? '' : 'none') : '';
+            el.style.display = !q || el.dataset.slug.includes(q) ? '' : 'none';
         });
     },
     _pickIcon(slug) {
         document.getElementById('social-form-icon').value = 'simple:' + slug;
-        document.querySelector('#icon-grid')?.closest('div[style]')?.parentElement?.remove();
+        const modal = document.getElementById('icon-picker-modal');
+        if (modal) modal.remove();
     },
     cancelEdit() { this.editingIdx = -1; this.startEdit(-1); },
     autoFill() {
