@@ -1557,13 +1557,13 @@ app.delete('/api/bookmarks', requireAdminToken, rateLimit(60_000, 30), (req, res
             if (!Array.isArray(bookmarks)) bookmarks = [];
             
             const initialLen = bookmarks.length;
+            // 按 ID 删除（精确匹配，仅删一个）
             bookmarks = bookmarks.filter(b => b.id !== id);
-            
+
             if (bookmarks.length === initialLen) {
-                // Try to delete by URL if ID not found (backward compatibility)
-                bookmarks = bookmarks.filter(b => b.url !== id);
+                return res.status(404).json({ error: '书签未找到' });
             }
-            
+
             fs.writeFileSync(bookmarksPath, JSON.stringify(bookmarks, null, 2));
             res.json({ success: true });
         } catch (e) {

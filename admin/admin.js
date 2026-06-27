@@ -3865,7 +3865,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (mode === 'add') {
             confirmBtn.textContent = '添加';
             modeSubBtn.style.display = ctx.catVal ? '' : 'none';
-            editTarget = ctx.catVal ? 'sub' : 'top';
+            editTarget = 'top';  // 默认添加顶级分类，按需切子分类
             keyInput.disabled = false;
             keyInput.placeholder = '英文ID';
             keyInput.value = '';
