@@ -180,7 +180,7 @@
                         返回列表
                     </button>
 
-                    <div id="article-content" class="rs-reader-content">
+                    <div id="article-content" class="rs-reader-content" style="display:none">
                         <!-- 默认空状态 -->
                         <div class="rs-empty-state" data-ui-panel="rss-empty-state">
                             <div class="rs-empty-icon">
@@ -444,5 +444,18 @@
             else window.addEventListener('load', load);
         })();
     </script>
+
+<script>
+// RSS back-to-top fix — listen on reader scroll too
+(function(){
+    var btt = document.getElementById('back-to-top');
+    var reader = document.getElementById('article-content');
+    function check(scrollTop) {
+        if (btt) btt.classList.toggle('visible', scrollTop > 400);
+    }
+    window.addEventListener('scroll', function(){ check(window.scrollY); });
+    if (reader) reader.addEventListener('scroll', function(){ check(reader.scrollTop); });
+})();
+</script>
 </body>
 </html>
