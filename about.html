@@ -167,15 +167,25 @@
             btt.addEventListener('click', () => lenis.scrollTo(0, { duration: 0.8 }));
         }
 
-        // 动态加载社交链接
+        // 动态加载社交链接（Simple Icons 品牌图标 + Lucide 通用图标）
         (function() {
-            fetch('/api/social').then(r => r.json()).then(data => {
-                const container = document.getElementById('about-social');
+            var isDark = document.documentElement.classList.contains('dark');
+            var iconColor = isDark ? 'white' : '333';
+            fetch('/api/social').then(function(r){return r.json()}).then(function(data){
+                var container = document.getElementById('about-social');
                 if (!container || !Array.isArray(data)) return;
-                container.innerHTML = data.map(s => {
-                    const isMail = s.url && s.url.startsWith('mailto:');
-                    const target = isMail ? '' : ' target="_blank" rel="noopener"';
-                    return '<a href="' + s.url + '"' + target + ' aria-label="' + s.name + '" title="' + s.name + '"><i data-lucide="' + (s.icon||'link') + '"></i></a>';
+                container.innerHTML = data.map(function(s){
+                    var isMail = s.url && s.url.indexOf('mailto:') === 0;
+                    var target = isMail ? '' : ' target="_blank" rel="noopener"';
+                    var icon = s.icon || 'lucide:link';
+                    var inner;
+                    if (icon.indexOf('simple:') === 0) {
+                        var slug = icon.replace('simple:', '');
+                        inner = '<img src="https://cdn.simpleicons.org/' + slug + '/' + iconColor + '" width="22" height="22" alt="">';
+                    } else {
+                        inner = '<i data-lucide="' + icon.replace('lucide:', '') + '"></i>';
+                    }
+                    return '<a href="' + s.url + '"' + target + ' aria-label="' + s.name + '" title="' + s.name + '">' + inner + '</a>';
                 }).join('');
                 if (window.lucide) lucide.createIcons();
             }).catch(function(){});

@@ -766,24 +766,32 @@
                     <h3 class="text-lg font-bold flex items-center gap-2 mb-4" style="color:inherit">
                         <i data-lucide="link" class="w-5 h-5" style="color:var(--color-primary,#14B8A6)"></i> 社交链接管理
                     </h3>
-                    <p style="font-size:.8rem;color:#64748b;margin-bottom:16px">管理关于页面底部的社交链接。输入平台名称自动填充链接和图标。支持: 微博/B站/知乎/小红书/GitHub/Twitter/Bilibili 等。</p>
+                    <p style="font-size:.8rem;color:#64748b;margin-bottom:16px">管理关于页面底部的社交链接。从预设选择或手动填写。图标使用 <a href="https://simpleicons.org" target="_blank" style="color:#14B8A6">Simple Icons</a>（simple:slug）或 <a href="https://lucide.dev/icons" target="_blank" style="color:#14B8A6">Lucide</a>（lucide:name）。</p>
                     <!-- 内联表单 -->
-                    <div style="display:flex;align-items:flex-end;gap:12px;padding:14px 16px;background:rgba(20,184,166,.05);border:1px solid rgba(20,184,166,.15);border-radius:12px;margin-bottom:16px;flex-wrap:wrap">
-                        <div style="flex:1;min-width:120px">
-                            <label style="font-size:.7rem;color:#94a3b8;display:block;margin-bottom:4px">名称</label>
-                            <input id="social-form-name" class="admin-input" placeholder="如 GitHub / 微博" style="padding:7px 12px" oninput="SocialManager.autoFill()">
+                    <div style="padding:14px 16px;background:rgba(20,184,166,.05);border:1px solid rgba(20,184,166,.15);border-radius:12px;margin-bottom:16px">
+                        <div style="margin-bottom:10px">
+                            <label style="font-size:.7rem;color:#94a3b8;display:block;margin-bottom:4px">从预设选择</label>
+                            <select id="social-preset-select" class="admin-input" style="padding:7px 12px;width:100%" onchange="SocialManager.selectPreset()">
+                                <option value="">-- 选择平台 --</option>
+                            </select>
                         </div>
-                        <div style="flex:2;min-width:200px">
-                            <label style="font-size:.7rem;color:#94a3b8;display:block;margin-bottom:4px">链接</label>
-                            <input id="social-form-url" class="admin-input" placeholder="https://..." style="padding:7px 12px">
-                        </div>
-                        <div style="width:100px;min-width:80px">
-                            <label style="font-size:.7rem;color:#94a3b8;display:block;margin-bottom:4px">图标</label>
-                            <input id="social-form-icon" class="admin-input" placeholder="link" style="padding:7px 12px">
-                        </div>
-                        <div style="display:flex;gap:6px">
-                            <button id="social-form-btn" onclick="SocialManager.submitForm()" class="admin-btn admin-btn-primary" style="padding:8px 16px;font-size:.8rem">添加链接</button>
-                            <button id="social-form-cancel" onclick="SocialManager.cancelEdit()" class="admin-btn admin-btn-ghost" style="padding:8px 12px;font-size:.8rem;display:none">取消</button>
+                        <div style="display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap">
+                            <div style="flex:1;min-width:120px">
+                                <label style="font-size:.7rem;color:#94a3b8;display:block;margin-bottom:4px">名称</label>
+                                <input id="social-form-name" class="admin-input" placeholder="如 GitHub" style="padding:7px 12px" oninput="SocialManager.autoFill()">
+                            </div>
+                            <div style="flex:2;min-width:200px">
+                                <label style="font-size:.7rem;color:#94a3b8;display:block;margin-bottom:4px">链接</label>
+                                <input id="social-form-url" class="admin-input" placeholder="https://..." style="padding:7px 12px">
+                            </div>
+                            <div style="width:120px;min-width:100px">
+                                <label style="font-size:.7rem;color:#94a3b8;display:block;margin-bottom:4px">图标</label>
+                                <input id="social-form-icon" class="admin-input" placeholder="simple:slug" style="padding:7px 12px">
+                            </div>
+                            <div style="display:flex;gap:6px">
+                                <button id="social-form-btn" onclick="SocialManager.submitForm()" class="admin-btn admin-btn-primary" style="padding:8px 16px;font-size:.8rem">添加</button>
+                                <button id="social-form-cancel" onclick="SocialManager.cancelEdit()" class="admin-btn admin-btn-ghost" style="padding:8px 12px;font-size:.8rem;display:none">取消</button>
+                            </div>
                         </div>
                     </div>
                     <div id="social-list" style="max-height:50vh;overflow-y:auto">

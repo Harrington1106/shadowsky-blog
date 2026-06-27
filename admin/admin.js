@@ -2058,41 +2058,73 @@ const ImageUploader = {
 
 // ═══════ 社交链接管理器 ═══════
 const SOCIAL_PRESETS = {
-    'github':     { url: 'https://github.com/', icon: 'github' },
-    'twitter':    { url: 'https://twitter.com/', icon: 'twitter' },
-    '微博':       { url: 'https://weibo.com/', icon: 'globe' },
-    'bilibili':   { url: 'https://space.bilibili.com/', icon: 'play' },
-    '哔哩哔哩':    { url: 'https://space.bilibili.com/', icon: 'play' },
-    'B站':        { url: 'https://space.bilibili.com/', icon: 'play' },
-    'youtube':    { url: 'https://www.youtube.com/', icon: 'youtube' },
-    'steam':      { url: 'https://steamcommunity.com/', icon: 'gamepad2' },
-    'telegram':   { url: 'https://t.me/', icon: 'send' },
-    'discord':    { url: 'https://discord.gg/', icon: 'message-circle' },
-    'email':      { url: 'mailto:', icon: 'mail' },
-    '邮箱':       { url: 'mailto:', icon: 'mail' },
-    'instagram':  { url: 'https://instagram.com/', icon: 'camera' },
-    'reddit':     { url: 'https://reddit.com/', icon: 'message-circle' },
-    'linkedin':   { url: 'https://linkedin.com/in/', icon: 'linkedin' },
-    'facebook':   { url: 'https://facebook.com/', icon: 'facebook' },
-    'twitch':     { url: 'https://twitch.tv/', icon: 'twitch' },
-    'spotify':    { url: 'https://open.spotify.com/', icon: 'music' },
-    'tiktok':     { url: 'https://tiktok.com/', icon: 'music-2' },
-    '抖音':       { url: 'https://www.douyin.com/', icon: 'music-2' },
-    '知乎':       { url: 'https://www.zhihu.com/', icon: 'message-square' },
-    '豆瓣':       { url: 'https://www.douban.com/', icon: 'book-open' },
-    '小红书':      { url: 'https://www.xiaohongshu.com/', icon: 'bookmark' },
-    'rss':        { url: '', icon: 'rss' },
-    'website':    { url: '', icon: 'globe' },
-    '网站':       { url: '', icon: 'globe' },
+    'GitHub':       { url: 'https://github.com/', icon: 'simple:github' },
+    'Twitter / X':  { url: 'https://twitter.com/', icon: 'simple:x' },
+    'Bilibili':     { url: 'https://space.bilibili.com/', icon: 'simple:bilibili' },
+    '微博':         { url: 'https://weibo.com/', icon: 'simple:sinaweibo' },
+    '知乎':         { url: 'https://www.zhihu.com/', icon: 'simple:zhihu' },
+    '小红书':       { url: 'https://www.xiaohongshu.com/', icon: 'simple:xiaohongshu' },
+    '抖音':         { url: 'https://www.douyin.com/', icon: 'simple:tiktok' },
+    '豆瓣':         { url: 'https://www.douban.com/', icon: 'simple:douban' },
+    'YouTube':      { url: 'https://www.youtube.com/', icon: 'simple:youtube' },
+    'Steam':        { url: 'https://steamcommunity.com/', icon: 'simple:steam' },
+    'Telegram':     { url: 'https://t.me/', icon: 'simple:telegram' },
+    'Discord':      { url: 'https://discord.gg/', icon: 'simple:discord' },
+    'Instagram':    { url: 'https://instagram.com/', icon: 'simple:instagram' },
+    'Reddit':       { url: 'https://reddit.com/', icon: 'simple:reddit' },
+    'LinkedIn':     { url: 'https://linkedin.com/in/', icon: 'simple:linkedin' },
+    'Facebook':     { url: 'https://facebook.com/', icon: 'simple:facebook' },
+    'Twitch':       { url: 'https://twitch.tv/', icon: 'simple:twitch' },
+    'Spotify':      { url: 'https://open.spotify.com/', icon: 'simple:spotify' },
+    'TikTok':       { url: 'https://tiktok.com/', icon: 'simple:tiktok' },
+    'Pixiv':        { url: 'https://www.pixiv.net/', icon: 'simple:pixiv' },
+    'NGA':          { url: 'https://bbs.nga.cn/', icon: 'simple:nga' },
+    'V2EX':         { url: 'https://www.v2ex.com/', icon: 'simple:v2ex' },
+    'Medium':       { url: 'https://medium.com/', icon: 'simple:medium' },
+    'Patreon':      { url: 'https://www.patreon.com/', icon: 'simple:patreon' },
+    'Ko-fi':        { url: 'https://ko-fi.com/', icon: 'simple:kofi' },
+    'RSS':          { url: '', icon: 'simple:rss' },
+    'Email':        { url: 'mailto:', icon: 'lucide:mail' },
+    '个人网站':     { url: '', icon: 'lucide:globe' },
+    'CodePen':      { url: 'https://codepen.io/', icon: 'simple:codepen' },
+    'Stack Overflow': { url: 'https://stackoverflow.com/', icon: 'simple:stackoverflow' },
+    'Mastodon':     { url: 'https://mastodon.social/', icon: 'simple:mastodon' },
+    'Bluesky':      { url: 'https://bsky.app/', icon: 'simple:bluesky' },
+    'SoundCloud':   { url: 'https://soundcloud.com/', icon: 'simple:soundcloud' },
+    'Apple Music':  { url: 'https://music.apple.com/', icon: 'simple:applemusic' },
+    'Netflix':      { url: 'https://www.netflix.com/', icon: 'simple:netflix' },
+    'Notion':       { url: 'https://www.notion.so/', icon: 'simple:notion' },
+    'Figma':        { url: 'https://www.figma.com/', icon: 'simple:figma' },
+    'Dribbble':     { url: 'https://dribbble.com/', icon: 'simple:dribbble' },
+    'Behance':      { url: 'https://www.behance.net/', icon: 'simple:behance' },
+    'Dev.to':       { url: 'https://dev.to/', icon: 'simple:devdotto' },
+    'Product Hunt': { url: 'https://www.producthunt.com/', icon: 'simple:producthunt' },
+    'Kaggle':       { url: 'https://www.kaggle.com/', icon: 'simple:kaggle' },
 };
 
 const SocialManager = {
     data: [],
     editingIdx: -1,
+    _iconHtml(iconKey) {
+        if (!iconKey) return '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg>';
+        if (iconKey.startsWith('simple:')) {
+            const slug = iconKey.replace('simple:', '');
+            return '<img src="https://cdn.simpleicons.org/' + slug + '/888" width="20" height="20" style="filter:grayscale(1)" onerror="this.style.display=\'none\'">';
+        }
+        return '<i data-lucide="' + iconKey.replace('lucide:', '') + '" style="width:20px;height:20px"></i>';
+    },
+    _populateDropdown() {
+        const sel = document.getElementById('social-preset-select');
+        if (!sel || sel.options.length > 1) return; // 已填充
+        Object.keys(SOCIAL_PRESETS).forEach(k => {
+            const o = document.createElement('option');
+            o.value = k; o.textContent = k;
+            sel.appendChild(o);
+        });
+    },
     async fetch() {
+        this._populateDropdown();
         const list = document.getElementById('social-list');
-        if (!list) return;
-        try {
             const res = await safeFetch(API_BASE + '/social');
             if (Array.isArray(res)) { this.data = res; this.render(); }
             else { list.innerHTML = '<div style="text-align:center;padding:32px;color:#ef4444">加载失败</div>'; }
@@ -2102,11 +2134,11 @@ const SocialManager = {
         const list = document.getElementById('social-list');
         if (!list) return;
         if (!this.data.length) {
-            list.innerHTML = '<div style="text-align:center;padding:48px;color:#94a3b8">暂无链接，用下方表单添加</div>';
+            list.innerHTML = '<div style="text-align:center;padding:48px;color:#94a3b8">暂无链接</div>';
         } else {
             list.innerHTML = this.data.map((s, i) =>
                 '<div style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);border-radius:12px;margin-bottom:8px">' +
-                '<i data-lucide="' + this._icon(s.icon) + '" style="width:20px;height:20px;color:#14B8A6;flex-shrink:0"></i>' +
+                '<span style="flex-shrink:0">' + this._iconHtml(s.icon) + '</span>' +
                 '<span style="font-weight:500;flex:1;color:inherit;font-size:.85rem">' + (s.name||'') + '</span>' +
                 '<span style="font-size:.7rem;color:#64748b;max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:monospace">' + (s.url||'') + '</span>' +
                 '<button onclick="SocialManager.startEdit('+i+')" style="background:none;border:none;cursor:pointer;padding:4px 8px;color:#94a3b8;font-size:.75rem">编辑</button>' +
@@ -2115,11 +2147,6 @@ const SocialManager = {
             ).join('');
         }
         if (typeof lucide !== 'undefined') lucide.createIcons();
-    },
-    _icon(name) {
-        // Lucide 支持的常见图标映射
-        const map = {github:'github',twitter:'twitter',youtube:'youtube',bilibili:'play',steam:'gamepad2',telegram:'send',email:'mail',discord:'message-circle',wechat:'message-square',instagram:'camera',reddit:'message-circle',linkedin:'linkedin',facebook:'facebook',twitch:'twitch',spotify:'music',tiktok:'music-2',rss:'rss',website:'globe',link:'link'};
-        return map[name] || name || 'link';
     },
     async save() {
         try {
@@ -2130,20 +2157,31 @@ const SocialManager = {
             if (res && res.success) { showToast('已保存', 'success'); this.render(); }
         } catch (e) { showToast('保存失败', 'error'); }
     },
+    selectPreset() {
+        if (this.editingIdx >= 0) return;
+        const sel = document.getElementById('social-preset-select');
+        const key = sel.value;
+        if (!key || !SOCIAL_PRESETS[key]) return;
+        const p = SOCIAL_PRESETS[key];
+        document.getElementById('social-form-name').value = key;
+        document.getElementById('social-form-url').value = p.url;
+        document.getElementById('social-form-icon').value = p.icon;
+    },
     startEdit(i) {
         this.editingIdx = i;
-        const s = i >= 0 ? this.data[i] : { name: '', url: '', icon: 'link' };
+        const s = i >= 0 ? this.data[i] : { name: '', url: '', icon: 'lucide:link' };
         document.getElementById('social-form-name').value = s.name || '';
         document.getElementById('social-form-url').value = s.url || '';
-        document.getElementById('social-form-icon').value = s.icon || 'link';
-        document.getElementById('social-form-btn').textContent = i >= 0 ? '保存修改' : '添加链接';
+        document.getElementById('social-form-icon').value = s.icon || 'lucide:link';
+        document.getElementById('social-preset-select').value = '';
+        document.getElementById('social-form-btn').textContent = i >= 0 ? '保存修改' : '添加';
         document.getElementById('social-form-cancel').style.display = i >= 0 ? '' : 'none';
     },
     cancelEdit() { this.editingIdx = -1; this.startEdit(-1); },
     autoFill() {
-        if (this.editingIdx >= 0) return; // 编辑模式不自动填充
+        if (this.editingIdx >= 0) return;
         const name = document.getElementById('social-form-name').value.trim();
-        const preset = SOCIAL_PRESETS[name] || SOCIAL_PRESETS[name.toLowerCase()];
+        const preset = SOCIAL_PRESETS[name];
         if (preset) {
             if (preset.url) document.getElementById('social-form-url').value = preset.url;
             document.getElementById('social-form-icon').value = preset.icon;
