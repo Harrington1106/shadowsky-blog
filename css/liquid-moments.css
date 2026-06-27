@@ -5,27 +5,31 @@
 
 /* ── Variables ── */
 :root {
-    --g-bg: #0a0a0a;
-    --g-surface: rgba(255,255,255,.03);
-    --g-border: rgba(255,255,255,.06);
+    --g-bg: #08080c;
+    --g-bg-gradient: linear-gradient(180deg, #08080c 0%, #0d1117 50%, #0a0d14 100%);
+    --g-surface: rgba(255,255,255,.04);
+    --g-glass: rgba(12,14,20,.72);
+    --g-border: rgba(255,255,255,.07);
     --g-text: #f1f1f1;
     --g-muted: rgba(255,255,255,.45);
-    --g-faint: rgba(255,255,255,.2);
+    --g-faint: rgba(255,255,255,.18);
     --g-accent: #2DD4BF;
-    --g-accent-dim: rgba(45,212,191,.15);
+    --g-accent-dim: rgba(45,212,191,.12);
     --g-radius: 10px;
     --g-gap: 6px;
 }
 
 html:not(.dark) {
-    --g-bg: #f5f5f5;
+    --g-bg: #f8f9fa;
+    --g-bg-gradient: linear-gradient(180deg, #f8f9fa 0%, #eef0f3 50%, #f5f6f8 100%);
     --g-surface: rgba(0,0,0,.02);
+    --g-glass: rgba(255,255,255,.78);
     --g-border: rgba(0,0,0,.06);
     --g-text: #171717;
-    --g-muted: rgba(0,0,0,.45);
-    --g-faint: rgba(0,0,0,.2);
+    --g-muted: rgba(0,0,0,.42);
+    --g-faint: rgba(0,0,0,.18);
     --g-accent: #0D9488;
-    --g-accent-dim: rgba(13,148,136,.12);
+    --g-accent-dim: rgba(13,148,136,.1);
 }
 
 /* ═══════════ PAGE ═══════════ */
@@ -34,11 +38,11 @@ html:not(.dark) {
     z-index: 1;
     min-height: 100dvh;
     padding-top: 76px;
-    background: var(--g-bg);
-    transition: background .4s;
+    background: var(--g-bg-gradient);
+    transition: background .5s;
 }
 
-/* ═══════════ FLOATING HEADER BAR ═══════════ */
+/* ═══════════ FLOATING HEADER BAR — liquid glass ═══════════ */
 .gallery-header {
     position: sticky;
     top: 76px;
@@ -46,11 +50,14 @@ html:not(.dark) {
     display: flex;
     align-items: center;
     gap: 16px;
-    padding: 10px 20px;
+    padding: 12px 20px;
     margin: 0 auto;
     max-width: 100%;
-    background: linear-gradient(to bottom, var(--g-bg) 60%, transparent);
-    transition: background .3s;
+    background: var(--g-glass);
+    backdrop-filter: blur(18px) saturate(140%);
+    -webkit-backdrop-filter: blur(18px) saturate(140%);
+    border-bottom: 1px solid var(--g-border);
+    transition: background .3s, border-color .3s;
 }
 
 .gallery-header-inner {
@@ -99,6 +106,8 @@ html:not(.dark) {
     width: 100%;
     padding: 8px 14px 8px 36px;
     background: var(--g-surface);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     border: 1px solid var(--g-border);
     border-radius: 10px;
     font-size: .82rem;
@@ -559,8 +568,9 @@ html:not(.dark) {
     z-index: 90;
     width: 42px; height: 42px;
     border-radius: 12px;
-    background: var(--g-surface);
-    backdrop-filter: blur(12px);
+    background: var(--g-glass);
+    backdrop-filter: blur(16px) saturate(140%);
+    -webkit-backdrop-filter: blur(16px) saturate(140%);
     border: 1px solid var(--g-border);
     color: var(--g-accent);
     cursor: pointer;
@@ -571,6 +581,7 @@ html:not(.dark) {
     visibility: hidden;
     transform: translateY(10px);
     transition: all .3s;
+    box-shadow: 0 4px 20px rgba(0,0,0,.2);
 }
 
 .g-btt.visible {

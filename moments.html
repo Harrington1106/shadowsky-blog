@@ -26,6 +26,13 @@
 </head>
 <body>
 
+    <!-- Fluid ambient background -->
+    <div class="liquid-ambient ambient-gentle" aria-hidden="true">
+        <div class="liquid-blob liquid-blob--1"></div>
+        <div class="liquid-blob liquid-blob--2"></div>
+        <div class="liquid-blob liquid-blob--3"></div>
+    </div>
+
     <!-- NAVBAR (identical to all pages) -->
     <nav id="navbar" class="homepage-cover-nav-shell" data-ui-region="home-nav-shell">
         <div class="nav-inner">
@@ -47,7 +54,7 @@
                 </div>
             </div>
             <div class="nav-actions">
-                <button id="theme-toggle" class="theme-toggle" aria-label="切换主题"></button>
+                <button id="theme-toggle" class="theme-toggle" aria-label="切换主题"><span id="theme-icon-wrap"><i data-lucide="sun"></i></span></button>
                 <button id="nav-hamburger" class="nav-hamburger" aria-label="菜单" aria-expanded="false"><i data-lucide="menu"></i></button>
             </div>
         </div>
