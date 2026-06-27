@@ -1872,6 +1872,27 @@ app.get('/api/notice', (req, res) => {
 });
 
 // API to save notice
+// ═══════ 社交链接管理 ═══════
+const socialPath = path.join(__dirname, '../public/data/social.json');
+const DEFAULT_SOCIAL = [
+    { id: 'email', name: 'Email', url: 'mailto:contact@shadowsky.com', icon: 'mail' },
+    { id: 'github', name: 'GitHub', url: 'https://github.com/shadowsky', icon: 'github' },
+    { id: 'twitter', name: 'Twitter', url: 'https://twitter.com/shadowsky', icon: 'twitter' },
+    { id: 'bilibili', name: 'Bilibili', url: 'https://space.bilibili.com/', icon: 'bilibili' },
+    { id: 'steam', name: 'Steam', url: 'https://steamcommunity.com/', icon: 'steam' },
+    { id: 'youtube', name: 'YouTube', url: 'https://www.youtube.com/', icon: 'youtube' },
+    { id: 'telegram', name: 'Telegram', url: 'https://t.me/', icon: 'telegram' }
+];
+function loadSocial() {
+    try { if (fs.existsSync(socialPath)) return JSON.parse(fs.readFileSync(socialPath, 'utf8')); } catch {}
+    return DEFAULT_SOCIAL;
+}
+app.get('/api/social', (req, res) => { res.json(loadSocial()); });
+app.post('/api/social', requireAdminToken, (req, res) => {
+    try { fs.writeFileSync(socialPath, JSON.stringify(req.body, null, 2)); res.json({ success: true }); }
+    catch (e) { res.status(500).json({ error: e.message }); }
+});
+
 // 打招呼通知 — 存储并通知站长
 const greetingsPath = path.join(__dirname, '../public/data/greetings.json');
 app.post('/api/wave', (req, res) => {

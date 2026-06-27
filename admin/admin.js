@@ -2056,6 +2056,71 @@ const ImageUploader = {
     }
 };
 
+// ═══════ 社交链接管理器 ═══════
+const SocialManager = {
+    data: [],
+    async fetch() {
+        const list = document.getElementById('social-list');
+        if (!list) return;
+        try {
+            const res = await safeFetch(API_BASE + '/social');
+            if (Array.isArray(res)) { this.data = res; this.render(); }
+            else { list.innerHTML = '<div style="text-align:center;padding:32px;color:#ef4444">加载失败</div>'; }
+        } catch (e) { list.innerHTML = '<div style="text-align:center;padding:32px;color:#ef4444">加载失败</div>'; }
+    },
+    render() {
+        const list = document.getElementById('social-list');
+        if (!list) return;
+        if (!this.data.length) { list.innerHTML = '<div style="text-align:center;padding:48px;color:#94a3b8">暂无链接，点击上方添加</div>'; return; }
+        list.innerHTML = this.data.map((s, i) =>
+            '<div style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);border-radius:12px;margin-bottom:8px">' +
+            '<i data-lucide="' + (s.icon||'link') + '" style="width:18px;height:18px;color:#14B8A6;flex-shrink:0"></i>' +
+            '<span style="font-weight:500;flex:1;color:inherit">' + (s.name||'') + '</span>' +
+            '<span style="font-size:.75rem;color:#64748b;max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + (s.url||'') + '</span>' +
+            '<button onclick="SocialManager.edit('+i+')" style="background:none;border:none;cursor:pointer;padding:4px 8px;color:#94a3b8;font-size:.75rem">编辑</button>' +
+            '<button onclick="SocialManager.remove('+i+')" style="background:none;border:none;cursor:pointer;padding:4px 8px;color:#ef4444;font-size:.75rem">删除</button>' +
+            '</div>'
+        ).join('');
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+    },
+    async save() {
+        try {
+            const res = await safeFetch(API_BASE + '/social', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(this.data)
+            });
+            if (res && res.success) { showToast('已保存', 'success'); this.render(); }
+        } catch (e) { showToast('保存失败', 'error'); }
+    },
+    add() {
+        const name = prompt('平台名称（如 GitHub、Bilibili）:');
+        if (!name) return;
+        const url = prompt('链接地址:');
+        if (!url) return;
+        const icon = prompt('Lucide 图标名（如 github、mail、link）:', 'link');
+        this.data.push({ name, url, icon: icon || 'link' });
+        this.save();
+    },
+    edit(i) {
+        const s = this.data[i];
+        if (!s) return;
+        const name = prompt('平台名称:', s.name);
+        if (name === null) return;
+        const url = prompt('链接地址:', s.url);
+        if (url === null) return;
+        const icon = prompt('Lucide 图标名:', s.icon || 'link');
+        if (icon === null) return;
+        this.data[i] = { name, url, icon: icon || 'link' };
+        this.save();
+    },
+    remove(i) {
+        if (!confirm('删除 "' + (this.data[i]?.name||'') + '"？')) return;
+        this.data.splice(i, 1);
+        this.save();
+    }
+};
+
 // ═══════ 打招呼管理器 ═══════
 const GreetingsManager = {
     async fetch() {
@@ -3238,6 +3303,7 @@ const Dashboard = {
         if (tabId === 'posts') PostsManager.fetch();
         if (tabId === 'bookmarks') { BookmarksManager.fetch(); BookmarksManager.populateCategories(); }
         if (tabId === 'snapshots') { SnapshotsManager.fetch(); ImageUploader.init(); }
+        if (tabId === 'social') SocialManager.fetch();
         if (tabId === 'greetings') GreetingsManager.fetch();
         if (tabId === 'media') { MediaManager.fetch(); MediaManager.updateFilterUI(); }
         if (tabId === 'feeds') FeedsManager.fetch();
