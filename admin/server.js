@@ -714,9 +714,16 @@ app.get('/api/visit-count', (req, res) => {
     res.json({ count });
 });
 
+// 排除的 IP 列表
+const EXCLUDED_IPS = ['2406:da14:1ad9:3400:b85e:2e4f:7de3:754f'];
+
 // 页面访问追踪（tracker.js 调用）
 app.post('/api/page-visit', (req, res) => {
     try {
+        const clientIP = req.ip || req.connection.remoteAddress || '';
+        if (EXCLUDED_IPS.includes(clientIP) || clientIP === '127.0.0.1' || clientIP === '::1') {
+            return res.json({ success: true, skipped: true });
+        }
         const { url } = req.body;
         if (!url) return res.status(400).json({ error: 'missing url' });
         // 提取页面名

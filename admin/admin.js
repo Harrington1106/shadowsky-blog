@@ -3298,7 +3298,8 @@ const StatsManager = {
         if (!container) return;
         // 用日志表格展示 IP 分布
         const ipMap = {};
-        const isLocal = ip => ip === '127.0.0.1' || ip === '::1' || ip === '::ffff:127.0.0.1' || ip.startsWith('192.168.') || ip.startsWith('10.') || ip.startsWith('172.16.');
+        const excludedIPs = ['2406:da14:1ad9:3400:b85e:2e4f:7de3:754f'];
+        const isLocal = ip => ip === '127.0.0.1' || ip === '::1' || ip === '::ffff:127.0.0.1' || ip.startsWith('192.168.') || ip.startsWith('10.') || ip.startsWith('172.16.') || excludedIPs.includes(ip);
         Object.values(this.data.raw).forEach(day => {
             if (day.ip_locations) {
                 Object.entries(day.ip_locations).forEach(([ip, c]) => {
