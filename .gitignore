@@ -4,4 +4,10 @@ node_modules/
 public/data/*.json
 public/posts/.obsidian/plugins/
 public/posts/*-auto_write.md
+*.test.js
+*_test.php
+test.php
+test.txt
+.trae/
+docs/superpowers/
 nul
