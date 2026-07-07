@@ -6,7 +6,6 @@ let allPosts = [];
 let currentView = 'grid';
 let currentPage = 1;
 const PER_PAGE = 12;
-let aiDailyData = [];
 
 // ── Fetch ──
 async function loadPosts() {
@@ -257,31 +256,70 @@ function renderTagsView(container, posts) {
 }
 
 // ── AI Daily ──
+let aiDailyIndex = [];
+
 async function renderAIDaily(container) {
     try {
-        if (aiDailyData.length === 0) {
-            const res = await fetch('public/data/ai-daily.json');
-            if (res.ok) aiDailyData = await res.json();
+        if (aiDailyIndex.length === 0) {
+            const res = await fetch('public/data/ai-daily/index.json');
+            if (res.ok) aiDailyIndex = await res.json();
         }
-        if (!aiDailyData.length) { container.innerHTML = '<div class="blog-empty">暂无 AI 日报，等待青龙脚本推送...</div>'; return; }
-        aiDailyData.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
-        container.innerHTML = '<div class="article-list">' + aiDailyData.map(d => {
+        if (!aiDailyIndex.length) {
+            container.innerHTML = '<div class="blog-empty">暂无 AI 日报，等待每日自动生成...</div>';
+            return;
+        }
+
+        // 列表
+        let html = '<div class="article-list">';
+        aiDailyIndex.forEach((d, i) => {
             const date = new Date(d.date);
-            const ds = isNaN(date) ? '' : date.toLocaleDateString('zh-CN', { month: 'short', day: 'numeric' });
-            return `<a href="post.html?ai=${encodeURIComponent(d.id)}" class="article-item">
+            const ds = isNaN(date) ? d.date : date.toLocaleDateString('zh-CN', { weekday: 'short', month: 'short', day: 'numeric' });
+            const isLatest = i === 0;
+            html += `<div class="ai-daily-item${isLatest ? ' selected' : ''}" data-file="${d.file}" onclick="loadAIDaily(this)">
                 <span class="article-date">${ds}</span>
                 <div class="article-thumb article-thumb--placeholder"><i data-lucide="bot"></i></div>
                 <div class="article-body">
                     <h3 class="article-title"><span class="ai-badge">AI</span>${d.title}</h3>
                     <p class="article-excerpt">${d.summary || ''}</p>
                     <div class="article-meta">
-                        ${d.projectCount ? `<span class="article-cat">${d.projectCount} 个项目</span>` : ''}
-                        ${(d.tags||[]).slice(0,3).map(t => `<span class="article-tag">#${t}</span>`).join('')}
+                        <span class="article-cat">${d.articleCount || '—'} 篇</span>
                     </div>
-                </div></a>`;
-        }).join('') + '</div>';
+                </div>
+            </div>`;
+        });
+        html += '</div><div id="ai-daily-content" class="ai-daily-content"></div>';
+
+        container.innerHTML = html;
+
+        // 自动加载最新一期
+        if (aiDailyIndex.length > 0) {
+            loadAIDailyContent(aiDailyIndex[0].file);
+        }
     } catch (e) {
-        container.innerHTML = '<div class="blog-empty">AI 日报加载失败</div>';
+        container.innerHTML = '<div class="blog-empty">AI 日报加载失败: ' + e.message + '</div>';
+    }
+    if (window.lucide) lucide.createIcons();
+}
+
+// 全局函数：加载并渲染 Markdown
+window.loadAIDaily = function(el) {
+    const file = el.dataset.file;
+    document.querySelectorAll('.ai-daily-item').forEach(i => i.classList.remove('selected'));
+    el.classList.add('selected');
+    loadAIDailyContent(file);
+};
+
+async function loadAIDailyContent(file) {
+    const viewer = document.getElementById('ai-daily-content');
+    if (!viewer) return;
+    viewer.innerHTML = '<div class="blog-empty" style="padding:20px">加载中...</div>';
+    try {
+        const res = await fetch('public/data/ai-daily/' + file);
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const md = await res.text();
+        viewer.innerHTML = '<div class="prose ai-prose">' + marked.parse(md) + '</div>';
+    } catch (e) {
+        viewer.innerHTML = '<div class="blog-empty">加载失败: ' + e.message + '</div>';
     }
     if (window.lucide) lucide.createIcons();
 }

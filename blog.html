@@ -17,6 +17,7 @@
     <link href="css/liquid-blog.css?v=2606270200" rel="stylesheet">
 
     <script src="js/vendor/lucide.min.js?v=20260625j"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
 
 </head>
@@ -157,6 +158,27 @@ body{font-family:var(--f);background:var(--bg);color:var(--t);padding-top:0}
 
 /* ══ Empty ══ */
 .blog-empty{text-align:center;padding:60px 0;color:var(--soft);font-size:.85rem}
+
+/* ══ AI Daily Content Viewer ══ */
+.ai-daily-item{cursor:pointer;position:relative}
+.ai-daily-item::before{content:'';position:absolute;left:0;top:8px;bottom:8px;width:3px;border-radius:2px;background:transparent;transition:background .15s}
+.ai-daily-item.selected::before{background:var(--a)}
+.ai-daily-item.selected .article-title{color:var(--a)}
+.ai-daily-content{margin-top:20px;padding:24px;background:var(--s);border:1px solid var(--b);border-radius:14px;max-height:70vh;overflow-y:auto}
+.ai-prose{font-size:.85rem;line-height:1.75;color:var(--t)}
+.ai-prose h1,.ai-prose h2,.ai-prose h3{font-family:var(--h);font-weight:600;color:var(--t);margin:24px 0 10px}
+.ai-prose h1{font-size:1.3rem}.ai-prose h2{font-size:1.05rem}.ai-prose h3{font-size:.9rem}
+.ai-prose p{margin:0 0 10px}.ai-prose ul,.ai-prose ol{padding-left:20px;margin:0 0 10px}
+.ai-prose li{margin-bottom:4px}.ai-prose a{color:var(--a)}.ai-prose blockquote{border-left:3px solid var(--a);padding:4px 14px;margin:12px 0;color:var(--soft);font-size:.82rem}
+.ai-prose strong{color:var(--t)}.ai-prose hr{border:none;border-top:1px solid var(--b);margin:20px 0}
+.ai-prose table{width:100%;border-collapse:collapse;font-size:.78rem;margin:12px 0}
+.ai-prose th,.ai-prose td{border:1px solid var(--b);padding:6px 10px;text-align:left}
+.ai-prose th{background:var(--ab);font-weight:600}
+.ai-prose pre{background:rgba(0,0,0,.2);padding:12px;border-radius:8px;overflow-x:auto;font-size:.75rem}
+.ai-prose code{font-size:.8em;background:var(--ab);padding:2px 5px;border-radius:3px}
+.ai-prose pre code{background:none;padding:0}
+.ai-prose img{max-width:100%;border-radius:8px}
+@media(max-width:640px){.ai-daily-content{padding:14px;max-height:55vh}}
 
 @media(max-width:768px){
     .blog-layout{flex-direction:column;padding:88px 16px 0;gap:20px}
