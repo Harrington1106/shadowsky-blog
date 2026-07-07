@@ -291,10 +291,7 @@ async function renderAIDaily(container) {
 
         container.innerHTML = html;
 
-        // 自动加载最新一期
-        if (aiDailyIndex.length > 0) {
-            loadAIDailyContent(aiDailyIndex[0].file);
-        }
+        // 不自动加载，等用户点击
     } catch (e) {
         container.innerHTML = '<div class="blog-empty">AI 日报加载失败: ' + e.message + '</div>';
     }
