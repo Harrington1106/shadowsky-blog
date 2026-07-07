@@ -269,54 +269,29 @@ async function renderAIDaily(container) {
             return;
         }
 
-        // 列表
         let html = '<div class="article-list">';
-        aiDailyIndex.forEach((d, i) => {
+        aiDailyIndex.forEach(d => {
             const date = new Date(d.date);
             const ds = isNaN(date) ? d.date : date.toLocaleDateString('zh-CN', { weekday: 'short', month: 'short', day: 'numeric' });
-            const isLatest = i === 0;
-            html += `<div class="ai-daily-item${isLatest ? ' selected' : ''}" data-file="${d.file}" onclick="loadAIDaily(this)">
+            // 去掉标题中的 markdown 前缀标记
+            const cleanTitle = (d.title || '').replace(/^[📰📝🏆]\s*/, '');
+            html += `<a href="post.html?ai=${encodeURIComponent(d.date)}" class="article-item">
                 <span class="article-date">${ds}</span>
                 <div class="article-thumb article-thumb--placeholder"><i data-lucide="bot"></i></div>
                 <div class="article-body">
-                    <h3 class="article-title"><span class="ai-badge">AI</span>${d.title}</h3>
-                    <p class="article-excerpt">${d.summary || ''}</p>
+                    <h3 class="article-title"><span class="ai-badge">AI</span>${cleanTitle}</h3>
+                    <p class="article-excerpt">${(d.summary || '').replace(/\*\*/g, '').replace(/🥇|🥈|🥉/g, '')}</p>
                     <div class="article-meta">
                         <span class="article-cat">${d.articleCount || '—'} 篇</span>
                     </div>
                 </div>
-            </div>`;
+            </a>`;
         });
-        html += '</div><div id="ai-daily-content" class="ai-daily-content"></div>';
+        html += '</div>';
 
         container.innerHTML = html;
-
-        // 不自动加载，等用户点击
     } catch (e) {
         container.innerHTML = '<div class="blog-empty">AI 日报加载失败: ' + e.message + '</div>';
-    }
-    if (window.lucide) lucide.createIcons();
-}
-
-// 全局函数：加载并渲染 Markdown
-window.loadAIDaily = function(el) {
-    const file = el.dataset.file;
-    document.querySelectorAll('.ai-daily-item').forEach(i => i.classList.remove('selected'));
-    el.classList.add('selected');
-    loadAIDailyContent(file);
-};
-
-async function loadAIDailyContent(file) {
-    const viewer = document.getElementById('ai-daily-content');
-    if (!viewer) return;
-    viewer.innerHTML = '<div class="blog-empty" style="padding:20px">加载中...</div>';
-    try {
-        const res = await fetch('public/data/ai-daily/' + file);
-        if (!res.ok) throw new Error('HTTP ' + res.status);
-        const md = await res.text();
-        viewer.innerHTML = '<div class="prose ai-prose">' + marked.parse(md, { async: false }) + '</div>';
-    } catch (e) {
-        viewer.innerHTML = '<div class="blog-empty">加载失败: ' + e.message + '</div>';
     }
     if (window.lucide) lucide.createIcons();
 }

@@ -272,41 +272,51 @@
         }
 
         // ═══ AI 日报入口 ═══
-        const aiId = params.get('ai');
-        if (aiId) {
+        const aiDate = params.get('ai');
+        if (aiDate) {
             try {
-                const aiRes = await fetch('../public/data/ai-daily.json');
-                if (!aiRes.ok) throw new Error('HTTP ' + aiRes.status);
-                const aiData = await aiRes.json();
-                const item = aiData.find(d => d.id === aiId);
-                if (!item) throw new Error('未找到日报 ' + aiId);
+                // 读取 Markdown 日报文件
+                const mdRes = await fetch(`../public/data/ai-daily/${aiDate}.md`);
+                if (!mdRes.ok) throw new Error('日报不存在: ' + aiDate);
+                const md = await mdRes.text();
+
+                // 提取标题
+                const titleMatch = md.match(/^#\s+(.+)/m);
+                const rawTitle = titleMatch ? titleMatch[1] : 'AI日报 · ' + aiDate;
+                const cleanTitle = rawTitle.replace(/^[📰📝🏆]\s*/, '');
 
                 // 所有返回链接指向 AI 日报
                 document.querySelectorAll('a[href="blog.html"]').forEach(a => { a.href = 'blog.html#aidaily'; });
 
                 // 填充元数据
-                document.title = item.title || 'AI日报';
-                postTitle.textContent = item.title || 'AI日报';
-                const d = item.date ? new Date(item.date) : new Date();
+                document.title = cleanTitle;
+                postTitle.textContent = cleanTitle;
+                const d = new Date(aiDate);
                 const dateStr = d.toLocaleDateString('zh-CN', { year:'numeric', month:'long', day:'numeric' });
                 postMeta.innerHTML = `
                     <i data-lucide="calendar" class="w-4 h-4 opacity-60"></i>
                     <span>${dateStr}</span>
                     <span class="meta-divider">·</span>
-                    <span style="display:inline-flex;align-items:center;gap:3px">🤖 AI日报</span>
-                    ${item.projectCount ? `<span class="meta-divider">·</span><span>📦 ${item.projectCount} 个项目</span>` : ''}
-                `;
-                postTags.innerHTML = (item.tags || []).map(t =>
+                    <span style="display:inline-flex;align-items:center;gap:3px">🤖 AI日报</span>`;
+
+                // 提取关键词
+                const kwMatch = md.match(/关键词[：:]\s*(.+)/);
+                const keywords = kwMatch ? kwMatch[1].split(/[,，、]/).map(k => k.trim()).filter(Boolean).slice(0, 5) : [];
+                postTags.innerHTML = keywords.map(t =>
                     `<span class="post-tag">#${t}</span>`
                 ).join('');
 
-                // 设置封面
+                // AI 封面
                 if (headerBg) {
                     headerBg.style.backgroundImage = 'url(https://images.unsplash.com/photo-1677442136019-21780ecad995?w=1200&q=80)';
                 }
 
-                // 直接注入 HTML
-                postContent.innerHTML = item.content || '<p>暂无内容</p>';
+                // Markdown → HTML
+                if (typeof marked !== 'undefined') {
+                    postContent.innerHTML = marked.parse(md, { async: false });
+                } else {
+                    postContent.innerHTML = `<pre style="white-space:pre-wrap;font-size:.82rem">${md.replace(/</g,'&lt;')}</pre>`;
+                }
 
                 // 运行后处理
                 if (typeof renderMathInElement === 'function') {
