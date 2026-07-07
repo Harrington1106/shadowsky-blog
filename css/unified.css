@@ -162,7 +162,7 @@ a:hover{color:var(--color-link-hover)}
 }
 .glass-depth-3:hover{
   transform:translateY(-2px);
-  box-shadow:var(--glass-depth-4-shadow);
+  box-shadow:var(--glass-hover-glow,var(--glass-depth-4-shadow));
   border-color:var(--glass-depth-4-border);
 }
 
@@ -217,7 +217,7 @@ a:hover{color:var(--color-link-hover)}
 }
 .glass-card:hover{
   transform:translateY(-2px);
-  box-shadow:var(--glass-depth-4-shadow);
+  box-shadow:var(--glass-hover-glow,var(--glass-depth-4-shadow));
   border-color:var(--glass-depth-4-border);
 }
 
