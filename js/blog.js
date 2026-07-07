@@ -268,8 +268,9 @@ async function renderAIDaily(container) {
         container.innerHTML = '<div class="article-list">' + aiDailyData.map(d => {
             const date = new Date(d.date);
             const ds = isNaN(date) ? '' : date.toLocaleDateString('zh-CN', { month: 'short', day: 'numeric' });
-            return `<a href="post.html?ai=${encodeURIComponent(d.id)}" class="ai-daily-item">
+            return `<a href="post.html?ai=${encodeURIComponent(d.id)}" class="article-item">
                 <span class="article-date">${ds}</span>
+                <div class="article-thumb article-thumb--placeholder"><i data-lucide="bot"></i></div>
                 <div class="article-body">
                     <h3 class="article-title"><span class="ai-badge">AI</span>${d.title}</h3>
                     <p class="article-excerpt">${d.summary || ''}</p>
