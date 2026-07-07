@@ -323,6 +323,7 @@
                     try { renderMathInElement(postContent); } catch {}
                 }
                 generateTOC();
+                setupScrollSpy();
                 addCopyButtons();
                 setupImageLightbox();
                 setupProgressBar();
