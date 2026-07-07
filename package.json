@@ -2,9 +2,13 @@
   "name": "shadowsky-blog",
   "private": true,
   "scripts": {
+    "dev": "serve -l 3000 .",
     "deploy": "deno -Ar https://host.retiehe.com/cli deploy"
   },
   "dependencies": {
     "deno": "^2.8.3"
+  },
+  "devDependencies": {
+    "serve": "^14.2.6"
   }
 }
