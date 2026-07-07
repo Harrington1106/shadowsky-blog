@@ -317,7 +317,7 @@ async function loadAIDailyContent(file) {
         const res = await fetch('public/data/ai-daily/' + file);
         if (!res.ok) throw new Error('HTTP ' + res.status);
         const md = await res.text();
-        viewer.innerHTML = '<div class="prose ai-prose">' + marked.parse(md) + '</div>';
+        viewer.innerHTML = '<div class="prose ai-prose">' + marked.parse(md, { async: false }) + '</div>';
     } catch (e) {
         viewer.innerHTML = '<div class="blog-empty">加载失败: ' + e.message + '</div>';
     }
