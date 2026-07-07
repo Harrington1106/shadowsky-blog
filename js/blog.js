@@ -222,11 +222,20 @@ function renderDirView(container, posts) {
         <div class="article-list">${items.map(p => {
             const d = new Date(p.date);
             const ds = isNaN(d) ? '' : d.toLocaleDateString('zh-CN', { month: 'short', day: 'numeric' });
-            return `<a href="post.html?file=${encodeURIComponent(p.file)}&ref=%23directory" class="dir-item">
+            const thumb = p.coverImage
+                ? `<div class="article-thumb"><img src="${p.coverImage}" loading="lazy" onerror="this.parentElement.style.display='none'" alt=""></div>`
+                : `<div class="article-thumb article-thumb--placeholder"><i data-lucide="file-text"></i></div>`;
+            const tags = (p.tags || []).slice(0, 2);
+            return `<a href="post.html?file=${encodeURIComponent(p.file)}&ref=%23directory" class="article-item">
                 <span class="article-date">${ds}</span>
+                ${thumb}
                 <div class="article-body">
                     <h3 class="article-title">${p.title}</h3>
                     <p class="article-excerpt">${p.excerpt || ''}</p>
+                    <div class="article-meta">
+                        <span class="article-cat">${p.category || '笔记'}</span>
+                        ${tags.map(t => `<span class="article-tag">#${t}</span>`).join('')}
+                    </div>
                 </div></a>`;
         }).join('')}</div>
     `).join('');
