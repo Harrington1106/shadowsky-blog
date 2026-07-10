@@ -14,7 +14,7 @@
 cat ~/.hn-daily-digest/config.json 2>/dev/null || echo "{}"
 ```
 
-如果已有 `geminiApiKey`，使用已保存配置。
+如果已有配置，使用已保存配置。主 provider 为**硅基流动 SiliconFlow**（DeepSeek-V3），Gemini / 其它 OpenAI 兼容为 fallback。
 
 ### Step 1: 收集参数
 
@@ -28,14 +28,19 @@ cat ~/.hn-daily-digest/config.json 2>/dev/null || echo "{}"
 
 ### Step 2: API Key
 
-首次使用需提供 Gemini API Key（免费获取：https://aistudio.google.com/apikey）。
+优先使用硅基流动 Key（https://cloud.siliconflow.cn/account/ak）。服务器写入站点根目录 `.env`（勿提交 git）：
 
-如果没有，询问用户输入。
+```bash
+SILICONFLOW_API_KEY=sk-...
+SILICONFLOW_MODEL=deepseek-ai/DeepSeek-V3   # 可选
+```
+
+可选 fallback：`GEMINI_API_KEY` 或 `OPENAI_API_KEY`。
 
 ### Step 3: 执行
 
 ```bash
-export GEMINI_API_KEY="<用户提供的key>"
+export SILICONFLOW_API_KEY="<用户提供的key>"
 npx -y tsx .claude/skills/ai-daily-digest/scripts/digest.ts \
   --hours <timeRange> \
   --top-n <topN> \
@@ -63,4 +68,4 @@ mkdir -p ~/.hn-daily-digest
 ## 环境要求
 
 - `tsx`（全局安装：`npm i -g tsx`）
-- Gemini API Key
+- `SILICONFLOW_API_KEY`（主）或 Gemini / OpenAI 兼容 Key（fallback）

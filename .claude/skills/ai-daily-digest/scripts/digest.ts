@@ -6,7 +6,9 @@ import process from 'node:process';
 // Constants
 // ============================================================================
 
-const GEMINI_API_URL = 'https://gemini-proxy.shadowquake666.workers.dev/v1beta/models/gemini-2.0-flash:generateContent';
+const GEMINI_API_URL = 'https://gemini.shadowquake.top/v1beta/models/gemini-2.0-flash:generateContent';
+const SILICONFLOW_DEFAULT_API_BASE = 'https://api.siliconflow.cn/v1';
+const SILICONFLOW_DEFAULT_MODEL = 'deepseek-ai/DeepSeek-V3';
 const OPENAI_DEFAULT_API_BASE = 'https://api.openai.com/v1';
 const OPENAI_DEFAULT_MODEL = 'gpt-4o-mini';
 const FEED_FETCH_TIMEOUT_MS = 15_000;
@@ -366,128 +368,233 @@ async function fetchAllFeeds(feeds: typeof RSS_FEEDS): Promise<Article[]> {
 // AI Providers (Gemini + OpenAI-compatible fallback)
 // ============================================================================
 
-async function callGemini(prompt: string, apiKey: string): Promise<string> {
-  const response = await fetch(`${GEMINI_API_URL}?key=${apiKey}`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      contents: [{ parts: [{ text: prompt }] }],
-      generationConfig: {
-        temperature: 0.3,
-        topP: 0.8,
-        topK: 40,
-      },
-    }),
-  });
-  
-  if (!response.ok) {
+async function callGemini(prompt: string, apiKey: string, retries = 3): Promise<string> {
+  const url = apiKey ? `${GEMINI_API_URL}?key=${apiKey}` : GEMINI_API_URL;
+
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: prompt }] }],
+        generationConfig: {
+          temperature: 0.3,
+          topP: 0.8,
+          topK: 40,
+        },
+      }),
+    });
+
+    if (response.ok) {
+      const data = await response.json() as {
+        candidates?: Array<{
+          content?: { parts?: Array<{ text?: string }> };
+        }>;
+      };
+      return data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    }
+
+    // 429 rate limit — parse retry delay and wait
+    if (response.status === 429 && attempt < retries) {
+      const errorBody = await response.text().catch(() => '{}');
+      let delayMs = 5000 * attempt; // fallback: 5s incremental
+      try {
+        const errorJson = JSON.parse(errorBody);
+        const retryDelay = errorJson?.error?.details?.find(
+          (d: any) => d['@type'] === 'type.googleapis.com/google.rpc.RetryInfo'
+        )?.retryDelay;
+        if (retryDelay) {
+          // retryDelay is a string like "41s" or "41.272291941s"
+          const match = retryDelay.match(/([\d.]+)s/);
+          if (match) delayMs = Math.ceil(parseFloat(match[1]) * 1000) + 1000; // +1s buffer
+        }
+      } catch { /* use fallback */ }
+      console.warn(`[digest] Gemini 429 rate limit, retrying in ${Math.round(delayMs / 1000)}s (attempt ${attempt}/${retries})...`);
+      await new Promise(resolve => setTimeout(resolve, delayMs));
+      continue;
+    }
+
     const errorText = await response.text().catch(() => 'Unknown error');
     throw new Error(`Gemini API error (${response.status}): ${errorText}`);
   }
-  
-  const data = await response.json() as {
-    candidates?: Array<{
-      content?: { parts?: Array<{ text?: string }> };
-    }>;
-  };
-  
-  return data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+
+  throw new Error(`Gemini API: exhausted ${retries} retries`);
 }
 
 async function callOpenAICompatible(
   prompt: string,
   apiKey: string,
   apiBase: string,
-  model: string
+  model: string,
+  retries = 3
 ): Promise<string> {
   const normalizedBase = apiBase.replace(/\/+$/, '');
-  const response = await fetch(`${normalizedBase}/chat/completions`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${apiKey}`,
-    },
-    body: JSON.stringify({
-      model,
-      messages: [{ role: 'user', content: prompt }],
-      temperature: 0.3,
-      top_p: 0.8,
-    }),
-  });
 
-  if (!response.ok) {
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    const response = await fetch(`${normalizedBase}/chat/completions`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        model,
+        messages: [{ role: 'user', content: prompt }],
+        temperature: 0.3,
+        top_p: 0.8,
+      }),
+    });
+
+    if (response.ok) {
+      const data = await response.json() as {
+        choices?: Array<{
+          message?: {
+            content?: string | Array<{ type?: string; text?: string }>;
+          };
+        }>;
+      };
+      const content = data.choices?.[0]?.message?.content;
+      if (typeof content === 'string') return content;
+      if (Array.isArray(content)) {
+        return content
+          .filter(item => item.type === 'text' && typeof item.text === 'string')
+          .map(item => item.text)
+          .join('\n');
+      }
+      return '';
+    }
+
+    // 429 / 5xx — 可重试错误，等待后重试
+    const retryable = response.status === 429 || response.status >= 500;
+    if (retryable && attempt < retries) {
+      await response.text().catch(() => {});
+      let delayMs = 3000 * attempt; // 递增 3s / 6s
+      const retryAfter = response.headers.get('retry-after');
+      if (retryAfter) {
+        const sec = parseInt(retryAfter, 10);
+        if (!isNaN(sec)) delayMs = sec * 1000 + 500;
+      }
+      console.warn(`[digest] ${model} ${response.status} (attempt ${attempt}/${retries}), retrying in ${Math.round(delayMs / 1000)}s...`);
+      await new Promise(resolve => setTimeout(resolve, delayMs));
+      continue;
+    }
+
     const errorText = await response.text().catch(() => 'Unknown error');
     throw new Error(`OpenAI-compatible API error (${response.status}): ${errorText}`);
   }
 
-  const data = await response.json() as {
-    choices?: Array<{
-      message?: {
-        content?: string | Array<{ type?: string; text?: string }>;
-      };
-    }>;
-  };
-
-  const content = data.choices?.[0]?.message?.content;
-  if (typeof content === 'string') return content;
-  if (Array.isArray(content)) {
-    return content
-      .filter(item => item.type === 'text' && typeof item.text === 'string')
-      .map(item => item.text)
-      .join('\n');
-  }
-  return '';
+  throw new Error(`OpenAI-compatible API: exhausted ${retries} retries`);
 }
 
 function inferOpenAIModel(apiBase: string): string {
   const base = apiBase.toLowerCase();
+  if (base.includes('siliconflow')) return SILICONFLOW_DEFAULT_MODEL;
   if (base.includes('deepseek')) return 'deepseek-chat';
   return OPENAI_DEFAULT_MODEL;
 }
 
 function createAIClient(config: {
+  siliconflowApiKey?: string;
+  siliconflowApiBase?: string;
+  siliconflowModel?: string;
   geminiApiKey?: string;
   openaiApiKey?: string;
   openaiApiBase?: string;
   openaiModel?: string;
 }): AIClient {
-  const state = {
-    geminiApiKey: config.geminiApiKey?.trim() || '',
-    openaiApiKey: config.openaiApiKey?.trim() || '',
-    openaiApiBase: (config.openaiApiBase?.trim() || OPENAI_DEFAULT_API_BASE).replace(/\/+$/, ''),
-    openaiModel: config.openaiModel?.trim() || '',
-    geminiEnabled: Boolean(config.geminiApiKey?.trim()),
-    fallbackLogged: false,
-  };
+  // Priority: SiliconFlow (primary) → Gemini proxy/key → generic OpenAI-compatible
+  const siliconflowApiKey = config.siliconflowApiKey?.trim() || '';
+  const siliconflowApiBase = (config.siliconflowApiBase?.trim() || SILICONFLOW_DEFAULT_API_BASE).replace(/\/+$/, '');
+  const siliconflowModel = config.siliconflowModel?.trim() || SILICONFLOW_DEFAULT_MODEL;
 
-  if (!state.openaiModel) {
-    state.openaiModel = inferOpenAIModel(state.openaiApiBase);
+  const geminiApiKey = config.geminiApiKey?.trim() || '';
+  const geminiProxy =
+    GEMINI_API_URL.includes('shadowquake.top') ||
+    !GEMINI_API_URL.includes('generativelanguage.googleapis.com');
+  const geminiAvailable = Boolean(geminiApiKey) || geminiProxy;
+
+  const openaiApiKey = config.openaiApiKey?.trim() || '';
+  const openaiApiBase = (config.openaiApiBase?.trim() || OPENAI_DEFAULT_API_BASE).replace(/\/+$/, '');
+  const openaiModel = config.openaiModel?.trim() || inferOpenAIModel(openaiApiBase);
+
+  type Provider =
+    | { kind: 'siliconflow' }
+    | { kind: 'gemini' }
+    | { kind: 'openai' };
+
+  const providers: Provider[] = [];
+  if (siliconflowApiKey) providers.push({ kind: 'siliconflow' });
+  if (geminiAvailable) providers.push({ kind: 'gemini' });
+  if (openaiApiKey) providers.push({ kind: 'openai' });
+
+  if (providers.length === 0) {
+    throw new Error(
+      'No AI API key configured. Set SILICONFLOW_API_KEY (recommended), GEMINI_API_KEY, and/or OPENAI_API_KEY.'
+    );
+  }
+
+  let providerIndex = 0;
+  let fallbackLogged = false;
+
+  async function callWithProvider(provider: Provider, prompt: string): Promise<string> {
+    if (provider.kind === 'siliconflow') {
+      return callOpenAICompatible(prompt, siliconflowApiKey, siliconflowApiBase, siliconflowModel);
+    }
+    if (provider.kind === 'gemini') {
+      return callGemini(prompt, geminiApiKey);
+    }
+    return callOpenAICompatible(prompt, openaiApiKey, openaiApiBase, openaiModel);
+  }
+
+  function describeProvider(provider: Provider): string {
+    if (provider.kind === 'siliconflow') {
+      return `SiliconFlow (${siliconflowApiBase}, model=${siliconflowModel})`;
+    }
+    if (provider.kind === 'gemini') {
+      return geminiProxy ? 'Gemini (proxy)' : 'Gemini';
+    }
+    return `OpenAI-compatible (${openaiApiBase}, model=${openaiModel})`;
   }
 
   return {
     async call(prompt: string): Promise<string> {
-      if (state.geminiEnabled && state.geminiApiKey) {
+      let lastError: unknown;
+
+      for (let i = providerIndex; i < providers.length; i++) {
+        const provider = providers[i]!;
         try {
-          return await callGemini(prompt, state.geminiApiKey);
-        } catch (error) {
-          if (state.openaiApiKey) {
-            if (!state.fallbackLogged) {
-              const reason = error instanceof Error ? error.message : String(error);
-              console.warn(`[digest] Gemini failed, switching to OpenAI-compatible fallback (${state.openaiApiBase}, model=${state.openaiModel}). Reason: ${reason}`);
-              state.fallbackLogged = true;
+          const result = await callWithProvider(provider, prompt);
+          if (i > providerIndex) {
+            // Sticky switch to working fallback for remaining calls
+            if (!fallbackLogged) {
+              const reason = lastError instanceof Error ? lastError.message : String(lastError ?? 'previous provider failed');
+              console.warn(
+                `[digest] Switched AI provider to ${describeProvider(provider)}. Reason: ${reason}`
+              );
+              fallbackLogged = true;
             }
-            state.geminiEnabled = false;
-            return callOpenAICompatible(prompt, state.openaiApiKey, state.openaiApiBase, state.openaiModel);
+            providerIndex = i;
+          }
+          return result;
+        } catch (error) {
+          lastError = error;
+          if (i + 1 < providers.length) {
+            const next = providers[i + 1]!;
+            if (!fallbackLogged) {
+              const reason = error instanceof Error ? error.message : String(error);
+              console.warn(
+                `[digest] ${describeProvider(provider)} failed, trying ${describeProvider(next)}. Reason: ${reason}`
+              );
+            }
+            continue;
           }
           throw error;
         }
       }
 
-      if (state.openaiApiKey) {
-        return callOpenAICompatible(prompt, state.openaiApiKey, state.openaiApiBase, state.openaiModel);
-      }
-
-      throw new Error('No AI API key configured. Set GEMINI_API_KEY and/or OPENAI_API_KEY.');
+      throw lastError instanceof Error
+        ? lastError
+        : new Error('No AI provider available');
     },
   };
 }
@@ -617,6 +724,10 @@ async function scoreArticlesWithAI(
     
     await Promise.all(promises);
     console.log(`[digest] Scoring progress: ${Math.min(i + MAX_CONCURRENT_GEMINI, batches.length)}/${batches.length} batches`);
+    // Rate limit guard: wait between batch groups
+    if (i + MAX_CONCURRENT_GEMINI < batches.length) {
+      await new Promise(resolve => setTimeout(resolve, 2000));
+    }
   }
   
   return allScores;
@@ -722,6 +833,9 @@ async function summarizeArticles(
     
     await Promise.all(promises);
     console.log(`[digest] Summary progress: ${Math.min(i + MAX_CONCURRENT_GEMINI, batches.length)}/${batches.length} batches`);
+    if (i + MAX_CONCURRENT_GEMINI < batches.length) {
+      await new Promise(resolve => setTimeout(resolve, 2000));
+    }
   }
   
   return summaries;
@@ -885,6 +999,20 @@ function generateTagCloud(articles: ScoredArticle[]): string {
 // Report Generation
 // ============================================================================
 
+function localDateStr(d = new Date()): string {
+  // Asia/Shanghai (UTC+8) calendar date — matches server crontab schedule
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Asia/Shanghai',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).formatToParts(d);
+  const y = parts.find(p => p.type === 'year')?.value;
+  const m = parts.find(p => p.type === 'month')?.value;
+  const day = parts.find(p => p.type === 'day')?.value;
+  return `${y}-${m}-${day}`;
+}
+
 function generateDigestReport(articles: ScoredArticle[], highlights: string, stats: {
   totalFeeds: number;
   successFeeds: number;
@@ -894,7 +1022,7 @@ function generateDigestReport(articles: ScoredArticle[], highlights: string, sta
   lang: string;
 }): string {
   const now = new Date();
-  const dateStr = now.toISOString().split('T')[0];
+  const dateStr = localDateStr(now);
   
   let report = `# 📰 AI 博客每日精选 — ${dateStr}\n\n`;
   report += `> 来自 Karpathy 推荐的 ${stats.totalFeeds} 个顶级技术博客，AI 精选 Top ${articles.length}\n\n`;
@@ -1012,10 +1140,13 @@ Options:
   --help          Show this help
 
 Environment:
-  GEMINI_API_KEY   Optional but recommended. Get one at https://aistudio.google.com/apikey
-  OPENAI_API_KEY   Optional fallback key for OpenAI-compatible APIs
-  OPENAI_API_BASE  Optional fallback base URL (default: https://api.openai.com/v1)
-  OPENAI_MODEL     Optional fallback model (default: deepseek-chat for DeepSeek base, else gpt-4o-mini)
+  SILICONFLOW_API_KEY   Primary (recommended). SiliconFlow / 硅基流动 API key
+  SILICONFLOW_API_BASE  Optional (default: https://api.siliconflow.cn/v1)
+  SILICONFLOW_MODEL     Optional (default: deepseek-ai/DeepSeek-V3)
+  GEMINI_API_KEY        Optional fallback. Get one at https://aistudio.google.com/apikey
+  OPENAI_API_KEY        Optional fallback key for other OpenAI-compatible APIs
+  OPENAI_API_BASE       Optional fallback base URL (default: https://api.openai.com/v1)
+  OPENAI_MODEL          Optional fallback model (default: gpt-4o-mini)
 
 Examples:
   bun scripts/digest.ts --hours 24 --top-n 10 --lang zh
@@ -1046,36 +1177,64 @@ async function main(): Promise<void> {
     }
   }
   
+  const siliconflowApiKey = process.env.SILICONFLOW_API_KEY;
+  const siliconflowApiBase = process.env.SILICONFLOW_API_BASE;
+  const siliconflowModel = process.env.SILICONFLOW_MODEL;
   const geminiApiKey = process.env.GEMINI_API_KEY;
   const openaiApiKey = process.env.OPENAI_API_KEY;
   const openaiApiBase = process.env.OPENAI_API_BASE;
   const openaiModel = process.env.OPENAI_MODEL;
 
-  if (!geminiApiKey && !openaiApiKey) {
-    console.error('[digest] Error: Missing API key. Set GEMINI_API_KEY and/or OPENAI_API_KEY.');
+  const geminiProxy =
+    GEMINI_API_URL.includes('shadowquake.top') ||
+    !GEMINI_API_URL.includes('generativelanguage.googleapis.com');
+
+  if (!siliconflowApiKey && !geminiApiKey && !openaiApiKey && !geminiProxy) {
+    console.error('[digest] Error: Missing API key. Set SILICONFLOW_API_KEY (recommended), GEMINI_API_KEY, and/or OPENAI_API_KEY.');
+    console.error('[digest] SiliconFlow: https://cloud.siliconflow.cn/account/ak');
     console.error('[digest] Gemini key: https://aistudio.google.com/apikey');
     process.exit(1);
   }
 
-  const aiClient = createAIClient({
-    geminiApiKey,
-    openaiApiKey,
-    openaiApiBase,
-    openaiModel,
-  });
+  let aiClient: AIClient;
+  try {
+    aiClient = createAIClient({
+      siliconflowApiKey,
+      siliconflowApiBase,
+      siliconflowModel,
+      geminiApiKey,
+      openaiApiKey,
+      openaiApiBase,
+      openaiModel,
+    });
+  } catch (error) {
+    console.error(`[digest] Error: ${error instanceof Error ? error.message : String(error)}`);
+    process.exit(1);
+  }
   
   if (!outputPath) {
     const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, '');
     outputPath = `./digest-${dateStr}.md`;
   }
+
+  const primaryLabel = siliconflowApiKey
+    ? `SiliconFlow (model=${siliconflowModel?.trim() || SILICONFLOW_DEFAULT_MODEL})`
+    : geminiApiKey || geminiProxy
+      ? geminiProxy
+        ? 'Gemini (proxy)'
+        : 'Gemini'
+      : `OpenAI-compatible (model=${openaiModel?.trim() || OPENAI_DEFAULT_MODEL})`;
   
   console.log(`[digest] === AI Daily Digest ===`);
   console.log(`[digest] Time range: ${hours} hours`);
   console.log(`[digest] Top N: ${topN}`);
   console.log(`[digest] Language: ${lang}`);
   console.log(`[digest] Output: ${outputPath}`);
-  console.log(`[digest] AI provider: ${geminiApiKey ? 'Gemini (primary)' : 'OpenAI-compatible (primary)'}`);
-  if (openaiApiKey) {
+  console.log(`[digest] AI provider: ${primaryLabel}`);
+  if (siliconflowApiKey && (geminiApiKey || geminiProxy)) {
+    console.log(`[digest] Fallback: ${geminiProxy ? 'Gemini (proxy)' : 'Gemini'}`);
+  }
+  if (openaiApiKey && (siliconflowApiKey || geminiApiKey || geminiProxy)) {
     const resolvedBase = (openaiApiBase?.trim() || OPENAI_DEFAULT_API_BASE).replace(/\/+$/, '');
     const resolvedModel = openaiModel?.trim() || inferOpenAIModel(resolvedBase);
     console.log(`[digest] Fallback: ${resolvedBase} (model=${resolvedModel})`);
@@ -1115,9 +1274,55 @@ async function main(): Promise<void> {
   });
   
   scoredArticles.sort((a, b) => b.totalScore - a.totalScore);
-  const topArticles = scoredArticles.slice(0, topN);
-  
-  console.log(`[digest] Top ${topN} articles selected (score range: ${topArticles[topArticles.length - 1]?.totalScore || 0} - ${topArticles[0]?.totalScore || 0})`);
+
+  // Diversify: dedupe near-identical titles, cap per-source to avoid one blog dominating
+  const MAX_PER_SOURCE = 2;
+  const sourceCount = new Map<string, number>();
+  const seenTitleKeys = new Set<string>();
+  const normalizeTitle = (t: string) =>
+    t.toLowerCase().replace(/[#*_`~\[\]()]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 80);
+
+  const topArticles: typeof scoredArticles = [];
+  for (const article of scoredArticles) {
+    const titleKey = normalizeTitle(article.title);
+    if (titleKey && seenTitleKeys.has(titleKey)) continue;
+
+    // Also skip if one title is a short prefix of another already selected (e.g. release notes variants)
+    let isNearDup = false;
+    for (const seen of seenTitleKeys) {
+      if (titleKey.startsWith(seen) || seen.startsWith(titleKey)) {
+        if (Math.min(titleKey.length, seen.length) >= 20) {
+          isNearDup = true;
+          break;
+        }
+      }
+    }
+    if (isNearDup) continue;
+
+    const count = sourceCount.get(article.sourceName) || 0;
+    if (count >= MAX_PER_SOURCE) continue;
+
+    topArticles.push(article);
+    seenTitleKeys.add(titleKey);
+    sourceCount.set(article.sourceName, count + 1);
+    if (topArticles.length >= topN) break;
+  }
+
+  // If diversity caps left us short, backfill by score only
+  if (topArticles.length < topN) {
+    const selectedLinks = new Set(topArticles.map(a => a.link));
+    for (const article of scoredArticles) {
+      if (selectedLinks.has(article.link)) continue;
+      const titleKey = normalizeTitle(article.title);
+      if (titleKey && seenTitleKeys.has(titleKey)) continue;
+      topArticles.push(article);
+      selectedLinks.add(article.link);
+      seenTitleKeys.add(titleKey);
+      if (topArticles.length >= topN) break;
+    }
+  }
+
+  console.log(`[digest] Top ${topArticles.length} articles selected (score range: ${topArticles[topArticles.length - 1]?.totalScore || 0} - ${topArticles[0]?.totalScore || 0}, sources: ${new Set(topArticles.map(a => a.sourceName)).size})`);
   
   console.log(`[digest] Step 4/5: Generating AI summaries...`);
   const indexedTopArticles = topArticles.map((a, i) => ({ ...a, index: i }));
