@@ -1,0 +1,30 @@
+name: CI
+
+# web/ (Next.js) 变更时做构建校验,防止坏构建流入 master。
+# 仅校验,不部署——部署仍由 deploy-web.sh 手动 scp(见仓库根)。
+on:
+  push:
+    branches: [master]
+    paths: ['web/**', '.github/workflows/ci.yml']
+  pull_request:
+    branches: [master]
+    paths: ['web/**', '.github/workflows/ci.yml']
+
+jobs:
+  build:
+    name: Build web (Next.js 静态导出)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - name: Install deps
+        run: npm ci
+      - name: Build (next build → out/)
+        run: npm run build
