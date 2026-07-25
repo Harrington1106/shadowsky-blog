@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
-import { Plus, Pencil, Trash2 } from 'lucide-react';
+import { Plus, Pencil, Trash2, Upload } from 'lucide-react';
+import { useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -19,11 +20,30 @@ export default function MomentsAdmin() {
     const [form, setForm] = useState(EMPTY);
     const [editing, setEditing] = useState(null);
     const [saving, setSaving] = useState(false);
+    const [uploading, setUploading] = useState(false);
+    const fileRef = useRef(null);
 
     async function load() {
         try { setItems(await apiGet('/api/moments')); } catch (e) { toast.error(e.message); }
     }
     useEffect(() => { load(); }, []);
+
+    async function handleUpload(e) {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        setUploading(true);
+        try {
+            const fd = new FormData();
+            fd.append('image', file);
+            const res = await fetch('/api/upload', { method: 'POST', body: fd });
+            if (res.status === 401) { window.location.href = '/admin/login'; return; }
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || '上传失败');
+            setForm((f) => ({ ...f, image: data.url }));
+            toast.success('图片已上传');
+        } catch (err) { toast.error(err.message); }
+        finally { setUploading(false); if (fileRef.current) fileRef.current.value = ''; }
+    }
 
     function openNew() { setForm(EMPTY); setEditing(null); setOpen(true); }
     function openEdit(m) { setForm({ content: m.content || '', image: m.image || '', location: m.location || '', tags: (m.tags || []).join(', ') }); setEditing(m.id); setOpen(true); }
@@ -76,7 +96,14 @@ export default function MomentsAdmin() {
                     <DialogHeader><DialogTitle>{editing ? '编辑随手拍' : '发布随手拍'}</DialogTitle></DialogHeader>
                     <div className="flex flex-col gap-3">
                         <Textarea placeholder="想说点什么…" value={form.content} onChange={(e) => setForm({ ...form, content: e.target.value })} />
-                        <Input placeholder="图片 URL" value={form.image} onChange={(e) => setForm({ ...form, image: e.target.value })} />
+                        <div className="flex gap-2">
+                            <Input placeholder="图片 URL(或点右侧上传)" value={form.image} onChange={(e) => setForm({ ...form, image: e.target.value })} />
+                            <input ref={fileRef} type="file" accept="image/*" hidden onChange={handleUpload} />
+                            <Button type="button" variant="outline" disabled={uploading} onClick={() => fileRef.current?.click()}>
+                                <Upload className="size-4" /> {uploading ? '上传中…' : '上传'}
+                            </Button>
+                        </div>
+                        {form.image && <img src={form.image} alt="" className="h-24 w-auto rounded-md border object-cover" />}
                         <div className="grid grid-cols-2 gap-3">
                             <Input placeholder="位置" value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })} />
                             <Input placeholder="标签(逗号分隔)" value={form.tags} onChange={(e) => setForm({ ...form, tags: e.target.value })} />

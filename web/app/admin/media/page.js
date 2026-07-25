@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
-import { Plus, Pencil, Trash2 } from 'lucide-react';
+import { Plus, Pencil, Trash2, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -19,11 +19,37 @@ export default function MediaAdmin() {
     const [form, setForm] = useState(EMPTY);
     const [editing, setEditing] = useState(null);
     const [saving, setSaving] = useState(false);
+    const [query, setQuery] = useState('');
+    const [results, setResults] = useState([]);
+    const [searching, setSearching] = useState(false);
 
     async function load() { try { setData(await apiGet('/api/media')); } catch (e) { toast.error(e.message); } }
     useEffect(() => { load(); }, []);
 
-    function openNew() { setForm({ ...EMPTY, type: tab }); setEditing(null); setOpen(true); }
+    async function search() {
+        if (!query.trim()) return;
+        setSearching(true);
+        try {
+            const res = await fetch(`/api/bgm_search?q=${encodeURIComponent(query)}&type=${form.type}`);
+            if (res.status === 401) { window.location.href = '/admin/login'; return; }
+            const data = await res.json();
+            setResults(Array.isArray(data?.data) ? data.data.slice(0, 8) : (Array.isArray(data?.list) ? data.list.slice(0, 8) : []));
+        } catch (e) { toast.error('搜索失败: ' + e.message); }
+        finally { setSearching(false); }
+    }
+    function pick(r) {
+        setForm((f) => ({
+            ...f,
+            id: String(r.id),
+            title: r.name_cn || r.name || f.title,
+            cover: r.images?.large || r.images?.common || r.image || f.cover,
+            total: r.eps || r.total_episodes || f.total,
+        }));
+        setResults([]);
+        setQuery('');
+    }
+
+    function openNew() { setForm({ ...EMPTY, type: tab }); setEditing(null); setResults([]); setQuery(''); setOpen(true); }
     function openEdit(m) { setForm({ ...m, total: m.total === '?' ? '' : m.total, tag: m.tag || '' }); setEditing(m.id); setOpen(true); }
 
     async function save() {
@@ -81,6 +107,25 @@ export default function MediaAdmin() {
                 <DialogContent>
                     <DialogHeader><DialogTitle>{editing ? '编辑条目' : '新增条目'}</DialogTitle></DialogHeader>
                     <div className="flex flex-col gap-3">
+                        {!editing && (
+                            <div className="rounded-lg border bg-muted/30 p-3">
+                                <div className="mb-2 flex gap-2">
+                                    <Input placeholder="搜索 Bangumi(番剧/漫画名)…" value={query} onChange={(e) => setQuery(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); search(); } }} />
+                                    <Button type="button" variant="secondary" disabled={searching} onClick={search}><Search className="size-4" /> {searching ? '搜索中' : '搜索'}</Button>
+                                </div>
+                                {results.length > 0 && (
+                                    <div className="flex max-h-56 flex-col gap-1 overflow-y-auto">
+                                        {results.map((r) => (
+                                            <button type="button" key={r.id} onClick={() => pick(r)} className="flex items-center gap-2 rounded-md p-1.5 text-left hover:bg-accent">
+                                                {(r.images?.grid || r.images?.common || r.image) && <img src={r.images?.grid || r.images?.common || r.image} alt="" className="h-10 w-8 shrink-0 rounded object-cover" />}
+                                                <span className="min-w-0 flex-1 truncate text-xs">{r.name_cn || r.name}</span>
+                                                <span className="shrink-0 font-mono text-[0.6rem] text-muted-foreground">#{r.id}</span>
+                                            </button>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        )}
                         <div className="grid grid-cols-2 gap-3">
                             <Input placeholder="Bangumi ID *" value={form.id} onChange={(e) => setForm({ ...form, id: e.target.value })} disabled={!!editing} />
                             <select value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value })} className="rounded-md border bg-background px-3 text-sm">
