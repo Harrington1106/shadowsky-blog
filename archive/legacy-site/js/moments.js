@@ -387,6 +387,8 @@
         cache();
         bind();
         skeleton();
+        // 先渲染静态图标（导航栏等），不依赖数据请求——本地 file:// 打开时 fetch 必败
+        icons();
 
         fetch('public/data/moments.json?v=' + Date.now())
             .then(function(r) { return r.ok ? r.json() : null; })

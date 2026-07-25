@@ -303,6 +303,8 @@
         cache();
         bind();
         skeleton();
+        // 先渲染静态图标（导航栏等），不依赖数据请求——本地 file:// 打开时 fetch 必败
+        icons();
 
         // Load categories first, then bookmarks
         var catPromise = fetch('public/data/categories.json?v=' + Date.now())

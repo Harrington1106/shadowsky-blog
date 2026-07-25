@@ -1,0 +1,22 @@
+1:"$Sreact.fragment"
+2:I[80998,["637","static/chunks/637-70f3802ecb78e2d1.js","708","static/chunks/708-b24c2ae5f05ecfb5.js","252","static/chunks/252-d46f454b90714d36.js","714","static/chunks/714-5d0e550491c1718b.js","177","static/chunks/app/layout-8b954a4005ced32e.js"],"TooltipProvider"]
+3:I[65856,["637","static/chunks/637-70f3802ecb78e2d1.js","708","static/chunks/708-b24c2ae5f05ecfb5.js","252","static/chunks/252-d46f454b90714d36.js","714","static/chunks/714-5d0e550491c1718b.js","177","static/chunks/app/layout-8b954a4005ced32e.js"],"default"]
+4:I[45387,["637","static/chunks/637-70f3802ecb78e2d1.js","708","static/chunks/708-b24c2ae5f05ecfb5.js","252","static/chunks/252-d46f454b90714d36.js","714","static/chunks/714-5d0e550491c1718b.js","177","static/chunks/app/layout-8b954a4005ced32e.js"],"default"]
+5:I[9766,[],""]
+6:I[98924,[],""]
+7:I[15683,["637","static/chunks/637-70f3802ecb78e2d1.js","345","static/chunks/app/not-found-1a0c4e2703b6f91e.js"],"default"]
+8:I[60650,["637","static/chunks/637-70f3802ecb78e2d1.js","708","static/chunks/708-b24c2ae5f05ecfb5.js","252","static/chunks/252-d46f454b90714d36.js","714","static/chunks/714-5d0e550491c1718b.js","177","static/chunks/app/layout-8b954a4005ced32e.js"],"Toaster"]
+9:I[64709,["637","static/chunks/637-70f3802ecb78e2d1.js","196","static/chunks/196-bae1fe2f3e58fd10.js","974","static/chunks/app/page-aaa40dba8760befe.js"],"default"]
+a:I[24431,[],"OutletBoundary"]
+c:I[15278,[],"AsyncMetadataOutlet"]
+e:I[24431,[],"ViewportBoundary"]
+10:I[24431,[],"MetadataBoundary"]
+11:"$Sreact.suspense"
+13:I[57150,[],""]
+:HL["/_next/static/css/624d9a7a1505817b.css","style"]
+0:{"P":null,"b":"st9KhJ_dMepYMK4nqJk_7","p":"","c":["",""],"i":false,"f":[[["",{"children":["__PAGE__",{}]},"$undefined","$undefined",true],["",["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/css/624d9a7a1505817b.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}]],["$","html",null,{"lang":"zh-CN","className":"dark","suppressHydrationWarning":true,"children":[["$","head",null,{"children":[["$","script",null,{"dangerouslySetInnerHTML":{"__html":"\n(function(){\n    try{\n        var t=localStorage.getItem(\"theme\");\n        var d=t?(t===\"dark\"):window.matchMedia(\"(prefers-color-scheme: dark)\").matches;\n        document.documentElement.classList.toggle(\"dark\",d);\n    }catch(e){}\n})();\n"}}],["$","meta",null,{"name":"theme-color","content":"#0B1120","media":"(prefers-color-scheme: dark)"}],["$","meta",null,{"name":"theme-color","content":"#F8FAFC","media":"(prefers-color-scheme: light)"}],["$","link",null,{"rel":"preconnect","href":"https://fonts.loli.net"}],["$","link",null,{"rel":"preconnect","href":"https://gstatic.loli.net","crossOrigin":"anonymous"}],["$","link",null,{"href":"https://fonts.loli.net/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500;700&display=swap","rel":"stylesheet"}]]}],["$","body",null,{"className":"flex min-h-screen flex-col font-sans antialiased","children":["$","$L2",null,{"children":[["$","$L3",null,{}],["$","$L4",null,{}],["$","$L5",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L6",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":[["$","$L7",null,{}],[]],"forbidden":"$undefined","unauthorized":"$undefined"}],["$","$L8",null,{}]]}]}]]}]]}],{"children":["__PAGE__",["$","$1","c",{"children":[["$","$L9",null,{}],null,["$","$La",null,{"children":["$Lb",["$","$Lc",null,{"promise":"$@d"}]]}]]}],{},null,false]},null,false],["$","$1","h",{"children":[null,[["$","$Le",null,{"children":"$Lf"}],null],["$","$L10",null,{"children":["$","div",null,{"hidden":true,"children":["$","$11",null,{"fallback":null,"children":"$L12"}]}]}]]}],false]],"m":"$undefined","G":["$13",[]],"s":false,"S":true}
+f:[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}]]
+b:null
+14:I[80622,[],"IconMark"]
+d:{"metadata":[["$","title","0",{"children":"夏日科技探索"}],["$","link","1",{"rel":"icon","href":"/img/favicon256.png"}],["$","$L14","2",{}]],"error":null,"digest":"$undefined"}
+12:"$d:metadata"

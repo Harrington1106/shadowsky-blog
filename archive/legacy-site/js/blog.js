@@ -273,8 +273,11 @@ async function renderAIDaily(container) {
         aiDailyIndex.forEach(d => {
             const date = new Date(d.date);
             const ds = isNaN(date) ? d.date : date.toLocaleDateString('zh-CN', { weekday: 'short', month: 'short', day: 'numeric' });
-            // 去掉标题中的 emoji 前缀和多余空格
-            const cleanTitle = (d.title || '').replace(/^[^\w一-鿿]+/, '').trim();
+            // 去掉标题中的各种前缀（emoji、"AI"字样等），避免与ai-badge重复
+            const cleanTitle = (d.title || '')
+                .replace(/^[^\w一-鿿]+/, '')          // 去掉开头的非文字字符（emoji等）
+                .replace(/^(AI|📰)\s*[-—]?\s*/i, '')  // 去掉"AI"、📰以及后面的分隔符
+                .trim();
             html += `<a href="post.html?ai=${encodeURIComponent(d.date)}" class="article-item">
                 <span class="article-date">${ds}</span>
                 <div class="article-thumb article-thumb--placeholder"><i data-lucide="bot"></i></div>

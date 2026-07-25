@@ -1,0 +1,240 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script>(function(){try{var t=localStorage.getItem("theme");var d=t?(t==="dark"):window.matchMedia("(prefers-color-scheme: dark)").matches;document.documentElement.classList.toggle("dark",d);}catch(e){}})();</script>
+    <meta name="theme-color" content="#08080c" media="(prefers-color-scheme: dark)">
+    <meta name="theme-color" content="#F5F7FA" media="(prefers-color-scheme: light)">
+    <title>关于 | 夏日科技探索</title>
+    <link rel="icon" type="image/png" href="public/img/black32.png" media="(prefers-color-scheme: dark)">
+    <link rel="icon" type="image/png" href="public/img/favicon32.png" media="(prefers-color-scheme: light)">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.loli.net">
+    <link rel="preconnect" href="https://gstatic.loli.net" crossorigin>
+    <link href="https://fonts.loli.net/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+    <!-- Unified CSS -->
+        <link href="css/unified.css?v=2607231300" rel="stylesheet">
+    <link href="css/liquid-ambient.css?v=20260624v5" rel="stylesheet">
+    <link href="css/liquid-about.css?v=2606270100" rel="stylesheet">
+    <script src="js/vendor/lucide.min.js?v=20260624v5"></script>
+    <style>html:not(.dark) .dark-only{display:none!important}html.dark .light-only{display:none!important}</style>
+</head>
+<body data-page="关于" class="font-sans">
+    <!-- ═══════ 流体光斑层 ═══════ -->
+    <div class="liquid-ambient ambient-subtle" aria-hidden="true">
+        <div class="liquid-blob liquid-blob--1"></div>
+        <div class="liquid-blob liquid-blob--2"></div>
+        <div class="liquid-blob liquid-blob--3"></div>
+    </div>
+
+    <!-- Navbar -->
+    <nav id="navbar" class="homepage-cover-nav-shell" data-ui-region="home-nav-shell">
+        <div class="nav-inner">
+            <div class="nav-left">
+                <a href="index.html" class="nav-brand" aria-label="夏日科技探索 Home">
+                    <img src="public/img/black256.png" alt="Logo" class="dark-only">
+                    <img src="public/img/favicon256.png" alt="Logo" class="light-only">
+                    <span>夏日科技探索</span>
+                </a>
+                <span class="nav-divider" aria-hidden="true"></span>
+                <div class="nav-links homepage-cover-nav-actions" role="navigation" aria-label="Main">
+                    <a href="index.html" class="nav-link" title="首页"><i data-lucide="house"></i><span class="nav-text">首页</span></a>
+                    <a href="blog.html" class="nav-link" title="笔记"><i data-lucide="file-text"></i><span class="nav-text">笔记</span></a>
+                    <a href="moments.html" class="nav-link" title="片刻"><i data-lucide="camera"></i><span class="nav-text">片刻</span></a>
+                    <a href="bookmarks.html" class="nav-link" title="收藏"><i data-lucide="bookmark"></i><span class="nav-text">收藏</span></a>
+                    <a href="rss.html" class="nav-link" title="订阅"><i data-lucide="rss"></i><span class="nav-text">订阅</span></a>
+                    <a href="acg.html" class="nav-link" title="ACG"><i data-lucide="film"></i><span class="nav-text">ACG</span></a>
+                    <a href="about.html" class="nav-link active" aria-current="page" title="关于"><i data-lucide="user-circle"></i><span class="nav-text">关于</span></a>
+                </div>
+            </div>
+            <div class="nav-actions">
+                <button id="theme-toggle" class="theme-toggle" aria-label="切换主题">
+                    <i data-lucide="sun" class="dark-only"></i>
+                    <i data-lucide="moon" class="light-only"></i>
+                </button>
+                <button id="nav-hamburger" class="nav-hamburger" aria-label="菜单" aria-expanded="false">
+                    <i data-lucide="menu"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ═══════ 移动端菜单 ═══════ -->
+    <div id="mobile-menu" role="dialog" aria-label="导航菜单" aria-modal="true">
+        <div class="mobile-menu-header">
+            <span class="mobile-menu-brand">夏日科技探索</span>
+            <button class="mobile-menu-close" aria-label="关闭菜单">
+                <i data-lucide="x"></i>
+            </button>
+        </div>
+        <div class="mobile-menu-links">
+            <a href="index.html" class="mobile-nav-link homepage-mobile-menu-link"><i data-lucide="house"></i><span>首页</span></a>
+            <a href="blog.html" class="mobile-nav-link homepage-mobile-menu-link"><i data-lucide="file-text"></i><span>笔记</span></a>
+            <a href="moments.html" class="mobile-nav-link homepage-mobile-menu-link"><i data-lucide="camera"></i><span>片刻</span></a>
+            <a href="bookmarks.html" class="mobile-nav-link homepage-mobile-menu-link"><i data-lucide="bookmark"></i><span>收藏</span></a>
+            <a href="rss.html" class="mobile-nav-link homepage-mobile-menu-link"><i data-lucide="rss"></i><span>订阅</span></a>
+            <a href="acg.html" class="mobile-nav-link homepage-mobile-menu-link"><i data-lucide="film"></i><span>ACG</span></a>
+            <a href="about.html" class="mobile-nav-link active homepage-mobile-menu-link"><i data-lucide="user-circle"></i><span>关于</span></a>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="about-page">
+
+        <header class="about-hero">
+            <img src="public/img/avatar.jpg" alt="Avatar" class="about-avatar">
+            <h1 class="about-name">Thoi</h1>
+            <div class="about-tags">
+                <span>大四学生</span><span class="about-tag-dot"></span>
+                <span>学习者</span><span class="about-tag-dot"></span>
+                <span>探索者</span>
+            </div>
+        </header>
+
+        <p class="about-quote">仰望星空，是为了更好地脚踏实地。<br>构建代码，是为了更自由地表达思想。</p>
+
+        <p class="about-bio">很高兴你能来到这里。我是 Thoi，一个在多元兴趣中探索成长的大四学生。从代码构建到星空观测，我始终保持着好奇与热情。这个网站没有弹窗、没有广告、没有复杂交互——一个在数字洪流中可以片刻驻足的安静角落。</p>
+
+        <div class="about-cards">
+            <div class="about-card">
+                <div class="about-card-icon blue"><i data-lucide="code-2"></i></div>
+                <h3>构建</h3>
+                <p>崇尚简洁与高效。好的代码应该像诗歌一样，逻辑清晰，韵律优美。</p>
+                <div class="about-tags-row">
+                    <span class="about-tag-pill">React</span><span class="about-tag-pill">TypeScript</span><span class="about-tag-pill">Tailwind</span>
+                </div>
+            </div>
+            <div class="about-card">
+                <div class="about-card-icon indigo"><i data-lucide="telescope"></i></div>
+                <h3>探索</h3>
+                <p>被未知与宏大所吸引。深空摄影、RSS 阅读、开源世界——拓展认知的边界。</p>
+                <div class="about-tags-row">
+                    <span class="about-tag-pill">Astro</span><span class="about-tag-pill">Nature</span><span class="about-tag-pill">RSS</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="about-quote-box">
+            <span class="about-quote-icon">"</span>
+            <p>在这个信息爆炸的时代，我希望通过 RSS 订阅回归阅读的本质，通过精选的网页收藏构建知识的图谱。去除了多余的装饰，只保留最核心的阅读体验。</p>
+        </div>
+
+        <div class="about-wave-wrap">
+            <button id="wave-btn" class="about-wave-btn">👋 向 Thoi 打个招呼</button>
+            <p id="wave-text" class="about-wave-text" style="opacity:0">谢谢你的来访！✨</p>
+        </div>
+
+        <p class="about-closing">这个网站是我数字生命的一部分，它会随着我的成长而缓慢生长。<br>如果你能在这里找到一篇有用的文章，一张喜欢的图片，那便是我最大的荣幸。</p>
+        <p class="about-signature">—— 2025. Thoi</p>
+
+        <div class="about-social" id="about-social"></div>
+
+    </main>
+
+    <!-- Back to Top Button -->
+<footer class="site-footer"><span class="visit-count"><i data-lucide="eye" style="width:14px;height:14px"></i> <span id="visit-count">—</span></span><span class="footer-dot">·</span><span>&copy; 2026 夏日科技探索 — Designed with <span class="footer-heart">❤️</span></span></footer>
+    <button id="back-to-top" style="position:fixed;bottom:28px;right:28px;width:44px;height:44px;border-radius:50%;background:var(--accent);color:#fff;border:none;cursor:pointer;z-index:50;opacity:0;transform:translateY(12px);pointer-events:none;transition:all .3s;box-shadow:0 4px 16px rgba(59,130,246,.25);display:flex;align-items:center;justify-content:center" aria-label="回到顶部">
+        <i data-lucide="chevron-up"></i>
+    </button>
+
+    <!-- Footer -->
+
+    <script src="js/navbar.js?v=20260723b"></script>
+    <script src="js/api.js?v=20260624v5"></script>
+    <script src="js/main.js?v=2606270000"></script>
+    <script src="js/click-effect.js?v=20260624v5"></script>
+    <script src="js/context-menu.js?v=2606270200"></script>
+    <script src="https://unpkg.com/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script>
+        lucide.createIcons();
+
+        // 主题切换修复
+        const themeBtn = document.getElementById('theme-toggle');
+        if (themeBtn) {
+            themeBtn.onclick = function(e) {
+                e.preventDefault();
+                const html = document.documentElement;
+                const isDark = !html.classList.contains('dark');
+                if (isDark) html.classList.add('dark'); else html.classList.remove('dark');
+                localStorage.setItem('theme', isDark ? 'dark' : 'light');
+                themeBtn.innerHTML = isDark ? '<i data-lucide="sun"></i>' : '<i data-lucide="moon"></i>';
+                lucide.createIcons();
+                window.dispatchEvent(new CustomEvent('themechange'));
+                window.dispatchEvent(new CustomEvent('themeChange', { detail: { isDark } }));
+            };
+            // 初始图标
+            const initDark = document.documentElement.classList.contains('dark');
+            themeBtn.innerHTML = initDark ? '<i data-lucide="sun"></i>' : '<i data-lucide="moon"></i>';
+            lucide.createIcons();
+        }
+
+        const lenis = new Lenis({ duration: 0.5, easing: t => Math.min(1, 1.001 - Math.pow(2, -6 * t)), smoothTouch: false, touchMultiplier: 2 });
+        window.lenis = lenis;
+        function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
+        requestAnimationFrame(raf);
+
+        // BTT
+        const btt = document.getElementById('back-to-top');
+        if (btt) {
+            lenis.on('scroll', ({ scroll }) => {
+                btt.style.opacity = scroll > 400 ? '1' : '0';
+                btt.style.transform = scroll > 400 ? 'translateY(0)' : 'translateY(12px)';
+                btt.style.pointerEvents = scroll > 400 ? 'auto' : 'none';
+            });
+            btt.addEventListener('click', () => lenis.scrollTo(0, { duration: 0.8 }));
+        }
+
+        // 动态加载社交链接（Simple Icons 品牌图标 + Lucide 通用图标）
+        (function() {
+            var socialData = [];
+            function renderSocial() {
+                var container = document.getElementById('about-social');
+                if (!container || !socialData.length) return;
+                var isDark = document.documentElement.classList.contains('dark');
+                container.innerHTML = socialData.map(function(s){
+                    var isMail = s.url && s.url.indexOf('mailto:') === 0;
+                    var target = isMail ? '' : ' target="_blank" rel="noopener"';
+                    var icon = s.icon || 'lucide:link';
+                    if (icon.indexOf('simple:') === 0) {
+                        return '<a href="' + s.url + '"' + target + ' aria-label="' + s.name + '" title="' + s.name + '"><img src="https://cdn.simpleicons.org/' + icon.replace('simple:', '') + '/' + (isDark ? 'white' : '333') + '" width="22" height="22" alt=""></a>';
+                    }
+                    return '<a href="' + s.url + '"' + target + ' aria-label="' + s.name + '" title="' + s.name + '"><i data-lucide="' + icon.replace('lucide:', '') + '"></i></a>';
+                }).join('');
+                if (window.lucide) lucide.createIcons();
+            }
+            fetch('/api/social').then(function(r){return r.json()}).then(function(data){
+                if (!Array.isArray(data)) return;
+                socialData = data.filter(Boolean);
+                renderSocial();
+            }).catch(function(){});
+            // 监听主题切换，重绘图标
+            window.addEventListener('themechange', renderSocial);
+            window.addEventListener('themeChange', renderSocial);
+        })();
+
+        // Wave button + confetti
+        const waveBtn = document.getElementById('wave-btn');
+        const waveText = document.getElementById('wave-text');
+        if (waveBtn) {
+            waveBtn.addEventListener('click', () => {
+                const d = { origin: { y: 0.7 } };
+                confetti({...d, particleCount: 50, spread: 26, startVelocity: 55});
+                confetti({...d, particleCount: 40, spread: 60});
+                confetti({...d, particleCount: 70, spread: 100, decay: .91, scalar: .8});
+                confetti({...d, particleCount: 20, spread: 120, startVelocity: 25, decay: .92, scalar: 1.2});
+                confetti({...d, particleCount: 20, spread: 120, startVelocity: 45});
+                waveText.style.opacity = '1';
+                waveBtn.textContent = '✨ 已收到！';
+                waveBtn.disabled = true;
+                // 通知站长
+                fetch('/api/wave', { method: 'POST' }).catch(function(){});
+            });
+        }
+    </script>
+<script src="js/tracker.js?v=20260624v5"></script>
+</body>
+</html>
