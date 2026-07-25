@@ -15,26 +15,13 @@ export default function PageTracker() {
     const pathname = usePathname();
 
     useEffect(() => {
-        const data = { url: window.location.href, referrer: document.referrer, ts: Date.now() };
-
+        // v2:访问上报统一走 /api/page-visit(增 page_visits + total_visits,排除 IP 跳过)
         fetch('/api/page-visit', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ url: data.url }),
+            body: JSON.stringify({ url: window.location.href }),
             keepalive: true,
         }).catch(() => {});
-
-        if (navigator.sendBeacon) {
-            const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
-            navigator.sendBeacon('/api/visit.php', blob);
-        } else {
-            fetch('/api/visit.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data),
-                keepalive: true,
-            }).catch(() => {});
-        }
     }, [pathname]);
 
     const msgIdxRef = useRef(0);

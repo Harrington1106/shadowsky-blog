@@ -117,8 +117,26 @@ export const snapshots = sqliteTable('snapshots', {
     createdAt: text('created_at'),
 });
 
-/** 非密钥应用设置(如 bangumi_username);密钥类留 .env,不入库 */
+/** 应用设置(bangumi_username/token 等,admin 可编辑) */
 export const appSettings = sqliteTable('app_settings', {
     key: text('key').primaryKey(),
     value: text('value'),
+});
+
+/** 统计排除的 IP(不计入访问量) */
+export const excludedIps = sqliteTable('excluded_ips', {
+    ip: text('ip').primaryKey(),
+});
+
+/** 全站封禁的 IP(403) */
+export const blockedIps = sqliteTable('blocked_ips', {
+    ip: text('ip').primaryKey(),
+});
+
+/** 打招呼记录(about 页 wave,admin 查看),最多留最近 50 条 */
+export const greetings = sqliteTable('greetings', {
+    id: integer('id').primaryKey({ autoIncrement: true }),
+    time: text('time'),
+    ip: text('ip'),
+    ua: text('ua'),
 });

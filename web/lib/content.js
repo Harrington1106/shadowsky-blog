@@ -14,6 +14,11 @@ export function aiDailyDir() {
     return process.env.AI_DAILY_DIR || path.resolve(process.cwd(), '..', 'public', 'data', 'ai-daily');
 }
 
+/** 上传文件目录(Docker 挂载卷),对外经 /uploads/ 提供。 */
+export function uploadsDir() {
+    return process.env.UPLOADS_DIR || path.resolve(process.cwd(), 'public', 'uploads');
+}
+
 /**
  * 把用户提供的文件名收敛成安全的 basename,阻断路径穿越(../ 等)。
  * 返回 null 表示非法。

@@ -24,4 +24,8 @@ web/db/*.db
 web/db/*.db-shm
 web/db/*.db-wal
 web/uploads/
+web/data/
+web/cA.txt
+web/cook.txt
+web/cookies.txt
 
