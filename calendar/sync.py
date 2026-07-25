@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 GNZ48 Team G 公演日历同步脚本
-读取 schedule.json → 生成 team_g.ics
+读取 schedule.json → 直接生成 team_g.ics (不依赖 ics 库序列化)
 
 用法:
     python3 sync.py
@@ -15,7 +15,6 @@ import json
 import os
 import sys
 from datetime import datetime, timedelta, timezone
-from ics import Calendar, Event
 
 # ── 配置 ──────────────────────────────────────────────
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -38,75 +37,84 @@ def load_schedule():
     return data
 
 
-def build_calendar(shows):
-    """将公演数据转换成 iCalendar 对象（CST 时区）"""
-    cal = Calendar(creator="GNZ48 Team G AutoSync - shadowquake.top")
+def escape_ics_text(text):
+    """转义 ICS 文本中的特殊字符: \\ , ; 换行"""
+    text = text.replace("\\", "\\\\")   # 反斜杠转义必须在最前
+    text = text.replace(";", "\\;")
+    text = text.replace(",", "\\,")
+    text = text.replace("\n", "\\n")    # 真实换行 → ICS \n
+    return text
 
-    # Python 3.6 不支持 f-string 内反斜杠，用变量代替
-    nl = "\n"
+
+def build_ics(shows):
+    """直接手写 ICS 文件内容，完全掌控格式"""
+
+    lines = []
+    lines.append("BEGIN:VCALENDAR")
+    lines.append("VERSION:2.0")
+    lines.append("PRODID:-//GNZ48 Team G//Theater Show Calendar//CN")
+    lines.append("CALSCALE:GREGORIAN")
+    lines.append("METHOD:PUBLISH")
+    lines.append("X-WR-CALNAME:GNZ48 Team G 公演日历")
+    lines.append("X-WR-CALDESC:GNZ48 Team G 剧场公演安排 - shadowquake.top")
+    lines.append("X-WR-TIMEZONE:Asia/Shanghai")
+
+    now_utc = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
 
     for show in shows:
-        event = Event()
-        event.name = "[GNZ48] {}".format(show["title"])
-
-        # 解析北京时间 (CST UTC+8)，显式带上时区
+        # 解析北京时间
         dt_str = "{} {}:00".format(show["date"], show["time"])
-        begin_naive = datetime.strptime(dt_str, "%Y-%m-%d %H:%M:%S")
-        begin = begin_naive.replace(tzinfo=TZ_CST)
+        begin_local = datetime.strptime(dt_str, "%Y-%m-%d %H:%M:%S")
+        begin_local = begin_local.replace(tzinfo=TZ_CST)
+        end_local = begin_local + timedelta(hours=2, minutes=30)
 
-        # 结束时间 = 开始 + 2.5 小时
-        end = begin + timedelta(hours=2, minutes=30)
+        # 转 UTC 时间
+        dtstart = begin_local.astimezone(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+        dtend = end_local.astimezone(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
 
-        event.begin = begin
-        event.end = end
+        # 构建描述文本 — 用真实换行，最后统一转义
+        desc_raw = "\n".join([
+            "公演：《{}》".format(show["stage"]),
+            "类型：{}".format(show["type"]),
+            "成员阵容：{}".format("、".join(show["cast"])),
+            "备注特企：{}".format(show["note"]),
+            "购票通道：https://m.gnz48.com/tickets/detail/{}".format(show["ticketId"]),
+            "订阅来源：https://{}/gnz48.html".format(DOMAIN),
+        ])
+        desc = escape_ics_text(desc_raw)
 
-        # 描述信息 — ICS 换行用 \n（单反斜杠）
-        event.description = (
-            "公演：《{}》\\n".format(show["stage"]) +
-            "类型：{}\\n".format(show["type"]) +
-            "成员阵容：{}\\n".format("、".join(show["cast"])) +
-            "备注特企：{}\\n".format(show["note"]) +
-            "购票通道：https://m.gnz48.com/tickets/detail/{}\\n".format(show["ticketId"]) +
-            "订阅来源：https://{}/gnz48.html".format(DOMAIN)
-        )
+        location = escape_ics_text(show["location"])
+        summary = escape_ics_text("[GNZ48] {}".format(show["title"]))
+        uid = "teamg-{}-2026@shadowquake.top".format(show["id"])
 
-        event.location = show["location"]
-        event.url = "https://m.gnz48.com/tickets/detail/{}".format(show["ticketId"])
+        lines.append("BEGIN:VEVENT")
+        lines.append("UID:{}".format(uid))
+        lines.append("DTSTAMP:{}".format(now_utc))
+        lines.append("DTSTART:{}".format(dtstart))
+        lines.append("DTEND:{}".format(dtend))
+        lines.append("SUMMARY:{}".format(summary))
+        lines.append("DESCRIPTION:{}".format(desc))
+        lines.append("LOCATION:{}".format(location))
+        lines.append("URL:https://m.gnz48.com/tickets/detail/{}".format(show["ticketId"]))
+        # 提前 2 小时提醒
+        lines.append("BEGIN:VALARM")
+        lines.append("TRIGGER:-PT2H")
+        lines.append("ACTION:DISPLAY")
+        lines.append("DESCRIPTION:公演即将开场！准备好应援棒吧！")
+        lines.append("END:VALARM")
+        lines.append("END:VEVENT")
 
-        cal.events.add(event)
+    lines.append("END:VCALENDAR")
 
-    print("[INFO] 已生成 {} 个 iCalendar 事件".format(len(cal.events)))
-    return cal
+    # ICS 要求 CRLF 换行
+    ics_text = "\r\n".join(lines) + "\r\n"
 
-
-def write_ics_with_alarms(cal):
-    """写出 .ics 文件，并手动注入 VALARM + 修正 PRODID"""
-
-    # 序列化日历
-    ics_text = cal.serialize()
-
-    # 替换 ics 库的默认 PRODID
-    ics_text = ics_text.replace(
-        "PRODID:ics.py - http://git.io/lLljaA",
-        "PRODID:-//GNZ48 Team G//Theater Show Calendar//CN"
-    )
-
-    # 在每个 VEVENT 末尾插入 VALARM（END:VEVENT 之前）
-    alarm_block = (
-        "BEGIN:VALARM\r\n"
-        "TRIGGER:-PT2H\r\n"
-        "ACTION:DISPLAY\r\n"
-        "DESCRIPTION:公演即将开场！准备好应援棒吧！\r\n"
-        "END:VALARM\r\n"
-    )
-
-    ics_text = ics_text.replace("\r\nEND:VEVENT", "\r\n" + alarm_block + "END:VEVENT")
-
-    with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
+    with open(OUTPUT_FILE, "w", encoding="utf-8", newline="") as f:
         f.write(ics_text)
 
     file_size = os.path.getsize(OUTPUT_FILE)
     print("[OK] 日历文件已写入: {} ({} bytes)".format(OUTPUT_FILE, file_size))
+    return ics_text
 
 
 def main():
@@ -118,8 +126,7 @@ def main():
         print("[ABORT] 无数据，退出")
         sys.exit(1)
 
-    cal = build_calendar(shows)
-    write_ics_with_alarms(cal)
+    build_ics(shows)
 
     # 输出订阅链接
     print("[DONE] 订阅地址: https://{}/calendar/team_g.ics".format(DOMAIN))

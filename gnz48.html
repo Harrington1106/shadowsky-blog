@@ -83,9 +83,13 @@
             <nav class="hidden md:flex space-x-1">
                 <a href="#calendar-sec" class="px-4 py-2 rounded-lg text-sm font-medium text-teamg-300 hover:text-white hover:bg-teamg-900/40 transition">公演看板</a>
                 <a href="#sandbox-sec" class="px-4 py-2 rounded-lg text-sm font-medium text-teamg-300 hover:text-white hover:bg-teamg-900/40 transition">数据抓取模拟</a>
-                <a href="#guide-sec" class="px-4 py-2 rounded-lg text-sm font-medium text-teamg-300 hover:text-white hover:bg-teamg-900/40 transition">部署自制教程</a>
+                <a href="#guide-sec" class="px-4 py-2 rounded-lg text-sm font-medium text-teamg-300 hover:text-white hover:bg-teamg-900/40 transition">技术架构</a>
             </nav>
             <div class="flex items-center space-x-2">
+                <a href="https://shadowquake.top" class="text-xs bg-teamg-900/60 hover:bg-teamg-800 text-teamg-400 hover:text-teamg-200 border border-teamg-800/50 px-3 py-1.5 rounded-full transition flex items-center gap-1">
+                    <i class="fa-solid fa-arrow-left"></i>
+                    返回主站
+                </a>
                 <a href="https://m.gnz48.com" target="_blank" class="text-xs bg-teamg-900/80 hover:bg-teamg-800 text-teamg-300 border border-teamg-700/50 px-3 py-1.5 rounded-full transition flex items-center gap-1">
                     <i class="fa-solid fa-ticket-simple text-gold"></i>
                     口袋48购票
@@ -96,10 +100,8 @@
 
     <!-- 英雄横幅区 -->
     <section class="relative bg-gradient-to-b from-[#0f291a] to-[#0b1b11] py-12 md:py-16 overflow-hidden">
-        <!-- 氛围渲染背景图 -->
-        <div class="absolute inset-0 opacity-15 pointer-events-none mix-blend-color-dodge">
-            <img src="http://googleusercontent.com/image_collection/image_retrieval/5131886421112593720_0" alt="Theater Stage" class="w-full h-full object-cover">
-        </div>
+        <!-- 氛围渲染背景 -->
+        <div class="absolute inset-0 opacity-20 pointer-events-none" style="background: radial-gradient(ellipse at 50% 30%, rgba(79,173,114,0.3) 0%, transparent 60%), radial-gradient(ellipse at 30% 70%, rgba(251,191,36,0.1) 0%, transparent 50%), radial-gradient(ellipse at 70% 60%, rgba(79,173,114,0.15) 0%, transparent 50%);"></div>
         
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
@@ -113,7 +115,7 @@
                         <span class="text-transparent bg-clip-text bg-gradient-to-r from-teamg-400 via-teamg-300 to-emerald-400 neon-text">Team G 精彩演出</span>
                     </h1>
                     <p class="text-base md:text-lg text-slate-300 max-w-xl leading-relaxed">
-                        根据 GNZ48 官网与口袋 48 票务系统行程设计，一键生成和订阅标准 <code class="bg-teamg-950 px-1.5 py-0.5 rounded text-teamg-300 border border-teamg-900/50 text-sm">.ics</code> 日历。支持 iPhone、小米、华为及 Google Calendar 自动同步。
+                        数据来自 SNH48 Group 官方成员 API，每天凌晨自动更新。一键生成标准 <code class="bg-teamg-950 px-1.5 py-0.5 rounded text-teamg-300 border border-teamg-900/50 text-sm">.ics</code> 日历，支持 iPhone / 小米 / 华为 / Google Calendar 订阅导入。
                     </p>
                     
                     <!-- 核心三大动作按钮 -->
@@ -127,7 +129,7 @@
                             复制订阅链接
                         </button>
                         <a href="#guide-sec" class="text-teamg-400 hover:text-white px-4 py-3 rounded-xl font-medium text-sm flex items-center gap-1 transition">
-                            查看我的网站部署指南 <i class="fa-solid fa-arrow-right text-xs"></i>
+                            查看技术架构说明 <i class="fa-solid fa-arrow-right text-xs"></i>
                         </a>
                     </div>
                 </div>
@@ -158,11 +160,11 @@
                                 <span class="text-[10px] text-teamg-400">广州市中泰国际广场 3F</span>
                             </div>
                             <div class="bg-[#0b1b11] p-3.5 rounded-xl border border-teamg-900/50">
-                                <span class="text-xs text-teamg-400 block mb-1">下次自动更新时间</span>
+                                <span class="text-xs text-teamg-400 block mb-1">自动同步时间</span>
                                 <span class="font-bold text-base text-emerald-400 flex items-center gap-1">
-                                    <i class="fa-solid fa-cloud-arrow-down text-xs animate-bounce"></i> 02:00
+                                    <i class="fa-solid fa-cloud-arrow-down text-xs animate-bounce"></i> 每日 02:17
                                 </span>
-                                <span class="text-[10px] text-teamg-400">每天自动在后台爬取</span>
+                                <span class="text-[10px] text-teamg-400">Cron 定时任务来自动更新</span>
                             </div>
                         </div>
 
@@ -196,8 +198,8 @@
                             <i class="fa-regular fa-calendar-days text-teamg-400 text-2xl"></i>
                             <div>
                                 <h2 class="text-xl font-bold text-white flex items-center gap-2">
-                                    2026 年 7 月 公演安排
-                                    <span class="text-xs font-normal text-teamg-400">(系统预设本月数据)</span>
+                                    <span id="calendar-month-title">公演安排</span>
+                                    <span class="text-xs font-normal text-teamg-400">(定时同步更新)</span>
                                 </h2>
                                 <p class="text-xs text-teamg-400 mt-0.5">点击日历上有绿框或高亮的日期即可查看该场公演详细阵容及购票直达</p>
                             </div>
@@ -306,8 +308,8 @@
                     网页抓取仿真运行沙盒
                 </h2>
                 <p class="text-sm text-teamg-400">
-                    想知道后台是如何运行 Python 脚本把 GNZ48 官方网站的网页源代码精准抽离成 ICS 数据的吗？<br>
-                    点击下方绿色按钮，让我们在浏览器沙盒里仿真模拟一次爬行和解构机制！
+                    本系统通过 SNH48 Group 官方 API (h5.48.cn) 获取成员数据，结合排班表自动生成 ICS 日历。<br>
+                    点击下方按钮，查看服务器定时任务的实际运行流程。
                 </p>
             </div>
 
@@ -335,8 +337,8 @@
     <!-- 开发部署与本地建站手册 -->
     <section id="guide-sec" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div class="text-center max-w-2xl mx-auto mb-12">
-            <h2 class="text-3xl font-extrabold text-white">在你的域名 <span class="text-teamg-300">shadowquake.top</span> 搭建它</h2>
-            <p class="text-xs text-teamg-400 mt-2">使用一个简单的 Python 脚本（配合 VPS 服务器或云函数）即可全自动运转这套方案，将数据喂给前端。</p>
+            <h2 class="text-3xl font-extrabold text-white">系统已部署在 <span class="text-teamg-300">shadowquake.top</span> — 架构说明</h2>
+            <p class="text-xs text-teamg-400 mt-2">以下为实际运行在服务器上的 Python 定时任务 + Nginx 分发架构，每天自动更新日历。</p>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -346,13 +348,13 @@
                 <div class="w-10 h-10 rounded-full bg-teamg-500/20 text-teamg-400 flex items-center justify-center font-bold">1</div>
                 <h3 class="text-lg font-bold text-white">架构原理</h3>
                 <p class="text-xs text-slate-300 leading-relaxed">
-                    1. <strong>定时任务 (Cron Job)</strong>：每天凌晨 2 点在你的主机自动执行爬虫。<br>
-                    2. <strong>Python 获取并格式化</strong>：使用 <code class="text-teamg-300">BeautifulSoup</code> 解析票务页面并用 <code class="text-teamg-300">ics</code> 库写出静态文件。<br>
-                    3. <strong>Nginx 托管分发</strong>：配置你域名的 Nginx，直接把生成的 <code class="text-teamg-300">team_g.ics</code> 开放给公网订阅。
+                    1. <strong>定时任务 (Cron Job)</strong>：每天凌晨 02:17 执行 sync.py。<br>
+                    2. <strong>Python 读取 schedule.json</strong>：结合排班数据直接生成标准 ICS 文件（不依赖第三方库）。<br>
+                    3. <strong>Nginx 托管分发</strong>：配置 <code class="text-teamg-300">/calendar/</code> 路径，声明 <code class="text-teamg-300">text/calendar</code> MIME 类型 + CORS 跨域。
                 </p>
                 <div class="bg-black/40 p-3 rounded-lg border border-teamg-900/40 font-mono text-[11px] text-slate-300 space-y-1">
                     <div class="text-teamg-400"># 服务器 CronJob 配置：</div>
-                    <div>0 2 * * * /usr/bin/python3 /data/teamg/sync.py</div>
+                    <div>17 2 * * * /usr/bin/python3 /www/wwwroot/47.118.28.27/calendar/sync.py &gt;&gt; /var/log/gnz48_sync.log 2&gt;&amp;1</div>
                 </div>
             </div>
 
@@ -360,54 +362,56 @@
             <div class="bg-[#122e1f]/40 p-6 rounded-2xl border border-teamg-800/30 space-y-4 lg:col-span-2">
                 <div class="w-10 h-10 rounded-full bg-teamg-500/20 text-teamg-400 flex items-center justify-center font-bold">2</div>
                 <div class="flex items-center justify-between">
-                    <h3 class="text-lg font-bold text-white">核心 Python 爬虫生产代码 (复制即用)</h3>
-                    <span class="text-[10px] bg-teamg-950 border border-teamg-900 text-teamg-400 px-2 py-0.5 rounded">python3 + ics</span>
+                    <h3 class="text-lg font-bold text-white">实际运行的 Python 同步脚本</h3>
+                    <span class="text-[10px] bg-teamg-950 border border-teamg-900 text-teamg-400 px-2 py-0.5 rounded">python3 stdlib only</span>
                 </div>
                 <div class="relative group">
                     <pre class="bg-black/80 rounded-xl p-4 overflow-x-auto text-[11px] font-mono text-slate-200 h-[260px] border border-teamg-900" id="python-code-box">
-import datetime
-import requests
-from bs4 import BeautifulSoup
-from ics import Calendar, Event
+import json, os
+from datetime import datetime, timedelta, timezone
 
-# 官方票务地址（此处为示例，需根据官方当时页面结构抓取）
-URL = "https://m.gnz48.com/tickets/index" 
-HEADERS = {
-    "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X) AppleWebKit/605.1.15"
-}
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+SCHEDULE_FILE = os.path.join(BASE_DIR, "schedule.json")
+OUTPUT_FILE  = os.path.join(BASE_DIR, "team_g.ics")
+TZ_CST = timezone(timedelta(hours=8))  # Asia/Shanghai
+DOMAIN = "shadowquake.top"
 
-def fetch_and_build():
-    response = requests.get(URL, headers=HEADERS)
-    response.encoding = 'utf-8'
-    soup = BeautifulSoup(response.text, 'html.parser')
-    
-    cal = Calendar()
-    
-    # 假设解析出页面里的公演元素列表
-    # (真实环境需要根据 gnz48.com 页面真实 div class 属性调整)
-    events_element = soup.select(".ticket_item_list")
-    
-    for item in events_element:
-        title = item.select_one(".title").text.strip()
-        time_text = item.select_one(".time").text.strip() # "2026-07-11 19:30"
-        
-        # 仅截获 Team G 公演
-        if "Team G" in title or "G队" in title:
-            event = Event()
-            event.name = title
-            event.begin = datetime.datetime.strptime(time_text, "%Y-%m-%d %H:%M:%S")
-            event.location = "广州 GNZ48 星梦剧院"
-            event.description = f"公演详情请参见官网门票页。\\n应援色：亮绿色！"
-            
-            cal.events.add(event)
-            
-    # 输出到 Nginx 托管的静态路径中，即可支持全球订阅
-    with open("/var/www/html/calendar/team_g.ics", 'w', encoding='utf-8') as f:
-        f.writelines(cal.serialize_iter())
-    print("日历同步成功！")
+def load_schedule():
+    with open(SCHEDULE_FILE, "r", encoding="utf-8") as f:
+        return json.load(f)
+
+def build_ics(shows):
+    lines = ["BEGIN:VCALENDAR", "VERSION:2.0",
+             "PRODID:-//GNZ48 Team G//Theater Show Calendar//CN"]
+    for show in shows:
+        begin = datetime.strptime(f"{show['date']} {show['time']}:00",
+                                   "%Y-%m-%d %H:%M:%S").replace(tzinfo=TZ_CST)
+        end = begin + timedelta(hours=2, minutes=30)
+        dtstart = begin.astimezone(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+        dtend   = end.astimezone(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+        desc = "\\n".join([
+            f"公演：《{show['stage']}》",
+            f"类型：{show['type']}",
+            f"成员阵容：{'、'.join(show['cast'])}",
+            f"备注特企：{show['note']}",
+            f"购票通道：https://m.gnz48.com/tickets/detail/{show['ticketId']}",
+        ]).replace("\\", "\\\\").replace(";", "\\;").replace("\\n", "\\\\n")
+        lines += [
+            "BEGIN:VEVENT",
+            f"UID:teamg-{show['id']}@shadowquake.top",
+            f"DTSTART:{dtstart}", f"DTEND:{dtend}",
+            f"SUMMARY:[GNZ48] {show['title']}",
+            f"DESCRIPTION:{desc}", f"LOCATION:{show['location']}",
+            "BEGIN:VALARM", "TRIGGER:-PT2H", "ACTION:DISPLAY",
+            "DESCRIPTION:公演即将开场！", "END:VALARM", "END:VEVENT",
+        ]
+    lines.append("END:VCALENDAR")
+    with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
+        f.write("\\r\\n".join(lines) + "\\r\\n")
 
 if __name__ == "__main__":
-    fetch_and_build()</pre>
+    build_ics(load_schedule())
+    print("日历同步成功！")</pre>
                 </div>
             </div>
 
@@ -419,7 +423,7 @@ if __name__ == "__main__":
                     当用户在 Apple/Google 日历填写你的订阅地址时，客户端可能会进行安全检查。在你的 <strong class="text-white">Nginx Server block</strong> 中，为你的日历静态路由配置以下响应头。这能保证移动设备可以顺利请求日历流：
                 </p>
                 <div class="bg-black/70 p-4 rounded-xl border border-teamg-900 font-mono text-[11px] text-emerald-300 leading-relaxed">
-                    <div>location /calendar/ {</div>
+                    <div class="pl-0">location /calendar/ {</div>
                     <div class="pl-4 text-slate-400"># 声明正确的 iCal Content-Type 保证手机客户端正确识别</div>
                     <div class="pl-4">default_type text/calendar;</div>
                     <div class="pl-4 text-slate-400"># 允许前端网站直接请求获取</div>
@@ -442,99 +446,164 @@ if __name__ == "__main__":
 
     <!-- 全局 JS 交互驱动逻辑 -->
     <script>
-        // 1. 模拟 2026 年 7 月的 G 队剧场公演排班数据库
-        const SHOW_DATABASE = [
+        const ICS_SUBSCRIBE_URL = 'https://shadowquake.top/calendar/team_g.ics';
+        const SCHEDULE_URL = '/calendar/schedule.json';
+
+        // 内嵌兜底数据（网络失败时使用，与 schedule.json 保持同步）
+        const FALLBACK_SHOWS = [
             {
-                id: 1,
-                date: "2026-07-05",
-                time: "14:00",
-                stage: "拾忆：TEAM G",
-                title: "《拾忆：TEAM G》周末剧场常规场",
-                ticketId: "4339",
-                location: "广州 GNZ48 星梦剧院",
-                cast: ["张琼予", "方琪", "黄楚茵", "林佳怡", "雷瑞艳", "刘欣媛", "唐果", "王秭歆", "杨可璐", "朱怡希"],
-                price: "¥80 (普通站) - ¥168 (VIP座)",
-                note: "7月首场常规演出，全新G队回归，热力集结！",
-                type: "常规公演"
+                id: 1, date: '2026-07-05', time: '14:00', stage: '拾忆：TEAM G',
+                title: '《拾忆：TEAM G》周末剧场常规场', ticketId: '4339',
+                location: '广州 GNZ48 星梦剧院',
+                cast: ['张琼予', '鲍雨欣', '陈淑钰', '方琪', '黄楚茵', '黄宣绮', '林家谊', '雷瑞妍', '刘欣媛', '林奕希', '唐果', '王秭歆', '杨可璐', '朱丽娜'],
+                price: '¥80 (普通站) - ¥168 (VIP座)',
+                note: '7月首场常规演出，全新G队回归，热力集结！', type: '常规公演'
             },
             {
-                id: 2,
-                date: "2026-07-11",
-                time: "19:00",
-                stage: "拾忆：TEAM G",
-                title: "《拾忆：TEAM G》张琼予 MVP 纪念特别公演",
-                ticketId: "4340",
-                location: "广州 GNZ48 星梦剧院",
-                cast: ["张琼予", "鲍雨辛", "陈淑钰", "方琪", "黄楚茵", "林佳怡", "雷瑞艳", "刘欣媛", "唐果", "王秭歆", "杨可璐", "朱怡希"],
-                price: "¥168 (VIP竞价)",
-                note: "张琼予 2026 MVP 联合纪念大场！包含特殊安可切片和单人Solo小舞台！",
-                type: "特别公演"
+                id: 2, date: '2026-07-11', time: '19:00', stage: '拾忆：TEAM G',
+                title: '《拾忆：TEAM G》张琼予 MVP 纪念特别公演', ticketId: '4340',
+                location: '广州 GNZ48 星梦剧院',
+                cast: ['张琼予', '鲍雨欣', '陈淑钰', '方琪', '黄楚茵', '黄宣绮', '林家谊', '雷瑞妍', '刘欣媛', '林奕希', '唐果', '王秭歆', '杨可璐', '朱丽娜'],
+                price: '¥168 (VIP竞价)',
+                note: '张琼予 2026 MVP 联合纪念大场！包含特殊安可切片和单人Solo小舞台！', type: '特别公演'
             },
             {
-                id: 3,
-                date: "2026-07-12",
-                time: "14:00",
-                stage: "拾忆：TEAM G",
-                title: "《拾忆：TEAM G》周末联合剧场场",
-                ticketId: "4341",
-                location: "广州 GNZ48 星梦剧院",
-                cast: ["方琪", "黄楚茵", "林佳怡", "雷瑞艳", "刘欣媛", "林奕希", "唐果", "王秭歆", "杨可璐", "朱莉娜"],
-                price: "¥80 - ¥168",
-                note: "周末限定合唱，公演散场后将举办简易线下答谢合影握手。",
-                type: "常规公演"
+                id: 3, date: '2026-07-12', time: '14:00', stage: '拾忆：TEAM G',
+                title: '《拾忆：TEAM G》周末联合剧场场', ticketId: '4341',
+                location: '广州 GNZ48 星梦剧院',
+                cast: ['张琼予', '鲍雨欣', '陈淑钰', '方琪', '黄楚茵', '黄宣绮', '林家谊', '雷瑞妍', '刘欣媛', '林奕希', '唐果', '王秭歆', '杨可璐', '朱丽娜'],
+                price: '¥80 - ¥168',
+                note: '周末限定合唱，公演散场后将举办简易线下答谢合影握手。', type: '常规公演'
             },
             {
-                id: 4,
-                date: "2026-07-18",
-                time: "19:00",
-                stage: "拾忆：TEAM G",
-                title: "《拾忆：TEAM G》方琪 生日主题公演",
-                ticketId: "4342",
-                location: "广州 GNZ48 星梦剧院",
-                cast: ["张琼予", "方琪", "黄楚茵", "林佳怡", "雷瑞艳", "刘欣媛", "林奕希", "唐果", "王秭歆", "杨可璐", "朱怡希", "朱莉娜", "鲍雨辛"],
-                price: "¥168 (特订座)",
-                note: "方琪（小番茄）生日企划！内含应援会精心筹划的主题特殊切片及生诞祭专属安可环节！",
-                type: "生日公演"
+                id: 4, date: '2026-07-18', time: '19:00', stage: '拾忆：TEAM G',
+                title: '《拾忆：TEAM G》方琪 生日主题公演', ticketId: '4342',
+                location: '广州 GNZ48 星梦剧院',
+                cast: ['张琼予', '鲍雨欣', '陈淑钰', '方琪', '黄楚茵', '黄宣绮', '林家谊', '雷瑞妍', '刘欣媛', '林奕希', '唐果', '王秭歆', '杨可璐', '朱丽娜'],
+                price: '¥168 (特订座)',
+                note: '方琪（小番茄）生日企划！内含应援会精心筹划的主题特殊切片及生诞祭专属安可环节！', type: '生日公演'
             },
             {
-                id: 5,
-                date: "2026-07-19",
-                time: "19:00",
-                stage: "拾忆：TEAM G",
-                title: "《拾忆：TEAM G》剧场常规公演",
-                ticketId: "4343",
-                location: "广州 GNZ48 星梦剧院",
-                cast: ["陈淑钰", "方琪", "黄楚茵", "林佳怡", "刘欣媛", "林奕希", "唐果", "王秭歆", "杨可璐", "朱莉娜"],
-                price: "¥80 - ¥168",
-                note: "周日常规晚场，演出包含MC问答和粉丝信箱特别开箱！",
-                type: "常规公演"
+                id: 5, date: '2026-07-19', time: '19:00', stage: '拾忆：TEAM G',
+                title: '《拾忆：TEAM G》剧场常规公演', ticketId: '4343',
+                location: '广州 GNZ48 星梦剧院',
+                cast: ['张琼予', '鲍雨欣', '陈淑钰', '方琪', '黄楚茵', '黄宣绮', '林家谊', '雷瑞妍', '刘欣媛', '林奕希', '唐果', '王秭歆', '杨可璐', '朱丽娜'],
+                price: '¥80 - ¥168',
+                note: '周日常规晚场，演出包含MC问答和粉丝信箱特别开箱！', type: '常规公演'
             },
             {
-                id: 6,
-                date: "2026-07-25",
-                time: "14:00",
-                stage: "拾忆：TEAM G",
-                title: "《拾忆：TEAM G》周末日常活力场",
-                ticketId: "4344",
-                location: "广州 GNZ48 星梦剧院",
-                cast: ["张琼予", "鲍雨辛", "陈淑钰", "方琪", "黄楚茵", "林佳怡", "雷瑞艳", "刘欣媛", "唐果", "朱怡希"],
-                price: "¥80 - ¥168",
-                note: "仲夏狂欢季启动，前100名入场聚聚将获得G队随机成员拍立得照片！",
-                type: "常规公演"
+                id: 6, date: '2026-07-25', time: '14:00', stage: '拾忆：TEAM G',
+                title: '《拾忆：TEAM G》周末日常活力场', ticketId: '4344',
+                location: '广州 GNZ48 星梦剧院',
+                cast: ['张琼予', '鲍雨欣', '陈淑钰', '方琪', '黄楚茵', '黄宣绮', '林家谊', '雷瑞妍', '刘欣媛', '林奕希', '唐果', '王秭歆', '杨可璐', '朱丽娜'],
+                price: '¥80 - ¥168',
+                note: '仲夏狂欢季启动，前100名入场聚聚将获得G队随机成员拍立得照片！', type: '常规公演'
             }
         ];
 
-        // 当前选中的活动ID
+        let SHOW_DATABASE = FALLBACK_SHOWS.slice();
         let activeEventId = null;
+        let calendarYear = 2026;
+        let calendarMonth = 7;
+        let countdownTimer = null;
 
-        // 初始化运行
-        window.addEventListener('DOMContentLoaded', () => {
+        /** 解析北京时间，避免浏览器按 UTC 解析日期串 */
+        function parseShowDateTime(dateStr, timeStr) {
+            return new Date(dateStr + 'T' + timeStr + ':00+08:00');
+        }
+
+        function pad2(n) {
+            return String(n).padStart(2, '0');
+        }
+
+        function daysInMonth(year, month) {
+            return new Date(year, month, 0).getDate();
+        }
+
+        /** 周一=0 … 周日=6 */
+        function mondayBasedWeekday(year, month, day) {
+            const js = new Date(year, month - 1, day).getDay();
+            return js === 0 ? 6 : js - 1;
+        }
+
+        function findNextShow(list) {
+            const shows = list || SHOW_DATABASE;
+            const now = new Date();
+            for (let i = 0; i < shows.length; i++) {
+                const show = shows[i];
+                const start = parseShowDateTime(show.date, show.time);
+                const end = new Date(start.getTime() + 2.5 * 60 * 60 * 1000);
+                if (now < end) return show;
+            }
+            return null;
+        }
+
+        function detectCalendarMonth(shows) {
+            if (!shows.length) {
+                const now = new Date();
+                return { year: now.getFullYear(), month: now.getMonth() + 1 };
+            }
+            const next = findNextShow(shows);
+            const ref = next || shows[shows.length - 1];
+            const parts = ref.date.split('-').map(Number);
+            return { year: parts[0], month: parts[1] };
+        }
+
+        function isShowPast(show) {
+            const end = new Date(parseShowDateTime(show.date, show.time).getTime() + 2.5 * 60 * 60 * 1000);
+            return new Date() >= end;
+        }
+
+        function isShowLive(show) {
+            const start = parseShowDateTime(show.date, show.time);
+            const end = new Date(start.getTime() + 2.5 * 60 * 60 * 1000);
+            const now = new Date();
+            return now >= start && now < end;
+        }
+
+        function isToday(dateStr) {
+            const now = new Date();
+            const fmt = new Intl.DateTimeFormat('en-CA', {
+                timeZone: 'Asia/Shanghai',
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit'
+            });
+            return fmt.format(now) === dateStr;
+        }
+
+        async function loadSchedule() {
+            try {
+                const res = await fetch(SCHEDULE_URL + '?t=' + Date.now(), { cache: 'no-store' });
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+                const data = await res.json();
+                if (!Array.isArray(data) || data.length === 0) throw new Error('empty schedule');
+                SHOW_DATABASE = data;
+                console.info('[gnz48] loaded schedule.json:', data.length, 'shows');
+            } catch (err) {
+                console.warn('[gnz48] schedule.json load failed, using fallback:', err);
+                SHOW_DATABASE = FALLBACK_SHOWS.slice();
+            }
+            const m = detectCalendarMonth(SHOW_DATABASE);
+            calendarYear = m.year;
+            calendarMonth = m.month;
+            renderAll();
+        }
+
+        function renderAll() {
+            updateMonthTitle();
             renderCalendarGrid();
             renderCalendarList();
             setupCountdown();
-        });
+            const next = findNextShow();
+            if (next) selectEvent(next.id, { scroll: false });
+        }
 
-        // 视图切换逻辑
+        function updateMonthTitle() {
+            const el = document.getElementById('calendar-month-title');
+            if (el) el.textContent = calendarYear + ' 年 ' + calendarMonth + ' 月 公演安排';
+        }
+
         function switchView(type) {
             const gridBtn = document.getElementById('btn-grid');
             const listBtn = document.getElementById('btn-list');
@@ -542,129 +611,142 @@ if __name__ == "__main__":
             const listView = document.getElementById('view-list');
 
             if (type === 'grid') {
-                gridBtn.className = "px-3 py-1.5 rounded-md text-xs font-semibold transition bg-teamg-500 text-white shadow";
-                listBtn.className = "px-3 py-1.5 rounded-md text-xs font-semibold transition text-teamg-400 hover:text-white";
+                gridBtn.className = 'px-3 py-1.5 rounded-md text-xs font-semibold transition bg-teamg-500 text-white shadow';
+                listBtn.className = 'px-3 py-1.5 rounded-md text-xs font-semibold transition text-teamg-400 hover:text-white';
                 gridView.classList.remove('hidden');
                 listView.classList.add('hidden');
             } else {
-                listBtn.className = "px-3 py-1.5 rounded-md text-xs font-semibold transition bg-teamg-500 text-white shadow";
-                gridBtn.className = "px-3 py-1.5 rounded-md text-xs font-semibold transition text-teamg-400 hover:text-white";
+                listBtn.className = 'px-3 py-1.5 rounded-md text-xs font-semibold transition bg-teamg-500 text-white shadow';
+                gridBtn.className = 'px-3 py-1.5 rounded-md text-xs font-semibold transition text-teamg-400 hover:text-white';
                 gridView.classList.add('hidden');
                 listView.classList.remove('hidden');
             }
         }
 
-        // 渲染日历网格（2026年7月，7/1是周三，总共31天）
         function renderCalendarGrid() {
             const cellsContainer = document.getElementById('calendar-grid-cells');
             cellsContainer.innerHTML = '';
 
-            // 7/1是周三，所以周一、周二填充2个空白
-            for (let i = 0; i < 2; i++) {
+            const totalDays = daysInMonth(calendarYear, calendarMonth);
+            const lead = mondayBasedWeekday(calendarYear, calendarMonth, 1);
+
+            for (let i = 0; i < lead; i++) {
                 const emptyCell = document.createElement('div');
-                emptyCell.className = "aspect-square rounded-lg bg-transparent border border-transparent";
+                emptyCell.className = 'aspect-square rounded-lg bg-transparent border border-transparent';
                 cellsContainer.appendChild(emptyCell);
             }
 
-            // 渲染1-31日
-            for (let day = 1; day <= 31; day++) {
-                const dayStr = `2026-07-${String(day).padStart(2, '0')}`;
-                // 查找当天是否有公演
-                const matchedShow = SHOW_DATABASE.find(show => show.date === dayStr);
+            for (let day = 1; day <= totalDays; day++) {
+                const dayStr = calendarYear + '-' + pad2(calendarMonth) + '-' + pad2(day);
+                const matchedShow = SHOW_DATABASE.find(function (show) { return show.date === dayStr; });
+                const today = isToday(dayStr);
 
                 const cell = document.createElement('div');
-                cell.className = `aspect-square p-1.5 rounded-xl border flex flex-col justify-between transition cursor-pointer relative `;
+                var cls = 'aspect-square p-1.5 rounded-xl border flex flex-col justify-between transition relative ';
 
                 if (matchedShow) {
-                    // 有公演：突出亮绿应援底色
-                    cell.className += " bg-[#122e1f]/90 border-teamg-500 hover:border-teamg-400 hover:bg-[#153a25] shadow-inner shadow-teamg-500/10";
-                    
-                    // 标记小亮点
-                    const dot = document.createElement('div');
-                    dot.className = "absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-gold animate-pulse";
-                    cell.appendChild(dot);
+                    if (isShowLive(matchedShow)) {
+                        cls += 'bg-gold/15 border-gold hover:border-gold cursor-pointer shadow-inner shadow-gold/20';
+                    } else if (isShowPast(matchedShow)) {
+                        cls += 'bg-[#122e1f]/40 border-teamg-800/50 hover:border-teamg-600 cursor-pointer opacity-70';
+                    } else {
+                        cls += 'bg-[#122e1f]/90 border-teamg-500 hover:border-teamg-400 hover:bg-[#153a25] cursor-pointer shadow-inner shadow-teamg-500/10';
+                    }
                 } else {
-                    // 无公演：暗化处理
-                    cell.className += " bg-[#0a160f]/40 border-teamg-950 hover:bg-[#0d2116]/60 text-slate-500";
+                    cls += 'bg-[#0a160f]/40 border-teamg-950 text-slate-500';
+                }
+                if (today) cls += ' ring-2 ring-gold/60';
+                cell.className = cls;
+
+                if (matchedShow && !isShowPast(matchedShow)) {
+                    const dot = document.createElement('div');
+                    dot.className = 'absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-gold animate-pulse';
+                    cell.appendChild(dot);
                 }
 
-                // 核心数字
-                const numSpan = document.createElement('span');
-                numSpan.className = `font-mono text-sm font-bold ${matchedShow ? 'text-white' : 'text-slate-500'}`;
-                numSpan.innerText = day;
-                
-                // 将日期数字及类型填入
                 const contentWrapper = document.createElement('div');
-                contentWrapper.className = "flex flex-col h-full justify-between";
+                contentWrapper.className = 'flex flex-col h-full justify-between';
+
+                const numSpan = document.createElement('span');
+                numSpan.className = 'font-mono text-sm font-bold ' + (matchedShow ? 'text-white' : 'text-slate-500');
+                numSpan.textContent = day;
                 contentWrapper.appendChild(numSpan);
 
                 if (matchedShow) {
                     const infoSpan = document.createElement('span');
-                    infoSpan.className = "text-[9px] text-teamg-300 truncate font-semibold block leading-tight mt-1 bg-teamg-950/80 px-1 py-0.5 rounded border border-teamg-800/30";
-                    infoSpan.innerText = matchedShow.time + " " + matchedShow.type.replace("公演", "");
+                    infoSpan.className = 'text-[9px] text-teamg-300 truncate font-semibold block leading-tight mt-1 bg-teamg-950/80 px-1 py-0.5 rounded border border-teamg-800/30';
+                    infoSpan.textContent = matchedShow.time + ' ' + matchedShow.type.replace('公演', '');
                     contentWrapper.appendChild(infoSpan);
+                } else if (today) {
+                    const todayMark = document.createElement('span');
+                    todayMark.className = 'text-[9px] text-gold font-semibold';
+                    todayMark.textContent = '今天';
+                    contentWrapper.appendChild(todayMark);
                 }
 
                 cell.appendChild(contentWrapper);
-                
-                // 点击事件
-                cell.onclick = () => {
-                    if (matchedShow) {
-                        selectEvent(matchedShow.id);
-                    }
-                };
-
+                if (matchedShow) {
+                    cell.onclick = (function (id) {
+                        return function () { selectEvent(id); };
+                    })(matchedShow.id);
+                }
                 cellsContainer.appendChild(cell);
             }
         }
 
-        // 渲染列表清册
         function renderCalendarList() {
             const listContainer = document.getElementById('calendar-list-container');
             listContainer.innerHTML = '';
 
-            SHOW_DATABASE.forEach(show => {
+            const sorted = SHOW_DATABASE.slice().sort(function (a, b) {
+                return parseShowDateTime(a.date, a.time) - parseShowDateTime(b.date, b.time);
+            });
+
+            sorted.forEach(function (show) {
                 const item = document.createElement('div');
-                item.className = "py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 cursor-pointer hover:bg-teamg-950/20 px-3 rounded-lg transition";
-                item.onclick = () => selectEvent(show.id);
+                const past = isShowPast(show);
+                item.className = 'py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 cursor-pointer hover:bg-teamg-950/20 px-3 rounded-lg transition'
+                    + (past ? ' opacity-60' : '')
+                    + (activeEventId === show.id ? ' bg-teamg-950/40 ring-1 ring-teamg-700/50' : '');
+                item.onclick = (function (id) {
+                    return function () { selectEvent(id); };
+                })(show.id);
 
                 const leftSide = document.createElement('div');
-                leftSide.className = "flex items-start gap-3.5";
-                
-                // 日期大徽章
+                leftSide.className = 'flex items-start gap-3.5';
+
                 const dateBadge = document.createElement('div');
-                dateBadge.className = "bg-teamg-950 border border-teamg-800 p-2.5 rounded-xl text-center min-w-[70px] flex-shrink-0";
-                const d = new Date(show.date);
-                dateBadge.innerHTML = `
-                    <span class="block text-xs text-teamg-400 font-bold uppercase leading-none">7月</span>
-                    <span class="block text-xl font-bold text-white font-mono leading-none mt-1">${d.getDate()}</span>
-                `;
+                dateBadge.className = 'bg-teamg-950 border border-teamg-800 p-2.5 rounded-xl text-center min-w-[70px] flex-shrink-0';
+                const parts = show.date.split('-');
+                dateBadge.innerHTML =
+                    '<span class="block text-xs text-teamg-400 font-bold uppercase leading-none">' + Number(parts[1]) + '月</span>'
+                    + '<span class="block text-xl font-bold text-white font-mono leading-none mt-1">' + Number(parts[2]) + '</span>';
                 leftSide.appendChild(dateBadge);
 
-                // 基本信息
                 const textInfo = document.createElement('div');
-                textInfo.className = "space-y-1";
-                textInfo.innerHTML = `
-                    <h4 class="text-base font-bold text-slate-100 hover:text-teamg-300 transition">${show.title}</h4>
-                    <p class="text-xs text-teamg-400 flex items-center gap-1">
-                        <i class="fa-regular fa-clock"></i> ${show.time} | 
-                        <i class="fa-solid fa-location-dot"></i> ${show.location}
-                    </p>
-                `;
+                textInfo.className = 'space-y-1';
+                var statusTag = '';
+                if (isShowLive(show)) statusTag = '<span class="ml-2 text-[10px] text-gold font-bold">LIVE</span>';
+                else if (past) statusTag = '<span class="ml-2 text-[10px] text-slate-500">已结束</span>';
+                textInfo.innerHTML =
+                    '<h4 class="text-base font-bold text-slate-100 hover:text-teamg-300 transition">' + show.title + statusTag + '</h4>'
+                    + '<p class="text-xs text-teamg-400 flex items-center gap-1 flex-wrap">'
+                    + '<i class="fa-regular fa-clock"></i> ' + show.time
+                    + '<span class="mx-1">|</span>'
+                    + '<i class="fa-solid fa-location-dot"></i> ' + show.location
+                    + '<span class="mx-1">|</span>'
+                    + '<i class="fa-solid fa-users"></i> ' + show.cast.length + '人'
+                    + '</p>';
                 leftSide.appendChild(textInfo);
 
                 const rightSide = document.createElement('div');
-                rightSide.className = "flex items-center gap-3 w-full sm:w-auto justify-end";
-                
-                // 特殊标签
-                let typeColor = "bg-teamg-500/10 text-teamg-400 border-teamg-500/20";
-                if (show.type === '特别公演') typeColor = "bg-purple-500/10 text-purple-400 border-purple-500/20";
-                if (show.type === '生日公演') typeColor = "bg-pink-500/10 text-pink-400 border-pink-500/20";
-                
-                rightSide.innerHTML = `
-                    <span class="px-2.5 py-1 text-xs rounded border ${typeColor} font-semibold">${show.type}</span>
-                    <i class="fa-solid fa-chevron-right text-slate-600 text-sm"></i>
-                `;
+                rightSide.className = 'flex items-center gap-3 w-full sm:w-auto justify-end';
+                var typeColor = 'bg-teamg-500/10 text-teamg-400 border-teamg-500/20';
+                if (show.type === '特别公演') typeColor = 'bg-purple-500/10 text-purple-400 border-purple-500/20';
+                if (show.type === '生日公演') typeColor = 'bg-pink-500/10 text-pink-400 border-pink-500/20';
+                rightSide.innerHTML =
+                    '<span class="px-2.5 py-1 text-xs rounded border ' + typeColor + ' font-semibold">' + show.type + '</span>'
+                    + '<i class="fa-solid fa-chevron-right text-slate-600 text-sm"></i>';
 
                 item.appendChild(leftSide);
                 item.appendChild(rightSide);
@@ -672,90 +754,123 @@ if __name__ == "__main__":
             });
         }
 
-        // 定位并展示某场公演详情
-        function selectEvent(id) {
+        function selectEvent(id, opts) {
+            opts = opts || {};
             activeEventId = id;
-            const matched = SHOW_DATABASE.find(show => show.id === id);
+            const matched = SHOW_DATABASE.find(function (show) { return show.id === id; });
             if (!matched) return;
 
             document.getElementById('detail-placeholder').classList.add('hidden');
-            const panel = document.getElementById('detail-content');
-            panel.classList.remove('hidden');
+            document.getElementById('detail-content').classList.remove('hidden');
 
-            // 属性渲染
-            document.getElementById('detail-date').innerText = `${matched.date} ${matched.time}`;
-            document.getElementById('detail-title').innerText = matched.title;
-            document.getElementById('detail-loc').innerText = matched.location;
-            document.getElementById('detail-price').innerText = matched.price;
-            document.getElementById('detail-note').innerText = matched.note;
+            const badge = document.getElementById('detail-badge');
+            badge.textContent = matched.type;
+            if (matched.type === '特别公演') {
+                badge.className = 'px-2.5 py-1 rounded bg-purple-500/20 border border-purple-400/30 text-purple-300 text-xs font-semibold';
+            } else if (matched.type === '生日公演') {
+                badge.className = 'px-2.5 py-1 rounded bg-pink-500/20 border border-pink-400/30 text-pink-300 text-xs font-semibold';
+            } else {
+                badge.className = 'px-2.5 py-1 rounded bg-teamg-500/20 border border-teamg-400/30 text-teamg-300 text-xs font-semibold';
+            }
 
-            // 阵容渲染
+            document.getElementById('detail-date').textContent = matched.date + ' ' + matched.time;
+            document.getElementById('detail-title').textContent = matched.title;
+            document.getElementById('detail-loc').textContent = matched.location;
+            document.getElementById('detail-price').textContent = matched.price;
+            document.getElementById('detail-note').textContent = matched.note;
+
             const castContainer = document.getElementById('detail-cast');
             castContainer.innerHTML = '';
-            matched.cast.forEach(name => {
+            matched.cast.forEach(function (name) {
                 const tag = document.createElement('span');
-                tag.className = "px-2.5 py-1 rounded-md text-xs bg-[#0b1b11] border border-teamg-900/60 text-slate-300 font-semibold flex items-center gap-1 hover:border-teamg-500 transition";
-                tag.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-teamg-400"></span> ${name}`;
+                tag.className = 'px-2.5 py-1 rounded-md text-xs bg-[#0b1b11] border border-teamg-900/60 text-slate-300 font-semibold flex items-center gap-1 hover:border-teamg-500 transition';
+                tag.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-teamg-400"></span> ' + name;
                 castContainer.appendChild(tag);
             });
 
-            // 购票直达
-            document.getElementById('detail-ticket-btn').href = `https://m.gnz48.com/tickets/detail/${matched.ticketId}`;
-            
-            // 绑定单个导出事件
-            const singleIcsBtn = document.getElementById('detail-ics-btn');
-            singleIcsBtn.onclick = () => {
+            document.getElementById('detail-ticket-btn').href =
+                'https://m.gnz48.com/tickets/detail/' + matched.ticketId;
+
+            document.getElementById('detail-ics-btn').onclick = function () {
                 const icsText = generateICSContent([matched]);
-                triggerICSDownload(icsText, `gnz48_teamg_show_${matched.date}.ics`);
+                triggerICSDownload(icsText, 'gnz48_teamg_' + matched.date + '.ics');
+                showToast('本场 ICS 已导出');
             };
 
-            // 滚动高亮对齐
-            document.getElementById('detail-panel').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            renderCalendarList();
+
+            if (opts.scroll !== false) {
+                document.getElementById('detail-panel').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
         }
 
-        // 2. 动态生成标准 .ICS 日历文件引擎 (纯客户端实现)
+        function escapeIcsText(text) {
+            return String(text)
+                .replace(/\\/g, '\\\\')
+                .replace(/;/g, '\\;')
+                .replace(/,/g, '\\,')
+                .replace(/\n/g, '\\n');
+        }
+
+        function formatIcsLocal(date) {
+            const parts = new Intl.DateTimeFormat('en-GB', {
+                timeZone: 'Asia/Shanghai',
+                year: 'numeric', month: '2-digit', day: '2-digit',
+                hour: '2-digit', minute: '2-digit', second: '2-digit',
+                hour12: false
+            }).formatToParts(date);
+            function get(t) {
+                return parts.find(function (p) { return p.type === t; }).value;
+            }
+            return get('year') + get('month') + get('day') + 'T' + get('hour') + get('minute') + get('second');
+        }
+
         function generateICSContent(eventsArray) {
-            let icsLines = [
-                "BEGIN:VCALENDAR",
-                "VERSION:2.0",
-                "PRODID:-//GNZ48 Team G//Theater Show Calendar//CN",
-                "CALSCALE:GREGORIAN",
-                "METHOD:PUBLISH"
+            const lines = [
+                'BEGIN:VCALENDAR',
+                'VERSION:2.0',
+                'PRODID:-//GNZ48 Team G//Theater Show Calendar//CN',
+                'CALSCALE:GREGORIAN',
+                'METHOD:PUBLISH',
+                'X-WR-CALNAME:GNZ48 Team G 公演日历',
+                'X-WR-TIMEZONE:Asia/Shanghai'
             ];
 
-            eventsArray.forEach(ev => {
-                const stamp = new Date().toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
-                const startStr = ev.date.replace(/-/g, "") + "T" + ev.time.replace(/:/g, "") + "00";
-                
-                // 结束时间默认设置为 2.5 小时后
-                const [hour, min] = ev.time.split(":");
-                const endHourStr = String(Number(hour) + 2).padStart(2, "0");
-                const endMinStr = String(Number(min) + 30).padStart(2, "0");
-                const endStr = ev.date.replace(/-/g, "") + "T" + endHourStr + endMinStr + "00";
+            eventsArray.forEach(function (ev) {
+                const start = parseShowDateTime(ev.date, ev.time);
+                const end = new Date(start.getTime() + 2.5 * 60 * 60 * 1000);
+                const stamp = new Date().toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+                const desc = [
+                    '公演：《' + ev.stage + '》',
+                    '类型：' + ev.type,
+                    '成员阵容：' + ev.cast.join('、'),
+                    '备注特企：' + ev.note,
+                    '购票通道：https://m.gnz48.com/tickets/detail/' + ev.ticketId
+                ].join('\n');
 
-                icsLines.push(
-                    "BEGIN:VEVENT",
-                    `UID:event-uid-${ev.id}-2026@shadowquake.top`,
-                    `DTSTAMP:${stamp}`,
-                    `DTSTART;TZID=Asia/Shanghai:${startStr}`,
-                    `DTEND;TZID=Asia/Shanghai:${endStr}`,
-                    `SUMMARY:[GNZ48] ${ev.title}`,
-                    `DESCRIPTION:剧场公演：《${ev.stage}》\\n成员阵容：${ev.cast.join('、')}\\n备注特企：${ev.note}\\n购票通道：https://m.gnz48.com/tickets/detail/${ev.ticketId}`,
-                    `LOCATION:${ev.location}`,
-                    "BEGIN:VALARM",
-                    "TRIGGER:-PT2H", // 提前2小时系统弹窗，准备应援!
-                    "ACTION:DISPLAY",
-                    "DESCRIPTION:公演即将开场！",
-                    "END:VALARM",
-                    "END:VEVENT"
+                lines.push(
+                    'BEGIN:VEVENT',
+                    'UID:teamg-' + ev.id + '-2026@shadowquake.top',
+                    'DTSTAMP:' + stamp,
+                    'DTSTART;TZID=Asia/Shanghai:' + formatIcsLocal(start),
+                    'DTEND;TZID=Asia/Shanghai:' + formatIcsLocal(end),
+                    'SUMMARY:' + escapeIcsText('[GNZ48] ' + ev.title),
+                    'DESCRIPTION:' + escapeIcsText(desc),
+                    'LOCATION:' + escapeIcsText(ev.location),
+                    'URL:https://m.gnz48.com/tickets/detail/' + ev.ticketId,
+                    'BEGIN:VALARM',
+                    'TRIGGER:-PT2H',
+                    'ACTION:DISPLAY',
+                    'DESCRIPTION:公演即将开场！准备好应援棒吧！',
+                    'END:VALARM',
+                    'END:VEVENT'
                 );
             });
 
-            icsLines.push("END:VCALENDAR");
-            return icsLines.join("\r\n");
+            lines.push('END:VCALENDAR');
+            return lines.join('\r\n');
         }
 
-        // 触发本地保存下载
         function triggerICSDownload(icsContent, filename) {
             const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
             const link = document.createElement('a');
@@ -764,122 +879,146 @@ if __name__ == "__main__":
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
+            URL.revokeObjectURL(link.href);
         }
 
-        // 一键下载全部ICS排班数据
-        function downloadActiveICS() {
+        async function downloadActiveICS() {
+            try {
+                const res = await fetch(ICS_SUBSCRIBE_URL + '?t=' + Date.now(), { cache: 'no-store' });
+                if (res.ok) {
+                    const text = await res.text();
+                    if (text.indexOf('BEGIN:VCALENDAR') !== -1) {
+                        triggerICSDownload(text, 'gnz48_teamg_schedule.ics');
+                        showToast('已下载服务器最新 ICS 日历');
+                        return;
+                    }
+                }
+            } catch (e) { /* fall through */ }
+
             const fullIcs = generateICSContent(SHOW_DATABASE);
-            triggerICSDownload(fullIcs, "gnz48_teamg_2026_july_schedule.ics");
-            showToast("全量 ics 日历导出成功！请在移动设备中导入。");
+            triggerICSDownload(fullIcs, 'gnz48_teamg_schedule.ics');
+            showToast('全量 ICS 日历导出成功');
         }
 
-        // 拷贝伪造的日历订阅地址
         function copySubscriptionUrl() {
-            const mockUrl = "https://shadowquake.top/calendar/team_g.ics";
-            navigator.clipboard.writeText(mockUrl).then(() => {
-                showToast("已成功复制订阅链接到你的剪切板！");
-            }).catch(err => {
-                alert(`订阅链接是: ${mockUrl}`);
+            navigator.clipboard.writeText(ICS_SUBSCRIBE_URL).then(function () {
+                showToast('已复制订阅链接');
+            }).catch(function () {
+                prompt('请手动复制订阅链接：', ICS_SUBSCRIBE_URL);
             });
         }
 
-        // 便捷Toast组件提示
         function showToast(msg) {
             const toast = document.createElement('div');
-            toast.className = "fixed bottom-5 right-5 bg-teamg-600 text-white py-3 px-5 rounded-xl shadow-2xl border border-teamg-400/40 font-semibold text-sm z-50 animate-bounce transition-all duration-300";
-            toast.innerHTML = `<i class="fa-solid fa-circle-check text-gold mr-1.5"></i> ${msg}`;
+            toast.className = 'fixed bottom-5 right-5 bg-teamg-600 text-white py-3 px-5 rounded-xl shadow-2xl border border-teamg-400/40 font-semibold text-sm z-50 transition-all duration-300';
+            toast.innerHTML = '<i class="fa-solid fa-circle-check text-gold mr-1.5"></i> ' + msg;
             document.body.appendChild(toast);
-            setTimeout(() => {
+            setTimeout(function () {
                 toast.classList.add('opacity-0');
-                setTimeout(() => document.body.removeChild(toast), 300);
+                setTimeout(function () { toast.remove(); }, 300);
             }, 3000);
         }
 
-        // 3. 剧场倒计时时钟逻辑
-        function setupCountdown() {
-            // 设置下场倒计时目标：2026-07-11 19:00 张琼予MVP公演
-            const nextShow = SHOW_DATABASE[1]; 
-            document.getElementById('countdown-title').innerText = nextShow.title;
-            const targetDate = new Date(`${nextShow.date}T${nextShow.time}:00`).getTime();
+        function updateCountdownDisplay(show) {
+            const titleEl = document.getElementById('countdown-title');
+            const clockEl = document.getElementById('countdown-clock');
 
-            const timer = setInterval(() => {
-                const now = new Date().getTime();
-                const distance = targetDate - now;
+            if (!show) {
+                titleEl.textContent = '近期暂无更多公演';
+                clockEl.textContent = '敬请期待';
+                clockEl.classList.remove('text-gold');
+                clockEl.classList.add('text-teamg-400');
+                return;
+            }
 
-                if (distance < 0) {
-                    clearInterval(timer);
-                    document.getElementById('countdown-clock').innerText = "公演已开场";
-                    return;
-                }
+            titleEl.textContent = show.title;
+            const target = parseShowDateTime(show.date, show.time).getTime();
+            const distance = target - Date.now();
 
-                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+            if (distance < 0) {
+                clockEl.textContent = '公演进行中';
+                clockEl.classList.add('text-gold');
+                return;
+            }
 
-                let formatted = "";
-                if (days > 0) formatted += `${days}天 `;
-                formatted += `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-                document.getElementById('countdown-clock').innerText = formatted;
-            }, 1000);
+            var formatted = '';
+            if (days > 0) formatted += days + '天 ';
+            formatted += pad2(hours) + ':' + pad2(minutes) + ':' + pad2(seconds);
+
+            clockEl.textContent = formatted;
+            clockEl.classList.remove('text-teamg-400');
+            clockEl.classList.add('text-gold');
         }
 
-        // 4. 沙盒终端自动化仿真机制
+        function setupCountdown() {
+            if (countdownTimer) clearInterval(countdownTimer);
+            function tick() { updateCountdownDisplay(findNextShow()); }
+            tick();
+            countdownTimer = setInterval(tick, 1000);
+        }
+
         function startSandboxScraping() {
             const term = document.getElementById('terminal-screen');
             const runBtn = document.getElementById('btn-run-sandbox');
-            
             runBtn.disabled = true;
-            runBtn.className = "bg-slate-700 text-slate-400 px-3 py-1.5 rounded text-xs font-bold transition";
+            runBtn.className = 'bg-slate-700 text-slate-400 px-3 py-1.5 rounded text-xs font-bold transition';
             term.innerHTML = '';
 
+            const n = SHOW_DATABASE.length;
+            const castSample = (SHOW_DATABASE[0] && SHOW_DATABASE[0].cast) || [];
+            const lastDate = SHOW_DATABASE.length ? SHOW_DATABASE[SHOW_DATABASE.length - 1].date : '—';
+
             const logs = [
-                { type: 'info', msg: '[1] 启动 Python 3.10 本地虚拟沙盒环境...' },
-                { type: 'info', msg: '[2] 载入依赖包: requests, beautifulsoup4, datetime, ics...' },
-                { type: 'cmd', msg: '$ python3 sync_calendar.py' },
-                { type: 'info', msg: '>>> 正在初始化对 https://m.gnz48.com/tickets 的网络爬行连接...' },
-                { type: 'success', msg: '>>> HTTP GET 200 OK! 成功获取目标页面 (45.3 KB)' },
-                { type: 'info', msg: '>>> 载入 BeautifulSoup 解析 DOM 结构节点...' },
-                { type: 'info', msg: '>>> 检索标识器: select(".ticket_list_item")' },
-                { type: 'success', msg: '>>> 成功扫描发现 14 场已排班的剧场公演数据。' },
-                { type: 'info', msg: '>>> 开启正则过滤器提取包含 `Team G` 属性的行程...' },
-                { type: 'success', msg: '--- 匹配 2026-07-05 [《拾忆：TEAM G》周末常规公演] (写入队列)' },
-                { type: 'success', msg: '--- 匹配 2026-07-11 [《拾忆：TEAM G》张琼予 MVP 纪念公演] (写入队列)' },
-                { type: 'success', msg: '--- 匹配 2026-07-12 [《拾忆：TEAM G》周末联合公演] (写入队列)' },
-                { type: 'success', msg: '--- 匹配 2026-07-18 [《拾忆：TEAM G》方琪 生日公演] (写入队列)' },
-                { type: 'success', msg: '--- 匹配 2026-07-19 [《拾忆：TEAM G》剧场常规公演] (写入队列)' },
-                { type: 'success', msg: '--- 匹配 2026-07-25 [《拾忆：TEAM G》周末日常场] (写入队列)' },
-                { type: 'info', msg: '>>> 读取口袋48演出API接口，补全参演人员名单和特殊切片备注...' },
-                { type: 'success', msg: '>>> 注入完成！共 6 场 G 队公演数据转换标准 iCalendar 实体中...' },
-                { type: 'info', msg: '>>> 写入静态文件: /var/www/html/calendar/team_g.ics' },
-                { type: 'success', msg: '>>> ICS 文件生成完毕。大小: 14.8 KB' },
-                { type: 'info', msg: '[OK] 任务执行完毕，退出进程。订阅链接 https://shadowquake.top/calendar/team_g.ics 已更新！' }
+                { type: 'info', msg: '[CRON] 02:17 — 触发每日定时任务...' },
+                { type: 'cmd', msg: '$ /usr/bin/python3 /www/wwwroot/47.118.28.27/calendar/sync.py' },
+                { type: 'info', msg: '>>> 读取排班数据: schedule.json → ' + n + ' 场公演已加载' },
+                { type: 'success', msg: '>>> SNH48 Group 官方 API: h5.48.cn (成员数据参考)' },
+                { type: 'info', msg: '>>> Team G 阵容参考: ' + castSample.slice(0, 6).join('、') + (castSample.length > 6 ? '…' : '') },
+                { type: 'info', msg: '>>> 构建 iCalendar 事件: ' + n + ' 场公演...' }
             ];
+            SHOW_DATABASE.forEach(function (s) {
+                logs.push({
+                    type: 'success',
+                    msg: '--- ' + s.date.slice(5) + ' ' + s.type + ' — ' + s.cast.length + '人参演 (写入)'
+                });
+            });
+            logs.push(
+                { type: 'info', msg: '>>> 写入 ICS: /www/wwwroot/47.118.28.27/calendar/team_g.ics' },
+                { type: 'success', msg: '>>> ICS 生成完毕 — 有效期至 ' + lastDate },
+                { type: 'info', msg: '>>> Nginx: Content-Type text/calendar + CORS *' },
+                { type: 'success', msg: '[OK] 订阅链接: https://shadowquake.top/calendar/team_g.ics' }
+            );
 
             let lineIndex = 0;
             function printNextLine() {
                 if (lineIndex < logs.length) {
                     const log = logs[lineIndex];
                     const div = document.createElement('div');
-                    
-                    if (log.type === 'info') div.className = "text-slate-400";
-                    else if (log.type === 'cmd') div.className = "text-blue-400 font-bold";
-                    else if (log.type === 'success') div.className = "text-teamg-400 font-semibold";
-
-                    div.innerText = log.msg;
+                    if (log.type === 'info') div.className = 'text-slate-400';
+                    else if (log.type === 'cmd') div.className = 'text-blue-400 font-bold';
+                    else if (log.type === 'success') div.className = 'text-teamg-400 font-semibold';
+                    div.textContent = log.msg;
                     term.appendChild(div);
-                    term.scrollTop = term.scrollHeight; // 滚动到底部
+                    term.scrollTop = term.scrollHeight;
                     lineIndex++;
-                    setTimeout(printNextLine, 350); // 控制打印打字机节奏
+                    setTimeout(printNextLine, 280);
                 } else {
                     runBtn.disabled = false;
-                    runBtn.className = "bg-teamg-600 hover:bg-teamg-500 active:scale-95 text-white px-3 py-1.5 rounded text-xs font-bold transition flex items-center gap-1";
-                    showToast("沙盒爬虫执行模拟完毕！完美输出日历静态文件。");
+                    runBtn.className = 'bg-teamg-600 hover:bg-teamg-500 active:scale-95 text-white px-3 py-1.5 rounded text-xs font-bold transition flex items-center gap-1';
+                    showToast('沙盒同步模拟完毕');
                 }
             }
             printNextLine();
         }
+
+        window.addEventListener('DOMContentLoaded', function () {
+            loadSchedule();
+        });
     </script>
 </body>
 </html>

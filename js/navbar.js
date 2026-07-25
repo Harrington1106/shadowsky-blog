@@ -92,11 +92,69 @@
     const href = link.getAttribute('href');
     if (!href) return;
     const linkPath = href.split('/').pop();
-    if (linkPath === currentPath || 
+    if (linkPath === currentPath ||
         (currentPath === '' && linkPath === 'index.html') ||
         (currentPath === '/' && linkPath === 'index.html')) {
       link.classList.add('active');
     }
   });
+
+  // ── 滑动激活指示 pill（液态玻璃透镜，跟随 hover/激活项）──
+  const navLinks = navbar.querySelector('.nav-links');
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+  if (navLinks) {
+    const pill = document.createElement('span');
+    pill.className = 'nav-pill';
+    pill.setAttribute('aria-hidden', 'true');
+    pill.style.opacity = '0';
+    navLinks.insertBefore(pill, navLinks.firstChild);
+
+    /** 将 pill 移动到指定链接位置（instant=true 时无动画，用于初始化/resize） */
+    function movePillTo(link, instant) {
+      if (!link) { pill.style.opacity = '0'; return; }
+      const x = link.offsetLeft;
+      const w = link.offsetWidth;
+      if (instant) {
+        pill.style.transition = 'none';
+        // 强制 reflow 后再恢复过渡，保证下一次移动仍有弹簧动画
+        pill.style.transform = `translate(${x}px, -50%)`;
+        pill.style.width = w + 'px';
+        pill.getBoundingClientRect();
+        pill.style.transition = '';
+      } else {
+        pill.style.transform = `translate(${x}px, -50%)`;
+        pill.style.width = w + 'px';
+      }
+      pill.style.opacity = '1';
+    }
+
+    function activeLink() {
+      return navLinks.querySelector('.nav-link.active') || null;
+    }
+
+    // 初始化：等图标字体/lucide 布局稳定后定位（静止于当前页项，不跟随 hover）
+    requestAnimationFrame(() => movePillTo(activeLink(), true));
+
+    window.addEventListener('resize', () => movePillTo(activeLink(), true));
+  }
+
+  // ── 光标跟随镜面高光（--mx/--my 驱动 ::after 径向渐变）──
+  if (!prefersReducedMotion.matches && window.matchMedia('(pointer: fine)').matches) {
+    let rafId = null;
+    navbar.addEventListener('pointermove', (e) => {
+      if (rafId) return;
+      rafId = requestAnimationFrame(() => {
+        const rect = navbar.getBoundingClientRect();
+        navbar.style.setProperty('--mx', ((e.clientX - rect.left) / rect.width * 100).toFixed(1) + '%');
+        navbar.style.setProperty('--my', ((e.clientY - rect.top) / rect.height * 100).toFixed(1) + '%');
+        rafId = null;
+      });
+    });
+    navbar.addEventListener('pointerleave', () => {
+      navbar.style.setProperty('--mx', '50%');
+      navbar.style.setProperty('--my', '-30%');
+    });
+  }
 
 })();
