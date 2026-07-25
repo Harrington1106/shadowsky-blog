@@ -1,0 +1,15 @@
+# ShadowQuake v2 定时任务 —— host crontab 示例
+# 每条用 `docker compose run --rm jobs <cmd>` 触发,跑完即退,不常驻(省内存 C1)。
+# 部署目录假设 /www/wwwroot/shadowquake(含 docker-compose.yml)。
+
+# AI 日报:每天 9:03(北京时间)—— 生成当天 md 后重建索引 index.json
+3 9 * * * cd /www/wwwroot/shadowquake && docker compose run --rm jobs sh -c 'tsx jobs/ai-digest.ts --hours 48 --top-n 10 --lang zh --output /app/content/ai-daily/$(date +\%Y-\%m-\%d).md && python3 jobs/gen-index.py /app/content/ai-daily' >> /var/log/ai-daily.log 2>&1
+
+# Bangumi 追番/追漫同步:每天 2:30(写 SQLite media 表)
+30 2 * * * cd /www/wwwroot/shadowquake && docker compose run --rm jobs tsx jobs/bangumi-sync.ts >> /var/log/bangumi-sync.log 2>&1
+
+# 数据备份:每天 4:30(SQLite + content 打包)
+30 4 * * * /www/wwwroot/shadowquake/scripts/backup-v2.sh >> /var/log/data-backup.log 2>&1
+
+# 注:GNZ48 日历同步(calendar/sync.py)是【遗留 gnz48 页】专用,不迁入 v2,
+#     保持原有宿主 cron 不变:17 2 * * * /usr/bin/python3 .../calendar/sync.py

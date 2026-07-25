@@ -1,0 +1,24 @@
+# ShadowQuake v2 jobs —— 定时任务运行镜像(node + python + tsx)
+# 由 host cron 触发 `docker compose run --rm jobs <cmd>`,跑完即退,不常驻(省内存 C1)。
+
+FROM node:20-slim
+
+# gnz48 爬虫用 Python;安装 python3 + 常用抓取库
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        python3 python3-requests ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci
+
+# tsx 用于跑 TS 任务(ai-digest / bangumi-sync)
+RUN npm i -g tsx
+
+COPY . .
+
+# 默认无操作;实际命令由 compose/cron 指定,例如:
+#   docker compose run --rm jobs tsx jobs/bangumi-sync.ts
+#   docker compose run --rm jobs tsx jobs/ai-digest.ts --output ...
+#   docker compose run --rm jobs python3 jobs/gnz48-sync.py
+CMD ["node", "-e", "console.log('jobs image ready; specify a command')"]

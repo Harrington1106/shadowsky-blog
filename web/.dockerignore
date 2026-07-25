@@ -1,0 +1,11 @@
+node_modules
+.next
+out
+db/*.db
+db/*.db-shm
+db/*.db-wal
+uploads
+.git
+*.log
+cookies.txt
+cook.txt
