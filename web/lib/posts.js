@@ -10,6 +10,12 @@ import { postsDir } from './content.js';
 let cache = null;
 let cacheTime = 0;
 
+/** 清除索引缓存(增删改文章后调用) */
+export function invalidatePostsCache() {
+    cache = null;
+    cacheTime = 0;
+}
+
 function parseFrontMatter(raw) {
     const fm = {};
     const parts = raw.split('---', 3);
