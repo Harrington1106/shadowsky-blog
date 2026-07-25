@@ -6,16 +6,21 @@
     "build": "next build",
     "build:preview": "cross-env NEXT_PUBLIC_BASE_PATH=/preview next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:push": "drizzle-kit push"
   },
   "dependencies": {
     "@base-ui/react": "^1.6.0",
     "@studio-freight/lenis": "^1.0.42",
     "@tailwindcss/postcss": "^4.3.3",
+    "better-sqlite3": "^13.0.1",
     "canvas-confetti": "^1.9.4",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "dompurify": "^3.4.12",
+    "drizzle-orm": "^0.45.2",
     "highlight.js": "^11.10.0",
     "katex": "^0.16.11",
     "lucide-react": "^0.469.0",
@@ -31,6 +36,7 @@
   },
   "devDependencies": {
     "cross-env": "^7.0.3",
+    "drizzle-kit": "^0.31.10",
     "shadcn": "^4.14.1"
   }
 }

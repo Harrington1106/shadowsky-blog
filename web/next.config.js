@@ -12,20 +12,22 @@ const API_PROXY_TARGET = process.env.API_PROXY_TARGET || 'https://shadowquake.to
 const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || '';
 
 const nextConfig = {
-    // 纯静态导出：不在服务器常驻 Next 进程，产物由现有 nginx 直接托管，
-    // 博客数据仍走客户端 fetch（见 lib/api.js），发布新文章无需重新构建。
-    output: 'export',
+    // v2:standalone 全栈。Next 常驻 Node 进程,同时提供页面 + /api Route Handlers,
+    // 取代旧的 Express + PHP 双后端。内容页仍可静态预渲染 + Cloudflare 缓存,
+    // 文章正文保持 .md 文件、服务端按请求读取,守住"发文即时可见"(C5)。
+    output: 'standalone',
     images: { unoptimized: true },
     basePath: BASE_PATH,
+    // better-sqlite3 是原生模块,不能被 webpack 打包,标为服务端外部依赖。
+    serverExternalPackages: ['better-sqlite3'],
     // 仓库根目录另有一份独立于本项目的旧版静态站点 package.json/lock，
     // 与 web/ 无关；显式指定 tracing root 避免 Next 误判工作区目录。
     outputFileTracingRoot: path.join(__dirname),
-    // rewrites 只在 `next dev` 时生效，export 构建会忽略；
-    // 生产环境下 /api、/public 与页面同源部署，直接走相对路径即可。
+    // dev 阶段:尚未迁移的 /public 数据文件回退代理到线上,便于增量开发。
+    // /api 已由本地 Route Handlers 接管(真实路由优先于 rewrites),故不再代理 /api。
     async rewrites() {
         if (!isDev) return [];
         return [
-            { source: '/api/:path*', destination: `${API_PROXY_TARGET}/api/:path*` },
             { source: '/public/:path*', destination: `${API_PROXY_TARGET}/public/:path*` },
         ];
     },

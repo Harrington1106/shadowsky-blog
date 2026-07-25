@@ -12,3 +12,16 @@ test.txt
 docs/superpowers/
 WORKFLOW.md
 nul
+
+.superpowers/
+
+# Next.js (web/)
+web/.next/
+web/out/
+
+# v2 运行时数据(SQLite 文件不进 git,迁移文件进 git)
+web/db/*.db
+web/db/*.db-shm
+web/db/*.db-wal
+web/uploads/
+
