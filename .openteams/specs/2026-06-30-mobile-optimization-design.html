@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ShadowQuake Blog 移动端显示优化设计</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --panel: #ffffff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --line: #dbe5ef;
+      --accent: #2563eb;
+      --soft: #eff6ff;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+      color: var(--text);
+      background: linear-gradient(180deg, #ffffff 0%, var(--bg) 100%);
+      line-height: 1.7;
+    }
+    main {
+      width: min(920px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 48px 0 72px;
+    }
+    header {
+      padding: 28px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: rgba(255,255,255,.86);
+      box-shadow: 0 18px 48px rgba(15,23,42,.08);
+    }
+    h1 {
+      margin: 0 0 12px;
+      font-size: clamp(1.8rem, 5vw, 3rem);
+      line-height: 1.08;
+      letter-spacing: 0;
+    }
+    h2 {
+      margin: 38px 0 12px;
+      font-size: 1.25rem;
+      letter-spacing: 0;
+    }
+    p { margin: 0 0 12px; }
+    ul { margin: 0; padding-left: 1.25rem; }
+    li { margin: 6px 0; }
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      color: var(--muted);
+      font-size: .92rem;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 3px 10px;
+      border: 1px solid #bfdbfe;
+      border-radius: 999px;
+      background: var(--soft);
+      color: #1d4ed8;
+      font-weight: 600;
+    }
+    section {
+      margin-top: 18px;
+      padding: 24px 28px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: var(--panel);
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+    .card {
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #fbfdff;
+    }
+    .card strong { display: block; margin-bottom: 6px; }
+    code {
+      padding: 2px 6px;
+      border-radius: 6px;
+      background: #f1f5f9;
+      color: #1e40af;
+      font-size: .92em;
+    }
+    @media (max-width: 640px) {
+      main { width: min(100% - 20px, 920px); padding-top: 20px; }
+      header, section { padding: 18px; border-radius: 12px; }
+      .grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <div class="meta">
+        <span class="pill">设计草案</span>
+        <span>日期：2026-06-30</span>
+        <span>项目：ShadowQuake Blog</span>
+      </div>
+      <h1>移动端显示优化</h1>
+      <p>目标是在不重做页面结构的前提下，提升手机宽度下的稳定性、可读性和交互舒适度。改动会优先落在共享样式和页面级响应式补丁，避免触碰数据逻辑与部署流程。</p>
+    </header>
+
+    <section>
+      <h2>当前上下文</h2>
+      <ul>
+        <li>全站静态 HTML 页面已经使用统一移动菜单结构：<code>homepage-mobile-menu-link</code>。</li>
+        <li>共享移动端样式集中在 <code>css/style.css</code>，页面样式分散在 <code>css/liquid-*.css</code>。</li>
+        <li>最近提交集中修复 <code>post.html</code> 的移动端横向溢出，说明文章页仍是高风险点。</li>
+        <li>项目约束要求修改模板或样式时兼顾 14 个 HTML 页面，并保持导航图标与菜单一致。</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>推荐方案</h2>
+      <p>采用“共享兜底 + 重点页面微调”。先在共享层处理视口宽度、移动菜单、安全区和通用溢出，再针对文章、博客、随手拍、收藏、RSS、ACG 页面做小屏规则补强。</p>
+      <div class="grid">
+        <div class="card">
+          <strong>共享层</strong>
+          <p>让导航、移动菜单、公共容器、浮动按钮在 320-430px 宽度下保持在视口内，不压住正文。</p>
+        </div>
+        <div class="card">
+          <strong>页面层</strong>
+          <p>只补每页已有组件的响应式规则，例如工具栏换行、横向分类滚动、正文表格滚动和卡片间距。</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>具体设计</h2>
+      <ul>
+        <li><strong>全站：</strong>增加移动端宽度防线，保证 <code>html</code>、<code>body</code>、主要 shell 和菜单不会产生页面级横向滚动。</li>
+        <li><strong>移动菜单：</strong>小屏下菜单宽度使用视口约束，贴近右侧但保留边距；菜单项保持 44px 以上触控高度。</li>
+        <li><strong>文章页：</strong>优化 <code>.post-shell</code>、<code>.post-hero-content</code>、<code>.post-body .prose</code>、表格和代码块，让长标题、长链接、代码和表格不会撑破视口。</li>
+        <li><strong>博客页：</strong>让搜索、视图切换、标签区域在手机上自然换行或横向滚动，文章卡片保持单列阅读节奏。</li>
+        <li><strong>随手拍和收藏：</strong>收紧 header/toolbar 间距，搜索框独占可用宽度，分类 chip 横向滚动但不影响页面宽度。</li>
+        <li><strong>RSS 和 ACG：</strong>检查侧栏、列表、播放器和筛选栏在移动端的宽度约束，避免浮层或 iframe 越界。</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>非目标</h2>
+      <ul>
+        <li>不重做视觉体系，不改变现有液态玻璃风格。</li>
+        <li>不改后端、API、Bangumi 同步或部署脚本。</li>
+        <li>不批量重写 14 个 HTML 模板，除非验证发现某页结构本身导致移动端问题。</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>验证计划</h2>
+      <ul>
+        <li>用代码搜索确认所有 HTML 保持统一移动菜单和 viewport。</li>
+        <li>重点检查 320px、375px、430px、768px 宽度下是否出现页面级横向滚动。</li>
+        <li>浏览关键页面：<code>index</code>、<code>blog</code>、<code>post</code>、<code>moments</code>、<code>bookmarks</code>、<code>rss</code>、<code>acg</code>。</li>
+        <li>若可启动本地服务，用移动端视口截图验证导航、工具栏、正文、浮层、播放器和底部浮动按钮。</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>实施顺序</h2>
+      <ul>
+        <li>先改 <code>css/style.css</code> 的共享移动端规则。</li>
+        <li>再改 <code>css/liquid-post.css</code> 处理文章页高风险内容。</li>
+        <li>最后按页面影响面补 <code>liquid-blog.css</code>、<code>liquid-moments.css</code>、<code>liquid-bookmarks.css</code>、<code>liquid-rss.css</code>、<code>liquid-acg.css</code>。</li>
+        <li>每一步都用搜索和视口检查确认没有破坏桌面端既有布局。</li>
+      </ul>
+    </section>
+  </main>
+</body>
+</html>

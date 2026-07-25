@@ -1,207 +1,222 @@
-# ShadowQuake Blog
+# ShadowQuake Blog (v2)
 
-个人 ACG 博客 shadowquake.top，部署在阿里云 ECS (47.118.28.27, Hangzhou)，前端 Cloudflare CDN。
+个人 ACG 博客 **shadowquake.top**，部署在阿里云 ECS (47.118.28.27, Hangzhou)，前端走 Cloudflare CDN。
 
-## 架构
+**2026-07-25 起**：站点由 **v2**（`web/` 目录的 Next.js 15 全栈应用 + SQLite）接管。
+旧 v1（14 个静态 HTML + Express `admin/server.js`:3000 + PHP `api/`）**仍在原地保留**，但 nginx 只把少数遗留路径指向它，观察期结束后清理。改任何东西前先确认改的是 v2 还是遗留件。
+
+## 生产架构
 
 ```
-用户 → Cloudflare DNS → Cloudflare Edge → nginx → Node.js:3000 (admin/server.js)
-                                              ├── PHP-FPM:9000 (api/*.php, 仅静态/回退)
-                                              └── 静态文件 /www/wwwroot/47.118.28.27/
+用户 → Cloudflare DNS/CDN → nginx (47.118.28.27:80/4443)
+        │
+        ├── 遗留静态（root = /www/wwwroot/47.118.28.27/）
+        │     /gnz48.html            GNZ48 日程页
+        │     /ai-daily/*.html       旧 AI 日报归档页
+        │     /team-g.ics /schedule.json
+        │     /css/ /js/ /public/ /img/legacy/  （上面两个页面还在引用）
+        │     /favicon.ico
+        │
+        └── 其余全部 /  → proxy_pass 127.0.0.1:3001
+                          → Docker 容器 shadowsky-v2（Next standalone，容器内 :3000）
 
-Bangumi API:
-  Node.js:3000 → bangumi.shadowquake.top (Cloudflare Worker) → api.bgm.tv
+旧 *.html 路径 301 → v2 干净 URL（/blog.html → /blog，以此类推）
+
+外部依赖：bangumi.shadowquake.top（Cloudflare Worker）
+  ├─ BANGUMI_API_BASE  → 代理 api.bgm.tv（国内 ECS 直连不通）
+  └─ FETCH_PROXY_BASE  → 书签抓简介等出站请求的回退代理
 ```
+
+nginx 配置：`/www/server/panel/vhost/nginx/shadowquake.top.conf`（宝塔面板路径，改完 `nginx -t && nginx -s reload`）
 
 ## 项目结构
 
 ```
 D:\Projects\shadowsky-blog\
-├── .env                    # 环境变量 (部署时 scp 到服务器根目录)
-├── AGENTS.md               # 本文档
-├── *.html                  # 14 个静态页面
-├── js/                     # 前端 JavaScript
-│   ├── api.js              # API 客户端 (window.api.xxx())
-│   ├── main.js             # 全局脚本
-│   ├── bookmarks.js        # 书签搜索/过滤
-│   ├── context-menu.js     # 右键菜单
-│   └── ...
-├── css/style.css           # Tailwind 编译产物
-├── public/data/            # 运行时 JSON 数据 (.gitignore)
-│   ├── bookmarks.json
-│   ├── moments.json
-│   ├── media.json          # Bangumi 同步结果
-│   ├── feeds.json
-│   ├── videos.json
-│   ├── visits.json
-│   ├── page_visits.json
-│   └── notice.json
-├── api/                    # PHP API (次要，Node 已接管大部分路由)
-│   ├── config.php          # 读 .env → DB/Bangumi 配置
-│   ├── auth.php            # ADMIN_TOKEN 认证
-│   ├── data/               # PHP KVDB JSON 存储
-│   └── ...
-├── admin/
-│   ├── server.js           # Node.js Express 主服务 (端口 3000)
-│   ├── admin.js            # 前端管理脚本
-│   ├── index.html          # 管理后台页面
-│   └── package.json
-└── workers/
-    └── bangumi-proxy.js    # Cloudflare Worker (代理 api.bgm.tv)
+├── web/                        ★ v2 全栈应用（几乎所有开发都在这里）
+│   ├── app/                    Next App Router
+│   │   ├── (页面) blog post moments bookmarks rss acg anime manga edits about
+│   │   ├── admin/              后台 UI（login posts moments bookmarks media feeds
+│   │   │                       videos social greetings notice settings stats）
+│   │   └── api/                Route Handlers（读写 API + 代理类 API）
+│   ├── components/             共用组件 + components/ui（shadcn）
+│   ├── lib/                    db.js schema.js auth.js posts.js content.js
+│   │                           proxyFetch.js ssrf.js rss.js aiClient.js …
+│   ├── db/                     Drizzle：migrations/ seed/ bootstrap.js
+│   │                           （*.db 本地开发库，已 gitignore）
+│   ├── jobs/                   bangumi-sync.cjs / ai-digest.ts / cron.example
+│   ├── middleware.js           /admin 鉴权拦截
+│   ├── Dockerfile.deploy       ★ 生产镜像（封装已构建的 standalone）
+│   └── Dockerfile / Dockerfile.jobs
+├── scripts/
+│   ├── backup-v2.sh            v2 备份（cron 4:45）
+│   ├── run-digest-v2.sh        AI 日报（cron 9:03）
+│   └── backup-data.sh          旧站数据备份（cron 4:30，遗留）
+├── .claude/skills/ai-daily-digest/   AI 日报工具链（digest.ts / gen-index.py）
+├── workers/                    Cloudflare Worker 源码（bangumi-proxy.js 等）
+├── nginx/                      nginx 配置副本
+│
+└── ── 以下为 v1 遗留，除 gnz48/日历外基本冻结 ──
+    ├── *.html                  旧静态页（只有 gnz48.html 还在线上生效）
+    ├── js/ css/                旧前端资源（gnz48/ai-daily 归档页仍在引用）
+    ├── admin/                  旧 Express 后台（server.js:3000，PM2 里还开着但没流量）
+    ├── api/                    旧 PHP API（php-fpm 已停）
+    ├── ai-daily/               旧 AI 日报静态归档
+    ├── calendar/               GNZ48 日历脚本（服务器上已被 /opt/gnz48-calendar 取代）
+    └── deploy-web.sh / deploy-gnz48-*.sh / deploy.sh  旧部署脚本，勿用于 v2
 ```
 
-## 技术栈
+## 技术栈（v2）
 
-- **前端**: Vanilla HTML/JS + Tailwind CSS (CDN) + Lucide Icons (CDN)
-- **图标**: `<i data-lucide="icon-name">` → `lucide.createIcons()`
-- **后端**: Node.js Express (admin/server.js, port 3000) + PHP (回退)
-- **静态托管**: nginx root + proxy_pass :3000
-- **进程管理**: PM2 (`pm2 restart shadowsky-admin`)
-- **CDN/代理**: Cloudflare (DNS + Worker)
-- **数据存储**: JSON 文件 (无 MySQL，mysqld 2025年12月已挂)
+- **框架**：Next.js 15（App Router，`output: 'standalone'`）+ React 19
+- **样式**：Tailwind CSS v4 + shadcn/ui（`components/ui`）
+- **图标**：`lucide-react`
+- **数据库**：SQLite（better-sqlite3 13 + Drizzle ORM），WAL 模式
+- **文章 / AI 日报**：Markdown 文件（`marked` + `highlight.js` + `katex` 渲染，`dompurify` 净化）
+- **鉴权**：`jose` 签发 JWT，httpOnly cookie，`middleware.js` 保护 `/admin`
+- **运行**：Docker 容器 `shadowsky-v2`（`node:22-slim`），`restart=unless-stopped`，约 100MB 内存
+- **CDN/代理**：Cloudflare（DNS + Worker）
 
-## 环境变量 (.env)
+## 数据存储
 
-位置: 项目根目录 `.env`，部署时 scp 到服务器 `/www/wwwroot/47.118.28.27/.env`
+| 数据 | 位置（服务器） | 容器内路径 |
+|------|----------------|-----------|
+| 结构化数据（书签/随手拍/媒体/订阅/视频/统计/设置…） | `/www/wwwroot/shadowquake-v2/db/shadowquake.db` | `/app/db/shadowquake.db` |
+| 文章 Markdown | `/www/wwwroot/shadowquake-v2/content/posts` | `/app/content/posts` |
+| AI 日报 Markdown + index.json | `/www/wwwroot/shadowquake-v2/content/ai-daily` | `/app/content/ai-daily` |
+| 上传图片 | `/www/wwwroot/shadowquake-v2/data/uploads` | `/app/public/uploads` |
 
-Node 端通过 `readEnvVar()` 函数直接读文件 (非 process.env，因为 PM2 不加载 .env)。
-PHP 端通过 `api/config.php` 的 `loadEnvConfig()` 读取。
+这三个目录是**容器的 volume 挂载**，即全部生产数据。备份脚本打包 `db` + `content` 两项。
+MySQL 早已停用；旧的 `public/data/*.json`、`api/data/` 只属于 v1。
 
-### 完整变量
+## 环境变量（v2）
 
-| 变量 | 用途 | 默认值 | 谁用 |
-|------|------|--------|------|
-| `ADMIN_TOKEN` | 后台认证令牌 (48-char hex) | 首次启动自动生成 | Node, PHP |
-| `PORT` | Node 监听端口 | 3000 | Node |
-| `HOST` | Node 绑定地址 | 127.0.0.1 | Node |
-| `RSS_PROXY_ALLOWED_HOSTS` | RSS 代理域名白名单 | 空=全允许 | Node |
-| `CORS_ALLOWED_ORIGINS` | CORS 来源 | 内置默认值 | Node |
-| `BANGUMI_API_BASE` | Bangumi API 代理地址 | `https://api.bgm.tv` | Node |
-| `BANGUMI_USERNAME` | Bangumi 用户名 | 空 | PHP |
-| `BANGUMI_TOKEN` | Bangumi API Token | 空 | Node, PHP |
-| `DB_HOST` | MySQL 主机 | localhost | PHP (不用) |
-| `DB_PORT` | MySQL 端口 | 3306 | PHP (不用) |
-| `DB_NAME` | 数据库名 | shadowsky_blog | PHP (不用) |
-| `DB_USER` | 数据库用户 | shadowsky_blog | PHP (不用) |
-| `DB_PASS` | 数据库密码 | 空=跳过 DB | PHP (不用) |
+服务器：`/www/wwwroot/shadowquake-v2/.env`（`docker run --env-file` 注入，权限 600）。
 
-**重要**: 当前 MySQL 已挂，DB_PASS 留空。所有数据存 JSON 文件。BANGUMI_API_BASE 指向 Cloudflare Worker 代理（国内服务器无法直连 api.bgm.tv）。
-
-## ⚠️ Bangumi 配置: 双数据源！
-
-Node 端从 `api/settings.json` 读 Bangumi 凭据：
-```json
-{"bangumi_username": "shadowquake", "bangumi_token": "HhoDa5R..."}
-```
-
-PHP 端从 `.env` 读：
-```
-BANGUMI_USERNAME=shadowquake
-BANGUMI_TOKEN=HhoDa5R...
-```
-
-修改 Bangumi 凭据时**两处都要改**。
-
-## ⚠️ read_file + write_file 坑
-
-`read_file()` 返回带行号前缀的内容 `     1|content`，`write_file()` 原样写入 → 行号会污染文件。
-
-**禁止**在 execute_code 中用 read_file + write_file 编辑 HTML/CSS。
-用 terminal heredoc 或 `patch` 工具：
-```bash
-cd /mnt/d/Projects/shadowsky-blog && python3 << 'PYEOF'
-with open('file.html') as f: content = f.read()
-content = content.replace('old', 'new')
-with open('file.html', 'w') as f: f.write(content)
-PYEOF
-```
-
-## UI 模板一致性
-
-修改任何模板/样式时必须检查所有 14 个 HTML 页面。
-
-| 规则 | 详情 |
+| 变量 | 说明 |
 |------|------|
-| navbar backdrop-blur | index.html 除外 (透明)，其他全部有 |
-| body 背景 | index/post 用 bg-white，其余 bg-gray-50 |
-| 导航栏图标 | 全站统一: house/file-text/camera/bookmark/rss/film/user-circle |
-| 访问计数 | RSS 药丸样式 + 绿点呼吸动画 |
-| h1 标题 | moments/bookmarks/blog 用渐变色，其余 plain |
-| 颜色体系 | 每页固定 gray 或 slate，不混用 |
+| `NODE_ENV` | production |
+| `PORT` / `HOSTNAME` | 3000 / 0.0.0.0（容器内；对外由 -p 映射到宿主 3001） |
+| `DB_PATH` | `/app/db/shadowquake.db` |
+| `POSTS_DIR` | `/app/content/posts` |
+| `AI_DAILY_DIR` | `/app/content/ai-daily` |
+| `UPLOADS_DIR` | `/app/public/uploads` |
+| `AUTH_SECRET` | JWT 签名密钥（v2 切换时新生成） |
+| `ADMIN_PASSWORD` | 后台口令（沿用旧 `ADMIN_TOKEN` 的值） |
+| `BANGUMI_USERNAME` / `BANGUMI_TOKEN` | Bangumi 凭据 |
+| `BANGUMI_API_BASE` | `https://bangumi.shadowquake.top`（CF Worker） |
+| `FETCH_PROXY_BASE` | `https://bangumi.shadowquake.top`（出站抓取回退代理） |
 
-修改后验证:
+> v1 时代「Bangumi 凭据双数据源（`api/settings.json` + `.env`）」的坑在 v2 已不存在，只有这一份 `.env`。
+> 旧站根目录的 `.env`（`/www/wwwroot/47.118.28.27/.env`）仍被 AI 日报脚本读取（`SILICONFLOW_API_KEY` 等）。
+
+## 部署（v2）
+
+**GitHub 是唯一真相源**（默认分支 `main`，但 v2 全部推在 `master`）。服务器不再靠 `git push` 自动更新——v2 是「本地构建 → 产物 scp → 服务器 docker build → 换容器」。
+
 ```bash
-grep -c 'pattern' *.html   # 每文件计数
-```
+# 1. 本地构建
+cd web && npm run build
 
-## 部署
+# 2. 组装部署产物（standalone 自包含，不含 node_modules 之外的东西）
+rm -rf _deploy && mkdir -p _deploy
+cp -r .next/standalone _deploy/standalone
+cp -r .next/static     _deploy/static
+cp -r public           _deploy/public
+mkdir -p _deploy/db && cp -r db/migrations db/bootstrap.js db/seed _deploy/db/
+cp Dockerfile.deploy _deploy/
+tar czf deploy.tgz -C _deploy .
 
-```bash
-# HTML 文件:
-scp *.html shadowsky:/www/wwwroot/47.118.28.27/
+# 3. 上传并解包
+scp web/deploy.tgz shadowsky:/tmp/
+ssh shadowsky 'cd /www/wwwroot/shadowquake-v2 && tar xzf /tmp/deploy.tgz'
 
-# .env 更新:
-scp .env shadowsky:/www/wwwroot/47.118.28.27/
+# 4. 重建镜像 + 换容器（数据都在挂载卷里，容器可随意重建）
+ssh shadowsky 'cd /www/wwwroot/shadowquake-v2 && \
+  docker build -f Dockerfile.deploy -t shadowquake-v2:latest . && \
+  docker rm -f shadowsky-v2 ; \
+  docker run -d --name shadowsky-v2 --restart unless-stopped \
+    -p 127.0.0.1:3001:3000 --env-file .env \
+    -v /www/wwwroot/shadowquake-v2/db:/app/db \
+    -v /www/wwwroot/shadowquake-v2/content:/app/content \
+    -v /www/wwwroot/shadowquake-v2/data/uploads:/app/public/uploads \
+    shadowquake-v2:latest'
 
-# server.js 更新:
-scp admin/server.js shadowsky:/www/wwwroot/47.118.28.27/admin/
-ssh shadowsky 'pm2 restart shadowsky-admin'
-
-# 或用 git push (服务器 receive.denyCurrentBranch=updateInstead)
+# 5. 验证
+ssh shadowsky 'curl -s -o /dev/null -w "%{http_code}\n" http://127.0.0.1:3001/'
 ```
 
 部署后提醒用户 **Ctrl+Shift+R** 强制刷新绕过 Cloudflare 缓存。
 
-## Cloudflare Worker (Bangumi 代理)
+**只改遗留静态页（gnz48.html 等）时**：`scp gnz48.html shadowsky:/www/wwwroot/47.118.28.27/`，不需要动 v2。
 
-`workers/bangumi-proxy.js` — 代理 `api.bgm.tv`，解决国内服务器无法直连的问题。
+## 定时任务（服务器 crontab）
 
-当前部署: `bangumi.shadowquake.top` → Worker `bangumi-proxy`
+| 时间 | 任务 |
+|------|------|
+| 2:30 | Bangumi 同步 → 写 SQLite（`docker run --rm … node jobs/bangumi-sync.cjs`，日志 `/var/log/bangumi-sync-v2.log`） |
+| 3:00 | GNZ48 日程更新 `/usr/local/bin/gnz48-update.sh`（跑 `/opt/gnz48-calendar`，产物 cp 到旧站根目录） |
+| 4:30 | 旧站数据备份 `scripts/backup-data.sh`（遗留，清理旧系统时一起删） |
+| 4:45 | v2 备份 `backup-v2.sh` → `/www/wwwroot/_backups/v2/`，保留 14 份 |
+| 9:03 | AI 日报 `run-digest-v2.sh`（复用宿主 tsx 跑 `.claude/skills/ai-daily-digest`，输出到 v2 `content/ai-daily` 并重建 index.json，日志 `/var/log/ai-daily-v2.log`） |
 
-部署/更新 Worker:
-1. Cloudflare Dashboard → Workers & Pages → bangumi-proxy → 编辑代码
-2. 粘贴 `workers/bangumi-proxy.js` → 保存并部署
+改 crontab 前先 `crontab -l > /root/crontab.bak.$(date +%Y%m%d-%H%M%S)`。
 
-## 图标规范
+## 备份与回滚
 
-全站导航栏: `house`(首页) `file-text`(博客) `camera`(随手拍) `bookmark`(收藏) `rss`(订阅) `film`(视频) `user-circle`(关于)
-右键菜单: `rotate-cw`(刷新) `chevron-up`(顶部) `chevron-left`(返回) `sun-moon`(主题)
+- **数据**：`/www/wwwroot/_backups/v2/v2-<时间戳>.tar.gz`（含 `db` + `content`），每日 4:45，保留 14 份。
+- **整站回滚到 v1**：nginx 配置备份 `/www/server/panel/vhost/nginx/shadowquake.top.conf.bak.20260725-195613`，`cp` 回去 + `nginx -s reload` 即秒切旧站（旧 Express 进程一直在 PM2 里开着）。
+- **代码基线**：tag `v1-static-baseline`。
 
-改图标时所有 14 页一起改。
+## 遗留系统现状（观察期，勿随手删）
+
+| 组件 | 状态 |
+|------|------|
+| Express `admin/server.js`（PM2 `shadowsky-admin`:3000） | 在线但 **nginx 已不再转发**，零流量，留作回滚 |
+| PHP-FPM + `api/*.php` | 已停（`php-fpm` inactive） |
+| 旧静态页 `*.html` | 只有 `gnz48.html` + `/ai-daily/*.html` 仍对外；其余被 301 到 v2 |
+| `gnz48.html` | 线上版本的**真实来源是另一个项目** `D:\Projects\GNZ48-Calendar\public\`（`deploy-gnz48-upload.sh` 上传）。本仓库里的 `gnz48.html` 是旧副本，已与线上分叉，**不要拿它去覆盖线上** |
+| 日程数据 `schedule.json` / `team-g.ics` / `data.js` | 服务器 `/opt/gnz48-calendar` 每天 3:00 生成并 cp 到旧站根目录 |
+| `calendar/sync.py` | **已废弃**：服务器上不存在，2026-07-26 已从 crontab 删除失效任务；实际生效的是 `/opt/gnz48-calendar` |
+| `deploy-web.sh` / `deploy.sh` / `deploy-gnz48-*.sh` | v1 时代脚本，**不要用来部署 v2** |
+
+清理旧系统时的顺序建议：先停 PM2 进程观察几天 → 再删 nginx 里的遗留 location（连同 gnz48/ai-daily 的去留决策）→ 最后删旧站根目录（先打包备份）。
 
 ## 编码规范
 
-- 中文注释，英文变量名
-- new Date 注意时区
-- 前端 API: `window.api.xxx()` (js/api.js)
-- `public/data/*.json` 在 .gitignore，不提交
-- 改 HTML 时 desktop nav + mobile nav 都要改
+- 中文注释，英文变量名（camelCase），4 空格缩进
+- v2 组件写在 `web/components/`，UI 基础件优先用 `components/ui`（shadcn）
+- 服务端读写数据一律走 `lib/db.js` + `lib/schema.js`（Drizzle），不要自己开 sqlite 连接
+- 外部 URL 抓取必须走 `lib/proxyFetch.js`（内含 `lib/ssrf.js` 防护），不要裸 `fetch` 用户传入的地址
+- 用户输入不插 `innerHTML`；Markdown 渲染后过 `dompurify`
+- `new Date` 注意时区（服务器 CST）
+- 密钥只进 `.env`，不进仓库
 
 ## 故障排查
 
-### 页面显示行号/乱码
-诊断: `ssh shadowsky 'head -1 /www/wwwroot/47.118.28.27/file.html | od -c | head -2'`
-正常: `< ! D O C T Y P E` 开头。异常: `1 | < ! D O C` 开头。
-修复: `git checkout -- *.html` 恢复，用 heredoc/patch 重做。
+### 站点 5xx / 白屏
+```bash
+ssh shadowsky 'docker ps -a | grep shadowsky-v2; docker logs --tail 50 shadowsky-v2'
+ssh shadowsky 'curl -s -o /dev/null -w "%{http_code}\n" http://127.0.0.1:3001/'
+```
+容器挂了直接 `docker restart shadowsky-v2`；镜像坏了按「部署」第 4 步重建。
+
+### better-sqlite3 段错误 / GLIBC 报错
+宿主是 glibc 2.32 + Node 20，装不动 better-sqlite3@13（需要 GLIBC 2.33 + Node 22 ABI）。
+**不要在宿主裸跑 v2**——必须用 `node:22-slim` 容器，镜像内 `npm install better-sqlite3`（apt 走阿里云镜像，npm 走 npmmirror）。
 
 ### 部署后仍是旧版
-Cloudflare 缓存。用户 Ctrl+Shift+R 强制刷新。仍不行: Cloudflare → 缓存 → 清除所有。
+Cloudflare 缓存。用户 Ctrl+Shift+R；仍不行就 Cloudflare → 缓存 → 清除所有。
 
-### Bangumi 同步失败 "Failed to fetch Bangumi data"
-api.bgm.tv 从国内不可达。检查 Worker 是否在线:
+### Bangumi 同步失败
+先确认 Worker 在线：
 ```bash
-ssh shadowsky 'curl -sS --max-time 10 https://bangumi.shadowquake.top/v0/users/shadowquake -H "Authorization: Bearer HhoDa5R..."'
+ssh shadowsky 'curl -sS --max-time 10 https://bangumi.shadowquake.top/v0/users/shadowquake -H "Authorization: Bearer <TOKEN>"'
 ```
-若 Worker 正常但 Node 仍失败，检查 `.env` 中 `BANGUMI_API_BASE` 是否设置。
+Worker 正常但同步失败 → 查 `/var/log/bangumi-sync-v2.log` 和 `.env` 里的 `BANGUMI_API_BASE`。
 
-### PM2 重启
-```bash
-ssh shadowsky 'pm2 restart shadowsky-admin'
-```
-PM2 会提示 `Use --update-env` — **忽略**。Node 通过 readEnvVar() 直接读 .env 文件，不依赖 PM2 环境注入。
+### AI 日报没更新
+`tail -30 /var/log/ai-daily-v2.log`。脚本发现当天 md 已存在会直接跳过；缺 key 时看旧站 `.env` 的 `SILICONFLOW_API_KEY`。
 
-### 访问计数不更新
-`api/data/shadowsky_stats.json` 权限问题:
-```bash
-ssh shadowsky 'chown www:www /www/wwwroot/47.118.28.27/api/data/shadowsky_stats.json'
-```
+### 后台登录不上
+口令是 `.env` 的 `ADMIN_PASSWORD`；改了 `AUTH_SECRET` 会让所有已签发 cookie 失效，改完要重建容器。

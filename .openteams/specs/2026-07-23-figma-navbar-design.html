@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Design Spec · Figma 风导航栏 + 液态玻璃增强</title>
+  <style>
+    :root {
+      --bg: #0b1220;
+      --surface: rgba(255,255,255,.04);
+      --border: rgba(255,255,255,.08);
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --accent: #2dd4bf;
+      --accent-dim: rgba(45,212,191,.15);
+      --warn: #fbbf24;
+      --ok: #4ade80;
+      --code: #1e293b;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, "Noto Sans SC", system-ui, sans-serif;
+      background: radial-gradient(ellipse 80% 50% at 10% 0%, rgba(20,184,166,.12), transparent 50%),
+                  radial-gradient(ellipse 60% 40% at 90% 10%, rgba(59,130,246,.1), transparent 45%),
+                  var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      padding: 40px 20px 80px;
+    }
+    .wrap { max-width: 860px; margin: 0 auto; }
+    header {
+      margin-bottom: 40px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--border);
+    }
+    .badge {
+      display: inline-block;
+      font-size: 11px;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--accent);
+      background: var(--accent-dim);
+      border: 1px solid rgba(45,212,191,.3);
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+    h1 { font-size: 1.75rem; margin: 0 0 8px; letter-spacing: -.02em; }
+    .meta { color: var(--muted); font-size: .9rem; }
+    h2 {
+      font-size: 1.15rem;
+      margin: 36px 0 12px;
+      padding-left: 12px;
+      border-left: 3px solid var(--accent);
+    }
+    h3 { font-size: 1rem; margin: 20px 0 8px; color: #cbd5e1; }
+    p, li { color: #cbd5e1; }
+    .muted { color: var(--muted); }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px 20px;
+      margin: 12px 0;
+    }
+    .grid2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    @media (max-width: 640px) { .grid2 { grid-template-columns: 1fr; } }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .9rem;
+      margin: 12px 0;
+    }
+    th, td {
+      text-align: left;
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border);
+    }
+    th { color: var(--muted); font-weight: 600; font-size: .8rem; text-transform: uppercase; letter-spacing: .04em; }
+    code, .mono {
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: .85em;
+      background: var(--code);
+      padding: 2px 6px;
+      border-radius: 5px;
+    }
+    pre {
+      background: var(--code);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      overflow-x: auto;
+      font-size: .82rem;
+      line-height: 1.5;
+    }
+    .tag {
+      display: inline-block;
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-weight: 600;
+    }
+    .tag-in { background: rgba(74,222,128,.12); color: var(--ok); }
+    .tag-out { background: rgba(251,191,36,.12); color: var(--warn); }
+    ul { padding-left: 1.2em; }
+    .check li { margin: 6px 0; }
+    footer {
+      margin-top: 48px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: .85rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="badge">Design Spec · Approved Direction D</div>
+      <h1>Figma 风导航栏动画 + 液态玻璃增强</h1>
+      <p class="meta">ShadowQuake Blog · 2026-07-23 · 全站 14 页统一适配</p>
+    </header>
+
+    <h2>1. 目标</h2>
+    <div class="card">
+      <p>把现有液态玻璃药丸导航升级为 <strong>Figma 式精密动效</strong>：</p>
+      <ul>
+        <li>独立滑动指示器（active pill）在导航项之间 spring 滑动，并随宽度变化</li>
+        <li>当前页展开「图标 + 文字」；其余项仅图标</li>
+        <li>悬停幽灵层跟随非当前项，不与 active 抢戏</li>
+        <li>同步增强 navbar 液态玻璃（折射边、高光、模糊层次）</li>
+        <li>所有带统一 navbar 的公开页面行为一致；尊重 <code>prefers-reduced-motion</code></li>
+      </ul>
+    </div>
+
+    <h2>2. 已确认决策</h2>
+    <table>
+      <thead><tr><th>项</th><th>决策</th></tr></thead>
+      <tbody>
+        <tr><td>动画风格</td><td>方案 D：滑动指示器 + 当前页展开标签 + spring 悬停</td></tr>
+        <tr><td>桌面端</td><td>图标为主；active 展开中文标签</td></tr>
+        <tr><td>移动端</td><td>保留现有汉堡 + 抽屉菜单；不启用滑动指示器</td></tr>
+        <tr><td>玻璃效果</td><td>在现有 Aqua Vitrum 体系上增强 navbar 壳层，不重做全站玻璃系统</td></tr>
+        <tr><td>主题</td><td>暗色 / 亮色双套 token，与现有 teal 色系一致</td></tr>
+        <tr><td>跨页动画</td><td>页面跳转后定位到 active（无跨文档 FLIP）；页内 hover/click 可动画</td></tr>
+      </tbody>
+    </table>
+
+    <h2>3. 架构</h2>
+    <h3>3.1 职责拆分</h3>
+    <div class="grid2">
+      <div class="card">
+        <h3 style="margin-top:0">CSS · <code>unified.css</code></h3>
+        <ul>
+          <li>导航项布局改为可伸缩宽度（去掉固定 38×38 死宽）</li>
+          <li>active 显示 <code>.nav-text</code></li>
+          <li>指示器 / 悬停幽灵样式与 spring transition</li>
+          <li>navbar 玻璃层（背景、边框折射、内高光）增强</li>
+          <li>reduced-motion 降级</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3 style="margin-top:0">JS · <code>navbar.js</code></h3>
+        <ul>
+          <li>注入 <code>.nav-indicator</code> 与 <code>.nav-hover</code> 元素</li>
+          <li>测量 active 几何，用 <code>transform + width</code> 定位</li>
+          <li>hover / resize / 字体加载后重算</li>
+          <li>保留 scroll、mobile menu、theme、active 检测</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3>3.2 DOM 结构（逻辑目标）</h3>
+    <pre>&lt;div class="nav-links"&gt;
+  &lt;span class="nav-hover" aria-hidden="true"&gt;&lt;/span&gt;
+  &lt;span class="nav-indicator" aria-hidden="true"&gt;&lt;/span&gt;
+  &lt;a class="nav-link active"&gt;&lt;i&gt;…&lt;/i&gt;&lt;span class="nav-text"&gt;首页&lt;/span&gt;&lt;/a&gt;
+  &lt;a class="nav-link"&gt;…&lt;/a&gt;
+  …
+&lt;/div&gt;</pre>
+    <p class="muted">指示器由 JS 注入，无需改 14 份 HTML 手写重复节点。HTML 侧仅需确保 <code>.nav-links</code> + <code>.nav-text</code> 已存在（现状已满足）。</p>
+
+    <h3>3.3 定位算法</h3>
+    <div class="card">
+      <ol>
+        <li>取 <code>.nav-links</code> 与目标 <code>.nav-link</code> 的 <code>getBoundingClientRect()</code></li>
+        <li><code>x = target.left - parent.left</code>，<code>w = target.width</code></li>
+        <li>设置指示器 <code>width</code> 与 <code>transform: translateX(x)</code>（GPU 友好）</li>
+        <li>切换 active 时：先更新 class（触发文字展开）→ rAF 双帧测量 → 可选 80ms / 320ms 二次对齐，避免 max-width 动画中途量错</li>
+        <li>悬停非 active：移动 <code>.nav-hover</code> 并显示；离开容器则隐藏</li>
+      </ol>
+    </div>
+
+    <h2>4. 动效参数</h2>
+    <table>
+      <thead><tr><th>属性</th><th>值</th><th>说明</th></tr></thead>
+      <tbody>
+        <tr><td>指示器移动</td><td>420ms <code>cubic-bezier(0.34, 1.35, 0.64, 1)</code></td><td>轻微 overshoot，Figma spring 感</td></tr>
+        <tr><td>指示器宽度</td><td>同 420ms spring</td><td>随展开标签变宽</td></tr>
+        <tr><td>悬停幽灵</td><td>280ms <code>cubic-bezier(0.22, 1, 0.36, 1)</code></td><td>更干脆，不抢 active</td></tr>
+        <tr><td>标签展开</td><td>380ms spring · max-width + opacity</td><td>仅 <code>.active .nav-text</code></td></tr>
+        <tr><td>图标悬停</td><td>translateY(-1px) scale(1.04)</td><td>active 项不做额外位移</td></tr>
+        <tr><td>reduced-motion</td><td>transition: none；直接跳位</td><td>a11y 必须</td></tr>
+      </tbody>
+    </table>
+    <p class="muted">优先复用 tokens：<code>--ease-spring</code> 可微调为指示器专用 <code>--ease-nav-spring</code>，避免全站其他 spring 过冲。</p>
+
+    <h2>5. 液态玻璃增强（navbar 壳）</h2>
+    <p>范围限定 <code>#navbar</code>，不推翻全站 glass token。</p>
+    <div class="grid2">
+      <div class="card">
+        <h3 style="margin-top:0">暗色</h3>
+        <ul>
+          <li>背景：多层半透明 + 略提高 blur（20→24px 常态，scrolled 28px）</li>
+          <li>边框：保留 teal 细线 + 加强 <code>::before</code> 上下折射渐变</li>
+          <li>内高光：顶部 1px 白边 inset 更清晰</li>
+          <li>指示器：独立玻璃片（半透明 teal 渐变 + 细描边 + 外发光）</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3 style="margin-top:0">亮色</h3>
+        <ul>
+          <li>背景不透明度 ≥ 0.72，避免「看不见的玻璃」</li>
+          <li>边框 <code>rgba(20,184,166,.22)</code> 级可见</li>
+          <li>指示器：浅 teal 渐变 + 柔和阴影，对比度达标</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card">
+      <strong>性能约束：</strong> 仅 navbar 使用较高 <code>backdrop-filter</code>；指示器本身用实色半透明 + box-shadow，不再套第二层 blur，避免移动端掉帧。
+    </div>
+
+    <h2>6. 页面适配范围</h2>
+    <table>
+      <thead><tr><th>页面</th><th>处理</th></tr></thead>
+      <tbody>
+        <tr><td>index, blog, moments, bookmarks, rss, acg, about, post, 404, edits…</td><td>共用 <code>navbar.js</code> + <code>unified.css</code>，自动获得动效</td></tr>
+        <tr><td>anime / manga / gnz48 / moments-old（若含同一 navbar）</td><td>同样依赖；验证脚本引用版本号 bump</td></tr>
+        <tr><td>admin/</td><td><span class="tag tag-out">OUT</span> 管理后台独立 UI，不在本次范围</td></tr>
+        <tr><td>ai-daily/</td><td><span class="tag tag-out">OUT</span> 除非使用同一 navbar 结构</td></tr>
+      </tbody>
+    </table>
+    <p>HTML 改动预期：<strong>几乎为零</strong>（仅 bump <code>?v=</code> 缓存参数）。若个别页缺少 <code>.nav-text</code> 或结构偏差，做最小补丁。</p>
+
+    <h2>7. 冲突清理</h2>
+    <ul>
+      <li>移除 / 覆盖 <code>unified.css</code> 顶部 <code>a.nav-link::after</code> 下划线动画（与滑动指示器语义冲突）</li>
+      <li>active 态背景从「链接自身 background」改为「指示器层」；链接背景透明，避免双重底</li>
+      <li>保留 icon glow（drop-shadow），与指示器叠加</li>
+    </ul>
+
+    <h2>8. 无障碍与降级</h2>
+    <ul class="check">
+      <li>指示器 / 悬停层 <code>aria-hidden="true"</code>，不进读屏</li>
+      <li>active 仍用 <code>aria-current="page"</code>（现有 + JS 可补）</li>
+      <li>键盘 focus-visible 描边保留在链接上</li>
+      <li>触控设备无 hover 幽灵；仅显示 active 指示器</li>
+      <li><code>prefers-reduced-motion: reduce</code>：无 spring、无宽度过渡</li>
+    </ul>
+
+    <h2>9. 实现步骤（计划草案）</h2>
+    <ol>
+      <li>扩展 <code>navbar.js</code>：注入层、定位、事件、resize、reduced-motion 检测</li>
+      <li>更新 <code>unified.css</code> 导航与玻璃样式；加 <code>--ease-nav-spring</code> token（可选在 design-tokens）</li>
+      <li>去掉冲突的 underline pseudo</li>
+      <li>全站 HTML 的 <code>navbar.js</code> / <code>unified.css</code> 版本号 bump</li>
+      <li>目检：暗/亮、桌面 hover/click、窄屏汉堡、首页透明/流体背景上的可读性</li>
+    </ol>
+
+    <h2>10. 验收标准</h2>
+    <ul class="check">
+      <li>桌面端切换当前页后，指示器落在正确项且宽度贴合「图标+文字」</li>
+      <li>悬停非当前项时幽灵层平滑跟随；当前项无双重底</li>
+      <li>暗色 / 亮色玻璃边与文字对比清晰</li>
+      <li>移动端菜单行为与现网一致</li>
+      <li>reduced-motion 下无滑动动画</li>
+      <li>不引入 layout shift（navbar 高度稳定）</li>
+    </ul>
+
+    <h2>11. 明确不做</h2>
+    <ul>
+      <li>跨页面 FLIP / View Transitions API（可作为后续增强）</li>
+      <li>重写移动端为底部 tab bar</li>
+      <li>全站所有卡片的玻璃体系大改</li>
+      <li>引入 React/动画库（纯 CSS + 原生 JS）</li>
+    </ul>
+
+    <footer>
+      状态：等待用户审阅本 spec 后进入实现计划 / 编码。<br>
+      视觉参考：Visual Companion 方案 D 高保真预览（nav-style-d-v2）。
+    </footer>
+  </div>
+</body>
+</html>

@@ -1,7 +1,7 @@
 .env
 api/data/
 node_modules/
-public/data/*.json
+public/data/
 public/posts/.obsidian/plugins/
 public/posts/*-auto_write.md
 *.test.js
@@ -28,4 +28,11 @@ web/data/
 web/cA.txt
 web/cook.txt
 web/cookies.txt
+
+# v2 部署产物(本地构建中间物,不进 git)
+web/_deploy/
+web/deploy.tgz
+
+# 遗留:GNZ48 日历生成产物(真实来源 D:\Projects\GNZ48-Calendar / 服务器 /opt/gnz48-calendar)
+calendar/team_g.ics
 
