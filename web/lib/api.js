@@ -9,7 +9,7 @@ const API_BASE = '/api';
  * 拉取全部文章列表（与 js/blog.js 行为一致）
  */
 export async function fetchPosts() {
-    const res = await fetch('/public/posts/posts.json');
+    const res = await fetch(`${API_BASE}/posts`);
     if (!res.ok) throw new Error('HTTP ' + res.status);
     const posts = (await res.json()) || [];
     posts.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
@@ -21,21 +21,11 @@ export async function fetchPosts() {
  */
 export async function fetchPostMarkdown(file) {
     const name = file.endsWith('.md') ? file : file + '.md';
-    const pathsToTry = [`/public/posts/${name}`, `/posts/${name}`, name];
-
-    for (const path of pathsToTry) {
-        try {
-            const res = await fetch(path);
-            if (!res.ok) continue;
-            const contentType = res.headers.get('content-type') || '';
-            const text = await res.text();
-            if (contentType.includes('text/html') && text.trim().startsWith('<')) continue;
-            return { text, finalPath: path };
-        } catch (e) {
-            // 尝试下一个路径
-        }
-    }
-    throw new Error(`Article not found (404). Tried paths: ${pathsToTry.join(', ')}`);
+    const url = `${API_BASE}/posts/${encodeURIComponent(name)}`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`Article not found (${res.status}): ${name}`);
+    const text = await res.text();
+    return { text, finalPath: url };
 }
 
 /**
@@ -79,13 +69,13 @@ async function fetchVisitCountFallback(pageId) {
  * AI 日报索引/单篇（供 blog 列表的"AI日报" tab 与 post 详情的 ?ai= 入口使用）
  */
 export async function fetchAiDailyIndex() {
-    const res = await fetch('/public/data/ai-daily/index.json');
+    const res = await fetch(`${API_BASE}/ai-daily`);
     if (!res.ok) return [];
     return (await res.json()) || [];
 }
 
 export async function fetchAiDailyMarkdown(date) {
-    const res = await fetch(`/public/data/ai-daily/${date}.md`);
+    const res = await fetch(`${API_BASE}/ai-daily/${encodeURIComponent(date)}`);
     if (!res.ok) throw new Error('日报不存在: ' + date);
     return res.text();
 }
@@ -94,7 +84,7 @@ export async function fetchAiDailyMarkdown(date) {
  * 拉取随手拍数据（与 js/moments.js 行为一致）
  */
 export async function fetchMoments() {
-    const res = await fetch('/public/data/moments.json');
+    const res = await fetch(`${API_BASE}/moments`);
     if (!res.ok) throw new Error('HTTP ' + res.status);
     const data = (await res.json()) || [];
     if (!Array.isArray(data)) throw new Error('数据格式错误');
@@ -113,19 +103,19 @@ function safeDate(s) {
  * 拉取收藏数据 + 分类元信息（与 js/bookmarks.js 行为一致）
  */
 export async function fetchBookmarks() {
-    const [categories, bookmarks] = await Promise.all([
-        fetch('/public/data/categories.json').then((r) => (r.ok ? r.json() : {})).catch(() => ({})),
-        fetch('/public/data/bookmarks.json').then((r) => (r.ok ? r.json() : null)).catch(() => null),
-    ]);
+    const res = await fetch(`${API_BASE}/bookmarks`);
+    if (!res.ok) throw new Error('数据加载失败');
+    const data = await res.json();
+    const bookmarks = data?.bookmarks;
     if (!bookmarks || !Array.isArray(bookmarks)) throw new Error('数据加载失败');
-    return { categories: categories || {}, bookmarks };
+    return { categories: data.categories || {}, bookmarks };
 }
 
 /**
  * 拉取追番/追漫数据（与 js/media-data.js 的 MediaLoader 行为一致）
  */
 export async function fetchMedia() {
-    const res = await fetch('/public/data/media.json');
+    const res = await fetch(`${API_BASE}/media`);
     if (!res.ok) throw new Error('Failed to load media data');
     const data = await res.json();
     return { anime: data.anime || [], manga: data.manga || [] };
@@ -135,7 +125,7 @@ export async function fetchMedia() {
  * 拉取视频/收藏视频数据（与 js/video-loader.js 行为一致）
  */
 export async function fetchVideos() {
-    const res = await fetch('/public/data/videos.json');
+    const res = await fetch(`${API_BASE}/videos`);
     if (!res.ok) throw new Error('Failed to load video data');
     const data = await res.json();
     return { videos: data.videos || [], favorites: data.favorites || [] };
