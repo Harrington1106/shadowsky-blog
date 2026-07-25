@@ -32,7 +32,7 @@ cat ~/.hn-daily-digest/config.json 2>/dev/null || echo "{}"
 
 ```bash
 SILICONFLOW_API_KEY=sk-...
-SILICONFLOW_MODEL=deepseek-ai/DeepSeek-V3   # 可选
+SILICONFLOW_MODEL=deepseek-ai/DeepSeek-V3.2   # 可选
 ```
 
 可选 fallback：`GEMINI_API_KEY` 或 `OPENAI_API_KEY`。

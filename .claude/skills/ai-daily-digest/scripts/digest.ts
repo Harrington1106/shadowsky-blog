@@ -8,7 +8,7 @@ import process from 'node:process';
 
 const GEMINI_API_URL = 'https://gemini.shadowquake.top/v1beta/models/gemini-2.0-flash:generateContent';
 const SILICONFLOW_DEFAULT_API_BASE = 'https://api.siliconflow.cn/v1';
-const SILICONFLOW_DEFAULT_MODEL = 'deepseek-ai/DeepSeek-V3';
+const SILICONFLOW_DEFAULT_MODEL = 'deepseek-ai/DeepSeek-V3.2';
 const OPENAI_DEFAULT_API_BASE = 'https://api.openai.com/v1';
 const OPENAI_DEFAULT_MODEL = 'gpt-4o-mini';
 const FEED_FETCH_TIMEOUT_MS = 15_000;
@@ -1142,7 +1142,7 @@ Options:
 Environment:
   SILICONFLOW_API_KEY   Primary (recommended). SiliconFlow / 硅基流动 API key
   SILICONFLOW_API_BASE  Optional (default: https://api.siliconflow.cn/v1)
-  SILICONFLOW_MODEL     Optional (default: deepseek-ai/DeepSeek-V3)
+  SILICONFLOW_MODEL     Optional (default: deepseek-ai/DeepSeek-V3.2)
   GEMINI_API_KEY        Optional fallback. Get one at https://aistudio.google.com/apikey
   OPENAI_API_KEY        Optional fallback key for other OpenAI-compatible APIs
   OPENAI_API_BASE       Optional fallback base URL (default: https://api.openai.com/v1)
