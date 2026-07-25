@@ -26,7 +26,7 @@ export default function VideoCard({ video, onPlay }) {
         >
             <div className="relative aspect-video overflow-hidden bg-muted">
                 <img
-                    src={`/api/image-proxy.php?url=${encodeURIComponent(video.thumbnail || '')}`}
+                    src={`/api/image-proxy?url=${encodeURIComponent(video.thumbnail || '')}`}
                     alt={video.title}
                     className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                     loading="lazy"

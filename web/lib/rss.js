@@ -126,7 +126,7 @@ export async function fetchFeedXml(url) {
     } catch (e) { /* 尝试下一级 */ }
 
     try {
-        const proxyUrl = `/api/rss-proxy.php?url=${encodeURIComponent(url)}`;
+        const proxyUrl = `/api/rss-proxy?url=${encodeURIComponent(url)}`;
         const controller = new AbortController();
         const timer = setTimeout(() => controller.abort(), 8000);
         const response = await fetch(proxyUrl, { signal: controller.signal });
