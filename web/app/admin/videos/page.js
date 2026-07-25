@@ -6,7 +6,10 @@ import { Plus, Pencil, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Card, CardContent } from '@/components/ui/card';
 import { apiGet, apiCreate, apiUpdate, apiDelete } from '@/lib/adminApi';
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+import { useConfirm } from '@/components/useConfirm';
 import AdminHeader from '@/components/admin/AdminHeader';
 
 const EMPTY = { title: '', thumbnail: '', duration: '', views: 0, category: '', type: 'bilibili', bvid: '', kind: 'video' };
@@ -18,6 +21,7 @@ export default function VideosAdmin() {
     const [form, setForm] = useState(EMPTY);
     const [editing, setEditing] = useState(null);
     const [saving, setSaving] = useState(false);
+    const [confirm, confirmDialog] = useConfirm();
 
     async function load() { try { setData(await apiGet('/api/videos')); } catch (e) { toast.error(e.message); } }
     useEffect(() => { load(); }, []);
@@ -36,7 +40,7 @@ export default function VideosAdmin() {
     }
 
     async function remove(v) {
-        if (!confirm(`删除「${v.title}」?`)) return;
+        if (!await confirm({ title: `删除「${v.title}」?`, description: '该条目会从视频/收藏列表中移除。' })) return;
         try { await apiDelete(`/api/videos?id=${v.id}`); toast.success('已删除'); load(); }
         catch (e) { toast.error(e.message); }
     }
@@ -45,23 +49,27 @@ export default function VideosAdmin() {
 
     return (
         <div className="mx-auto max-w-5xl px-8 py-10">
+            {confirmDialog}
             <AdminHeader title="视频" count={data.videos.length + data.favorites.length} action={<Button size="sm" onClick={openNew}><Plus className="size-4" /> 新增</Button>} />
 
-            <div className="mt-4 flex gap-2">
+            <ToggleGroup
+                variant="outline"
+                value={[tab]}
+                onValueChange={(vals) => vals.length && setTab(vals[0])}
+                className="mt-4 justify-start"
+            >
                 {[['videos', '我的剪辑'], ['favorites', '收藏视频']].map(([t, label]) => (
-                    <button key={t} onClick={() => setTab(t)} className={`rounded-md px-3 py-1.5 text-sm transition-colors ${tab === t ? 'bg-accent font-medium' : 'text-muted-foreground hover:bg-accent/50'}`}>
-                        {label} {data[t].length}
-                    </button>
+                    <ToggleGroupItem key={t} value={t}>{label} {data[t].length}</ToggleGroupItem>
                 ))}
-            </div>
+            </ToggleGroup>
 
             <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 {list.map((v) => (
-                    <div key={v.id} className="overflow-hidden rounded-lg border">
+                    <Card key={v.id} className="gap-0 overflow-hidden py-0">
                         <div className="aspect-video bg-muted">
                             {v.thumbnail && <img src={v.thumbnail} alt="" className="size-full object-cover" />}
                         </div>
-                        <div className="p-2.5">
+                        <CardContent className="p-2.5">
                             <div className="line-clamp-1 text-sm font-medium" title={v.title}>{v.title}</div>
                             <div className="mt-1 flex items-center justify-between">
                                 <span className="text-xs text-muted-foreground">{v.duration || '—'} · {v.views} 播放</span>
@@ -70,8 +78,8 @@ export default function VideosAdmin() {
                                     <Button variant="ghost" size="icon" className="size-7" onClick={() => remove(v)}><Trash2 className="size-3.5 text-destructive" /></Button>
                                 </div>
                             </div>
-                        </div>
-                    </div>
+                        </CardContent>
+                    </Card>
                 ))}
                 {list.length === 0 && <p className="col-span-full py-10 text-center text-sm text-muted-foreground">暂无视频</p>}
             </div>

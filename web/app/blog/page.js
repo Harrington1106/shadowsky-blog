@@ -9,7 +9,7 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import Footer from '@/components/Footer';
 import BackToTop from '@/components/BackToTop';
 import { fetchPosts, fetchAiDailyIndex } from '@/lib/api';
-import { withBase } from '@/lib/utils';
+import { cardSurface, cn, withBase } from '@/lib/utils';
 
 const PER_PAGE = 12;
 const VIEWS = [
@@ -49,7 +49,7 @@ function ArticleRow({ post, refHash }) {
     const tags = (post.tags || []).slice(0, 3);
     const ref = refHash ? `&ref=${encodeURIComponent(refHash)}` : '';
     return (
-        <a href={withBase(`/post?file=${encodeURIComponent(post.file)}${ref}`)} className="flex gap-4 rounded-lg border p-3 transition-colors hover:border-primary/50 hover:bg-accent/40">
+        <a href={withBase(`/post?file=${encodeURIComponent(post.file)}${ref}`)} className={cn(cardSurface, 'flex gap-4 p-3 transition-colors hover:ring-primary/40 hover:bg-accent/40')}>
             <div className="hidden w-12 shrink-0 text-center font-mono text-xs text-muted-foreground sm:block">
                 <div>{ys}</div>
                 <div className="font-semibold text-foreground">{ds}</div>
@@ -325,7 +325,7 @@ function AiDailyView({ index, error }) {
                     .replace(/^(AI|📰)\s*[-—]?\s*/i, '')
                     .trim();
                 return (
-                    <a key={d.date} href={withBase(`/post?ai=${encodeURIComponent(d.date)}`)} className="flex gap-4 rounded-lg border p-3 transition-colors hover:border-primary/50 hover:bg-accent/40">
+                    <a key={d.date} href={withBase(`/post?ai=${encodeURIComponent(d.date)}`)} className={cn(cardSurface, 'flex gap-4 p-3 transition-colors hover:ring-primary/40 hover:bg-accent/40')}>
                         <div className="hidden w-16 shrink-0 text-center text-xs text-muted-foreground sm:block">{ds}</div>
                         <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground">
                             <Bot size={20} />

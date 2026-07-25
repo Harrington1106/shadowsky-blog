@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Card } from '@/components/ui/card';
 import { apiGet, apiCreate } from '@/lib/adminApi';
 import { getAiSettings, setAiSettings } from '@/lib/aiClient';
 import AdminHeader from '@/components/admin/AdminHeader';
@@ -36,7 +37,7 @@ export default function SettingsAdmin() {
         <div className="mx-auto max-w-2xl px-8 py-10">
             <AdminHeader title="站点设置" />
             <div className="mt-6 flex flex-col gap-5">
-                <section className="rounded-lg border p-5">
+                <Card className="p-5">
                     <h2 className="text-sm font-semibold">Bangumi 同步</h2>
                     <p className="mt-1 text-xs text-muted-foreground">用于追番/追漫同步任务(bangumi-sync)。token 保存在数据库,不进 git。</p>
                     <div className="mt-4 flex flex-col gap-3">
@@ -49,12 +50,12 @@ export default function SettingsAdmin() {
                             <Input type="password" value={form.bangumi_token} onChange={(e) => setForm({ ...form, bangumi_token: e.target.value })} placeholder="Bangumi API Token" />
                         </div>
                     </div>
-                </section>
+                </Card>
                 <div>
                     <Button onClick={save} disabled={saving}>{saving ? '保存中…' : '保存设置'}</Button>
                 </div>
 
-                <section className="rounded-lg border p-5">
+                <Card className="p-5">
                     <h2 className="text-sm font-semibold">AI 翻译 / 推测</h2>
                     <p className="mt-1 text-xs text-muted-foreground">用于书签「自动获取/翻译简介」等。DeepSeek/OpenAI 兼容接口,密钥只存在本浏览器(localStorage),不上传服务器。</p>
                     <div className="mt-4 flex flex-col gap-3">
@@ -74,7 +75,7 @@ export default function SettingsAdmin() {
                         </div>
                         <div><Button variant="outline" onClick={saveAi}>保存 AI 设置</Button></div>
                     </div>
-                </section>
+                </Card>
             </div>
         </div>
     );

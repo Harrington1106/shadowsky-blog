@@ -8,6 +8,9 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Card } from '@/components/ui/card';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { useConfirm } from '@/components/useConfirm';
 import { apiGet, apiCreate, apiUpdate, apiDelete } from '@/lib/adminApi';
 import { aiGuessTitleDesc, aiTranslate, hasAiKey } from '@/lib/aiClient';
 import AdminHeader from '@/components/admin/AdminHeader';
@@ -22,6 +25,7 @@ export default function BookmarksAdmin() {
     const [saving, setSaving] = useState(false);
     const [fetching, setFetching] = useState(false);
     const [translating, setTranslating] = useState(false);
+    const [confirm, confirmDialog] = useConfirm();
 
     async function load() {
         try { setItems((await apiGet('/api/bookmarks')).bookmarks); }
@@ -81,52 +85,55 @@ export default function BookmarksAdmin() {
     }
 
     async function remove(b) {
-        if (!confirm(`删除「${b.title}」?`)) return;
+        if (!await confirm({ title: `删除「${b.title}」?`, description: '该收藏会从列表中移除。' })) return;
         try { await apiDelete(`/api/bookmarks?id=${encodeURIComponent(b.id)}`); toast.success('已删除'); load(); }
         catch (e) { toast.error(e.message); }
     }
 
     return (
         <div className="mx-auto max-w-5xl px-8 py-10">
+            {confirmDialog}
             <AdminHeader title="收藏管理" count={items.length} action={<Button size="sm" onClick={openNew}><Plus className="size-4" /> 新增</Button>} />
 
-            <div className="mt-6 overflow-x-auto rounded-lg border">
-                <table className="w-full text-sm">
-                    <thead className="bg-muted/50 text-xs text-muted-foreground">
-                        <tr>
-                            <th className="px-4 py-2.5 text-left font-medium">标题</th>
-                            <th className="px-4 py-2.5 text-left font-medium">分类</th>
-                            <th className="px-4 py-2.5 text-left font-medium">标签</th>
-                            <th className="px-4 py-2.5 text-right font-medium">操作</th>
-                        </tr>
-                    </thead>
-                    <tbody>
+            <Card className="mt-6 overflow-hidden py-0">
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead>标题</TableHead>
+                            <TableHead>分类</TableHead>
+                            <TableHead>标签</TableHead>
+                            <TableHead className="text-right">操作</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
                         {items.map((b) => (
-                            <tr key={b.id} className="border-t">
-                                <td className="max-w-xs px-4 py-2.5">
+                            <TableRow key={b.id}>
+                                <TableCell className="max-w-xs">
                                     <div className="truncate font-medium">{b.title}</div>
                                     <a href={b.url} target="_blank" rel="noreferrer" className="flex items-center gap-1 truncate text-xs text-muted-foreground hover:text-primary">
                                         <ExternalLink className="size-3 shrink-0" />{b.url}
                                     </a>
-                                </td>
-                                <td className="px-4 py-2.5 text-muted-foreground">{b.category || '—'}{b.subcategory ? ` / ${b.subcategory}` : ''}</td>
-                                <td className="px-4 py-2.5">
+                                </TableCell>
+                                <TableCell className="text-muted-foreground">{b.category || '—'}{b.subcategory ? ` / ${b.subcategory}` : ''}</TableCell>
+                                <TableCell>
                                     <div className="flex flex-wrap gap-1">
                                         {(b.tags || []).slice(0, 3).map((t) => <Badge key={t} variant="outline" className="text-[0.65rem]">{t}</Badge>)}
                                     </div>
-                                </td>
-                                <td className="px-4 py-2.5">
+                                </TableCell>
+                                <TableCell>
                                     <div className="flex justify-end gap-1">
                                         <Button variant="ghost" size="icon" onClick={() => openEdit(b)}><Pencil className="size-4" /></Button>
                                         <Button variant="ghost" size="icon" onClick={() => remove(b)}><Trash2 className="size-4 text-destructive" /></Button>
                                     </div>
-                                </td>
-                            </tr>
+                                </TableCell>
+                            </TableRow>
                         ))}
-                        {items.length === 0 && <tr><td colSpan={4} className="px-4 py-10 text-center text-muted-foreground">暂无收藏</td></tr>}
-                    </tbody>
-                </table>
-            </div>
+                        {items.length === 0 && (
+                            <TableRow><TableCell colSpan={4} className="py-10 text-center text-muted-foreground">暂无收藏</TableCell></TableRow>
+                        )}
+                    </TableBody>
+                </Table>
+            </Card>
 
             <Dialog open={open} onOpenChange={setOpen}>
                 <DialogContent>

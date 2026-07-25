@@ -18,6 +18,24 @@
 - 图标用 `lucide-react` 组件，不用 CDN 版 Lucide
 - Server Component 优先，需要交互再 `'use client'`
 
+### shadcn 统一规范（不要再手写这些）
+
+组件库是 **shadcn base-nova 风格 + @base-ui/react**（不是 radix）。缺组件用 `npx shadcn@latest add <name>`，会自动按 `components.json` 里的 style 拉取 base-ui 版本。
+
+| 别写 | 要用 |
+|------|------|
+| `<button>` / 手写药丸按钮 | `Button`（`@/components/ui/button`） |
+| `<input>` / `<textarea>` / `<select>` | `Input` / `Textarea` / `Select`（隐藏的 `<input type="file">` 除外） |
+| `<input type="checkbox">` | `Switch` 或 `Checkbox` + `Label` |
+| `<table>` | `Table` 系列 |
+| `window.confirm` / `alert` | `useConfirm()`（`@/components/useConfirm`）/ `toast`（sonner） |
+| 手写 `rounded-* border p-*` 卡片 | `Card` / `CardContent`；必须是 `<a>`/`<button>` 语义时用 `cardSurface`（`@/lib/utils`） |
+| 自己拼的 tab 按钮组 | `ToggleGroup` + `ToggleGroupItem`（`value` 传数组） |
+
+base-ui 的两个坑：
+- `Select` 必须给 Root 传 `items={[{value,label}]}`，否则 `SelectValue` 只显示原始 value 而不是中文标签
+- `Button` 用 `render={<a …/>}` 渲染成链接时要同时加 `nativeButton={false}`，否则控制台报 Base UI 语义警告
+
 ## 遗留静态页（gnz48.html 等）
 
 - Tailwind CDN + 原生 DOM API，保持现状即可，不引框架

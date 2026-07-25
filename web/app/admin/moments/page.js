@@ -10,6 +10,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { apiGet, apiCreate, apiUpdate, apiDelete } from '@/lib/adminApi';
+import { useConfirm } from '@/components/useConfirm';
 import AdminHeader from '@/components/admin/AdminHeader';
 
 const EMPTY = { content: '', image: '', location: '', tags: '' };
@@ -21,6 +22,7 @@ export default function MomentsAdmin() {
     const [editing, setEditing] = useState(null);
     const [saving, setSaving] = useState(false);
     const [uploading, setUploading] = useState(false);
+    const [confirm, confirmDialog] = useConfirm();
     const fileRef = useRef(null);
 
     async function load() {
@@ -60,13 +62,14 @@ export default function MomentsAdmin() {
     }
 
     async function remove(m) {
-        if (!confirm('删除这条随手拍?')) return;
+        if (!await confirm({ title: '删除这条随手拍?', description: '删除后无法恢复。' })) return;
         try { await apiDelete(`/api/moments?id=${encodeURIComponent(m.id)}`); toast.success('已删除'); load(); }
         catch (e) { toast.error(e.message); }
     }
 
     return (
         <div className="mx-auto max-w-5xl px-8 py-10">
+            {confirmDialog}
             <AdminHeader title="随手拍" count={items.length} action={<Button size="sm" onClick={openNew}><Plus className="size-4" /> 发布</Button>} />
 
             <div className="mt-6 flex flex-col gap-2">

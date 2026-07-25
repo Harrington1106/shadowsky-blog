@@ -3,6 +3,7 @@
 import { useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Card } from '@/components/ui/card';
 import Footer from '@/components/Footer';
 
 const GRID = 11;
@@ -352,7 +353,7 @@ export default function NotFound() {
                 <p className="mx-auto mt-2 max-w-sm text-sm text-muted-foreground">你寻找的页面已星间蒸发，或是从未存在过。</p>
                 <p className="mt-1 mb-4 text-xs text-muted-foreground/70">来玩一局围猫游戏放松一下吧。</p>
 
-                <div className="w-full max-w-sm rounded-2xl border bg-card p-3 pb-2">
+                <Card className="w-full max-w-sm gap-0 p-3 pb-2">
                     <div className="mb-1.5 flex flex-wrap items-center justify-between gap-1.5">
                         <span ref={roleTextRef} className="text-xs font-medium text-muted-foreground">切换: 扮演小猫</span>
                         <div className="flex flex-wrap gap-2">
@@ -378,7 +379,7 @@ export default function NotFound() {
                             />
                         </div>
                     </div>
-                </div>
+                </Card>
             </main>
 
             <Footer pageId="404" />

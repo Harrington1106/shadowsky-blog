@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { apiGet, apiCreate, apiDelete } from '@/lib/adminApi';
+import { useConfirm } from '@/components/useConfirm';
 import AdminHeader from '@/components/admin/AdminHeader';
 
 const EMPTY = { title: '', url: '', category: '' };
@@ -16,6 +17,7 @@ export default function FeedsAdmin() {
     const [open, setOpen] = useState(false);
     const [form, setForm] = useState(EMPTY);
     const [saving, setSaving] = useState(false);
+    const [confirm, confirmDialog] = useConfirm();
 
     async function load() { try { setItems(await apiGet('/api/feeds')); } catch (e) { toast.error(e.message); } }
     useEffect(() => { load(); }, []);
@@ -28,13 +30,14 @@ export default function FeedsAdmin() {
     }
 
     async function remove(f) {
-        if (!confirm(`删除订阅源「${f.title}」?`)) return;
+        if (!await confirm({ title: `删除订阅源「${f.title}」?`, description: '该订阅源会从 RSS 列表中移除。' })) return;
         try { await apiDelete(`/api/feeds?id=${f.id}`); toast.success('已删除'); load(); }
         catch (e) { toast.error(e.message); }
     }
 
     return (
         <div className="mx-auto max-w-3xl px-8 py-10">
+            {confirmDialog}
             <AdminHeader title="RSS 订阅源" count={items.length} action={<Button size="sm" onClick={() => { setForm(EMPTY); setOpen(true); }}><Plus className="size-4" /> 新增</Button>} />
 
             <div className="mt-6 flex flex-col gap-2">

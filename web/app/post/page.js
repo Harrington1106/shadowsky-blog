@@ -12,7 +12,7 @@ import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import Footer from '@/components/Footer';
 import BackToTop from '@/components/BackToTop';
-import { cn, withBase } from '@/lib/utils';
+import { cardSurface, cn, withBase } from '@/lib/utils';
 import { fetchPostMarkdown, fetchVisitCount, fetchPosts, fetchAiDailyMarkdown } from '@/lib/api';
 import { CATEGORY_IMAGES, calculateReadingTime, parseFrontMatter, normalizeTags } from '@/lib/postContent';
 import 'katex/dist/katex.min.css';
@@ -319,7 +319,7 @@ function PostPageInner() {
                                 {navLinks.prev ? (
                                     <a
                                         href={withBase(`/post?file=${encodeURIComponent(navLinks.prev.file)}`)}
-                                        className="flex flex-col gap-1 rounded-lg border p-3 text-sm transition-colors hover:border-primary/50 hover:bg-accent/40"
+                                        className={cn(cardSurface, 'flex flex-col gap-1 p-3 text-sm transition-colors hover:ring-primary/40 hover:bg-accent/40')}
                                     >
                                         <span className="text-xs text-muted-foreground">← 上一篇</span>
                                         <span className="line-clamp-1 font-medium">{navLinks.prev.title}</span>
@@ -328,7 +328,7 @@ function PostPageInner() {
                                 {navLinks.next ? (
                                     <a
                                         href={withBase(`/post?file=${encodeURIComponent(navLinks.next.file)}`)}
-                                        className="flex flex-col gap-1 rounded-lg border p-3 text-sm transition-colors hover:border-primary/50 hover:bg-accent/40 sm:items-end sm:text-right"
+                                        className={cn(cardSurface, 'flex flex-col gap-1 p-3 text-sm transition-colors hover:ring-primary/40 hover:bg-accent/40 sm:items-end sm:text-right')}
                                     >
                                         <span className="text-xs text-muted-foreground">下一篇 →</span>
                                         <span className="line-clamp-1 font-medium">{navLinks.next.title}</span>

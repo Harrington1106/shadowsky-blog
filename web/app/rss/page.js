@@ -13,6 +13,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+import { useConfirm } from '@/components/useConfirm';
+import { toast } from 'sonner';
 import Footer from '@/components/Footer';
 import BackToTop from '@/components/BackToTop';
 import { cn } from '@/lib/utils';
@@ -22,8 +24,9 @@ import {
     loadAISettings, saveAISettingsToStorage, translateArticle, testAIConnection,
 } from '@/lib/rss';
 
+// 阅读器工具条:展示型元信息用 PILL(纯 span),可交互项一律用 shadcn Button + PILL_BTN 对齐尺寸
 const PILL = 'inline-flex h-8 items-center gap-1.5 rounded-md border px-2.5 text-xs font-medium text-muted-foreground transition-colors';
-const PILL_ACTION = `${PILL} hover:border-primary/40 hover:text-primary disabled:pointer-events-none disabled:opacity-50`;
+const PILL_BTN = 'h-8 gap-1.5 px-2.5 text-xs font-medium text-muted-foreground hover:text-primary';
 const FONT_SIZE_STYLES = {
     sm: { fontSize: '0.9rem', lineHeight: 1.75 },
     md: { fontSize: '1.05rem', lineHeight: 1.85 },
@@ -432,6 +435,7 @@ function ArticleReader({ article, fontSize, onFontSize, focusMode, onToggleFocus
     const [shared, setShared] = useState(false);
     const [fullLoading, setFullLoading] = useState(false);
     const [lightbox, setLightbox] = useState(null);
+    const [confirm, confirmDialog] = useConfirm();
 
     const contentRef = useRef(null);
     const bodyRef = useRef(null);
@@ -479,7 +483,13 @@ function ArticleReader({ article, fontSize, onFontSize, focusMode, onToggleFocus
         const currentText = stripTags(safeContent);
         const ratio = cjkRatio(currentText);
         if (ratio > 0.3) {
-            if (!confirm(`文章已有 ${Math.round(ratio * 100)}% 中文字符，可能已是中文。仍需翻译吗？`)) return;
+            const go = await confirm({
+                title: '这篇文章可能已经是中文',
+                description: `正文中约 ${Math.round(ratio * 100)}% 是中文字符，仍然要翻译吗？`,
+                confirmText: '仍然翻译',
+                destructive: false,
+            });
+            if (!go) return;
         }
 
         setTranslating(true);
@@ -488,7 +498,7 @@ function ArticleReader({ article, fontSize, onFontSize, focusMode, onToggleFocus
             setTranslatedHtml(html);
             setShowTranslated(true);
         } catch (e) {
-            alert('翻译失败: ' + e.message);
+            toast.error('翻译失败: ' + e.message);
         } finally {
             setTranslating(false);
         }
@@ -504,7 +514,7 @@ function ArticleReader({ article, fontSize, onFontSize, focusMode, onToggleFocus
             setShared(true);
             setTimeout(() => setShared(false), 2000);
         } catch (e) {
-            alert('无法分享: ' + e.message);
+            toast.error('无法分享: ' + e.message);
         }
     }
 
@@ -519,10 +529,10 @@ function ArticleReader({ article, fontSize, onFontSize, focusMode, onToggleFocus
                 setTranslatedHtml('');
                 setSafeContent(data.content);
             } else {
-                alert('未能提取完整文章，请尝试打开原文阅读。');
+                toast.error('未能提取完整文章，请尝试打开原文阅读。');
             }
         } catch (e) {
-            alert('加载失败: ' + e.message + '\n请尝试直接打开原文。');
+            toast.error('加载失败: ' + e.message, { description: '请尝试直接打开原文。' });
         } finally {
             setFullLoading(false);
         }
@@ -535,6 +545,7 @@ function ArticleReader({ article, fontSize, onFontSize, focusMode, onToggleFocus
 
     return (
         <div className="min-h-0 flex-1 overflow-y-auto" ref={contentRef}>
+            {confirmDialog}
             <article className={cn('mx-auto w-full px-6 py-8 sm:px-10', focusMode ? 'max-w-[860px]' : 'max-w-[720px]')}>
                 <header className="mb-8 border-b pb-6">
                     <h1 className="text-2xl leading-tight font-bold sm:text-3xl">{article.title}</h1>
@@ -542,19 +553,19 @@ function ArticleReader({ article, fontSize, onFontSize, focusMode, onToggleFocus
                         <span className={PILL} title={dateStr}><Calendar size={13} />{relativeTime}</span>
                         <span className={PILL}><Clock size={13} />{readingTime}</span>
                         {article.author && <span className={PILL}><User size={13} />{article.author}</span>}
-                        <a href={article.link} target="_blank" rel="noopener noreferrer" className={PILL_ACTION}>
+                        <Button variant="outline" size="sm" className={PILL_BTN} nativeButton={false} render={<a href={article.link} target="_blank" rel="noopener noreferrer" />}>
                             <ExternalLink size={13} /> 原文
-                        </a>
-                        <button className={PILL_ACTION} title="通过服务器加载完整文章" onClick={handleFullArticle} disabled={fullLoading}>
+                        </Button>
+                        <Button variant="outline" size="sm" className={PILL_BTN} title="通过服务器加载完整文章" onClick={handleFullArticle} disabled={fullLoading}>
                             {fullLoading ? <Loader2 size={13} className="animate-spin" /> : <ScrollText size={13} />} 加载全文
-                        </button>
-                        <button className={PILL_ACTION} title="分享这篇文章" onClick={handleShare}>
+                        </Button>
+                        <Button variant="outline" size="sm" className={PILL_BTN} title="分享这篇文章" onClick={handleShare}>
                             {shared ? <Check size={13} className="text-primary" /> : <Share2 size={13} />} {shared ? '已复制' : '分享'}
-                        </button>
-                        <button className={PILL_ACTION} onClick={handleTranslate} disabled={translating}>
+                        </Button>
+                        <Button variant="outline" size="sm" className={PILL_BTN} onClick={handleTranslate} disabled={translating}>
                             {translating ? <Loader2 size={13} className="animate-spin" /> : showTranslated ? <Undo2 size={13} /> : <Languages size={13} />}
                             {translating ? '翻译中' : showTranslated ? '显示原文' : '翻译'}
-                        </button>
+                        </Button>
                     </div>
                     <div className="mt-3 flex flex-wrap items-center gap-2">
                         <ToggleGroup variant="outline" size="sm" spacing={0} value={[fontSize]} onValueChange={(v) => v.length && onFontSize(v[0])}>
@@ -755,9 +766,9 @@ function AiSettingsModal({ open, onClose }) {
                         </datalist>
                         <div className="flex flex-wrap gap-1.5">
                             {provider.models.map((m) => (
-                                <button key={m} type="button" onClick={() => setForm((f) => ({ ...f, model: m }))} className="rounded-full border px-2 py-0.5 text-[0.65rem] transition-colors hover:bg-accent">
+                                <Button key={m} type="button" variant="outline" size="sm" onClick={() => setForm((f) => ({ ...f, model: m }))} className="h-auto rounded-full px-2 py-0.5 text-[0.65rem] font-normal">
                                     {m}
-                                </button>
+                                </Button>
                             ))}
                         </div>
                         <p className="text-xs text-muted-foreground">{provider.help}</p>
@@ -777,9 +788,9 @@ function AiSettingsModal({ open, onClose }) {
                         />
                         <div className="flex flex-wrap gap-1.5">
                             {presets.map((p) => (
-                                <button key={p.label} type="button" onClick={() => setForm((f) => ({ ...f, systemPrompt: p.prompt }))} className="rounded-full border px-2 py-0.5 text-[0.65rem] transition-colors hover:bg-accent">
+                                <Button key={p.label} type="button" variant="outline" size="sm" onClick={() => setForm((f) => ({ ...f, systemPrompt: p.prompt }))} className="h-auto rounded-full px-2 py-0.5 text-[0.65rem] font-normal">
                                     {p.label}
-                                </button>
+                                </Button>
                             ))}
                         </div>
                     </div>

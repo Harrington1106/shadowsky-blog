@@ -12,6 +12,7 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import Footer from '@/components/Footer';
 import BackToTop from '@/components/BackToTop';
 import { fetchMoments } from '@/lib/api';
+import { Card } from '@/components/ui/card';
 
 function cdn(u) {
     if (!u) return u;
@@ -315,7 +316,7 @@ function TimelineView({ items, onOpen }) {
                 lastYm = ym;
 
                 return (
-                    <div key={m.id} className="relative mb-2 flex gap-3.5 rounded-lg border bg-card p-3">
+                    <Card key={m.id} className="relative mb-2 flex-row gap-3.5 p-3">
                         {showMonth && (
                             <div className="absolute -left-11.5 -top-1 flex items-center gap-2">
                                 <div className="size-2 rounded-full bg-primary" />
@@ -346,7 +347,7 @@ function TimelineView({ items, onOpen }) {
                                 {(m.tags || []).length > 0 && <span className="text-primary">{m.tags.map((t) => '#' + t).join(' ')}</span>}
                             </div>
                         </div>
-                    </div>
+                    </Card>
                 );
             })}
         </div>

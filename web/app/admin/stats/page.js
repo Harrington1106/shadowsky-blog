@@ -5,6 +5,8 @@ import { toast } from 'sonner';
 import { Eye, Ban, ShieldOff, Plus, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import { Card } from '@/components/ui/card';
 import { apiGet, apiCreate } from '@/lib/adminApi';
 import AdminHeader from '@/components/admin/AdminHeader';
 
@@ -56,13 +58,13 @@ export default function StatsAdmin() {
             <AdminHeader title="访问统计" />
 
             <section className="mt-6">
-                <div className="mb-4 flex items-center gap-2 rounded-lg border bg-card p-4">
+                <Card className="mb-4 flex-row items-center gap-2 p-4">
                     <Eye className="size-5 text-muted-foreground" />
                     <div>
                         <div className="text-2xl font-bold tabular-nums">{stats.total ?? 0}</div>
                         <div className="text-xs text-muted-foreground">总访问量</div>
                     </div>
-                </div>
+                </Card>
                 <h2 className="mb-2 text-sm font-semibold">分页面访问</h2>
                 <div className="flex flex-col gap-1.5">
                     {pageEntries.map(([page, count]) => (
@@ -88,10 +90,12 @@ export default function StatsAdmin() {
                 </div>
                 <div className="flex flex-wrap gap-2">
                     {excluded.map((ip) => (
-                        <span key={ip} className="inline-flex items-center gap-1.5 rounded-md border bg-muted/50 px-2.5 py-1 font-mono text-xs">
+                        <Badge key={ip} variant="outline" className="gap-1.5 py-1 pr-1 pl-2.5 font-mono">
                             {ip}
-                            <button onClick={() => removeExcluded(ip)} className="text-muted-foreground hover:text-destructive"><X className="size-3.5" /></button>
-                        </span>
+                            <Button variant="ghost" size="icon" className="size-5" aria-label={`移除 ${ip}`} onClick={() => removeExcluded(ip)}>
+                                <X className="size-3.5" />
+                            </Button>
+                        </Badge>
                     ))}
                     {excluded.length === 0 && <span className="text-xs text-muted-foreground">无</span>}
                 </div>
@@ -106,10 +110,12 @@ export default function StatsAdmin() {
                 </div>
                 <div className="flex flex-wrap gap-2">
                     {blocked.map((ip) => (
-                        <span key={ip} className="inline-flex items-center gap-1.5 rounded-md border border-destructive/40 bg-destructive/5 px-2.5 py-1 font-mono text-xs">
+                        <Badge key={ip} variant="destructive" className="gap-1.5 py-1 pr-1 pl-2.5 font-mono">
                             {ip}
-                            <button onClick={() => blockIp(ip, 'remove')} className="text-muted-foreground hover:text-destructive"><X className="size-3.5" /></button>
-                        </span>
+                            <Button variant="ghost" size="icon" className="size-5" aria-label={`解封 ${ip}`} onClick={() => blockIp(ip, 'remove')}>
+                                <X className="size-3.5" />
+                            </Button>
+                        </Badge>
                     ))}
                     {blocked.length === 0 && <span className="text-xs text-muted-foreground">无</span>}
                 </div>

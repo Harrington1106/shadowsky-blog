@@ -4,6 +4,9 @@ import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { apiGet, apiUpdate } from '@/lib/adminApi';
 import AdminHeader from '@/components/admin/AdminHeader';
 
@@ -30,19 +33,19 @@ export default function NoticeAdmin() {
             <AdminHeader title="站点公告" />
             <div className="mt-6 flex flex-col gap-4">
                 <Textarea placeholder="公告内容(留空则不显示)" value={form.content} onChange={(e) => setForm({ ...form, content: e.target.value })} className="min-h-24" />
-                <label className="flex items-center gap-2 text-sm">
-                    <input type="checkbox" checked={form.show} onChange={(e) => setForm({ ...form, show: e.target.checked })} className="size-4" />
-                    在站点上显示
-                </label>
+                <div className="flex items-center gap-2">
+                    <Switch id="notice-show" checked={form.show} onCheckedChange={(v) => setForm({ ...form, show: v })} />
+                    <Label htmlFor="notice-show">在站点上显示</Label>
+                </div>
                 <div className="flex items-center gap-2">
                     <span className="text-sm text-muted-foreground">样式:</span>
-                    {STYLES.map((s) => (
-                        <button
-                            key={s}
-                            onClick={() => setForm({ ...form, style: s })}
-                            className={`rounded-md border px-3 py-1 text-xs transition-colors ${form.style === s ? 'border-primary bg-accent font-medium' : 'text-muted-foreground hover:bg-accent/50'}`}
-                        >{s}</button>
-                    ))}
+                    <ToggleGroup
+                        variant="outline"
+                        value={[form.style]}
+                        onValueChange={(vals) => vals.length && setForm({ ...form, style: vals[0] })}
+                    >
+                        {STYLES.map((s) => <ToggleGroupItem key={s} value={s} className="text-xs">{s}</ToggleGroupItem>)}
+                    </ToggleGroup>
                 </div>
                 <div>
                     <Button onClick={save} disabled={saving}>{saving ? '保存中…' : '保存公告'}</Button>

@@ -5,10 +5,12 @@ import { toast } from 'sonner';
 import { Pencil, Trash2, ExternalLink, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Card } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { apiGet, apiUpdate, apiDelete } from '@/lib/adminApi';
+import { useConfirm } from '@/components/useConfirm';
 import AdminHeader from '@/components/admin/AdminHeader';
 
 export default function PostsAdmin() {
@@ -16,6 +18,7 @@ export default function PostsAdmin() {
     const [open, setOpen] = useState(false);
     const [form, setForm] = useState(null);
     const [saving, setSaving] = useState(false);
+    const [confirm, confirmDialog] = useConfirm();
 
     async function load() { try { setItems(await apiGet('/api/posts')); } catch (e) { toast.error(e.message); } }
     useEffect(() => { load(); }, []);
@@ -34,19 +37,20 @@ export default function PostsAdmin() {
     }
 
     async function remove(p) {
-        if (!confirm(`删除文章「${p.title}」?文件将被移除,不可恢复。`)) return;
+        if (!await confirm({ title: `删除文章「${p.title}」?`, description: 'Markdown 文件将被移除，不可恢复。' })) return;
         try { await apiDelete(`/api/posts?file=${encodeURIComponent(p.file)}`); toast.success('已删除'); load(); }
         catch (e) { toast.error(e.message); }
     }
 
     return (
         <div className="mx-auto max-w-5xl px-8 py-10">
+            {confirmDialog}
             <AdminHeader title="博客文章" count={items.length} />
             <p className="mt-3 text-xs text-muted-foreground">文章正文以 Markdown 文件形式管理(发文=新增 .md 文件)。此处可编辑元信息或删除。</p>
 
             <div className="mt-6 flex flex-col gap-2">
                 {items.map((p) => (
-                    <div key={p.file} className="flex items-center gap-3 rounded-lg border p-3">
+                    <Card key={p.file} className="flex-row items-center gap-3 p-3">
                         <FileText className="size-5 shrink-0 text-muted-foreground" />
                         <div className="min-w-0 flex-1">
                             <div className="truncate text-sm font-medium">{p.title || p.file}</div>
@@ -60,7 +64,7 @@ export default function PostsAdmin() {
                         <a href={`/post?file=${encodeURIComponent(p.file)}`} target="_blank" rel="noreferrer" className="shrink-0 text-muted-foreground hover:text-primary"><ExternalLink className="size-4" /></a>
                         <Button variant="ghost" size="icon" onClick={() => openEdit(p)}><Pencil className="size-4" /></Button>
                         <Button variant="ghost" size="icon" onClick={() => remove(p)}><Trash2 className="size-4 text-destructive" /></Button>
-                    </div>
+                    </Card>
                 ))}
                 {items.length === 0 && <p className="py-10 text-center text-sm text-muted-foreground">暂无文章</p>}
             </div>

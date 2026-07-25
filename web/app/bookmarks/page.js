@@ -9,6 +9,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 import Footer from '@/components/Footer';
 import BackToTop from '@/components/BackToTop';
 import { fetchBookmarks } from '@/lib/api';
+import { Card } from '@/components/ui/card';
+import { cardSurface, cn } from '@/lib/utils';
 
 const CAT_FALLBACKS = {
     dev_tech: '开发与技术',
@@ -226,11 +228,11 @@ function BookmarkSkeleton() {
     return (
         <div className="columns-1 gap-4 sm:columns-2 lg:columns-3 xl:columns-4">
             {Array.from({ length: 8 }, (_, i) => (
-                <div key={i} className="mb-4 break-inside-avoid space-y-2 rounded-xl border p-4">
+                <Card key={i} className="mb-4 gap-2 break-inside-avoid p-4">
                     <Skeleton className="h-3 w-full" />
                     <Skeleton className="h-3 w-3/4" />
                     <Skeleton className="h-3 w-2/5" />
-                </div>
+                </Card>
             ))}
         </div>
     );
@@ -312,7 +314,7 @@ function BookmarkCard({ b }) {
             role="button"
             tabIndex={0}
             aria-label={b.title || domain(b.url)}
-            className="group mb-3 cursor-pointer break-inside-avoid rounded-xl border bg-card p-4 transition-colors hover:border-primary/50 focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
+            className={cn(cardSurface, 'group mb-3 cursor-pointer break-inside-avoid p-4 transition-[box-shadow,color] hover:ring-primary/40 focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none')}
             onClick={openLink}
             onKeyDown={onKeyDown}
         >
