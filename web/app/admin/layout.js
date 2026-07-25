@@ -1,7 +1,7 @@
 'use client';
 
 import { usePathname, useRouter } from 'next/navigation';
-import { LayoutDashboard, Bookmark, Camera, Clapperboard, Film, Rss, Bell, FileText, Settings, LogOut } from 'lucide-react';
+import { LayoutDashboard, Bookmark, Camera, Clapperboard, Film, Rss, Bell, FileText, Settings, BarChart3, LogOut } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Toaster } from '@/components/ui/sonner';
@@ -15,6 +15,7 @@ const NAV = [
     { href: '/admin/videos', label: '视频', icon: Film },
     { href: '/admin/feeds', label: '订阅源', icon: Rss },
     { href: '/admin/notice', label: '公告', icon: Bell },
+    { href: '/admin/stats', label: '统计', icon: BarChart3 },
     { href: '/admin/settings', label: '设置', icon: Settings },
 ];
 
