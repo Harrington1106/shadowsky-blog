@@ -154,6 +154,42 @@ html.dark .light-only { display: none !important; }
   .post-prose th { background: var(--muted); font-weight: 600; }
   .post-prose .hljs { background: transparent !important; padding: 0 !important; }
 
+  /* ── 导航栏液态玻璃(自 v1 unified.css 移植)：滑动激活 pill + 光标跟随镜面高光 ── */
+  .nav-pill {
+    position: absolute; top: 50%; left: 0; height: 32px; width: 0;
+    border-radius: 999px; pointer-events: none; z-index: 0; opacity: 0;
+    transform: translate(0, -50%);
+    transition:
+      transform .45s cubic-bezier(.34, 1.56, .64, 1),
+      width .45s cubic-bezier(.34, 1.56, .64, 1),
+      opacity .3s ease;
+  }
+  .dark .nav-pill {
+    background: linear-gradient(180deg, rgba(255,255,255,.16), rgba(255,255,255,.05));
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.18), 0 0 18px rgba(255,255,255,.05);
+  }
+  html:not(.dark) .nav-pill {
+    background: linear-gradient(180deg, rgba(255,255,255,.98), rgba(0,0,0,.04));
+    box-shadow: 0 4px 14px rgba(0,0,0,.10), inset 0 1px 0 rgba(255,255,255,.95);
+  }
+
+  /* 光标跟随光泽：--mx/--my 由 NavBar 的 pointermove 写入 */
+  .nav-glass::after {
+    content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 1;
+    opacity: var(--glass-opacity, 0); transition: opacity .35s ease;
+    background: radial-gradient(180px 100px at var(--mx, 50%) var(--my, -30%),
+      rgba(255,255,255,.30), rgba(255,255,255,0) 60%);
+  }
+  html:not(.dark) .nav-glass::after {
+    background: radial-gradient(180px 100px at var(--mx, 50%) var(--my, -30%),
+      rgba(255,255,255,.85), rgba(255,255,255,0) 60%);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .nav-pill { transition: opacity .01ms; }
+    .nav-glass::after { display: none; }
+  }
+
   .code-header { position: absolute; top: 0; left: 0; right: 0; height: 2.6em; display: flex; align-items: center; justify-content: space-between; padding: 0 14px; background: var(--muted); border-bottom: 1px solid var(--border); z-index: 1; }
   .window-controls { display: flex; gap: 6px; }
   .window-dot { width: 9px; height: 9px; border-radius: 999px; }
