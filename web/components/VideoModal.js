@@ -7,13 +7,15 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
 /**
- * B 站视频播放弹窗 —— 用官方 iframe 播放器。
+ * B 站视频播放弹窗 —— 用 B 站的 H5 移动端播放器嵌入。
  *
- * 这里原本先请求 /api/bilibili_playurl 取直链、失败再回退 iframe，但该端点在 v1 时代
- * 就不存在（v2 也没有），每次打开视频都只是白跑一个 404 再回退，故直接走 iframe。
- * 若将来要取直链，需要新增 Route Handler 处理 B 站的 referer/wbi 签名限制。
+ * 为什么不是 player.bilibili.com/player.html：那个外链播放器在第三方站点内嵌时，
+ * 画面区域会被「你感兴趣的视频都在B站」推广面板盖住（加 isOutside=true、去 sandbox、
+ * referrerPolicy=no-referrer 均无效，三个不同 bvid 表现一致，非单个稿件的转载设置）。
+ * blackboard/html5mobileplayer.html 则能正常出画面，实测于 2026-07-26。
  *
- * 注意：外链播放器必须带 isOutside=true，否则 B 站只返回「你感兴趣的视频都在B站」占位页。
+ * 参数：danmaku=0 关弹幕，hideCoverInfo=1 去播放量浮层，highQuality=1 优先高清，
+ *       fjw=0 关“记忆上次播放位置”的跳转提示。
  */
 export default function VideoModal({ video, onClose }) {
     const [player, setPlayer] = useState(null); // { kind: 'iframe'|'demo', bvid }
@@ -40,11 +42,10 @@ export default function VideoModal({ video, onClose }) {
                             )}
                             {player?.kind === 'iframe' && (
                                 <iframe
-                                    src={`https://player.bilibili.com/player.html?isOutside=true&bvid=${player.bvid}&p=1&high_quality=1&autoplay=1&danmaku=0&as_wide=1`}
+                                    src={`https://www.bilibili.com/blackboard/html5mobileplayer.html?bvid=${player.bvid}&p=1&autoplay=1&danmaku=0&hideCoverInfo=1&highQuality=1&fjw=0`}
                                     scrolling="no"
                                     frameBorder="no"
                                     allowFullScreen
-                                    sandbox="allow-same-origin allow-scripts allow-popups allow-presentation"
                                     allow="autoplay; fullscreen"
                                     className="absolute inset-0 h-full w-full"
                                 />
@@ -78,11 +79,7 @@ export default function VideoModal({ video, onClose }) {
                                 </Button>
                             )}
                         </div>
-                        {player?.kind === 'iframe' && (
-                            <p className="text-xs text-muted-foreground/70">
-                                B 站对第三方站点内嵌有限制，播放器可能只显示占位图 —— 点上方按钮到 B 站观看。
-                            </p>
-                        )}
+
                     </>
                 )}
             </DialogContent>
