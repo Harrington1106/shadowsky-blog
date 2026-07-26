@@ -1,38 +1,24 @@
+# 环境变量(含密钥)
 .env
-api/data/
+
+# 依赖与构建产物
 node_modules/
-public/data/
-public/posts/.obsidian/plugins/
-public/posts/*-auto_write.md
-*.test.js
-*_test.php
-test.php
-test.txt
-.trae/
-docs/superpowers/
-WORKFLOW.md
-nul
-
-.superpowers/
-
-# Next.js (web/)
 web/.next/
 web/out/
 
-# v2 运行时数据(SQLite 文件不进 git,迁移文件进 git)
-web/db/*.db
-web/db/*.db-shm
-web/db/*.db-wal
-web/uploads/
-web/data/
-web/cA.txt
-web/cook.txt
-web/cookies.txt
-
-# v2 部署产物(本地构建中间物,不进 git)
+# v2 部署产物(本地构建中间物)
 web/_deploy/
 web/deploy.tgz
 
-# 遗留:GNZ48 日历生成产物(真实来源 D:\Projects\GNZ48-Calendar / 服务器 /opt/gnz48-calendar)
-calendar/team_g.ics
+# v2 运行时数据(SQLite 与上传文件不进 git,migrations 进)
+web/db/*.db
+web/db/*.db-shm
+web/db/*.db-wal
+web/data/
+web/uploads/
 
+# 杂项
+*.test.js
+.trae/
+.superpowers/
+docs/superpowers/
