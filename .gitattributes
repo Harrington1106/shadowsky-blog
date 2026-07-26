@@ -1,0 +1,16 @@
+# 统一换行:仓库内一律 LF。
+# 尤其是 *.sh —— 检出成 CRLF 再 scp 到服务器，bash 会报 $'\r': command not found。
+* text=auto eol=lf
+
+*.sh   text eol=lf
+*.md   text eol=lf
+*.json text eol=lf
+*.js   text eol=lf
+*.jsx  text eol=lf
+*.css  text eol=lf
+*.py   text eol=lf
+
+*.png binary
+*.jpg binary
+*.ico binary
+*.tgz binary
