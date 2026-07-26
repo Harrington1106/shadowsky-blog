@@ -3,7 +3,7 @@
 # 由 cron 每天触发。日志 /var/log/ai-daily-v2.log
 set -e
 LOG=/var/log/ai-daily-v2.log
-SKILL=/www/wwwroot/47.118.28.27/.claude/skills/ai-daily-digest
+SKILL=/www/wwwroot/shadowquake-v2/tools/ai-daily-digest
 DIGEST="$SKILL/scripts/digest.ts"
 INDEX="$SKILL/gen-index.py"
 OUT=/www/wwwroot/shadowquake-v2/content/ai-daily
@@ -15,7 +15,7 @@ if [ -f "$OUT/$DATE.md" ]; then
     echo "[$(date '+%F %T')] 今日已存在,跳过" >>"$LOG"; exit 0
 fi
 # 载入 .env(SILICONFLOW_API_KEY 等)
-if [ -f /www/wwwroot/47.118.28.27/.env ]; then set -a; . /www/wwwroot/47.118.28.27/.env; set +a; fi
+if [ -f /www/wwwroot/shadowquake-v2/tools/digest.env ]; then set -a; . /www/wwwroot/shadowquake-v2/tools/digest.env; set +a; fi
 
 tsx "$DIGEST" --hours 48 --top-n 10 --lang zh --output "$OUT/$DATE.md" >>"$LOG" 2>&1
 if [ -f "$OUT/$DATE.md" ]; then

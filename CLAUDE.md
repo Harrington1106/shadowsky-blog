@@ -203,7 +203,20 @@ ssh shadowsky 'grep -n "proxy_cache" /www/server/panel/vhost/nginx/shadowquake.t
 
 ## 备份与回滚
 
-- **数据**：`/www/wwwroot/_backups/v2/v2-<时间戳>.tar.gz`（含 `db` + `content`），每日 4:45，保留 14 份。
+- **数据**：`/www/wwwroot/_backups/v2/v2-<时间戳>.tar.gz`（含 `db` + `content` + `data/uploads`），每日 4:45，保留 14 份。
+- **异地备份（待启用）**：本地备份和数据在**同一块盘**上，防误删不防掉盘。
+  `scripts/backup-offsite.py` 已就位（零依赖，标准库手写 SigV4；这台 ECS 装不了 rclone/boto3），
+  `backup-v2.sh` 打包后会自动调用它——但只在 `tools/r2.env` 存在时生效，否则安静跳过。
+  启用步骤：Cloudflare 开通 R2 → 建桶 → 生成**仅对该桶可读写**的 API Token →
+  在服务器写 `/www/wwwroot/shadowquake-v2/tools/r2.env`（600）：
+  ```
+  R2_ACCOUNT_ID=…
+  R2_ACCESS_KEY_ID=…
+  R2_SECRET_ACCESS_KEY=…
+  R2_BUCKET=…
+  R2_KEEP_DAYS=90
+  ```
+  然后 `python3 tools/backup-offsite.py --check` 验证可写可删，`--list` 看远端列表。
 - **回滚上一个版本**：每次 `deploy-v2.sh` 都会把旧镜像打成 `shadowquake-v2:rollback-<时间戳>`，
   `docker rm -f shadowsky-v2 && docker tag shadowquake-v2:rollback-<时间戳> shadowquake-v2:latest` 后重跑 run 命令。
 - **回到 v1**（2026-07-26 后已不是秒切）：先从 `_backups/v1-final-20260726-084131.tar.gz`

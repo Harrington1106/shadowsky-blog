@@ -57,6 +57,9 @@ cp Dockerfile.deploy _deploy/
 cp -r jobs _deploy/jobs
 mkdir -p _deploy/tools
 cp -r ../.claude/skills/ai-daily-digest _deploy/tools/ai-daily-digest
+cp ../scripts/backup-offsite.py _deploy/tools/backup-offsite.py
+# 宿主上跑的 shell(cron 直接调用),此前一直是手工放上去的,容易和仓库漂移
+cp ../scripts/backup-v2.sh ../scripts/run-digest-v2.sh _deploy/
 
 tar czf deploy.tgz -C _deploy .
 
@@ -110,7 +113,7 @@ ssh "$SSH_HOST" 'set -e
         echo "    直连容器 == 经 nginx ✓ (md5 ${direct:0:8})"
     fi
     # 宿主侧 cron 依赖是否到位(它们不在镜像里,靠 tar 解包更新)
-    for f in jobs/bangumi-sync.cjs tools/ai-daily-digest/scripts/digest.ts tools/digest.env; do
+    for f in jobs/bangumi-sync.cjs tools/ai-daily-digest/scripts/digest.ts tools/digest.env              tools/backup-offsite.py backup-v2.sh run-digest-v2.sh; do
         if [ -f "'"$REMOTE_DIR"'/$f" ]; then printf "    %-42s ✓\n" "$f"
         else printf "    %-42s ✗ 缺失\n" "$f"; fail=1; fi
     done
