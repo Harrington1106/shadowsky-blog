@@ -3,8 +3,6 @@
 import { Suspense, useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Marked } from 'marked';
-import hljs from 'highlight.js';
-import renderMathInElement from 'katex/contrib/auto-render';
 import { ArrowLeft, Calendar, Folder, Clock, Eye, Edit3, List, X, Bot } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -15,10 +13,30 @@ import BackToTop from '@/components/BackToTop';
 import { cardSurface, cn, withBase } from '@/lib/utils';
 import { fetchPostMarkdown, fetchVisitCount, fetchPosts, fetchAiDailyMarkdown } from '@/lib/api';
 import { CATEGORY_IMAGES, calculateReadingTime, parseFrontMatter, normalizeTags } from '@/lib/postContent';
-import 'katex/dist/katex.min.css';
 
 const HLJS_THEME_DARK = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css';
 const HLJS_THEME_LIGHT = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+
+// highlight.js / katex 都按需加载:两者合计占 /post 首屏包的绝大部分,
+// 而大多数访问只是读文字。加载后缓存在模块级变量里,同一次会话不会重复请求。
+let hljs = null;
+async function ensureHljs() {
+    // 用 lib/common(约 40 种常见语言)而不是全量 190+,体积小一个量级。
+    // powershell 不在 common 里但文章用到,单独注册(约 2KB),避免降级成纯文本。
+    if (!hljs) {
+        const [core, ps] = await Promise.all([
+            import('highlight.js/lib/common'),
+            import('highlight.js/lib/languages/powershell'),
+        ]);
+        hljs = core.default;
+        hljs.registerLanguage('powershell', ps.default);
+    }
+    return hljs;
+}
+
+function escapeHtml(s) {
+    return s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
 
 const marked = new Marked({ breaks: true, gfm: true });
 marked.use({
@@ -27,8 +45,9 @@ marked.use({
             return `<img src="${href}" alt="${text || ''}" title="${title || ''}" class="rounded-lg shadow-md max-w-full h-auto my-6 mx-auto">`;
         },
         code({ text, lang }) {
-            const language = lang && hljs.getLanguage(lang) ? lang : 'plaintext';
-            const highlighted = hljs.highlight(text, { language }).value;
+            // hljs 未就绪时原样输出(转义后),不至于因为懒加载失败而丢内容
+            const language = hljs && lang && hljs.getLanguage(lang) ? lang : 'plaintext';
+            const highlighted = hljs ? hljs.highlight(text, { language }).value : escapeHtml(text);
             return `<pre class="group"><div class="code-header"><div class="window-controls"><div class="window-dot red"></div><div class="window-dot yellow"></div><div class="window-dot green"></div></div><div class="flex items-center gap-2"><div class="lang-label">${language}</div><button class="code-copy-btn" title="复制代码"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span>复制</span></button></div></div><code class="hljs language-${language}">${highlighted}</code></pre>`;
         },
     },
@@ -89,6 +108,7 @@ function PostPageInner() {
                 const keywords = kwMatch ? kwMatch[1].split(/[,，、]/).map((k) => k.trim()).filter(Boolean).slice(0, 5) : [];
                 setTags(keywords);
                 setHeroImage('https://images.unsplash.com/photo-1677442136019-21780ecad995?w=1200&q=80');
+                await ensureHljs();
                 setContentHtml(marked.parse(md));
             } catch (e) {
                 if (!cancelled) {
@@ -141,6 +161,7 @@ function PostPageInner() {
                     },
                 });
 
+                await ensureHljs();
                 setContentHtml(marked.parse(content));
 
                 const pageId = 'posts/' + file.replace(/\.md$/, '');
@@ -189,15 +210,27 @@ function PostPageInner() {
         if (!contentHtml || !contentRef.current) return;
         const container = contentRef.current;
 
-        try {
-            renderMathInElement(container, {
-                delimiters: [
-                    { left: '$$', right: '$$', display: true },
-                    { left: '$', right: '$', display: false },
-                ],
-                throwOnError: false,
-            });
-        } catch (e) { /* noop */ }
+        // 只有正文里真的出现数学分隔符才去加载 KaTeX(库 + CSS 约 300KB)
+        const plain = container.textContent || '';
+        const hasMath = plain.includes('$$') || plain.includes('\\(') || plain.includes('\\[')
+            || new RegExp('\\$[^$\\n]+\\$').test(plain);
+        if (hasMath) {
+            (async () => {
+                try {
+                    const [{ default: renderMathInElement }] = await Promise.all([
+                        import('katex/contrib/auto-render'),
+                        import('katex/dist/katex.min.css'),
+                    ]);
+                    renderMathInElement(container, {
+                        delimiters: [
+                            { left: '$$', right: '$$', display: true },
+                            { left: '$', right: '$', display: false },
+                        ],
+                        throwOnError: false,
+                    });
+                } catch (e) { /* noop */ }
+            })();
+        }
 
         const headers = Array.from(container.querySelectorAll('h1, h2, h3'));
         const list = headers.map((h, i) => {
