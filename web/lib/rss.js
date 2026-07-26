@@ -1,6 +1,6 @@
 /**
  * RSS/AI 翻译数据层 —— 移植自 ../../js/rss.js
- * 全部走客户端 fetch/DOMParser，保持原版三级代理链路（CF Worker → PHP → 直连）
+ * 全部走客户端 fetch/DOMParser，三级代理链路（CF Worker → /api/rss-proxy → 直连）
  */
 
 export const AI_PROVIDERS = {
@@ -102,7 +102,7 @@ export async function fetchFeeds() {
     return (Array.isArray(feeds) ? feeds : []).map((f) => ({ ...f, xmlUrl: f.xmlUrl || f.url }));
 }
 
-/** 抓取订阅源 XML：CF Worker → PHP 代理 → 直连兜底 */
+/** 抓取订阅源 XML：CF Worker → 自家 /api/rss-proxy(带 SSRF 防护) → 直连兜底 */
 export async function fetchFeedXml(url) {
     try {
         const cfUrl = `https://bangumi.shadowquake.top/fetch?url=${encodeURIComponent(url)}`;
@@ -119,10 +119,7 @@ export async function fetchFeedXml(url) {
         const timer = setTimeout(() => controller.abort(), 8000);
         const response = await fetch(proxyUrl, { signal: controller.signal });
         clearTimeout(timer);
-        if (response.ok) {
-            const text = await response.text();
-            if (!text.includes('<?php') && !text.trim().startsWith('<?=')) return text;
-        }
+        if (response.ok) return await response.text();
     } catch (e) { /* 尝试直连 */ }
 
     try {

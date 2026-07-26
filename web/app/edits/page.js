@@ -25,7 +25,8 @@ export default function EditsPage() {
         }).catch(() => {});
     }, []);
 
-    const categories = useMemo(() => ['all', ...new Set(videos.map((v) => v.category))], [videos]);
+    // 过滤掉空分类,否则会渲染出一个没有文字的空药丸
+    const categories = useMemo(() => ['all', ...new Set(videos.map((v) => v.category).filter(Boolean))], [videos]);
     const filtered = useMemo(() => (filter === 'all' ? videos : videos.filter((v) => v.category === filter)), [videos, filter]);
 
     return (
