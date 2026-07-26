@@ -31,6 +31,25 @@ const nextConfig = {
             { source: '/public/:path*', destination: `${API_PROXY_TARGET}/public/:path*` },
         ];
     },
+    // 页面 HTML 的缓存策略。
+    //
+    // Next 给预渲染页的默认头是 `Cache-Control: s-maxage=31536000` —— 共享缓存可以存一年。
+    // 2026-07-26 就是这条头让 nginx 的全局 proxy_cache 在部署后继续发旧 HTML(排查了很久)。
+    // nginx 那层已关缓存,但 Cloudflare 侧同样的雷还在:哪天开个 "Cache Everything" 规则,
+    // 用户就会拿到一年前的 HTML —— 而它引用的 /_next/static chunk 早已随部署删除,直接白屏。
+    //
+    // 所以显式收紧:边缘最多缓 60 秒,过期后可先用旧的再后台回源(SWR),浏览器每次都校验。
+    // 只作用于页面,/api 与 /_next/static 不匹配(前者要实时,后者本就带 immutable 长缓存)。
+    async headers() {
+        return [
+            {
+                source: '/:path((?!api/|_next/static/).*)',
+                headers: [
+                    { key: 'Cache-Control', value: 'public, max-age=0, s-maxage=60, stale-while-revalidate=86400' },
+                ],
+            },
+        ];
+    },
 };
 
 module.exports = nextConfig;

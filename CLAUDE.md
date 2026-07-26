@@ -172,6 +172,19 @@ $env:AUTH_SECRET='dev'; $env:ADMIN_PASSWORD='devpass'; npm run dev
 ```
 打包后自查：`tar tzf deploy.tgz | grep -i "\.env"` 应为空。
 
+### 缓存策略（三层，各管各的）
+
+| 内容 | 头 | 谁在缓存 |
+|------|-----|---------|
+| 页面 HTML | `max-age=0, s-maxage=60, stale-while-revalidate=86400` | CDN 最多 60 秒；浏览器每次校验 |
+| `/_next/static/*` | `max-age=31536000, immutable` | 文件名带 hash，可以放心长缓存 |
+| `/api/*` | 不设 | 实时数据，不缓存 |
+
+页面这条是在 `web/next.config.js` 的 `headers()` 里显式收紧的 —— Next 对预渲染页的默认头是
+`s-maxage=31536000`（共享缓存可存**一年**），正是它让 nginx 在部署后继续发旧 HTML。
+不收紧的话，哪天在 Cloudflare 开个 "Cache Everything" 规则就会重演，
+而且更糟：旧 HTML 引用的 chunk 早已随部署删除，用户直接白屏。
+
 ### ⚠️ nginx 全局 proxy_cache（2026-07-26 踩过）
 
 宝塔的 `nginx.conf` http 块里有全局 `proxy_cache cache_one;`。Next 的预渲染页会发
