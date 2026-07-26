@@ -175,7 +175,7 @@ function MomentsPageInner() {
                         <span className="text-muted-foreground/40">·</span>
                         <span><strong className="text-foreground">{stats.locs}</strong> 地</span>
                     </div>
-                    <div className="relative min-w-40 max-w-64 flex-1">
+                    <div className="relative min-w-0 flex-1 sm:min-w-40 sm:max-w-64">
                         <Search className="absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-muted-foreground" />
                         <Input
                             placeholder="搜索..."
@@ -184,13 +184,13 @@ function MomentsPageInner() {
                             className="h-8 pl-8 text-sm"
                         />
                     </div>
-                    <div className="flex min-w-0 flex-1 flex-wrap gap-1.5">
-                        <Badge variant={!activeTag ? 'default' : 'outline'} className="cursor-pointer" render={<button type="button" onClick={() => setActiveTag(null)} />}>全部</Badge>
+                    <div className="flex w-full min-w-0 flex-wrap gap-1.5 sm:w-auto sm:flex-1">
+                        <Badge variant={!activeTag ? 'default' : 'outline'} className="h-6 cursor-pointer px-2.5 sm:h-5 sm:px-2" render={<button type="button" onClick={() => setActiveTag(null)} />}>全部</Badge>
                         {tagCounts.map((t) => (
                             <Badge
                                 key={t}
                                 variant={activeTag === t ? 'default' : 'outline'}
-                                className="cursor-pointer"
+                                className="h-6 cursor-pointer px-2.5 sm:h-5 sm:px-2"
                                 render={<button type="button" onClick={() => setActiveTag((v) => (v === t ? null : t))} />}
                             >
                                 {t}

@@ -94,23 +94,11 @@ export function getRelativeTime(date) {
     return d.getFullYear() + '年' + month + '月' + day + '日';
 }
 
-/** 加载订阅源列表：优先 /api/feeds.php，失败回退静态 /public/data/feeds.json */
+/** 加载订阅源列表（v2：SQLite ← /api/feeds） */
 export async function fetchFeeds() {
-    let feeds = [];
-    try {
-        const response = await fetch('/api/feeds.php');
-        if (response.ok) {
-            const text = await response.text();
-            if (text && !text.trim().startsWith('<')) feeds = JSON.parse(text);
-        }
-    } catch (e) {
-        // 忽略，走静态回退
-    }
-    if (!Array.isArray(feeds) || feeds.length === 0) {
-        const staticResponse = await fetch('/public/data/feeds.json');
-        if (!staticResponse.ok) throw new Error('Failed to load feeds data');
-        feeds = await staticResponse.json();
-    }
+    const response = await fetch('/api/feeds', { headers: { Accept: 'application/json' } });
+    if (!response.ok) throw new Error('Failed to load feeds data: HTTP ' + response.status);
+    const feeds = await response.json();
     return (Array.isArray(feeds) ? feeds : []).map((f) => ({ ...f, xmlUrl: f.xmlUrl || f.url }));
 }
 

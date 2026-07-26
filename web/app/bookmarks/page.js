@@ -175,7 +175,7 @@ export default function BookmarksPage() {
                             <span className="text-muted-foreground/40">·</span>
                             <span><strong className="text-foreground">{catCount}</strong> 个分类</span>
                         </div>
-                        <div className="relative min-w-40 max-w-72 flex-1">
+                        <div className="relative min-w-0 flex-1 sm:min-w-40 sm:max-w-72">
                             <Search className="absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-muted-foreground" />
                             <Input
                                 placeholder="搜索收藏..."
@@ -184,10 +184,10 @@ export default function BookmarksPage() {
                                 className="h-8 pl-8 text-sm"
                             />
                         </div>
-                        <div className="flex min-w-0 flex-1 flex-wrap gap-1.5">
+                        <div className="flex w-full min-w-0 flex-wrap gap-1.5 sm:w-auto sm:flex-1">
                             <Badge
                                 variant={!activeCat ? 'default' : 'outline'}
-                                className="cursor-pointer"
+                                className="h-6 cursor-pointer px-2.5 sm:h-5 sm:px-2"
                                 render={<button type="button" onClick={() => setActiveCat(null)} />}
                             >
                                 全部 <span className="opacity-60">{bookmarks.length}</span>
@@ -196,7 +196,7 @@ export default function BookmarksPage() {
                                 <Badge
                                     key={key}
                                     variant={activeCat === key ? 'default' : 'outline'}
-                                    className="cursor-pointer"
+                                    className="h-6 cursor-pointer px-2.5 sm:h-5 sm:px-2"
                                     render={<button type="button" onClick={() => setActiveCat((v) => (v === key ? null : key))} />}
                                 >
                                     {catName(key, categories)} <span className="opacity-60">{n}</span>

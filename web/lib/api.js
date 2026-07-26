@@ -44,24 +44,10 @@ export async function fetchVisitCount(pageId) {
             }
         }
     } catch (e) {
-        // 忽略，走 fallback
+        // 忽略，返回 0
     }
-    return fetchVisitCountFallback(pageId);
-}
-
-async function fetchVisitCountFallback(pageId) {
-    try {
-        const res = await fetch(`${API_BASE}/stats.php`);
-        const data = await res.json();
-        if (data && data.success) {
-            const d = data.data || {};
-            const pages = d.pages || (d.stats && d.stats.pages) || {};
-            const total = d.total_visits || d.total || (d.stats && d.stats.total) || 0;
-            return { count: pages[pageId] || 0, total };
-        }
-    } catch (e) {
-        // ignore
-    }
+    // v1 时代的 stats.php 兜底已随旧系统下线；/api/stats 是鉴权接口，公开访客拿不到，
+    // 所以这里不再兜底，取不到就显示 0。
     return { count: 0, total: 0 };
 }
 
