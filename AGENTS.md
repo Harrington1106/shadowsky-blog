@@ -114,6 +114,13 @@ MySQL 早已停用；旧的 `public/data/*.json`、`api/data/` 只属于 v1。
 
 **GitHub 是唯一真相源**（默认分支 `main`，但 v2 全部推在 `master`）。服务器不再靠 `git push` 自动更新——v2 是「本地构建 → 产物 scp → 服务器 docker build → 换容器」。
 
+**日常直接用脚本**（已内置下面两道防呆和部署后验证）：
+```bash
+bash scripts/deploy-v2.sh              # 完整部署
+bash scripts/deploy-v2.sh --skip-build # 复用现有 .next
+```
+下面是脚本内部做的事，手工排查时参考：
+
 ```bash
 # 1. 本地构建
 cd web && npm run build
