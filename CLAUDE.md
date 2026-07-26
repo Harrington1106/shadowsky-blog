@@ -142,8 +142,30 @@ ssh shadowsky 'cd /www/wwwroot/shadowquake-v2 && \
     -v /www/wwwroot/shadowquake-v2/data/uploads:/app/public/uploads \
     shadowquake-v2:latest'
 
-# 5. 验证
-ssh shadowsky 'curl -s -o /dev/null -w "%{http_code}\n" http://127.0.0.1:3001/'
+# 5. 验证（必须两条都测：直连容器 + 经 nginx，两者不一致说明命中缓存）
+ssh shadowsky 'curl -s http://127.0.0.1:3001/blog | md5sum
+               curl -s -H "Host: shadowquake.top" http://127.0.0.1/blog | md5sum'
+```
+
+### ⚠️ 构建前先确认 `web/.env` 不存在
+
+Next standalone 会把项目根的 `.env` 一并打进产物 → 本地开发用的 `.env`（含 dev 口令）会跟着进镜像。
+本地要跑 admin 就用行内变量，别落盘：
+```powershell
+$env:AUTH_SECRET='dev'; $env:ADMIN_PASSWORD='devpass'; npm run dev
+```
+打包后自查：`tar tzf deploy.tgz | grep -i "\.env"` 应为空。
+
+### ⚠️ nginx 全局 proxy_cache（2026-07-26 踩过）
+
+宝塔的 `nginx.conf` http 块里有全局 `proxy_cache cache_one;`。Next 的预渲染页会发
+`Cache-Control: s-maxage=31536000`，nginx 照单全收缓存**一年** → 部署完容器是新的、
+用户看到的还是旧 HTML，而且 `/api`、`/admin` 的响应也会被缓存。
+
+已在 `location /` 里加 `proxy_cache off;` 关掉。若哪天缓存又被面板改回来：
+```bash
+ssh shadowsky 'grep -n "proxy_cache" /www/server/panel/vhost/nginx/shadowquake.top.conf
+               rm -rf /www/server/nginx/proxy_cache_dir/* && nginx -s reload'
 ```
 
 部署后提醒用户 **Ctrl+Shift+R** 强制刷新绕过 Cloudflare 缓存。
@@ -206,7 +228,15 @@ ssh shadowsky 'curl -s -o /dev/null -w "%{http_code}\n" http://127.0.0.1:3001/'
 **不要在宿主裸跑 v2**——必须用 `node:22-slim` 容器，镜像内 `npm install better-sqlite3`（apt 走阿里云镜像，npm 走 npmmirror）。
 
 ### 部署后仍是旧版
-Cloudflare 缓存。用户 Ctrl+Shift+R；仍不行就 Cloudflare → 缓存 → 清除所有。
+按顺序排查（一步步缩小范围）：
+```bash
+# 1. 容器里的产物新不新
+ssh shadowsky 'docker exec shadowsky-v2 grep -c nav-glass /app/.next/server/app/blog.html'
+# 2. 直连容器 vs 经 nginx —— 不一致就是 nginx proxy_cache(见「部署」章节)
+ssh shadowsky 'curl -s http://127.0.0.1:3001/blog | md5sum
+               curl -s -H "Host: shadowquake.top" http://127.0.0.1/blog | md5sum'
+```
+两处都新 → 才是 Cloudflare/浏览器缓存：用户 Ctrl+Shift+R；仍不行就 Cloudflare → 缓存 → 清除所有。
 
 ### Bangumi 同步失败
 先确认 Worker 在线：
