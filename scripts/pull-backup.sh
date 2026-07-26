@@ -8,6 +8,9 @@
 # 相比 R2 方案:不需要开通任何服务、不需要新凭据(走现成的 SSH 密钥),
 #              代价是只有本机开着时才同步。两者可以并存。
 #
+# 拉完若存在备份仓库(../shadowquake-backups,private),会顺手提交并推送 ——
+# 这样即使本机也没了,GitHub 上还有一份,且带版本历史。
+#
 # 用法:bash scripts/pull-backup.sh [保留份数,默认 30]
 # 落地位置:仓库同级的 _backups/(已在 .gitignore,不会进 git)
 # ============================================================
@@ -58,5 +61,33 @@ if [ ${#OLD[@]} -gt 0 ]; then
     echo "==> 清理 ${#OLD[@]} 份本地旧副本(保留最近 $KEEP 份)"
 fi
 
-echo "==> 完成。本地共 $(ls -1 "$LOCAL_DIR"/v2-*.tar.gz | wc -l) 份,占用 $(du -sh "$LOCAL_DIR" | cut -f1)"
-echo "    恢复方法:tar xzf $LOCAL_DIR/<包> -C <目标目录>,再把 db/ 与 content/ 放回服务器 shadowquake-v2/"
+echo "==> 本地共 $(ls -1 "$LOCAL_DIR"/v2-*.tar.gz | wc -l) 份,占用 $(du -sh "$LOCAL_DIR" | cut -f1)"
+
+# ── 推到私有备份仓库(可选)────────────────────────────────
+# 目录不在就跳过,不报错 —— 换台机器跑时不至于失败。
+BACKUP_REPO="../shadowquake-backups"
+if [ -d "$BACKUP_REPO/.git" ]; then
+    echo "==> 同步到备份仓库…"
+    mkdir -p "$BACKUP_REPO/archives"
+    cp -f "$LOCAL_DIR"/v2-*.tar.gz "$BACKUP_REPO/archives/"
+    # 工作区只留最近 KEEP 份,更早的仍在 git 历史里,checkout 不会越来越大
+    (cd "$BACKUP_REPO/archives" && ls -1t v2-*.tar.gz | tail -n +$((KEEP + 1)) | xargs -r rm -f)
+    (
+        cd "$BACKUP_REPO"
+        if [ -n "$(git status --porcelain)" ]; then
+            git add -A
+            git commit -q -m "backup: $NAME ($(date +%F))"
+            if git push -q origin main 2>/dev/null; then
+                echo "    已提交并推送到 GitHub ✓"
+            else
+                echo "    ⚠ 提交成功但推送失败(网络?),下次运行会补推"
+            fi
+        else
+            echo "    备份仓库无变化"
+        fi
+    )
+else
+    echo "==> 未找到 $BACKUP_REPO,跳过 GitHub 同步"
+fi
+
+echo "==> 完成。恢复方法见备份仓库的 README.md"

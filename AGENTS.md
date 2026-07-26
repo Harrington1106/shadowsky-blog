@@ -204,7 +204,13 @@ ssh shadowsky 'grep -n "proxy_cache" /www/server/panel/vhost/nginx/shadowquake.t
 ## 备份与回滚
 
 - **数据**：`/www/wwwroot/_backups/v2/v2-<时间戳>.tar.gz`（含 `db` + `content` + `data/uploads`），每日 4:45，保留 14 份。
-- **异地备份（待启用）**：本地备份和数据在**同一块盘**上，防误删不防掉盘。
+- **异地备份（已启用）**：本机每日 12:00 由 Windows 计划任务「ShadowQuake 备份异地同步」
+  跑 `scripts/pull-backup.sh`——校验 md5、自检包内容后落到 `_backups/`（保留 30 份），
+  再提交推送到**私有仓库** `Harrington1106/shadowquake-backups`（恢复步骤见该仓库 README）。
+  于是共三份：服务器 14 份、本机 30 份、GitHub 全量历史。
+  备份包**不含密钥**（`AUTH_SECRET`/`ADMIN_PASSWORD`/Bangumi token 都在服务器 `.env` 里，
+  数据库 `app_settings` 只有 `bangumi_username`），但含访客 IP 数据，仓库须保持 private。
+- **R2 异地备份（可选，未启用）**：本地备份和数据在**同一块盘**上，防误删不防掉盘。
   `scripts/backup-offsite.py` 已就位（零依赖，标准库手写 SigV4；这台 ECS 装不了 rclone/boto3），
   `backup-v2.sh` 打包后会自动调用它——但只在 `tools/r2.env` 存在时生效，否则安静跳过。
   启用步骤：Cloudflare 开通 R2 → 建桶 → 生成**仅对该桶可读写**的 API Token →
