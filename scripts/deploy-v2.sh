@@ -50,6 +50,14 @@ cp -r .next/static     _deploy/static
 cp -r public           _deploy/public
 cp -r db/migrations db/bootstrap.js db/seed _deploy/db/
 cp Dockerfile.deploy _deploy/
+
+# 宿主侧跑的东西(不进镜像,但必须随部署更新,否则改了代码线上还是旧的):
+#   jobs/                   cron 2:30 的 bangumi 同步(docker run 挂载进容器)
+#   tools/ai-daily-digest/  cron 9:03 的 AI 日报(宿主 tsx 直接跑)
+cp -r jobs _deploy/jobs
+mkdir -p _deploy/tools
+cp -r ../.claude/skills/ai-daily-digest _deploy/tools/ai-daily-digest
+
 tar czf deploy.tgz -C _deploy .
 
 if tar tzf deploy.tgz | grep -qi "\.env"; then
@@ -101,6 +109,11 @@ ssh "$SSH_HOST" 'set -e
     else
         echo "    直连容器 == 经 nginx ✓ (md5 ${direct:0:8})"
     fi
+    # 宿主侧 cron 依赖是否到位(它们不在镜像里,靠 tar 解包更新)
+    for f in jobs/bangumi-sync.cjs tools/ai-daily-digest/scripts/digest.ts tools/digest.env; do
+        if [ -f "'"$REMOTE_DIR"'/$f" ]; then printf "    %-42s ✓\n" "$f"
+        else printf "    %-42s ✗ 缺失\n" "$f"; fail=1; fi
+    done
     docker stats --no-stream --format "    容器 {{.MemUsage}} CPU {{.CPUPerc}}" '"$CONTAINER"'
     exit $fail'
 

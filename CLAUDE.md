@@ -122,13 +122,16 @@ bash scripts/deploy-v2.sh --skip-build # 复用现有 .next
 # 1. 本地构建
 cd web && npm run build
 
-# 2. 组装部署产物（standalone 自包含，不含 node_modules 之外的东西）
+# 2. 组装部署产物（standalone 自包含；另带 jobs/ 与 tools/ai-daily-digest，
+#    这两个跑在宿主上、不进镜像，但必须随部署更新）
 rm -rf _deploy && mkdir -p _deploy
 cp -r .next/standalone _deploy/standalone
 cp -r .next/static     _deploy/static
 cp -r public           _deploy/public
 mkdir -p _deploy/db && cp -r db/migrations db/bootstrap.js db/seed _deploy/db/
 cp Dockerfile.deploy _deploy/
+cp -r jobs _deploy/jobs
+mkdir -p _deploy/tools && cp -r ../.claude/skills/ai-daily-digest _deploy/tools/ai-daily-digest
 tar czf deploy.tgz -C _deploy .
 
 # 3. 上传并解包
