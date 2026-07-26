@@ -49,8 +49,12 @@ D:\Projects\shadowsky-blog\
 │   ├── middleware.js           /admin 鉴权拦截
 │   ├── Dockerfile.deploy       ★ 生产镜像（封装已构建的 standalone）
 │   └── Dockerfile / Dockerfile.jobs
+├── content/                    线上内容的**只读镜像**（文章 + AI 日报）
+│                               由 scripts/pull-content.sh 从服务器单向同步，
+│                               只为留版本历史；服务器才是权威副本，部署不推这里
 ├── scripts/
 │   ├── deploy-v2.sh            ★ 一键部署（含防呆与部署后验证）
+│   ├── pull-content.sh         拉回线上内容并留档（服务器 → 仓库，单向）
 │   ├── backup-v2.sh            v2 备份（cron 4:45）
 │   └── run-digest-v2.sh        AI 日报（cron 9:03）
 ├── .claude/skills/ai-daily-digest/   AI 日报工具链源（线上副本在服务器
@@ -83,6 +87,11 @@ D:\Projects\shadowsky-blog\
 | 上传图片 | `/www/wwwroot/shadowquake-v2/data/uploads` | `/app/public/uploads` |
 
 这三个目录是**容器的 volume 挂载**，即全部生产数据。备份脚本打包 `db` + `content` 两项。
+
+文章正文只在服务器上被写入（后台编辑器写文件、cron 生成日报），git 里原本没有 → 改错只能翻备份。
+现在用 `bash scripts/pull-content.sh --commit` 把内容同步回仓库 `content/` 留档，
+**方向是单向的（服务器 → 仓库）**，`deploy-v2.sh` 不会把 `content/` 推上线。
+要回滚某篇：从仓库取旧版内容，再 `scp` 回服务器对应路径。
 MySQL 早已停用；旧的 `public/data/*.json`、`api/data/` 只属于 v1。
 
 ## 环境变量（v2）
