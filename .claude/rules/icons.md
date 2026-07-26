@@ -1,29 +1,30 @@
 # 图标规范
 
-全站使用 Lucide Icons (CDN)。
+v2 用 **`lucide-react` 组件**（不是 CDN 版 Lucide）。
 
-## 导航栏图标（所有页面统一）
+## 导航栏（`web/components/NavBar.js` 的 `NAV_ITEMS`）
 
-| 页面 | 图标 | 
+| 页面 | 组件 |
 |------|------|
-| 首页 | `house` |
-| 星空笔记/博客 | `file-text` |
-| 随手拍 | `camera` |
-| 收藏 | `bookmark` |
-| 订阅 | `rss` |
-| 视频 | `film` |
-| 关于 | `user-circle` |
+| 首页 | `House` |
+| 笔记 | `FileText` |
+| 片刻 | `Camera` |
+| 收藏 | `Bookmark` |
+| 订阅 | `Rss` |
+| ACG | `Film` |
+| 关于 | `UserCircle` |
 
-## 通用图标
+桌面导航和移动端 Sheet 抽屉共用同一份 `NAV_ITEMS`，改一处即可。
 
-- 主题: `sun`(亮) / `moon`(暗) / `sun-moon`(切换按钮)
-- 返回: `chevron-left` | 前进: `chevron-right`
-- 刷新: `rotate-cw` | 回到顶部: `chevron-up`
-- 复制: `copy` | 搜索: `search`
-- 菜单: `menu`
+## 通用
+
+- 主题切换：`Sun` / `Moon`
+- 返回/前进：`ChevronLeft` / `ChevronRight`
+- 刷新：`RotateCw`｜回到顶部：`ChevronUp`
+- 复制：`Copy`｜搜索：`Search`｜菜单：`Menu`
 
 ## 规则
 
-1. 修改图标时必须同时改 desktop nav 和 mobile nav
-2. 检查目标页面是否有 `lucide.createIcons()` 调用
-3. 新图标名必须在 Lucide 中存在：https://lucide.dev/icons
+1. 新图标名必须在 https://lucide.dev/icons 存在，且以 PascalCase 组件形式引入
+2. 尺寸用 `size={16}` 或 `className="size-4"`，不要写死 width/height 属性
+3. 遗留静态页（服务器 `/www/wwwroot/legacy-static/gnz48.html`）仍是 `<i data-lucide>` + `lucide.createIcons()` 的老写法，那部分不归本规范管，也不要去"统一"它

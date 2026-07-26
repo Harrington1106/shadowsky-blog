@@ -1,7 +1,8 @@
-检查并修复全站图标一致性：
-1. 扫描所有 HTML 页面，提取 navigation bar 的 data-lucide 图标
-2. 对比与 CLAUDE.md 中定义的图标规范是否一致
-3. 标准: house | file-text | camera | bookmark | rss | film | user-circle
-4. 不匹配的改为标准图标
-5. 确保所有页面有 `lucide.createIcons()` 调用
-6. 部署: git add -A && git commit -m "fix: 统一图标" && git push
+检查并修复图标一致性（v2 只有一处导航，改动集中在 `web/components/NavBar.js`）：
+
+1. 读 `web/components/NavBar.js` 的 `NAV_ITEMS`，确认图标与规范一致：
+   House(首页) / FileText(笔记) / Camera(片刻) / Bookmark(收藏) / Rss(订阅) / Film(ACG) / UserCircle(关于)
+2. 图标一律用 `lucide-react` 组件（`import { House } from 'lucide-react'`），不要用 CDN 版
+   `<i data-lucide>` —— 那是 v1 的写法，只在遗留静态页 `legacy-static/gnz48.html` 里还存在
+3. 桌面导航与移动端 Sheet 抽屉共用同一份 `NAV_ITEMS`，改一处即可，不必两边同步
+4. 改完 `cd web && npm run build` 验证，再按 /ship 部署

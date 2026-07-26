@@ -10,11 +10,12 @@
 ```
 用户 → Cloudflare DNS/CDN → nginx (47.118.28.27:80/4443)
         │
-        ├── 遗留静态（root = /www/wwwroot/47.118.28.27/）
+        ├── 遗留静态（root = /www/wwwroot/legacy-static/）
         │     /gnz48.html            GNZ48 日程页
         │     /ai-daily/*.html       旧 AI 日报归档页
         │     /team-g.ics /schedule.json
-        │     /css/ /js/ /public/ /img/legacy/  （上面两个页面还在引用）
+        │     /app.js /data.js       gnz48 页的脚本与数据
+        │     /css/ /js/ /public/img/  （上面两个页面还在引用）
         │     /favicon.ico
         │
         └── 其余全部 /  → proxy_pass 127.0.0.1:3001
@@ -49,21 +50,16 @@ D:\Projects\shadowsky-blog\
 │   ├── Dockerfile.deploy       ★ 生产镜像（封装已构建的 standalone）
 │   └── Dockerfile / Dockerfile.jobs
 ├── scripts/
+│   ├── deploy-v2.sh            ★ 一键部署（含防呆与部署后验证）
 │   ├── backup-v2.sh            v2 备份（cron 4:45）
-│   ├── run-digest-v2.sh        AI 日报（cron 9:03）
-│   └── backup-data.sh          旧站数据备份（cron 4:30，遗留）
-├── .claude/skills/ai-daily-digest/   AI 日报工具链（digest.ts / gen-index.py）
+│   └── run-digest-v2.sh        AI 日报（cron 9:03）
+├── .claude/skills/ai-daily-digest/   AI 日报工具链源（线上副本在服务器
+│                               shadowquake-v2/tools/ai-daily-digest，改完要同步过去）
 ├── workers/                    Cloudflare Worker 源码（bangumi-proxy.js 等）
 ├── nginx/                      nginx 配置副本
 │
-└── ── 以下为 v1 遗留，除 gnz48/日历外基本冻结 ──
-    ├── *.html                  旧静态页（只有 gnz48.html 还在线上生效）
-    ├── js/ css/                旧前端资源（gnz48/ai-daily 归档页仍在引用）
-    ├── admin/                  旧 Express 后台（server.js:3000，PM2 里还开着但没流量）
-    ├── api/                    旧 PHP API（php-fpm 已停）
-    ├── ai-daily/               旧 AI 日报静态归档
-    ├── calendar/               GNZ48 日历脚本（服务器上已被 /opt/gnz48-calendar 取代）
-    └── deploy-web.sh / deploy-gnz48-*.sh / deploy.sh  旧部署脚本，勿用于 v2
+（v1 的 `*.html` / `js/` / `css/` / `admin/` / `api/` / `public/` 等已于 2026-07-26
+    随旧系统一起删除，需要考古时看 tag `v1-static-baseline` 或 git 历史）
 ```
 
 ## 技术栈（v2）
@@ -108,7 +104,8 @@ MySQL 早已停用；旧的 `public/data/*.json`、`api/data/` 只属于 v1。
 | `FETCH_PROXY_BASE` | `https://bangumi.shadowquake.top`（出站抓取回退代理） |
 
 > v1 时代「Bangumi 凭据双数据源（`api/settings.json` + `.env`）」的坑在 v2 已不存在，只有这一份 `.env`。
-> 旧站根目录的 `.env`（`/www/wwwroot/47.118.28.27/.env`）仍被 AI 日报脚本读取（`SILICONFLOW_API_KEY` 等）。
+> AI 日报的密钥（`SILICONFLOW_API_KEY` 等）单独放在 `/www/wwwroot/shadowquake-v2/tools/digest.env`（600），
+> 不在上面这张表里，也不进容器 —— 日报脚本跑在宿主上。
 
 ## 部署（v2）
 
@@ -177,39 +174,48 @@ ssh shadowsky 'grep -n "proxy_cache" /www/server/panel/vhost/nginx/shadowquake.t
 
 部署后提醒用户 **Ctrl+Shift+R** 强制刷新绕过 Cloudflare 缓存。
 
-**只改遗留静态页（gnz48.html 等）时**：`scp gnz48.html shadowsky:/www/wwwroot/47.118.28.27/`，不需要动 v2。
+**只改遗留静态页时**：`scp <文件> shadowsky:/www/wwwroot/legacy-static/`，不需要动 v2。
+但 `gnz48.html` / `app.js` / `data.js` 的源头在另一个项目 `D:\Projects\GNZ48-Calendar`，
+改那边再上传，别直接改线上文件（cron 3:00 会覆盖 data.js/schedule.json/team-g.ics）。
 
 ## 定时任务（服务器 crontab）
 
 | 时间 | 任务 |
 |------|------|
 | 2:30 | Bangumi 同步 → 写 SQLite（`docker run --rm … node jobs/bangumi-sync.cjs`，日志 `/var/log/bangumi-sync-v2.log`） |
-| 3:00 | GNZ48 日程更新 `/usr/local/bin/gnz48-update.sh`（跑 `/opt/gnz48-calendar`，产物 cp 到旧站根目录） |
-| 4:30 | 旧站数据备份 `scripts/backup-data.sh`（遗留，清理旧系统时一起删） |
+| 3:00 | GNZ48 日程更新 `/usr/local/bin/gnz48-update.sh`（跑 `/opt/gnz48-calendar`，产物 cp 到 `legacy-static/`） |
 | 4:45 | v2 备份 `backup-v2.sh` → `/www/wwwroot/_backups/v2/`，保留 14 份 |
-| 9:03 | AI 日报 `run-digest-v2.sh`（复用宿主 tsx 跑 `.claude/skills/ai-daily-digest`，输出到 v2 `content/ai-daily` 并重建 index.json，日志 `/var/log/ai-daily-v2.log`） |
+| 9:03 | AI 日报 `run-digest-v2.sh`（宿主 tsx 跑 `shadowquake-v2/tools/ai-daily-digest`，密钥读 `tools/digest.env`，输出到 `content/ai-daily` 并重建 index.json，日志 `/var/log/ai-daily-v2.log`） |
 
 改 crontab 前先 `crontab -l > /root/crontab.bak.$(date +%Y%m%d-%H%M%S)`。
 
 ## 备份与回滚
 
 - **数据**：`/www/wwwroot/_backups/v2/v2-<时间戳>.tar.gz`（含 `db` + `content`），每日 4:45，保留 14 份。
-- **整站回滚到 v1**：nginx 配置备份 `/www/server/panel/vhost/nginx/shadowquake.top.conf.bak.20260725-195613`，`cp` 回去 + `nginx -s reload` 即秒切旧站（旧 Express 进程一直在 PM2 里开着）。
-- **代码基线**：tag `v1-static-baseline`。
+- **回滚上一个版本**：每次 `deploy-v2.sh` 都会把旧镜像打成 `shadowquake-v2:rollback-<时间戳>`，
+  `docker rm -f shadowsky-v2 && docker tag shadowquake-v2:rollback-<时间戳> shadowquake-v2:latest` 后重跑 run 命令。
+- **回到 v1**（2026-07-26 后已不是秒切）：先从 `_backups/v1-final-20260726-084131.tar.gz`
+  恢复旧站目录、重建 PM2 进程，再换 nginx 配置。代码基线 tag `v1-static-baseline`。
 
-## 遗留系统现状（观察期，勿随手删）
+## 遗留系统（2026-07-26 已清理）
 
-| 组件 | 状态 |
-|------|------|
-| Express `admin/server.js`（PM2 `shadowsky-admin`:3000） | 在线但 **nginx 已不再转发**，零流量，留作回滚 |
-| PHP-FPM + `api/*.php` | 已停（`php-fpm` inactive） |
-| 旧静态页 `*.html` | 只有 `gnz48.html` + `/ai-daily/*.html` 仍对外；其余被 301 到 v2 |
-| `gnz48.html` | 线上版本的**真实来源是另一个项目** `D:\Projects\GNZ48-Calendar\public\`（`deploy-gnz48-upload.sh` 上传）。本仓库里的 `gnz48.html` 是旧副本，已与线上分叉，**不要拿它去覆盖线上** |
-| 日程数据 `schedule.json` / `team-g.ics` / `data.js` | 服务器 `/opt/gnz48-calendar` 每天 3:00 生成并 cp 到旧站根目录 |
-| `calendar/sync.py` | **已废弃**：服务器上不存在，2026-07-26 已从 crontab 删除失效任务；实际生效的是 `/opt/gnz48-calendar` |
-| `deploy-web.sh` / `deploy.sh` / `deploy-gnz48-*.sh` | v1 时代脚本，**不要用来部署 v2** |
+v1 整套已下线并删除：PM2 进程 `shadowsky-admin` 已 `pm2 delete`、旧站根目录
+`/www/wwwroot/47.118.28.27/` 已删除、4:30 的旧数据备份 cron 已移除。
+删除前整目录打包在 **`/www/wwwroot/_backups/v1-final-20260726-084131.tar.gz`（48MB）**，
+含旧 `.env`、`api/data/`、`public/data/`、Express 后端源码。
 
-清理旧系统时的顺序建议：先停 PM2 进程观察几天 → 再删 nginx 里的遗留 location（连同 gnz48/ai-daily 的去留决策）→ 最后删旧站根目录（先打包备份）。
+还活着的遗留件都已搬出旧目录：
+
+| 东西 | 现在在哪 |
+|------|---------|
+| gnz48 页 + 日历订阅 + AI日报归档页 + 它们引用的 css/js/img | `/www/wwwroot/legacy-static/`（nginx root，1.7MB） |
+| AI 日报工具链 | `/www/wwwroot/shadowquake-v2/tools/ai-daily-digest` |
+| 日报所需密钥（SILICONFLOW_*） | `/www/wwwroot/shadowquake-v2/tools/digest.env`（600） |
+| gnz48 数据生成 | `/opt/gnz48-calendar`（cron 3:00，产物 cp 到 legacy-static） |
+
+注意：`gnz48.html` 的真实来源仍是另一个项目 `D:\Projects\GNZ48-Calendar\public\`。
+本仓库不再保留任何 v1 文件；要考古看 tag `v1-static-baseline`。
+回滚到 v1 已不再是"改 nginx 就行"——需要先从上面那个 tar 包恢复目录。
 
 ## 编码规范
 

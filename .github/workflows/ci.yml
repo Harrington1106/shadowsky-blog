@@ -1,7 +1,7 @@
 name: CI
 
 # web/ (Next.js) 变更时做构建校验,防止坏构建流入 master。
-# 仅校验,不部署——部署仍由 deploy-web.sh 手动 scp(见仓库根)。
+# 仅校验,不部署——部署仍由 scripts/deploy-v2.sh 手动执行。
 on:
   push:
     branches: [master]
@@ -12,7 +12,7 @@ on:
 
 jobs:
   build:
-    name: Build web (Next.js 静态导出)
+    name: Build web (Next.js standalone)
     runs-on: ubuntu-latest
     defaults:
       run:
