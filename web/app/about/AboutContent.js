@@ -58,7 +58,7 @@ export default function AboutPage() {
             <main className="mx-auto w-full max-w-2xl flex-1 px-4 py-16">
                 <header className="flex flex-col items-center text-center">
                     <Avatar className="size-24 border-4 border-background shadow">
-                        <AvatarImage src={withBase('/img/avatar.jpg')} alt="Avatar" />
+                        <AvatarImage src={withBase('/img/avatar.webp')} alt="Thoi 的头像" width={96} height={96} />
                         <AvatarFallback>T</AvatarFallback>
                     </Avatar>
                     <h1 className="mt-5 text-3xl font-extrabold tracking-tight">Thoi</h1>

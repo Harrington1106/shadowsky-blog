@@ -14,8 +14,16 @@ export default function Typewriter({ phrases, typeMs = 60, deleteMs = 30 }) {
 
     return (
         <p className="text-base text-muted-foreground sm:text-lg">
-            <span ref={textRef} />
-            <span className="ml-0.5 inline-block w-0.5 animate-pulse bg-current align-middle">&nbsp;</span>
+            {/*
+              逐字变化的文本对读屏软件是噪音(每打一个字都可能被重读),
+              所以动画部分整体 aria-hidden,另给一句静态的仅读屏文本。
+            */}
+            <span className="sr-only">{phrases[0]}</span>
+            <span aria-hidden="true">
+                <span ref={textRef} />
+                {/* 光标:motion-safe 才闪,用户要求减少动效时保持常亮 */}
+                <span className="ml-0.5 inline-block w-0.5 bg-current align-middle motion-safe:animate-pulse">&nbsp;</span>
+            </span>
         </p>
     );
 }
