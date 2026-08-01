@@ -19,10 +19,18 @@ export default function Typewriter({ phrases, typeMs = 60, deleteMs = 30 }) {
               所以动画部分整体 aria-hidden,另给一句静态的仅读屏文本。
             */}
             <span className="sr-only">{phrases[0]}</span>
-            <span aria-hidden="true">
+            <span aria-hidden="true" className="group/tw inline-flex items-center">
                 <span ref={textRef} />
-                {/* 光标:motion-safe 才闪,用户要求减少动效时保持常亮 */}
-                <span className="ml-0.5 inline-block w-0.5 bg-current align-middle motion-safe:animate-pulse">&nbsp;</span>
+                {/*
+                  光标:
+                  - 用 caret-blink(硬切)而不是 animate-pulse(正弦淡入淡出)—— 后者像呼吸灯,不像光标
+                  - 打字/删字时(父元素带 data-typing)停止闪烁保持常亮,停顿时才闪,与真终端一致
+                  - 高度跟随字号(h-[1.15em])而不是靠 &nbsp; 撑,换字号不会错位
+                  - motion-safe:只在用户没要求减少动效时才闪
+                */}
+                <span
+                    className="ml-1 inline-block h-[1.15em] w-[2px] shrink-0 translate-y-[0.08em] rounded-full bg-foreground/70 motion-safe:animate-caret-blink group-data-[typing=true]/tw:animate-none"
+                />
             </span>
         </p>
     );

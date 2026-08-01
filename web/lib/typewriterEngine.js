@@ -64,6 +64,17 @@ export function initTypewriter(textNode, phrases, opts = {}) {
     let timer = null;
     let stopped = false;
     let lastText = '';
+    let lastPhase = '';
+
+    // 光标的行为交给 CSS:正在打字/删字时挂 data-typing,让它保持常亮;
+    // 停顿时去掉,恢复闪烁 —— 真终端就是这样,一边打一边闪会很躁。
+    const host = textNode.parentElement;
+    function markPhase(phase) {
+        if (!host || phase === lastPhase) return;
+        if (phase === 'pause') delete host.dataset.typing;
+        else host.dataset.typing = 'true';
+        lastPhase = phase;
+    }
 
     function schedule(delay) {
         timer = setTimeout(step, delay);
@@ -78,6 +89,7 @@ export function initTypewriter(textNode, phrases, opts = {}) {
             textNode.textContent = text;
             lastText = text;
         }
+        markPhase(state.phase);
         schedule(delay);
     }
 
