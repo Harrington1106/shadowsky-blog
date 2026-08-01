@@ -344,10 +344,13 @@ ssh shadowsky 'grep -n "proxy_cache" /www/server/panel/vhost/nginx/shadowquake.t
   于是共三份：服务器 14 份、本机 30 份、GitHub 全量历史。
   备份包**不含密钥**（`AUTH_SECRET`/`ADMIN_PASSWORD`/Bangumi token 都在服务器 `.env` 里，
   数据库 `app_settings` 只有 `bangumi_username`），但含访客 IP 数据，仓库须保持 private。
-- **R2 异地备份（可选，未启用）**：本地备份和数据在**同一块盘**上，防误删不防掉盘。
-  `scripts/backup-offsite.py` 已就位（零依赖，标准库手写 SigV4；这台 ECS 装不了 rclone/boto3），
-  `backup-v2.sh` 打包后会自动调用它——但只在 `tools/r2.env` 存在时生效，否则安静跳过。
-  启用步骤：Cloudflare 开通 R2 → 建桶 → 生成**仅对该桶可读写**的 API Token →
+- **R2 异地备份：已评估并搁置，不要再提议**。卡在账户侧——Cloudflare 开通 R2 必须绑付款方式，
+  且不收借记卡（可用国区 PayPal 绑银联储蓄卡）。**站主没有信用卡**，评估后认为为备份不值得走这一步。
+  现有三份副本（服务器 14 / 本机 30 / 私有 GitHub 全量历史）已覆盖误删、掉盘、本机丢失三种情况。
+  若将来为**图床**开通 R2，可顺带启用备份。
+  代码是现成的：`scripts/backup-offsite.py`（零依赖，标准库手写 SigV4；这台 ECS 装不了 rclone/boto3），
+  `backup-v2.sh` 打包后会自动调用它——只在 `tools/r2.env` 存在时生效，否则安静跳过。
+  真要启用时：Cloudflare 开通 R2 → 建桶 → 生成**仅对该桶可读写**的 API Token →
   在服务器写 `/www/wwwroot/shadowquake-v2/tools/r2.env`（600）：
   ```
   R2_ACCOUNT_ID=…
