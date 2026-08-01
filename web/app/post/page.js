@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { getPostsIndex } from '@/lib/posts';
 import { aiDailyDir } from '@/lib/content';
+import { OG_IMAGE } from '@/lib/site';
 import PostContent from './PostContent';
 
 /**
@@ -43,7 +44,7 @@ export async function generateMetadata({ searchParams }) {
                     title,
                     description,
                     alternates: { canonical: `/post?ai=${encodeURIComponent(ai)}` },
-                    openGraph: { type: 'article', title, description, publishedTime: ai, url: `/post?ai=${encodeURIComponent(ai)}` },
+                    openGraph: { type: 'article', title, description, publishedTime: ai, url: `/post?ai=${encodeURIComponent(ai)}`, images: OG_IMAGE },
                 };
             }
         } catch {
@@ -56,7 +57,8 @@ export async function generateMetadata({ searchParams }) {
         const post = getPostsIndex().find((p) => p.file === file);
         if (post) {
             const url = `/post?file=${encodeURIComponent(file)}`;
-            const images = post.coverImage ? [post.coverImage] : undefined;
+            // 没有封面就退回站点默认大图 —— 子页写了 openGraph 就不会继承 layout 的 images
+            const images = post.coverImage ? [post.coverImage] : OG_IMAGE;
             return {
                 title: post.title,
                 description: post.excerpt || undefined,
@@ -74,8 +76,8 @@ export async function generateMetadata({ searchParams }) {
                     url,
                     images,
                 },
-                // 有封面图才值得用大图卡片,否则维持 layout 里的 summary
-                twitter: images ? { card: 'summary_large_image', title: post.title, description: post.excerpt || undefined, images } : undefined,
+                // 无封面时不写 images,自动继承 layout 里的 1200×630 默认图
+                twitter: { card: 'summary_large_image', title: post.title, description: post.excerpt || undefined, images },
             };
         }
     }

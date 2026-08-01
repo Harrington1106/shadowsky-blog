@@ -1,4 +1,5 @@
 import AnimeContent from './AnimeContent';
+import { OG_IMAGE } from '@/lib/site';
 
 export const metadata = {
     title: '我的追番',
@@ -8,6 +9,7 @@ export const metadata = {
         title: '我的追番',
         description: '从 Bangumi 同步的追番记录：在看、看过与想看。',
         url: '/anime',
+        images: OG_IMAGE,
     },
 };
 

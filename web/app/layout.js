@@ -24,15 +24,14 @@ export const metadata = {
         url: SITE_URL,
         title: `星空笔记 — ${SITE_NAME}`,
         description: SITE_DESC,
-        // 目前只有方形站标可用,所以卡片类型用 summary(小图)而非 summary_large_image,
-        // 免得平台把 256×256 拉伸成横幅。将来做了 1200×630 的 OG 图再一起换。
-        images: [{ url: withBase('/img/favicon256.png'), width: 256, height: 256, alt: SITE_NAME }],
+        // 1200×630 品牌图,由 scripts/gen-og-image.mjs 本地生成后提交(线上零字体依赖)
+        images: [{ url: withBase('/img/og-default.png'), width: 1200, height: 630, alt: `星空笔记 — ${SITE_NAME}` }],
     },
     twitter: {
-        card: 'summary',
+        card: 'summary_large_image',
         title: `星空笔记 — ${SITE_NAME}`,
         description: SITE_DESC,
-        images: [withBase('/img/favicon256.png')],
+        images: [withBase('/img/og-default.png')],
     },
 };
 
