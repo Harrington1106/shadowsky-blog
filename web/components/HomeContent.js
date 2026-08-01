@@ -33,7 +33,7 @@ export default function HomeContent() {
                 <div className="relative">
                     <div
                         aria-hidden="true"
-                        className="pointer-events-none absolute -inset-6 -z-10 rounded-full bg-[radial-gradient(circle,var(--color-primary)_0%,transparent_70%)] opacity-15 blur-2xl dark:opacity-25"
+                        className="pointer-events-none absolute -inset-8 -z-10 rounded-full bg-[radial-gradient(circle,rgba(59,130,246,0.45)_0%,rgba(139,92,246,0.22)_45%,transparent_72%)] opacity-0 blur-2xl dark:opacity-100"
                     />
                     <Avatar className="size-28 border-4 border-background shadow-lg">
                         {/* 原来是 1080×1080 的 147KB JPEG,却只显示 112px —— 换成 256px webp(16KB)。
@@ -57,15 +57,16 @@ export default function HomeContent() {
                     <Typewriter phrases={PHRASES} />
                 </div>
 
-                {/* 标签是纯展示,不可点 —— 所以不给 hover 效果,免得让人以为能点 */}
-                <div className="mt-8 flex max-w-md flex-wrap justify-center gap-2">
+                {/* 标签是纯展示,不可点 —— 所以不给 hover 效果,免得让人以为能点。
+                    不要加 max-w:六个标签本来一行放得下,限宽会把最后一个挤到第二行落单。 */}
+                <div className="mt-8 flex flex-wrap justify-center gap-2">
                     {TAGS.map(({ icon: Icon, label }) => (
                         <Badge
                             key={label}
                             variant="outline"
-                            className="gap-1.5 rounded-full border-border/70 bg-muted/40 px-3 py-1 text-xs font-normal text-muted-foreground"
+                            className="gap-1.5 rounded-full border-border bg-muted/60 px-3 py-1 text-xs font-normal text-foreground/75 dark:bg-muted/30 dark:text-foreground/70"
                         >
-                            <Icon className="size-3.5 opacity-70" /> {label}
+                            <Icon className="size-3.5 opacity-60" /> {label}
                         </Badge>
                     ))}
                 </div>
