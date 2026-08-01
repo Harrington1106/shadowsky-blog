@@ -15,11 +15,15 @@ cd web && npm run build
 
 ## 遗留静态页部署
 
-只有 `gnz48.html`、`/ai-daily/*.html` 及它们引用的 `css/ js/ public/ img/legacy/` 还由旧站根目录提供：
+只剩 `gnz48.html` 及它的 `app.js / data.js / team-g.ics / schedule.json` 还是静态文件，
+由 `/www/wwwroot/legacy-static/` 提供（旧站根目录 `/www/wwwroot/47.118.28.27/` 已随 v1 删除）：
 
 ```bash
-scp gnz48.html shadowsky:/www/wwwroot/47.118.28.27/
+scp gnz48.html shadowsky:/www/wwwroot/legacy-static/
 ```
+
+`/ai-daily/*.html` 归档页已于 2026-08-01 退役，现在由 nginx 301 到 v2
+（`YYYY-MM-DD.html → /post?ai=YYYY-MM-DD`，其余 → `/blog#aidaily`），不再需要部署。
 
 ## 重要注意事项
 
