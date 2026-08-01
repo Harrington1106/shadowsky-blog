@@ -58,6 +58,7 @@ cp -r jobs _deploy/jobs
 mkdir -p _deploy/tools
 cp -r ../.claude/skills/ai-daily-digest _deploy/tools/ai-daily-digest
 cp ../scripts/backup-offsite.py _deploy/tools/backup-offsite.py
+cp ../scripts/cf-purge.sh _deploy/tools/cf-purge.sh
 # 宿主上跑的 shell(cron 直接调用),此前一直是手工放上去的,容易和仓库漂移
 cp ../scripts/backup-v2.sh ../scripts/run-digest-v2.sh _deploy/
 
@@ -94,13 +95,20 @@ ssh "$SSH_HOST" "set -e
     tar xzf /tmp/deploy.tgz
     docker build -q -f Dockerfile.deploy -t $IMAGE:latest . >/dev/null
     docker rm -f $CONTAINER >/dev/null 2>&1 || true
+    # 后台改文后要清边缘缓存,容器里得有 CF_ZONE_ID/CF_PURGE_TOKEN。
+    # 不把它们抄进 .env,而是直接挂第二个 env-file —— 密钥只存 tools/cf.env 一份。
+    ENVFILES=\"--env-file $REMOTE_DIR/.env\"
+    [ -f $REMOTE_DIR/tools/cf.env ] && ENVFILES=\"\$ENVFILES --env-file $REMOTE_DIR/tools/cf.env\"
     docker run -d --name $CONTAINER --restart unless-stopped \
-        -p 127.0.0.1:3001:3000 --env-file $REMOTE_DIR/.env \
+        -p 127.0.0.1:3001:3000 \$ENVFILES \
         -v $REMOTE_DIR/db:/app/db \
         -v $REMOTE_DIR/content:/app/content \
         -v $REMOTE_DIR/data/uploads:/app/public/uploads \
         $IMAGE:latest >/dev/null
-    sleep 4"
+    sleep 4
+    # 边缘可能还存着旧 HTML,而它引用的 chunk 已随本次部署删除 —— 不清会白屏。
+    # 没配 tools/cf.env 时脚本自己会跳过。
+    bash tools/cf-purge.sh || true"
 
 # ── 5. 验证 ──────────────────────────────────────────────
 echo "==> 5/6 验证…"
@@ -133,7 +141,7 @@ ssh "$SSH_HOST" 'set -e
         echo "    直连容器 == 经 nginx ✓ (md5 ${direct:0:8})"
     fi
     # 宿主侧 cron 依赖是否到位(它们不在镜像里,靠 tar 解包更新)
-    for f in jobs/bangumi-sync.cjs tools/ai-daily-digest/scripts/digest.ts tools/digest.env              tools/backup-offsite.py backup-v2.sh run-digest-v2.sh; do
+    for f in jobs/bangumi-sync.cjs tools/ai-daily-digest/scripts/digest.ts tools/digest.env              tools/backup-offsite.py tools/cf-purge.sh backup-v2.sh run-digest-v2.sh; do
         if [ -f "'"$REMOTE_DIR"'/$f" ]; then printf "    %-42s ✓\n" "$f"
         else printf "    %-42s ✗ 缺失\n" "$f"; fail=1; fi
     done

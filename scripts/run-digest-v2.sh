@@ -20,6 +20,8 @@ if [ -f /www/wwwroot/shadowquake-v2/tools/digest.env ]; then set -a; . /www/wwwr
 tsx "$DIGEST" --hours 48 --top-n 10 --lang zh --output "$OUT/$DATE.md" >>"$LOG" 2>&1
 if [ -f "$OUT/$DATE.md" ]; then
     python3 "$INDEX" "$OUT" >>"$LOG" 2>&1
+    # 新日报要让边缘立刻可见:清列表页与这一天的地址(没配 cf.env 会自己跳过)
+    bash /www/wwwroot/shadowquake-v2/tools/cf-purge.sh / /blog "/ai-daily/$DATE" /sitemap.xml >>"$LOG" 2>&1 || true
     echo "[$(date '+%F %T')] 完成:$OUT/$DATE.md + 索引已重建" >>"$LOG"
 else
     echo "[$(date '+%F %T')] 失败:未生成 md" >>"$LOG"; exit 1

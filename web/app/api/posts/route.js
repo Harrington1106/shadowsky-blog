@@ -3,6 +3,7 @@ import path from 'node:path';
 import { getPostsIndex, invalidatePostsCache } from '@/lib/posts';
 import { postsDir, safeName } from '@/lib/content';
 import { requireAuth } from '@/lib/requireAuth';
+import { purgeUrls, postPurgeTargets } from '@/lib/cfPurge';
 
 export const dynamic = 'force-dynamic';
 
@@ -50,6 +51,8 @@ export async function PUT(request) {
     const newFm = lines.join(eol);
     fs.writeFileSync(full, `---${eol}${newFm}${eol}---${rest}`);
     invalidatePostsCache();
+    // 边缘还存着旧 HTML,不清的话改动要等 TTL 过期才可见
+    await purgeUrls(postPurgeTargets(name));
     return Response.json({ success: true });
 }
 
@@ -63,5 +66,7 @@ export async function DELETE(request) {
     if (!fs.existsSync(full)) return Response.json({ error: '文件不存在' }, { status: 404 });
     fs.unlinkSync(full);
     invalidatePostsCache();
+    // 边缘还存着旧 HTML,不清的话改动要等 TTL 过期才可见
+    await purgeUrls(postPurgeTargets(name));
     return Response.json({ success: true });
 }
