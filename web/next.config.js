@@ -54,7 +54,17 @@ const nextConfig = {
                 // missing:普通文档请求才给可缓存的头
                 missing: [{ type: 'header', key: 'RSC' }],
                 headers: [
-                    { key: 'Cache-Control', value: 'public, max-age=0, s-maxage=60, stale-while-revalidate=86400' },
+                    // s-maxage 从 60 秒拉到 1 小时(2026-08-01):60 秒对本站这种流量密度
+                    // 几乎等于没缓存 —— 实测多数访问仍是 MISS,要跨太平洋回源 1.2–2.5s。
+                    //
+                    // 敢拉长的前提是「内容一变就清边缘」已经接好(scripts/cf-purge.sh):
+                    //   部署后        → 清全站(旧 HTML 引用的 chunk 已被删,不清会白屏)
+                    //   后台改/删文章 → 清该文与列表页(lib/cfPurge.js)
+                    //   cron 出日报   → 清 / /blog /ai-daily/<date> /sitemap.xml
+                    // 另外只有 /post/* 与 /ai-daily/* 是服务端渲染正文;/blog、/moments、
+                    // /bookmarks、ACG 各页都是壳 + 客户端读 /api(/api 从不缓存),
+                    // 所以那些页面即使壳被缓存 1 小时,数据依然是实时的。
+                    { key: 'Cache-Control', value: 'public, max-age=0, s-maxage=3600, stale-while-revalidate=86400' },
                 ],
             },
             {
