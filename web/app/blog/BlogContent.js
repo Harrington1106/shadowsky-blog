@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { FileText, FolderTree, Tags, Bot, Search, Filter, ChevronDown } from 'lucide-react';
+import { FileText, FolderTree, Tags, Bot, Search, Filter, ChevronDown, Rss, X } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -219,6 +219,15 @@ export default function BlogPage({ initialPosts = [] }) {
         setPage(1);
     }
 
+    const hasFilter = Boolean(search.trim() || activeCat || activeTag);
+
+    function clearFilters() {
+        setSearch('');
+        setActiveCat(null);
+        setActiveTag(null);
+        setPage(1);
+    }
+
     // 侧边栏是「按分类/标签筛文章」的工具,只对文章类视图有意义:
     //   标签云视图 —— 主区就是全部 60+ 个标签,侧栏那 15 个是同屏重复
     //   AI 日报视图 —— 分类/标签筛的是文章,对日报无效,却占着 220px
@@ -247,6 +256,15 @@ export default function BlogPage({ initialPosts = [] }) {
                         <div className="flex items-center gap-1.5"><FolderTree size={13} className="opacity-50" /><strong className="text-foreground">{cats.length}</strong> 个分类</div>
                         <div className="flex items-center gap-1.5"><Tags size={13} className="opacity-50" /><strong className="text-foreground">{topTags.length}</strong> 个标签</div>
                     </div>
+
+                    {/* 订阅入口。/feed.xml 早就有了,但只写在 <head> 的 <link rel=alternate> 里 ——
+                        阅读器能自动发现,人眼看不到,等于藏起来了。 */}
+                    <a
+                        href={withBase('/feed.xml')}
+                        className="mt-3 inline-flex items-center gap-1.5 rounded-md text-xs text-muted-foreground transition-colors hover:text-primary focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none"
+                    >
+                        <Rss size={13} className="opacity-60" /> 订阅更新
+                    </a>
 
                     {/*
                       窄屏(<lg)是单列布局,侧栏整块排在文章之前 —— 6 个分类 + 15 个标签
@@ -323,12 +341,29 @@ export default function BlogPage({ initialPosts = [] }) {
                         </TabsList>
                     </Tabs>
 
+                    {/*
+                      筛选结果反馈:之前搜完/筛完页面上没有任何计数,侧栏那个「19 篇文章」
+                      是全站总数、不跟着变 —— 用户不知道自己筛出了几条。
+                      顺带给一个「清除」出口:原本只能再点一次那个已选中的分类才能取消。
+                    */}
+                    {hasFilter && showSidebar && (
+                        <div className="mb-4 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                            <span>共 <strong className="text-foreground">{filteredPosts.length}</strong> 篇</span>
+                            {activeCat && <Badge variant="secondary">分类：{activeCat}</Badge>}
+                            {activeTag && <Badge variant="secondary">标签：{activeTag}</Badge>}
+                            {search.trim() && <Badge variant="secondary">搜索：{search.trim()}</Badge>}
+                            <Button variant="ghost" size="sm" onClick={clearFilters} className="h-6 gap-1 px-2 text-xs">
+                                <X size={12} /> 清除
+                            </Button>
+                        </div>
+                    )}
+
                     <div style={{ minHeight: '60vh' }}>
                         {loadError && <EmptyMsg>加载失败: {loadError}</EmptyMsg>}
                         {!loadError && view === 'grid' && <GridView posts={filteredPosts} page={page} setPage={setPage} />}
                         {!loadError && view === 'directory' && <DirectoryView posts={filteredPosts} />}
                         {!loadError && view === 'tags' && <TagsView posts={filteredPosts} onPick={toggleTag} />}
-                        {!loadError && view === 'aidaily' && <AiDailyView index={aiDailyIndex} error={aiDailyError} />}
+                        {!loadError && view === 'aidaily' && <AiDailyView index={aiDailyIndex} error={aiDailyError} page={page} setPage={setPage} />}
                     </div>
                 </section>
             </main>
@@ -374,6 +409,26 @@ function EmptyMsg({ children }) {
     return <div className="py-16 text-center text-sm text-muted-foreground">{children}</div>;
 }
 
+/** 翻页条(文章列表与 AI 日报共用) */
+function Pager({ page, totalPages, setPage }) {
+    if (totalPages <= 1) return null;
+    return (
+        <div className="mt-6 flex flex-wrap justify-center gap-1.5">
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((n) => (
+                <Button
+                    key={n}
+                    variant={n === page ? 'default' : 'outline'}
+                    size="icon"
+                    aria-current={n === page ? 'page' : undefined}
+                    onClick={() => { setPage(n); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                >
+                    {n}
+                </Button>
+            ))}
+        </div>
+    );
+}
+
 function GridView({ posts, page, setPage }) {
     if (posts.length === 0) return <EmptyMsg>没有匹配的文章</EmptyMsg>;
     const totalPages = Math.ceil(posts.length / PER_PAGE);
@@ -384,20 +439,7 @@ function GridView({ posts, page, setPage }) {
             <div className="flex flex-col gap-2">
                 {pagePosts.map((p) => <ArticleRow key={p.file} post={p} />)}
             </div>
-            {totalPages > 1 && (
-                <div className="mt-6 flex flex-wrap justify-center gap-1.5">
-                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((n) => (
-                        <Button
-                            key={n}
-                            variant={n === page ? 'default' : 'outline'}
-                            size="icon"
-                            onClick={() => { setPage(n); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-                        >
-                            {n}
-                        </Button>
-                    ))}
-                </div>
-            )}
+            <Pager page={page} totalPages={totalPages} setPage={setPage} />
         </>
     );
 }
@@ -449,13 +491,17 @@ function TagsView({ posts, onPick }) {
     );
 }
 
-function AiDailyView({ index, error }) {
+// 日报每天由 cron 加一条,只增不减 —— 文章列表早就分页了,这里一直是全量渲染,
+// 一年后就是 300 多条一次性铺出来。用同一套翻页。
+function AiDailyView({ index, error, page, setPage }) {
     if (error) return <EmptyMsg>AI 日报加载失败: {error}</EmptyMsg>;
     if (index === null) return <EmptyMsg>加载中...</EmptyMsg>;
     if (!index.length) return <EmptyMsg>暂无 AI 日报，等待每日自动生成...</EmptyMsg>;
+    const totalPages = Math.ceil(index.length / PER_PAGE);
+    const start = (page - 1) * PER_PAGE;
     return (
         <div className="flex flex-col gap-2">
-            {index.map((d) => {
+            {index.slice(start, start + PER_PAGE).map((d) => {
                 const date = new Date(d.date);
                 // 原来把「星期」和「月日」塞在同一行 w-16 里,渲染成「7月31日周 / 五」——
                 // 连"周五"都被拆开。拆成两行:月日一行、星期一行,各自不换行。
@@ -484,6 +530,7 @@ function AiDailyView({ index, error }) {
                     </a>
                 );
             })}
+            <Pager page={page} totalPages={totalPages} setPage={setPage} />
         </div>
     );
 }
