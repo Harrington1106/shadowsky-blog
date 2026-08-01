@@ -89,7 +89,9 @@ ssh "$SSH_HOST" "set -e
         docker rmi $IMAGE:\$t >/dev/null 2>&1 || true
     done
     docker image prune -f >/dev/null 2>&1 || true
-    docker builder prune -f --filter until=168h >/dev/null 2>&1 || true
+    # --filter until=168h 在密集部署的日子等于没清(缓存都是当天的),
+    # 2026-08-01 一天就攒了 5.18GB。改成按容量封顶,保留最近的、砍掉超出的。
+    docker builder prune -f --keep-storage 2GB >/dev/null 2>&1 || true
     docker tag $IMAGE:latest $IMAGE:rollback-$TS 2>/dev/null || true
     rm -f standalone/.env
     tar xzf /tmp/deploy.tgz
