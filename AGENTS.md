@@ -63,9 +63,15 @@ nginx 配置：`/www/server/panel/vhost/nginx/shadowquake.top.conf`（宝塔面�
 - 根本原因：CDN 加的是**边缘节点**，而瓶颈在**回源中转**，边缘再快也省不掉中间那趟美国往返
 
 真正能改善的三条路，按性价比：
-1. **让 Cloudflare 边缘缓存 HTML**（Cache Rule）→ 命中时大陆用户根本不走美国，预计 300–500ms。
-   前提条件已就绪：`next.config.js` 里页面 HTML 已收成 `s-maxage=60`，边缘最多缓 1 分钟，
-   不会重演「旧 HTML 引用已删 chunk → 白屏」。
+1. ~~**让 Cloudflare 边缘缓存 HTML**（Cache Rule）~~ **2026-08-01 已做，但收益远低于预期**。
+   实测发现关键事实：**CF 免费版把大陆流量路由到 LAX（洛杉矶）**，不是港/日
+   （`curl https://www.cloudflare.com/cdn-cgi/trace` 从大陆本机和杭州源站出去，`colo` 都是 LAX）。
+   所以「命中就不走美国」这个前提根本不成立 —— 边缘本身就在美国。
+   实测：命中 TTFB 0.7–0.9s（其中光是握到 LAX 就要 TCP 0.19s + TLS 0.41s），
+   未命中仍是 1.2–2.5s。本站流量稀疏 + 60s TTL + 每台边缘机各自一份缓存 → 大多数请求是 MISS。
+   还能榨的两点：开 **Tiered Cache**（免费版可用，未命中先找上层而不是直接跨太平洋回源）、
+   把边缘 TTL 拉长并在部署时清缓存。
+   ⚠ 开缓存必须同时处理 RSC：见下方「RSC 与边缘缓存」。
 2. **中转机换到香港/日本** → 大陆到港 RTT 30–50ms，预计 TTFB 降到 300ms 量级，不需要备案。
 3. **备案** → 唯一的根本解，之后才能用带大陆节点的 CDN（EdgeOne 中国站 / 阿里云 CDN）。
 
@@ -230,6 +236,30 @@ $env:AUTH_SECRET='dev'; $env:ADMIN_PASSWORD='devpass'; npm run dev
 `s-maxage=31536000`（共享缓存可存**一年**），正是它让 nginx 在部署后继续发旧 HTML。
 不收紧的话，哪天在 Cloudflare 开个 "Cache Everything" 规则就会重演，
 而且更糟：旧 HTML 引用的 chunk 早已随部署删除，用户直接白屏。
+
+### ⚠️ RSC 与边缘缓存（2026-08-01 踩过，出过线上事故）
+
+同一个 URL，Next 对**带 `RSC` 头**的请求返回的是 flight 数据（`1:"$Sreact.fragment"…`）
+而不是 HTML。响应里有 `Vary: rsc,…`，但 **Cloudflare 默认忽略 Vary**
+（官方文档：*by default, Cloudflare does not consider vary values in caching decisions*），
+两种响应共用同一个缓存键 → 开了边缘缓存后普通访客会拿到 flight 数据，页面全是乱码。
+实测 8 轮里 6 轮中招。
+
+**只在 Cache Rule 表达式里排除 RSC 请求不够** —— 被排除的请求走「默认行为」，
+照样读写同一条缓存条目。正解是在源头分流（`next.config.js` 的 `headers()`）：
+
+| 请求 | Cache-Control |
+|------|---------------|
+| 普通文档请求（`missing: RSC`） | `public, max-age=0, s-maxage=60, stale-while-revalidate=86400` |
+| 带 `RSC` 头（`has: RSC`） | `private, no-store` |
+
+改完 RSC 请求在边缘是 `BYPASS`，写不进缓存。验证（用随机 query 造全新缓存条目，
+先打 RSC 再打普通请求，看普通请求拿到的是不是 `<!DOCTYPE`）：
+```bash
+U="https://shadowquake.top/blog?cb=$RANDOM"
+curl -sI --noproxy '*' -H "RSC: 1" "$U" | grep -i cf-cache-status   # 应为 BYPASS
+curl -s  --noproxy '*' "$U" | head -c 12                            # 应为 <!DOCTYPE
+```
 
 ### ⚠️ nginx 全局 proxy_cache（2026-07-26 踩过）
 
