@@ -53,5 +53,5 @@ export async function purgeUrls(paths) {
  */
 export function postPurgeTargets(file) {
     const slug = String(file || '').replace(/\.md$/, '');
-    return ['/', '/blog', `/post/${encodeURIComponent(slug)}`, '/sitemap.xml'];
+    return ['/', '/blog', `/post/${encodeURIComponent(slug)}`, '/sitemap.xml', '/feed.xml'];
 }

@@ -73,6 +73,13 @@ export default function RootLayout({ children }) {
                 <meta name="theme-color" content="#0B1120" media="(prefers-color-scheme: dark)" />
                 <meta name="theme-color" content="#F8FAFC" media="(prefers-color-scheme: light)" />
                 {/*
+                  订阅源自动发现。写死在 <head> 而不是走 metadata.alternates.types ——
+                  metadata 是浅合并,子页面只要自己写了 alternates(我们每页都写了 canonical),
+                  layout 里的 types 就整个被替换掉,结果是全站一个 feed 链接都不出现。
+                  同一个坑在 openGraph.images 上也踩过。
+                */}
+                <link rel="alternate" type="application/atom+xml" title="星空笔记 — 夏日科技探索" href={withBase('/feed.xml')} />
+                {/*
                   这里原本有一条 fonts.loli.net 的字体样式表(Inter / Noto Sans SC /
                   Space Grotesk / DM Sans),2026-08-01 删除:
                   - 它是 <head> 里的阻塞样式表,大陆实测 TTFB 4.9s,首屏要等它

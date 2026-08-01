@@ -40,6 +40,13 @@ const nextConfig = {
     //
     // 所以显式收紧:边缘最多缓 60 秒,过期后可先用旧的再后台回源(SWR),浏览器每次都校验。
     // 只作用于页面,/api 与 /_next/static 不匹配(前者要实时,后者本就带 immutable 长缓存)。
+    // 订阅源只有 /feed.xml 一个真身,另外两个常见地址跳过去
+    async redirects() {
+        return [
+            { source: '/rss.xml', destination: '/feed.xml', permanent: true },
+            { source: '/atom.xml', destination: '/feed.xml', permanent: true },
+        ];
+    },
     // ⚠ 同一个 URL,Next 对带 `RSC` 头的请求返回的是 flight 数据(`1:"$Sreact.fragment"…`)
     //   而不是 HTML。响应里虽然有 `Vary: rsc,…`,但 **Cloudflare 默认忽略 Vary**
     //   (官方文档:by default, Cloudflare does not consider vary values in caching decisions),

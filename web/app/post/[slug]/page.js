@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation';
 import { loadPost } from '@/lib/article';
 import PostContent from '../PostContent';
+import { SITE_URL, SITE_NAME } from '@/lib/site';
 
 /**
  * 文章阅读页 /post/<slug>（slug = 文件名去掉 .md）。
@@ -36,6 +37,33 @@ export async function generateMetadata({ params }) {
     };
 }
 
+/**
+ * 结构化数据（schema.org BlogPosting）。
+ * 搜索引擎靠它拿到发布时间、作者、封面 —— <meta> 里的 og:* 是给社交平台的，
+ * 搜索侧认的是 JSON-LD，两者不能互相替代。
+ */
+function articleJsonLd(article) {
+    return {
+        '@context': 'https://schema.org',
+        '@type': 'BlogPosting',
+        headline: article.title,
+        description: article.description || undefined,
+        datePublished: article.publishedTime || undefined,
+        dateModified: article.modifiedTime || article.publishedTime || undefined,
+        author: { '@type': 'Person', name: article.author || 'Thoi' },
+        publisher: {
+            '@type': 'Organization',
+            name: SITE_NAME,
+            logo: { '@type': 'ImageObject', url: `${SITE_URL}/img/og-default.png` },
+        },
+        image: article.ogImages?.map((i) => (typeof i === 'string' ? i : i.url)).map((u) => (u.startsWith('http') ? u : SITE_URL + u)),
+        keywords: article.tags?.length ? article.tags.join(', ') : undefined,
+        articleSection: article.meta?.category || undefined,
+        inLanguage: 'zh-CN',
+        mainEntityOfPage: { '@type': 'WebPage', '@id': `${SITE_URL}${article.canonical}` },
+    };
+}
+
 export default async function Page({ params, searchParams }) {
     const { slug } = await params;
     const { ref } = await searchParams;
@@ -43,5 +71,13 @@ export default async function Page({ params, searchParams }) {
     // 文章不存在就真 404,而不是 200 + 页面里写「加载失败」(软 404 对收录有害)
     if (!article) notFound();
 
-    return <PostContent article={article} backRef={ref || null} />;
+    return (
+        <>
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd(article)) }}
+            />
+            <PostContent article={article} backRef={ref || null} />
+        </>
+    );
 }
