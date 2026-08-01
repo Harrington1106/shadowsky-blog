@@ -111,6 +111,16 @@ ssh "$SSH_HOST" 'set -e
         printf "    %-14s %s\n" "$p" "$code"
         [ "$code" = 200 ] || fail=1
     done
+    # 文章页是站点主体,但地址随内容而变 —— 取索引里最新一篇当探针,
+    # 顺带验证正文确实在服务端渲染进了 HTML(只有空壳会很短)
+    slug=$(curl -s http://127.0.0.1:3001/api/posts | sed -n "s/.*\"file\":\"\([^\"]*\)\.md\".*/\1/p" | head -1)
+    if [ -n "$slug" ]; then
+        body=$(curl -s "http://127.0.0.1:3001/post/$slug" | sed "s/<[^>]*>//g" | tr -d " \n" | wc -c)
+        if [ "$body" -gt 2000 ]; then printf "    /post/%-24s 正文 %s 字 ✓\n" "$slug" "$body"
+        else echo "    ✗ /post/$slug 正文只有 $body 字 —— 服务端渲染可能失效"; fail=1; fi
+    else
+        echo "    ✗ /api/posts 取不到文章,跳过正文检查"; fail=1
+    fi
     # 直连容器 vs 经 nginx:不一致 = nginx proxy_cache 在发旧页面
     direct=$(curl -s http://127.0.0.1:3001/blog | md5sum | cut -d" " -f1)
     viaNginx=$(curl -s -H "Host: shadowquake.top" http://127.0.0.1/blog | md5sum | cut -d" " -f1)

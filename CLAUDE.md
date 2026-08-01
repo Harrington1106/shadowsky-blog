@@ -31,6 +31,11 @@
 
 旧 *.html 路径 301 → v2 干净 URL（/blog.html → /blog，以此类推）
 
+阅读页地址（2026-08-01 起）：
+  文章 `/post/<slug>`（slug = 文件名去掉 .md）  日报 `/ai-daily/<YYYY-MM-DD>`
+  三代老地址都还通：`/post.html?file=x.md` → `/post?file=x.md` → `/post/x`（app/post/page.js 做 308），
+  `/ai-daily/<date>.html` → `/ai-daily/<date>`（nginx 301）。`app/post/page.js` 是兼容层，别删。
+
 外部依赖：bangumi.shadowquake.top（Cloudflare Worker）
   ├─ BANGUMI_API_BASE  → 代理 api.bgm.tv（国内 ECS 直连不通）
   └─ FETCH_PROXY_BASE  → 书签抓简介等出站请求的回退代理
