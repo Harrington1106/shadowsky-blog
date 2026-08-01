@@ -12,6 +12,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { apiGet, apiUpdate, apiDelete } from '@/lib/adminApi';
 import { useConfirm } from '@/components/useConfirm';
 import AdminHeader from '@/components/admin/AdminHeader';
+import { postHref } from '@/lib/links';
 
 export default function PostsAdmin() {
     const [items, setItems] = useState([]);
@@ -61,7 +62,7 @@ export default function PostsAdmin() {
                                 <span className="font-mono opacity-60">{p.file}</span>
                             </div>
                         </div>
-                        <a href={`/post?file=${encodeURIComponent(p.file)}`} target="_blank" rel="noreferrer" className="shrink-0 text-muted-foreground hover:text-primary"><ExternalLink className="size-4" /></a>
+                        <a href={postHref(p.file)} target="_blank" rel="noreferrer" className="shrink-0 text-muted-foreground hover:text-primary"><ExternalLink className="size-4" /></a>
                         <Button variant="ghost" size="icon" onClick={() => openEdit(p)}><Pencil className="size-4" /></Button>
                         <Button variant="ghost" size="icon" onClick={() => remove(p)}><Trash2 className="size-4 text-destructive" /></Button>
                     </Card>

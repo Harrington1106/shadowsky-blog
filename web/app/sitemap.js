@@ -3,6 +3,7 @@ import path from 'node:path';
 import { getPostsIndex } from '@/lib/posts';
 import { aiDailyDir } from '@/lib/content';
 import { SITE_URL } from '@/lib/site';
+import { postHref, aiDailyHref } from '@/lib/links';
 
 // 文章与日报都是运行时从磁盘读的(后台发文、cron 生成日报都不重新构建),
 // 所以 sitemap 必须每次请求现算,不能在构建时定死。
@@ -39,7 +40,7 @@ export default function sitemap() {
     }));
 
     const postEntries = getPostsIndex().map((p) => ({
-        url: `${SITE_URL}/post?file=${encodeURIComponent(p.file)}`,
+        url: `${SITE_URL}${postHref(p.file)}`,
         lastModified: toDate(p.lastModified) || toDate(p.date) || now,
         changeFrequency: 'monthly',
         priority: 0.8,
@@ -49,7 +50,7 @@ export default function sitemap() {
     try {
         const idx = JSON.parse(fs.readFileSync(path.join(aiDailyDir(), 'index.json'), 'utf8'));
         aiEntries = idx.map((e) => ({
-            url: `${SITE_URL}/post?ai=${encodeURIComponent(e.date)}`,
+            url: `${SITE_URL}${aiDailyHref(e.date)}`,
             lastModified: toDate(e.date) || now,
             changeFrequency: 'never',
             priority: 0.4,

@@ -10,6 +10,7 @@ import Footer from '@/components/Footer';
 import BackToTop from '@/components/BackToTop';
 import { cardSurface, cn, withBase } from '@/lib/utils';
 import { fetchVisitCount, fetchPosts } from '@/lib/api';
+import { postHref } from '@/lib/links';
 
 const HLJS_THEME_DARK = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css';
 const HLJS_THEME_LIGHT = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
@@ -204,7 +205,7 @@ export default function PostContent({ article, backRef }) {
                             <div className="mt-10 grid gap-3 sm:grid-cols-2">
                                 {navLinks.prev ? (
                                     <a
-                                        href={withBase(`/post?file=${encodeURIComponent(navLinks.prev.file)}`)}
+                                        href={withBase(postHref(navLinks.prev.file))}
                                         className={cn(cardSurface, 'flex flex-col gap-1 p-3 text-sm transition-colors hover:ring-primary/40 hover:bg-accent/40')}
                                     >
                                         <span className="text-xs text-muted-foreground">← 上一篇</span>
@@ -213,7 +214,7 @@ export default function PostContent({ article, backRef }) {
                                 ) : <div />}
                                 {navLinks.next ? (
                                     <a
-                                        href={withBase(`/post?file=${encodeURIComponent(navLinks.next.file)}`)}
+                                        href={withBase(postHref(navLinks.next.file))}
                                         className={cn(cardSurface, 'flex flex-col gap-1 p-3 text-sm transition-colors hover:ring-primary/40 hover:bg-accent/40 sm:items-end sm:text-right')}
                                     >
                                         <span className="text-xs text-muted-foreground">下一篇 →</span>
@@ -247,7 +248,7 @@ export default function PostContent({ article, backRef }) {
                                         {recommendations.map((p) => (
                                             <a
                                                 key={p.file}
-                                                href={withBase(`/post?file=${encodeURIComponent(p.file)}`)}
+                                                href={withBase(postHref(p.file))}
                                                 className="line-clamp-2 rounded-md px-2 py-1.5 text-xs text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
                                             >
                                                 {p.title}
