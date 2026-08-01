@@ -14,6 +14,10 @@ function createTypewriterState(phrases) {
     return { phrases, phraseIndex: 0, shown: 0, phase: 'typing' };
 }
 
+// 打到标点时多停一拍 —— 匀速逐字太机械,人念到逗号句号本来就会顿一下
+const PUNCTUATION = /[，。！？；：、,.!?;:—…]/;
+const PUNCT_PAUSE_MS = 260;
+
 /** 推进一步,返回 { state, delay } —— delay 是下一步该等多久 */
 function typewriterTick(state, { typeMs, deleteMs }) {
     const current = state.phrases[state.phraseIndex];
@@ -24,7 +28,9 @@ function typewriterTick(state, { typeMs, deleteMs }) {
             // 整句打完 → 停顿一次,不再用一堆空转 tick 凑时间
             return { state: { ...state, shown: current.length, phase: 'pause' }, delay: PAUSE_MS };
         }
-        return { state: { ...state, shown, phase: 'typing' }, delay: typeMs };
+        const justTyped = current[shown - 1];
+        const delay = PUNCTUATION.test(justTyped) ? PUNCT_PAUSE_MS : typeMs;
+        return { state: { ...state, shown, phase: 'typing' }, delay };
     }
 
     if (state.phase === 'pause') {

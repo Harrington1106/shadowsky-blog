@@ -6,14 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import Typewriter from '@/components/Typewriter';
 import Footer from '@/components/Footer';
 import { withBase } from '@/lib/utils';
-
-const PHRASES = [
-    '星河欲转千帆舞',
-    '心有猛虎，细嗅蔷薇',
-    '且将新火试新茶，诗酒趁年华',
-    '路漫漫其修远兮，吾将上下而求索',
-    '星垂平野阔，月涌大江流',
-];
+import { FALLBACK_PHRASES } from '@/lib/hitokoto';
 
 const TAGS = [
     { icon: Code2, label: '全栈' },
@@ -24,7 +17,8 @@ const TAGS = [
     { icon: MapPin, label: '香港' },
 ];
 
-export default function HomeContent() {
+// phrases 由服务端从一言取好传进来(见 lib/hitokoto.js);取不到时用兜底那批
+export default function HomeContent({ phrases = FALLBACK_PHRASES }) {
     return (
         <>
             <main className="flex flex-1 flex-col items-center justify-center px-4 py-16 text-center sm:py-24">
@@ -54,7 +48,7 @@ export default function HomeContent() {
 
                 {/* min-h 而不是固定 h:极窄屏上标语换行时不会被裁掉 */}
                 <div className="mt-5 min-h-7">
-                    <Typewriter phrases={PHRASES} />
+                    <Typewriter phrases={phrases} />
                 </div>
 
                 {/* 标签是纯展示,不可点 —— 所以不给 hover 效果,免得让人以为能点。
