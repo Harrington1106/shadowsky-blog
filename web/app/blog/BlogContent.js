@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
-import { FileText, FolderTree, Tags, Bot, Search } from 'lucide-react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { FileText, FolderTree, Tags, Bot, Search, Filter, ChevronDown } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -111,6 +111,9 @@ export default function BlogPage({ initialPosts = [] }) {
     const [aiDailyIndex, setAiDailyIndex] = useState(null);
     const [aiDailyError, setAiDailyError] = useState(null);
 
+    // 筛选状态从 URL 恢复完之前,不要把 URL 写回去(否则会先被空状态清掉)
+    const urlReady = useRef(false);
+
     useEffect(() => {
         // 切视图时会写 window.location.hash,所以要跟着 hash 走 —— 只在挂载时读一次的话,
         // 用户切几个视图再按浏览器后退,地址变了页面却不动。
@@ -121,11 +124,43 @@ export default function BlogPage({ initialPosts = [] }) {
         applyHash();
         window.addEventListener('hashchange', applyHash);
 
+        // 从 URL 恢复筛选:之前搜完/筛完地址栏一点不变,结果分享不出去、刷新就丢
+        const sp = new URLSearchParams(window.location.search);
+        const q = sp.get('q');
+        const cat = sp.get('cat');
+        const tag = sp.get('tag');
+        const p = parseInt(sp.get('p') || '1', 10);
+        if (q) setSearch(q);
+        if (cat) setActiveCat(cat);
+        if (tag) setActiveTag(tag);
+        if (Number.isFinite(p) && p > 1) setPage(p);
+        urlReady.current = true;
+
         if (initialPosts.length === 0) {
             fetchPosts().then(setPosts).catch((e) => setLoadError(e.message));
         }
         return () => window.removeEventListener('hashchange', applyHash);
     }, []);
+
+    // 把筛选状态写回地址栏。用 replaceState 而不是 push:输入搜索词是逐字触发的,
+    // push 会往历史里塞一堆记录,后退键就废了。视图切换仍走 hash(那个该进历史)。
+    useEffect(() => {
+        if (!urlReady.current) return;
+        const sp = new URLSearchParams(window.location.search);
+        const set = (k, v) => (v ? sp.set(k, v) : sp.delete(k));
+        set('q', search.trim());
+        set('cat', activeCat);
+        set('tag', activeTag);
+        set('p', page > 1 ? String(page) : '');
+        const qs = sp.toString();
+        window.history.replaceState(null, '', window.location.pathname + (qs ? `?${qs}` : '') + window.location.hash);
+    }, [search, activeCat, activeTag, page]);
+
+    // 搜索词一变就回到第 1 页 —— 否则在第 2 页搜一个只有 3 条结果的词,会停在空白页
+    useEffect(() => {
+        if (urlReady.current) setPage(1);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [search]);
 
     useEffect(() => {
         if (view === 'aidaily' && aiDailyIndex === null) {
@@ -151,9 +186,12 @@ export default function BlogPage({ initialPosts = [] }) {
         let list = posts;
         const term = search.toLowerCase().trim();
         if (term) {
+            // 也搜分类名 —— 之前只搜标题/摘要/标签,「博客运维」这种只存在于分类的词
+            // 一条都搜不到,而它就明晃晃列在左边侧栏里
             list = list.filter((p) =>
                 (p.title || '').toLowerCase().includes(term) ||
                 (p.excerpt || '').toLowerCase().includes(term) ||
+                (p.category || '').toLowerCase().includes(term) ||
                 (p.tags || []).some((t) => t.toLowerCase().includes(term))
             );
         }
@@ -205,13 +243,38 @@ export default function BlogPage({ initialPosts = [] }) {
                 )}>
                     <h2 className="text-lg font-bold">星空笔记</h2>
                     <p className="mt-1 text-xs text-muted-foreground">记录技术、天文与生活</p>
-                    <div className="mt-4 space-y-1.5 text-xs text-muted-foreground">
+                    <div className="mt-4 flex flex-wrap gap-x-4 gap-y-1.5 text-xs text-muted-foreground lg:block lg:space-y-1.5">
                         <div className="flex items-center gap-1.5"><FileText size={13} className="opacity-50" /><strong className="text-foreground">{posts.length}</strong> 篇文章</div>
                         <div className="flex items-center gap-1.5"><FolderTree size={13} className="opacity-50" /><strong className="text-foreground">{cats.length}</strong> 个分类</div>
                         <div className="flex items-center gap-1.5"><Tags size={13} className="opacity-50" /><strong className="text-foreground">{topTags.length}</strong> 个标签</div>
                     </div>
-                    <div className="mt-5 mb-2 text-xs font-semibold text-muted-foreground uppercase">分类</div>
-                    <div className="flex flex-col gap-1">
+
+                    {/*
+                      窄屏(<lg)是单列布局,侧栏整块排在文章之前 —— 6 个分类 + 15 个标签
+                      竖着铺开有 559px,手机首屏几乎全是筛选器,划半天才看到第一篇文章。
+                      所以窄屏折叠成 <details>(默认收起,只留一行"筛选"),桌面端还原成常驻侧栏。
+                    */}
+                    <details className="group mt-4 lg:hidden">
+                        <summary className="flex cursor-pointer list-none items-center gap-1.5 text-xs font-semibold text-muted-foreground uppercase">
+                            <Filter size={13} className="opacity-60" />
+                            筛选
+                            {(activeCat || activeTag) && (
+                                <Badge variant="secondary" className="text-[0.65rem]">{activeCat || activeTag}</Badge>
+                            )}
+                            <ChevronDown size={14} className="ml-auto opacity-60 transition-transform group-open:rotate-180" />
+                        </summary>
+                        <MobileFilters
+                            cats={cats}
+                            topTags={topTags}
+                            activeCat={activeCat}
+                            activeTag={activeTag}
+                            toggleCat={toggleCat}
+                            toggleTag={toggleTag}
+                        />
+                    </details>
+
+                    <div className="mt-5 mb-2 hidden text-xs font-semibold text-muted-foreground uppercase lg:block">分类</div>
+                    <div className="hidden flex-col gap-1 lg:flex">
                         {cats.map(([cat, n]) => (
                             // 这里原本是手写 <button> + 一串 class,与规范(统一用 shadcn Button)不符
                             <Button
@@ -229,8 +292,8 @@ export default function BlogPage({ initialPosts = [] }) {
                             </Button>
                         ))}
                     </div>
-                    <div className="mt-5 mb-2 text-xs font-semibold text-muted-foreground uppercase">标签</div>
-                    <div className="flex flex-wrap gap-1.5">
+                    <div className="mt-5 mb-2 hidden text-xs font-semibold text-muted-foreground uppercase lg:block">标签</div>
+                    <div className="hidden flex-wrap gap-1.5 lg:flex">
                         {topTags.map(([tag, n]) => (
                             <Badge
                                 key={tag}
@@ -274,6 +337,38 @@ export default function BlogPage({ initialPosts = [] }) {
             <Footer pageId="blog" />
             <BackToTop />
         </>
+    );
+}
+
+/** 窄屏折叠面板里的分类 + 标签(桌面端用侧栏那份常驻列表) */
+function MobileFilters({ cats, topTags, activeCat, activeTag, toggleCat, toggleTag }) {
+    return (
+        <div className="mt-3 space-y-3">
+            <div className="flex flex-wrap gap-1.5">
+                {cats.map(([cat, n]) => (
+                    <Badge
+                        key={cat}
+                        variant={activeCat === cat ? 'default' : 'outline'}
+                        className="cursor-pointer"
+                        render={<button type="button" onClick={() => toggleCat(cat)} />}
+                    >
+                        {cat} <span className="opacity-60">{n}</span>
+                    </Badge>
+                ))}
+            </div>
+            <div className="flex flex-wrap gap-1.5">
+                {topTags.map(([tag, n]) => (
+                    <Badge
+                        key={tag}
+                        variant={activeTag === tag ? 'default' : 'outline'}
+                        className="cursor-pointer text-[0.7rem]"
+                        render={<button type="button" onClick={() => toggleTag(tag)} />}
+                    >
+                        {tag} <span className="opacity-60">{n}</span>
+                    </Badge>
+                ))}
+            </div>
+        </div>
     );
 }
 
