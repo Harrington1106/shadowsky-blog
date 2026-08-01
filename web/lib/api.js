@@ -17,18 +17,6 @@ export async function fetchPosts() {
 }
 
 /**
- * 拉取单篇文章的原始 Markdown（含 front matter）
- */
-export async function fetchPostMarkdown(file) {
-    const name = file.endsWith('.md') ? file : file + '.md';
-    const url = `${API_BASE}/posts/${encodeURIComponent(name)}`;
-    const res = await fetch(url);
-    if (!res.ok) throw new Error(`Article not found (${res.status}): ${name}`);
-    const text = await res.text();
-    return { text, finalPath: url };
-}
-
-/**
  * 拉取指定页面的访问计数
  * @param {string} pageId
  */
@@ -58,12 +46,6 @@ export async function fetchAiDailyIndex() {
     const res = await fetch(`${API_BASE}/ai-daily`);
     if (!res.ok) return [];
     return (await res.json()) || [];
-}
-
-export async function fetchAiDailyMarkdown(date) {
-    const res = await fetch(`${API_BASE}/ai-daily/${encodeURIComponent(date)}`);
-    if (!res.ok) throw new Error('日报不存在: ' + date);
-    return res.text();
 }
 
 /**

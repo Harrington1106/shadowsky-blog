@@ -1,8 +1,6 @@
 'use client';
 
-import { Suspense, useEffect, useRef, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
-import { Marked } from 'marked';
+import { useEffect, useRef, useState } from 'react';
 import { ArrowLeft, Calendar, Folder, Clock, Eye, Edit3, List, X, Bot } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -11,68 +9,21 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sh
 import Footer from '@/components/Footer';
 import BackToTop from '@/components/BackToTop';
 import { cardSurface, cn, withBase } from '@/lib/utils';
-import { fetchPostMarkdown, fetchVisitCount, fetchPosts, fetchAiDailyMarkdown } from '@/lib/api';
-import { CATEGORY_IMAGES, calculateReadingTime, parseFrontMatter, normalizeTags } from '@/lib/postContent';
+import { fetchVisitCount, fetchPosts } from '@/lib/api';
 
 const HLJS_THEME_DARK = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css';
 const HLJS_THEME_LIGHT = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
 
-// highlight.js / katex 都按需加载:两者合计占 /post 首屏包的绝大部分,
-// 而大多数访问只是读文字。加载后缓存在模块级变量里,同一次会话不会重复请求。
-let hljs = null;
-async function ensureHljs() {
-    // 用 lib/common(约 40 种常见语言)而不是全量 190+,体积小一个量级。
-    // powershell 不在 common 里但文章用到,单独注册(约 2KB),避免降级成纯文本。
-    if (!hljs) {
-        const [core, ps] = await Promise.all([
-            import('highlight.js/lib/common'),
-            import('highlight.js/lib/languages/powershell'),
-        ]);
-        hljs = core.default;
-        hljs.registerLanguage('powershell', ps.default);
-    }
-    return hljs;
-}
+/**
+ * 文章阅读页的交互层。正文 HTML、标题、元信息全部由服务端 page.js 算好传进来
+ * (见 lib/renderMarkdown.js),这里只做需要浏览器的部分:目录高亮、KaTeX、
+ * 代码复制、图片灯箱、阅读进度、访问计数、上下篇与相关推荐。
+ *
+ * marked 与 highlight.js 已经不在客户端了 —— 它们曾是 /post 首屏包的大头。
+ */
+export default function PostContent({ article, backRef }) {
+    const { title, tags, heroImage, html: contentHtml, meta: postMeta, needsMath } = article;
 
-function escapeHtml(s) {
-    return s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-}
-
-const marked = new Marked({ breaks: true, gfm: true });
-marked.use({
-    renderer: {
-        image({ href, title, text }) {
-            return `<img src="${href}" alt="${text || ''}" title="${title || ''}" class="rounded-lg shadow-md max-w-full h-auto my-6 mx-auto">`;
-        },
-        code({ text, lang }) {
-            // hljs 未就绪时原样输出(转义后),不至于因为懒加载失败而丢内容
-            const language = hljs && lang && hljs.getLanguage(lang) ? lang : 'plaintext';
-            const highlighted = hljs ? hljs.highlight(text, { language }).value : escapeHtml(text);
-            return `<pre class="group"><div class="code-header"><div class="window-controls"><div class="window-dot red"></div><div class="window-dot yellow"></div><div class="window-dot green"></div></div><div class="flex items-center gap-2"><div class="lang-label">${language}</div><button class="code-copy-btn" title="复制代码"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span>复制</span></button></div></div><code class="hljs language-${language}">${highlighted}</code></pre>`;
-        },
-    },
-});
-
-export default function PostPage() {
-    return (
-        <Suspense fallback={null}>
-            <PostPageInner />
-        </Suspense>
-    );
-}
-
-function PostPageInner() {
-    const params = useSearchParams();
-    const file = params.get('file');
-    const aiDate = params.get('ai');
-    const refHash = params.get('ref');
-
-    const [title, setTitle] = useState('加载中…');
-    const [postMeta, setPostMeta] = useState(null);
-    const [tags, setTags] = useState([]);
-    const [contentHtml, setContentHtml] = useState('');
-    const [heroImage, setHeroImage] = useState(null);
-    const [error, setError] = useState(null);
     const [toc, setToc] = useState([]);
     const [activeTocId, setActiveTocId] = useState(null);
     const [progress, setProgress] = useState(0);
@@ -83,139 +34,48 @@ function PostPageInner() {
     const [lightbox, setLightbox] = useState(null);
 
     const contentRef = useRef(null);
-    const backHref = withBase(refHash ? '/blog' + refHash : '/blog');
+    // ?ref= 记着来时在 /blog 的哪个视图/锚点,返回时还原
+    const backHref = withBase(backRef ? '/blog' + backRef : '/blog');
 
-    // ── 加载文章 ──
+    // ── 访问计数 + 上下篇 + 相关推荐(都不影响正文,后台补齐)──
     useEffect(() => {
+        if (article.kind !== 'post') return;
         let cancelled = false;
 
-        async function loadAiDaily() {
-            try {
-                const md = await fetchAiDailyMarkdown(aiDate);
-                if (cancelled) return;
-                const titleMatch = md.match(/^#\s+(.+)/m);
-                const rawTitle = titleMatch ? titleMatch[1] : 'AI日报 · ' + aiDate;
-                const cleanTitle = rawTitle
-                    .replace(/^[^\w一-鿿]+/, '')
-                    .replace(/^(AI|📰)\s*[-—]?\s*/i, '')
-                    .trim();
-                // 标题现在由 page.js 的 generateMetadata 在服务端写好(含站名),
-                // 这里不再改 document.title —— 否则会把它覆盖成没有站名的版本,
-                // 而且 PageTracker 在挂载时就取过一次标题,时序上也对不上。
-                setTitle(cleanTitle);
-                const d = new Date(aiDate);
-                const dateStr = d.toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' });
-                setPostMeta({ kind: 'aidaily', dateStr });
-                const kwMatch = md.match(/关键词[：:]\s*(.+)/);
-                const keywords = kwMatch ? kwMatch[1].split(/[,，、]/).map((k) => k.trim()).filter(Boolean).slice(0, 5) : [];
-                setTags(keywords);
-                setHeroImage('https://images.unsplash.com/photo-1677442136019-21780ecad995?w=1200&q=80');
-                await ensureHljs();
-                setContentHtml(marked.parse(md));
-            } catch (e) {
-                if (!cancelled) {
-                    setError(e.message);
-                    setTitle('加载失败');
-                }
-            }
-        }
+        fetchVisitCount(article.pageId).then((d) => { if (!cancelled) setVisitCount(d.count); }).catch(() => setVisitCount('-'));
 
-        async function loadPost() {
-            if (!file) { setError('URL 参数中缺少 file 字段。'); setTitle('错误'); return; }
-            try {
-                const { text, finalPath } = await fetchPostMarkdown(file);
-                if (cancelled) return;
-                const { metadata, content } = parseFrontMatter(text);
-
-                setTitle(metadata.title || '无标题');
-
-                let dateStr = '未知日期';
-                if (metadata.date) {
-                    const dateObj = new Date(metadata.date);
-                    if (!isNaN(dateObj.getTime())) {
-                        dateStr = dateObj.toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' });
-                    }
-                }
-                const category = metadata.category || '未分类';
-                const readingTime = calculateReadingTime(content);
-                const dateYm = metadata.date && /^\d{4}-\d{2}/.test(metadata.date) ? metadata.date.substring(0, 7) : null;
-                const modifiedStr = (metadata.lastModified && metadata.lastModified !== metadata.date)
-                    ? new Date(metadata.lastModified).toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' })
-                    : null;
-
-                const normalizedTags = normalizeTags(metadata.tags);
-                setTags(normalizedTags);
-
-                const imageUrl = metadata.coverImage || CATEGORY_IMAGES[category] || CATEGORY_IMAGES.default;
-                setHeroImage(imageUrl);
-
-                const dir = finalPath.substring(0, finalPath.lastIndexOf('/') + 1);
-                marked.use({
-                    renderer: {
-                        image({ href, title: t, text: alt }) {
-                            let cleanHref = String(href || '');
-                            if (cleanHref && !cleanHref.startsWith('http') && !cleanHref.startsWith('//') && !cleanHref.startsWith('/')) {
-                                cleanHref = dir + cleanHref;
-                            }
-                            return `<img src="${cleanHref}" alt="${alt || ''}" title="${t || ''}" class="rounded-lg shadow-md max-w-full h-auto my-6 mx-auto">`;
-                        },
-                    },
+        fetchPosts().then((posts) => {
+            if (cancelled) return;
+            const idx = posts.findIndex((p) => p.file === article.file);
+            if (idx !== -1) {
+                setNavLinks({
+                    prev: idx < posts.length - 1 ? posts[idx + 1] : null, // 较旧
+                    next: idx > 0 ? posts[idx - 1] : null, // 较新
                 });
-
-                await ensureHljs();
-                setContentHtml(marked.parse(content));
-
-                const pageId = 'posts/' + file.replace(/\.md$/, '');
-                fetchVisitCount(pageId).then((d) => setVisitCount(d.count)).catch(() => setVisitCount('-'));
-
-                setPostMeta({ kind: 'post', dateStr, dateYm, category, readingTime, modifiedStr });
-
-                // 上一篇/下一篇 + 相关推荐
-                fetchPosts().then((posts) => {
-                    if (cancelled) return;
-                    const currentFileName = file.split('/').pop();
-                    const idx = posts.findIndex((p) => p.file === currentFileName || p.file.endsWith(currentFileName));
-                    if (idx !== -1) {
-                        setNavLinks({
-                            prev: idx < posts.length - 1 ? posts[idx + 1] : null, // 较旧
-                            next: idx > 0 ? posts[idx - 1] : null, // 较新
-                        });
-                    }
-                    if (normalizedTags.length > 0) {
-                        const scored = posts
-                            .filter((p) => p.file !== file)
-                            .map((p) => ({ post: p, score: normalizeTags(p.tags).filter((t) => normalizedTags.includes(t)).length }))
-                            .filter((x) => x.score > 0)
-                            .sort((a, b) => b.score - a.score)
-                            .slice(0, 4);
-                        setRecommendations(scored.map((x) => x.post));
-                    }
-                }).catch(() => {});
-            } catch (e) {
-                if (!cancelled) {
-                    setError(e.message);
-                    setTitle('404 Not Found');
-                }
             }
-        }
-
-        if (aiDate) loadAiDaily();
-        else loadPost();
+            if (tags.length > 0) {
+                const scored = posts
+                    .filter((p) => p.file !== article.file)
+                    .map((p) => ({ post: p, score: (p.tags || []).filter((t) => tags.includes(t)).length }))
+                    .filter((x) => x.score > 0)
+                    .sort((a, b) => b.score - a.score)
+                    .slice(0, 4);
+                setRecommendations(scored.map((x) => x.post));
+            }
+        }).catch(() => {});
 
         return () => { cancelled = true; };
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [file, aiDate]);
+    }, [article.file]);
 
     // ── 内容渲染后：KaTeX、TOC、滚动进度 ──
     useEffect(() => {
         if (!contentHtml || !contentRef.current) return;
         const container = contentRef.current;
 
-        // 只有正文里真的出现数学分隔符才去加载 KaTeX(库 + CSS 约 300KB)
-        const plain = container.textContent || '';
-        const hasMath = plain.includes('$$') || plain.includes('\\(') || plain.includes('\\[')
-            || new RegExp('\\$[^$\\n]+\\$').test(plain);
-        if (hasMath) {
+        // 只有正文里真的出现数学分隔符才去加载 KaTeX(库 + CSS 约 300KB)。
+        // 判断已经在服务端做完(lib/renderMarkdown 的 hasMath),这里直接用结论。
+        if (needsMath) {
             (async () => {
                 try {
                     const [{ default: renderMathInElement }] = await Promise.all([
@@ -330,23 +190,15 @@ function PostPageInner() {
 
                 <div className="mx-auto grid w-full max-w-5xl gap-10 px-4 py-10 sm:px-6 lg:grid-cols-[1fr_260px]">
                     <div className="min-w-0">
-                        {error ? (
-                            <div className="py-16 text-center">
-                                <p className="mb-2 text-base font-medium text-destructive">无法加载文章</p>
-                                <p className="mb-6 text-sm text-muted-foreground">{error}</p>
-                                <a href={withBase('/blog')} className="text-sm text-primary hover:underline">← 返回博客</a>
-                            </div>
-                        ) : (
-                            <div
-                                className="post-prose"
-                                id="post-content"
-                                ref={contentRef}
-                                onClick={onContentClick}
-                                dangerouslySetInnerHTML={{
-                                    __html: contentHtml || '<div class="my-16 flex justify-center"><div class="size-8 animate-spin rounded-full border-2 border-muted border-t-primary"></div></div>',
-                                }}
-                            />
-                        )}
+                        {/* 正文由服务端渲染好后直接注入,不再有"加载中"状态;
+                            文章不存在的情况在 page.js 里就 notFound() 了 */}
+                        <div
+                            className="post-prose"
+                            id="post-content"
+                            ref={contentRef}
+                            onClick={onContentClick}
+                            dangerouslySetInnerHTML={{ __html: contentHtml }}
+                        />
 
                         {(navLinks.prev || navLinks.next) && (
                             <div className="mt-10 grid gap-3 sm:grid-cols-2">
