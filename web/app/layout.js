@@ -4,10 +4,36 @@ import PageTracker from '@/components/PageTracker';
 import { Toaster } from '@/components/ui/sonner';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { withBase } from '@/lib/utils';
+import { SITE_URL, SITE_NAME, SITE_DESC } from '@/lib/site';
 
+// metadataBase 决定 og:image / canonical 里的相对路径怎么补全成绝对地址。
+// 不设的话 Next 构建时会警告并退化成 localhost,分享卡片的图就取不到。
 export const metadata = {
-    title: '星空笔记 — 夏日科技探索',
+    metadataBase: new URL(SITE_URL),
+    // 子页面只写自己那一截标题,由 template 补站名;首页用 title.absolute 跳过模板。
+    title: {
+        default: `星空笔记 — ${SITE_NAME}`,
+        template: `%s — ${SITE_NAME}`,
+    },
+    description: SITE_DESC,
     icons: { icon: withBase('/img/favicon256.png') },
+    openGraph: {
+        type: 'website',
+        siteName: SITE_NAME,
+        locale: 'zh_CN',
+        url: SITE_URL,
+        title: `星空笔记 — ${SITE_NAME}`,
+        description: SITE_DESC,
+        // 目前只有方形站标可用,所以卡片类型用 summary(小图)而非 summary_large_image,
+        // 免得平台把 256×256 拉伸成横幅。将来做了 1200×630 的 OG 图再一起换。
+        images: [{ url: withBase('/img/favicon256.png'), width: 256, height: 256, alt: SITE_NAME }],
+    },
+    twitter: {
+        card: 'summary',
+        title: `星空笔记 — ${SITE_NAME}`,
+        description: SITE_DESC,
+        images: [withBase('/img/favicon256.png')],
+    },
 };
 
 const themeInitScript = `
