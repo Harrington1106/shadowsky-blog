@@ -40,12 +40,28 @@ const nextConfig = {
     //
     // 所以显式收紧:边缘最多缓 60 秒,过期后可先用旧的再后台回源(SWR),浏览器每次都校验。
     // 只作用于页面,/api 与 /_next/static 不匹配(前者要实时,后者本就带 immutable 长缓存)。
+    // ⚠ 同一个 URL,Next 对带 `RSC` 头的请求返回的是 flight 数据(`1:"$Sreact.fragment"…`)
+    //   而不是 HTML。响应里虽然有 `Vary: rsc,…`,但 **Cloudflare 默认忽略 Vary**
+    //   (官方文档:by default, Cloudflare does not consider vary values in caching decisions),
+    //   于是两种响应共用同一个缓存键 —— 2026-08-01 开边缘缓存后立刻复现:
+    //   8 轮测试里 6 轮普通请求拿到了 flight 数据,页面直接是乱码。
+    //   仅在 CDN 规则里「排除 RSC 请求」不够:排除后走的是默认行为,照样读写同一条缓存。
+    //   所以从源头把 RSC 响应标成不可缓存,边缘就只会存 HTML 那一份。
     async headers() {
         return [
             {
                 source: '/:path((?!api/|_next/static/).*)',
+                // missing:普通文档请求才给可缓存的头
+                missing: [{ type: 'header', key: 'RSC' }],
                 headers: [
                     { key: 'Cache-Control', value: 'public, max-age=0, s-maxage=60, stale-while-revalidate=86400' },
+                ],
+            },
+            {
+                source: '/:path*',
+                has: [{ type: 'header', key: 'RSC' }],
+                headers: [
+                    { key: 'Cache-Control', value: 'private, no-store' },
                 ],
             },
         ];
