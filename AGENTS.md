@@ -16,12 +16,11 @@
         ↓
       nginx (47.118.28.27:80/443/4443，杭州阿里云 ECS)
         │
-        ├── 遗留静态（root = /www/wwwroot/legacy-static/）
+        ├── 遗留静态（root = /www/wwwroot/legacy-static/，2026-08-01 起只剩 48KB）
         │     /gnz48.html            GNZ48 日程页（唯一还在发静态 HTML 的页面）
         │     /team-g.ics /schedule.json
         │     /app.js /data.js       gnz48 页的脚本与数据
         │     /favicon.ico
-        │     /css/ /js/ /public/    已无引用方（原为 ai-daily 归档页所用），可删
         │
         │   /ai-daily/* 已于 2026-08-01 退役 → 301 到 v2：
         │     /ai-daily/YYYY-MM-DD.html → /post?ai=YYYY-MM-DD
@@ -287,7 +286,7 @@ v1 整套已下线并删除：PM2 进程 `shadowsky-admin` 已 `pm2 delete`、�
 
 | 东西 | 现在在哪 |
 |------|---------|
-| gnz48 页 + 日历订阅（+ 已无引用方的 css/js/public/img） | `/www/wwwroot/legacy-static/`（nginx root） |
+| gnz48 页 + 日历订阅 | `/www/wwwroot/legacy-static/`（nginx root，48KB；旧 css/js/public/img 已于 2026-08-01 删除，全量包在 `_backups/legacy-static-full-20260801-105155.tar.gz`） |
 | AI 日报工具链 | `/www/wwwroot/shadowquake-v2/tools/ai-daily-digest` |
 | 日报所需密钥（SILICONFLOW_*） | `/www/wwwroot/shadowquake-v2/tools/digest.env`（600） |
 | gnz48 数据生成 | `/opt/gnz48-calendar`（cron 3:00，产物 cp 到 legacy-static） |
