@@ -20,6 +20,12 @@ function cdn(u) {
         .replace('/main/', '@main/').replace('/master/', '@master/');
 }
 
+// 位置链接原本指向 Google 地图 —— 大陆点开是空白页。站点读者基本在大陆,
+// 换成高德搜索,点得开才有意义。
+function mapUrl(location) {
+    return `https://www.amap.com/search?query=${encodeURIComponent(location)}`;
+}
+
 function safeDate(s) {
     if (!s) return new Date();
     const d = new Date(s);
@@ -335,7 +341,7 @@ function TimelineView({ items, onOpen }) {
                                 <span>{time}</span>
                                 {m.location && (
                                     <a
-                                        href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(m.location)}`}
+                                        href={mapUrl(m.location)}
                                         target="_blank"
                                         rel="noreferrer"
                                         className="inline-flex items-center gap-1 hover:text-primary"
@@ -418,7 +424,7 @@ function Lightbox({ moment, onOpenChange, onNext, onPrev }) {
                             {moment.location && (
                                 <span
                                     className="pointer-events-auto inline-flex cursor-pointer items-center gap-1"
-                                    onClick={() => window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(moment.location)}`, '_blank', 'noopener,noreferrer')}
+                                    onClick={() => window.open(mapUrl(moment.location), '_blank', 'noopener,noreferrer')}
                                 >
                                     <MapPin size={12} /> {moment.location}
                                 </span>

@@ -250,6 +250,13 @@ $env:AUTH_SECRET='dev'; $env:ADMIN_PASSWORD='devpass'; npm run dev
 | cdnjs 的 hljs 主题 | 内联进 `app/hljs-theme.css`，按 `html.dark` 作用域 | `node scripts/gen-hljs-css.mjs` |
 | unsplash 封面 | 镜像到 `public/img/covers/*.webp`（文件名=URL 的 sha1，`immutable`） | `node scripts/mirror-covers.mjs` |
 | 分类默认图（已 404） | 本地星空兜底图 | `node scripts/gen-fallback-cover.mjs` |
+| 收藏页 Google favicon（大陆**不通**） | 镜像到 `public/img/favicons/*.webp`，未收录用域名首字母块 | `node scripts/mirror-icons.mjs` |
+| 关于页 simpleicons CDN | 镜像到 `public/img/icons/*.svg`（深浅各一份） | 同上 |
+| 片刻的 Google 地图链接 | 改用高德（大陆点得开） | — |
+
+⚠ **扫描外部依赖时别只看服务端 HTML** —— 收藏页 favicon、关于页社交图标都是客户端
+运行时才拼出来的地址，只扫 SSR HTML 会漏掉。要连 `/_next/static/chunks/*.js` 一起 grep。
+**收藏/社交链接变动后重跑 `mirror-icons.mjs`**；不跑不会坏，只是新域名显示字母块。
 
 **新文章用了外链封面 → 部署前跑一次 `mirror-covers.mjs`**；不跑不会坏，只是那张图仍走外链。
 封面镜像同时作用于文章头图、列表缩略图和 og:image。
