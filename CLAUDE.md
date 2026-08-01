@@ -109,7 +109,11 @@ D:\Projects\shadowsky-blog\
 - **样式**：Tailwind CSS v4 + shadcn/ui（`components/ui`）
 - **图标**：`lucide-react`
 - **数据库**：SQLite（better-sqlite3 13 + Drizzle ORM），WAL 模式
-- **文章 / AI 日报**：Markdown 文件（`marked` + `highlight.js` + `katex` 渲染，`dompurify` 净化）
+- **文章 / AI 日报**：Markdown 文件。正文在**服务端**渲染（`lib/renderMarkdown.js`：`marked` +
+  `highlight.js`，结果按文件 mtime 缓存），`katex` 仍在客户端按需加载。
+  注意：这条链路**没有过 `dompurify`**——文章里有 B 站 iframe、日报里有 `<details>`，
+  需要放行原生 HTML，直接上默认配置的 DOMPurify 会把它们剥掉。内容源是自己的 `content/`
+  与 AI 日报脚本，暂按可信处理；要收紧得先定 iframe 白名单。`/rss` 页的外部内容仍走 `dompurify`。
 - **鉴权**：`jose` 签发 JWT，httpOnly cookie，`middleware.js` 保护 `/admin`
 - **运行**：Docker 容器 `shadowsky-v2`（`node:22-slim`），`restart=unless-stopped`，约 100MB 内存
 - **CDN/代理**：Cloudflare（DNS + Worker）

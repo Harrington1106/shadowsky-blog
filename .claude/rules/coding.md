@@ -14,6 +14,8 @@
 - 页面/接口放 `app/`（App Router），共用组件放 `components/`，UI 基础件优先复用 `components/ui`（shadcn）
 - 数据读写统一走 `lib/db.js` + `lib/schema.js`（Drizzle），不要另开 sqlite 连接；表结构变更走 `db/migrations`（`npm run db:generate`）
 - 文章/AI 日报是 Markdown 文件，通过 `lib/posts.js` / `lib/content.js` 读取，不要直接拼路径读盘
+- Markdown → HTML 只在服务端做（`lib/renderMarkdown.js`），客户端不要再引 `marked`/`highlight.js`；
+  渲染结果按文件 mtime 缓存，改文件即失效，别加固定 TTL（会破坏「发文即时可见」）
 - 后台接口一律套 `lib/requireAuth.js`；`/admin` 页面由 `middleware.js` 拦截
 - 图标用 `lucide-react` 组件，不用 CDN 版 Lucide
 - Server Component 优先，需要交互再 `'use client'`
