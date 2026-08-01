@@ -11,6 +11,7 @@ import BackToTop from '@/components/BackToTop';
 import { fetchBookmarks } from '@/lib/api';
 import { Card } from '@/components/ui/card';
 import { cardSurface, cn } from '@/lib/utils';
+import { localFavicon } from '@/lib/iconMirror';
 
 const CAT_FALLBACKS = {
     dev_tech: '开发与技术',
@@ -77,11 +78,19 @@ function domain(url) {
     catch (e) { return url; }
 }
 
+// 原来这里返回 www.google.com/s2/favicons —— 大陆完全不通,56 条收藏就是 55 个
+// 必然失败的请求。改成查本地镜像(scripts/mirror-icons.mjs),没有就返回空,
+// 由调用方显示域名首字母块,不再有任何跨境请求。
 function favicon(url) {
+    return localFavicon(url) || '';
+}
+
+/** 没有镜像图标时的兜底:域名首字母 */
+function initial(url) {
     try {
-        const host = new URL(url).hostname;
-        return `https://www.google.com/s2/favicons?domain=${host}&sz=32`;
-    } catch (e) { return ''; }
+        const host = new URL(url).hostname.replace(/^www\./, '');
+        return host.charAt(0).toUpperCase();
+    } catch { return '#'; }
 }
 
 export default function BookmarksPage() {
@@ -320,8 +329,10 @@ function BookmarkCard({ b }) {
         >
             <div className="mb-2.5 flex items-center gap-2.5">
                 <div className="flex size-7 shrink-0 items-center justify-center overflow-hidden rounded-md bg-muted">
-                    {faviconFailed ? <Link2 size={14} className="text-muted-foreground" /> : (
-                        <img src={favicon(b.url)} alt="" loading="lazy" className="size-4.5 object-contain" onError={() => setFaviconFailed(true)} />
+                    {faviconFailed || !favicon(b.url) ? (
+                        <span className="text-[0.7rem] font-semibold text-muted-foreground">{initial(b.url)}</span>
+                    ) : (
+                        <img src={favicon(b.url)} alt="" loading="lazy" width={18} height={18} className="size-4.5 object-contain" onError={() => setFaviconFailed(true)} />
                     )}
                 </div>
                 <span className="flex-1 truncate font-mono text-xs text-muted-foreground">{domain(b.url)}</span>

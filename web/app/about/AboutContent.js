@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import Footer from '@/components/Footer';
 import BackToTop from '@/components/BackToTop';
 import { withBase } from '@/lib/utils';
+import { localSimpleIcon } from '@/lib/iconMirror';
 
 const LUCIDE_ICON_MAP = {
     mail: Mail,
@@ -149,7 +150,14 @@ export default function AboutPage() {
                         if (icon.startsWith('simple:')) {
                             return (
                                 <Button key={s.name} variant="ghost" size="icon" render={<a {...linkProps} />} nativeButton={false}>
-                                    <img src={`https://cdn.simpleicons.org/${icon.replace('simple:', '')}/${isDark ? 'white' : '333'}`} width={20} height={20} alt="" />
+                                    {/* 本地镜像优先(scripts/mirror-icons.mjs);没镜像才回落 CDN —— 那条大陆 TTFB 3.5s */}
+                                    <img
+                                        src={localSimpleIcon(icon.replace('simple:', ''), isDark)
+                                            || `https://cdn.simpleicons.org/${icon.replace('simple:', '')}/${isDark ? 'white' : '333'}`}
+                                        width={20}
+                                        height={20}
+                                        alt=""
+                                    />
                                 </Button>
                             );
                         }
