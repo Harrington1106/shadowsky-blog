@@ -22,6 +22,31 @@ const VIEWS = [
     { id: 'aidaily', label: 'AI日报' },
 ];
 
+/**
+ * 摘要开头常常把标题又抄了一遍(生成摘要时连标题一起截进去了),
+ * 卡片上只有两行摘要,重复一遍等于白丢一行。展示时剥掉这个前缀。
+ * 比较时忽略标点空格,避免「（使用 iframe）」这种括号差异导致匹配不上。
+ */
+function trimTitlePrefix(excerpt, title) {
+    const text = (excerpt || '').trim();
+    const t = (title || '').trim();
+    if (!text || t.length < 6) return text;
+
+    const norm = (s) => s.replace(/[\s\p{P}]/gu, '');
+    const nt = norm(t);
+    // 逐字符扫,找出正文里对应标题结束的位置(标题里的标点可能和正文写法不同)
+    let ni = 0;
+    let i = 0;
+    for (; i < text.length && ni < nt.length; i++) {
+        if (!/[\s\p{P}]/u.test(text[i])) {
+            if (text[i] !== nt[ni]) return text; // 开头不是标题,原样返回
+            ni++;
+        }
+    }
+    if (ni < nt.length) return text;
+    return text.slice(i).replace(/^[\s\p{P}]+/u, '') || text;
+}
+
 function formatDate(dateStr) {
     const d = new Date(dateStr);
     if (isNaN(d)) return { ds: dateStr || '', ys: '' };
@@ -53,14 +78,16 @@ function ArticleRow({ post, refHash }) {
     const ref = refHash ? `?ref=${encodeURIComponent(refHash)}` : '';
     return (
         <a href={withBase(postHref(post.file) + ref)} className={cn(cardSurface, 'flex gap-4 p-3 transition-colors hover:ring-primary/40 hover:bg-accent/40')}>
-            <div className="hidden w-12 shrink-0 text-center font-mono text-xs text-muted-foreground sm:block">
+            {/* w-12(48px)装不下「12月28日」,会把最后那个「日」挤到第三行去。
+                加宽到 w-14 并 whitespace-nowrap,让日期永远一行。 */}
+            <div className="hidden w-14 shrink-0 text-center font-mono text-xs whitespace-nowrap text-muted-foreground sm:block">
                 <div>{ys}</div>
                 <div className="font-semibold text-foreground">{ds}</div>
             </div>
             <Thumb post={post} />
             <div className="min-w-0 flex-1">
                 <h3 className="line-clamp-1 text-sm font-semibold">{post.title}</h3>
-                <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">{post.excerpt || ''}</p>
+                <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">{trimTitlePrefix(post.excerpt, post.title)}</p>
                 <div className="mt-2 flex flex-wrap items-center gap-1.5">
                     <Badge variant="secondary" className="text-[0.65rem]">{post.category || '笔记'}</Badge>
                     {tags.map((t) => <Badge key={t} variant="outline" className="text-[0.65rem]">#{t}</Badge>)}
@@ -83,11 +110,17 @@ export default function BlogPage() {
     const [aiDailyError, setAiDailyError] = useState(null);
 
     useEffect(() => {
-        const hash = window.location.hash;
-        if (hash === '#timeline' || hash === '#directory' || hash === '#tags' || hash === '#aidaily') {
-            setView(hash.slice(1));
-        }
+        // 切视图时会写 window.location.hash,所以要跟着 hash 走 —— 只在挂载时读一次的话,
+        // 用户切几个视图再按浏览器后退,地址变了页面却不动。
+        const applyHash = () => {
+            const id = window.location.hash.slice(1);
+            setView(VIEWS.some((v) => v.id === id) ? id : 'grid');
+        };
+        applyHash();
+        window.addEventListener('hashchange', applyHash);
+
         fetchPosts().then(setPosts).catch((e) => setLoadError(e.message));
+        return () => window.removeEventListener('hashchange', applyHash);
     }, []);
 
     useEffect(() => {
@@ -145,10 +178,18 @@ export default function BlogPage() {
         setPage(1);
     }
 
+    // 侧边栏是「按分类/标签筛文章」的工具,只对文章类视图有意义:
+    //   标签云视图 —— 主区就是全部 60+ 个标签,侧栏那 15 个是同屏重复
+    //   AI 日报视图 —— 分类/标签筛的是文章,对日报无效,却占着 220px
+    const showSidebar = view !== 'tags' && view !== 'aidaily';
+
     return (
         <>
-            <main className="mx-auto grid w-full max-w-6xl flex-1 gap-8 px-4 py-8 lg:grid-cols-[220px_1fr]">
-                <aside className="lg:sticky lg:top-20 lg:self-start">
+            <main className={cn(
+                'mx-auto grid w-full max-w-6xl flex-1 gap-8 px-4 py-8',
+                showSidebar && 'lg:grid-cols-[220px_1fr]'
+            )}>
+                <aside className={cn('lg:sticky lg:top-20 lg:self-start', !showSidebar && 'hidden')}>
                     <h2 className="text-lg font-bold">星空笔记</h2>
                     <p className="mt-1 text-xs text-muted-foreground">记录技术、天文与生活</p>
                     <div className="mt-4 space-y-1.5 text-xs text-muted-foreground">
@@ -329,14 +370,20 @@ function AiDailyView({ index, error }) {
         <div className="flex flex-col gap-2">
             {index.map((d) => {
                 const date = new Date(d.date);
-                const ds = isNaN(date) ? d.date : date.toLocaleDateString('zh-CN', { weekday: 'short', month: 'short', day: 'numeric' });
+                // 原来把「星期」和「月日」塞在同一行 w-16 里,渲染成「7月31日周 / 五」——
+                // 连"周五"都被拆开。拆成两行:月日一行、星期一行,各自不换行。
+                const md = isNaN(date) ? d.date : date.toLocaleDateString('zh-CN', { month: 'short', day: 'numeric' });
+                const wd = isNaN(date) ? '' : date.toLocaleDateString('zh-CN', { weekday: 'short' });
                 const cleanTitle = (d.title || '')
                     .replace(/^[^\w一-鿿]+/, '')
                     .replace(/^(AI|📰)\s*[-—]?\s*/i, '')
                     .trim();
                 return (
                     <a key={d.date} href={withBase(aiDailyHref(d.date))} className={cn(cardSurface, 'flex gap-4 p-3 transition-colors hover:ring-primary/40 hover:bg-accent/40')}>
-                        <div className="hidden w-16 shrink-0 text-center text-xs text-muted-foreground sm:block">{ds}</div>
+                        <div className="hidden w-14 shrink-0 text-center text-xs whitespace-nowrap text-muted-foreground sm:block">
+                            <div className="font-medium text-foreground">{md}</div>
+                            <div className="mt-0.5 opacity-70">{wd}</div>
+                        </div>
                         <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground">
                             <Bot size={20} />
                         </div>
