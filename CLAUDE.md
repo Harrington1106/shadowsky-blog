@@ -122,9 +122,11 @@ D:\Projects\shadowsky-blog\
 - **数据库**：SQLite（better-sqlite3 13 + Drizzle ORM），WAL 模式
 - **文章 / AI 日报**：Markdown 文件。正文在**服务端**渲染（`lib/renderMarkdown.js`：`marked` +
   `highlight.js`，结果按文件 mtime 缓存），`katex` 仍在客户端按需加载。
-  注意：这条链路**没有过 `dompurify`**——文章里有 B 站 iframe、日报里有 `<details>`，
-  需要放行原生 HTML，直接上默认配置的 DOMPurify 会把它们剥掉。内容源是自己的 `content/`
-  与 AI 日报脚本，暂按可信处理；要收紧得先定 iframe 白名单。`/rss` 页的外部内容仍走 `dompurify`。
+  渲染结果过 **`sanitize-html`** 白名单（2026-08-01 起）：白名单必须同时覆盖我们自己生成的
+  标记（代码块的 `pre/div/button/svg`、复制按钮、标题 id）和内容里真正用到的原生 HTML
+  （`<details>/<summary>/<br>`）；**iframe 只放行 bilibili 域名**，内联样式只放行布局属性。
+  改白名单后务必逐篇比对结构计数，漏一项就是可见的功能损坏。
+  `/rss` 页的外部内容仍走客户端 `dompurify`。
 - **鉴权**：`jose` 签发 JWT，httpOnly cookie，`middleware.js` 保护 `/admin`
 - **运行**：Docker 容器 `shadowsky-v2`（`node:22-slim`），`restart=unless-stopped`，约 100MB 内存
 - **CDN/代理**：Cloudflare（DNS + Worker）
