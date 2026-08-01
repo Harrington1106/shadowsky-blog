@@ -16,7 +16,6 @@ import { mirrorCover } from '@/lib/coverMirror';
 const PER_PAGE = 12;
 const VIEWS = [
     { id: 'grid', label: '文章' },
-    { id: 'timeline', label: '时间轴' },
     { id: 'directory', label: '目录' },
     { id: 'tags', label: '标签云' },
     { id: 'aidaily', label: 'AI日报' },
@@ -327,7 +326,6 @@ export default function BlogPage({ initialPosts = [] }) {
                     <div style={{ minHeight: '60vh' }}>
                         {loadError && <EmptyMsg>加载失败: {loadError}</EmptyMsg>}
                         {!loadError && view === 'grid' && <GridView posts={filteredPosts} page={page} setPage={setPage} />}
-                        {!loadError && view === 'timeline' && <TimelineView posts={filteredPosts} />}
                         {!loadError && view === 'directory' && <DirectoryView posts={filteredPosts} />}
                         {!loadError && view === 'tags' && <TagsView posts={filteredPosts} onPick={toggleTag} />}
                         {!loadError && view === 'aidaily' && <AiDailyView index={aiDailyIndex} error={aiDailyError} />}
@@ -404,25 +402,6 @@ function GridView({ posts, page, setPage }) {
     );
 }
 
-function TimelineView({ posts }) {
-    if (posts.length === 0) return <EmptyMsg>没有匹配的文章</EmptyMsg>;
-    const groups = {};
-    posts.forEach((p) => {
-        const ym = (p.date || '').substring(0, 7);
-        (groups[ym] ||= []).push(p);
-    });
-    const entries = Object.entries(groups).sort((a, b) => b[0].localeCompare(a[0]));
-    return entries.map(([ym, items]) => (
-        <div key={ym} className="mb-6">
-            <h3 className="mb-3 border-l-2 border-primary pl-3 text-sm font-semibold text-muted-foreground">
-                {ym} <span className="text-xs opacity-60">{items.length}篇</span>
-            </h3>
-            <div className="flex flex-col gap-2">
-                {items.map((p) => <ArticleRow key={p.file} post={p} refHash="#timeline" />)}
-            </div>
-        </div>
-    ));
-}
 
 function DirectoryView({ posts }) {
     if (posts.length === 0) return <EmptyMsg>没有匹配的文章</EmptyMsg>;
