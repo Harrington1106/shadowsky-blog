@@ -12,9 +12,6 @@ import { cardSurface, cn, withBase } from '@/lib/utils';
 import { fetchVisitCount, fetchPosts } from '@/lib/api';
 import { postHref } from '@/lib/links';
 
-const HLJS_THEME_DARK = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css';
-const HLJS_THEME_LIGHT = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
-
 /**
  * 文章阅读页的交互层。正文 HTML、标题、元信息全部由服务端 page.js 算好传进来
  * (见 lib/renderMarkdown.js),这里只做需要浏览器的部分:目录高亮、KaTeX、
@@ -141,22 +138,10 @@ export default function PostContent({ article, backRef }) {
         if (img) setLightbox({ src: img.src, alt: img.alt });
     }
 
-    // ── 代码高亮主题跟随全站深浅色切换 ──
-    useEffect(() => {
-        const link = document.createElement('link');
-        link.id = 'hljs-theme';
-        link.rel = 'stylesheet';
-        link.href = document.documentElement.classList.contains('dark') ? HLJS_THEME_DARK : HLJS_THEME_LIGHT;
-        document.head.appendChild(link);
-        const onThemeChange = (e) => {
-            link.href = e.detail.isDark ? HLJS_THEME_DARK : HLJS_THEME_LIGHT;
-        };
-        window.addEventListener('themeChange', onThemeChange);
-        return () => {
-            window.removeEventListener('themeChange', onThemeChange);
-            link.remove();
-        };
-    }, []);
+    // 代码高亮主题原先是运行时从 cdnjs 插 <link>、再监听 themeChange 换 href。
+    // 大陆实测 cdnjs TTFB 3.66s,代码块要裸奔三秒多才上色。现在两套主题已按
+    // html.dark 作用域内联进 globals.css(见 app/hljs-theme.css),深浅色由 CSS
+    // 自己跟着走,这段逻辑连同那个跨境依赖一起删掉了。
 
     return (
         <>

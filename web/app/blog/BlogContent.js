@@ -11,6 +11,7 @@ import BackToTop from '@/components/BackToTop';
 import { fetchPosts, fetchAiDailyIndex } from '@/lib/api';
 import { cardSurface, cn, withBase } from '@/lib/utils';
 import { postHref, aiDailyHref } from '@/lib/links';
+import { mirrorCover } from '@/lib/coverMirror';
 
 const PER_PAGE = 12;
 const VIEWS = [
@@ -34,7 +35,7 @@ function Thumb({ post }) {
     if (post.coverImage) {
         return (
             <div className="h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-muted sm:h-20 sm:w-20">
-                <img src={post.coverImage} loading="lazy" alt="" className="h-full w-full object-cover" onError={(e) => { e.currentTarget.parentElement.style.display = 'none'; }} />
+                <img src={mirrorCover(post.coverImage)} loading="lazy" alt="" className="h-full w-full object-cover" onError={(e) => { e.currentTarget.parentElement.style.display = 'none'; }} />
             </div>
         );
     }

@@ -74,6 +74,13 @@ const nextConfig = {
                     { key: 'Cache-Control', value: 'private, no-store' },
                 ],
             },
+            {
+                // 镜像封面图的文件名是内容 sha1，图变了就是新文件名 —— 可以放心长缓存
+                source: '/img/covers/:path*',
+                headers: [
+                    { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
+                ],
+            },
         ];
     },
 };

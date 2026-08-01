@@ -2,15 +2,18 @@
  * 文章内容处理 —— 移植自 ../../js/post-viewer.js 中与渲染无关的纯函数部分
  */
 
+// 天文 与 default 两张原本指向 unsplash,2026-08-01 实测已 404 ——
+// 换成本地生成的星空兜底图(scripts/gen-fallback-cover.mjs)。
+// 其余几张仍写 unsplash 原址,渲染时由 lib/coverMirror 换成本地镜像。
 export const CATEGORY_IMAGES = {
-    '天文': 'https://images.unsplash.com/photo-1519681393784-d8e5b5a4570e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
-    '天文观测': 'https://images.unsplash.com/photo-1519681393784-d8e5b5a4570e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+    '天文': '/img/covers/fallback-space.webp',
+    '天文观测': '/img/covers/fallback-space.webp',
     '技术': 'https://images.unsplash.com/photo-1547658719-da2b51169166?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
     '技术思考': 'https://images.unsplash.com/photo-1547658719-da2b51169166?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
     '博客运维': 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
     '生活': 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
     '日记': 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
-    'default': 'https://images.unsplash.com/photo-1499750310159-5b5f2269592b?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+    'default': '/img/covers/fallback-space.webp',
 };
 
 export function calculateReadingTime(text) {

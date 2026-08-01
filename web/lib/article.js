@@ -13,6 +13,7 @@ import { OG_IMAGE } from '@/lib/site';
 import { renderMarkdown, hasMath } from '@/lib/renderMarkdown';
 import { CATEGORY_IMAGES, calculateReadingTime, parseFrontMatter, normalizeTags } from '@/lib/postContent';
 import { postHref, aiDailyHref } from '@/lib/links';
+import { mirrorCover } from '@/lib/coverMirror';
 
 const AI_HERO = 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=1200&q=80';
 // 相对图片路径的基准目录,与旧客户端(按 /api/posts/<file> 的目录)保持一致
@@ -104,7 +105,7 @@ function buildAiDaily(md, ai) {
         title,
         description,
         tags,
-        heroImage: AI_HERO,
+        heroImage: mirrorCover(AI_HERO),
         html: renderMarkdown(md),
         needsMath: hasMath(md),
         meta: { kind: 'aidaily', dateStr: fmtDate(ai) || ai },
@@ -126,7 +127,7 @@ function buildPost(raw, name) {
         description: metadata.excerpt || '',
         author: metadata.author || '',
         tags: normalizeTags(metadata.tags),
-        heroImage: coverImage || CATEGORY_IMAGES[category] || CATEGORY_IMAGES.default,
+        heroImage: mirrorCover(coverImage || CATEGORY_IMAGES[category] || CATEGORY_IMAGES.default),
         html: renderMarkdown(content, { imageBaseDir: POST_IMAGE_BASE }),
         needsMath: hasMath(content),
         meta: {
@@ -142,7 +143,7 @@ function buildPost(raw, name) {
         pageId: 'posts/' + name.replace(/\.md$/, ''),
         publishedTime: metadata.date || undefined,
         modifiedTime: metadata.lastModified || undefined,
-        ogImages: coverImage ? [coverImage] : OG_IMAGE,
+        ogImages: coverImage ? [mirrorCover(coverImage)] : OG_IMAGE,
         canonical: postHref(name),
     };
 }

@@ -72,12 +72,16 @@ export default function RootLayout({ children }) {
                 <script dangerouslySetInnerHTML={{ __html: swCleanupScript }} />
                 <meta name="theme-color" content="#0B1120" media="(prefers-color-scheme: dark)" />
                 <meta name="theme-color" content="#F8FAFC" media="(prefers-color-scheme: light)" />
-                <link rel="preconnect" href="https://fonts.loli.net" />
-                <link rel="preconnect" href="https://gstatic.loli.net" crossOrigin="anonymous" />
-                <link
-                    href="https://fonts.loli.net/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500;700&display=swap"
-                    rel="stylesheet"
-                />
+                {/*
+                  这里原本有一条 fonts.loli.net 的字体样式表(Inter / Noto Sans SC /
+                  Space Grotesk / DM Sans),2026-08-01 删除:
+                  - 它是 <head> 里的阻塞样式表,大陆实测 TTFB 4.9s,首屏要等它
+                  - 而这四套字体一次都没被用到 —— Tailwind 的 .font-sans 解析成
+                    `--font-sans: -apple-system, Segoe UI, Roboto…` 的系统栈,
+                    产物 CSS 里搜不到任何一个字体名
+                  所以删掉是纯赚:零视觉变化,省下一次跨境阻塞请求。
+                  以后真要上自定义字体,用 next/font 自托管,别再引外部 CDN。
+                */}
             </head>
             <body className="flex min-h-screen flex-col font-sans antialiased">
                 <TooltipProvider>
