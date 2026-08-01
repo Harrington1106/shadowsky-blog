@@ -189,7 +189,16 @@ export default function BlogPage() {
                 'mx-auto grid w-full max-w-6xl flex-1 gap-8 px-4 py-8',
                 showSidebar && 'lg:grid-cols-[220px_1fr]'
             )}>
-                <aside className={cn('lg:sticky lg:top-20 lg:self-start', !showSidebar && 'hidden')}>
+                {/*
+                  吸附位置必须等于它「本来待着」的位置,否则一开始滚动会先往上挪一截才钉住
+                  (原来写 top-20=80px,而自然位置是 89px —— 滚动时侧栏会突兀地跳 9px)。
+                  89px = 顶栏 3.5rem(h-14) + 1px 边框 + main 的 py-8(2rem)。
+                  改顶栏高度或 main 内边距时,这里要跟着改。
+                */}
+                <aside className={cn(
+                    'lg:sticky lg:top-[calc(3.5rem+1px+2rem)] lg:self-start',
+                    !showSidebar && 'hidden'
+                )}>
                     <h2 className="text-lg font-bold">星空笔记</h2>
                     <p className="mt-1 text-xs text-muted-foreground">记录技术、天文与生活</p>
                     <div className="mt-4 space-y-1.5 text-xs text-muted-foreground">

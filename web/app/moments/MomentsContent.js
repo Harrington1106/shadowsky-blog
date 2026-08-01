@@ -173,7 +173,7 @@ function MomentsPageInner() {
     return (
         <>
             <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8">
-                <div className="sticky top-14 z-30 -mx-4 mb-6 flex flex-wrap items-center gap-3 border-b bg-background/95 px-4 py-3 backdrop-blur">
+                <div className="sticky top-[calc(3.5rem+1px)] z-30 -mx-4 mb-6 flex flex-wrap items-center gap-3 border-b bg-background/95 px-4 py-3 backdrop-blur">
                     <div className="flex shrink-0 items-center gap-2 text-sm text-muted-foreground">
                         <span><strong className="text-foreground">{stats.count}</strong> 张</span>
                         <span className="text-muted-foreground/40">·</span>
