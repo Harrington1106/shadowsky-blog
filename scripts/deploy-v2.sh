@@ -76,9 +76,19 @@ scp -q deploy.tgz "$SSH_HOST:/tmp/deploy.tgz"
 ssh "$SSH_HOST" "bash $REMOTE_DIR/backup-v2.sh"
 
 # ── 4. 构建镜像 + 换容器 ─────────────────────────────────
+# 每次部署都会留一个 rollback-<时间戳> 镜像(每个约 1.5GB)。2026-08-01 攒到 18 个
+# 把 40G 盘撑到 100%,docker build 直接 ENOSPC —— 所以构建前先只保留最近 KEEP_ROLLBACKS 个。
+# 放在 build 之前是故意的:磁盘满的时候正是最需要先腾地方的时候。
+KEEP_ROLLBACKS=3
 echo "==> 4/6 服务器构建镜像并换容器…"
 ssh "$SSH_HOST" "set -e
     cd $REMOTE_DIR
+    # tail -n +$KEEP_ROLLBACKS 留下 $((KEEP_ROLLBACKS - 1)) 个旧的,本次马上又打一个新的 → 稳定保持 $KEEP_ROLLBACKS 个
+    for t in \$(docker images --format '{{.Tag}}' $IMAGE | grep '^rollback-' | sort -r | tail -n +$KEEP_ROLLBACKS); do
+        docker rmi $IMAGE:\$t >/dev/null 2>&1 || true
+    done
+    docker image prune -f >/dev/null 2>&1 || true
+    docker builder prune -f --filter until=168h >/dev/null 2>&1 || true
     docker tag $IMAGE:latest $IMAGE:rollback-$TS 2>/dev/null || true
     rm -f standalone/.env
     tar xzf /tmp/deploy.tgz
@@ -118,6 +128,10 @@ ssh "$SSH_HOST" 'set -e
         else printf "    %-42s ✗ 缺失\n" "$f"; fail=1; fi
     done
     docker stats --no-stream --format "    容器 {{.MemUsage}} CPU {{.CPUPerc}}" '"$CONTAINER"'
+    # 盘满会让下次 docker build 直接 ENOSPC(2026-08-01 踩过),提前报警
+    use=$(df --output=pcent / | tail -1 | tr -dc "0-9")
+    printf "    磁盘 %s%% 已用(剩 %s)\n" "$use" "$(df -h --output=avail / | tail -1 | tr -d " ")"
+    [ "$use" -ge 85 ] && echo "    ⚠ 磁盘超过 85%,清理:docker image prune -a -f / docker builder prune -f"
     exit $fail'
 
 echo "==> 6/6 完成。回滚:ssh $SSH_HOST 'docker rm -f $CONTAINER && docker tag $IMAGE:rollback-$TS $IMAGE:latest' 后重跑 run 命令"

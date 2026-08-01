@@ -273,6 +273,10 @@ ssh shadowsky 'grep -n "proxy_cache" /www/server/panel/vhost/nginx/shadowquake.t
   R2_KEEP_DAYS=90
   ```
   然后 `python3 tools/backup-offsite.py --check` 验证可写可删，`--list` 看远端列表。
+- **⚠ 磁盘**：镜像每个约 1.5GB，2026-08-01 攒到 18 个 rollback 把 40G 盘塞满（100%），
+  `docker build` 直接 `ENOSPC` 失败。现在 `deploy-v2.sh` 每次构建前只保留最近 3 个 rollback，
+  并在验证阶段打印磁盘占用、超过 85% 报警。手工清理：
+  `docker images shadowquake-v2` 挑旧 tag `docker rmi`，再 `docker builder prune -f`。
 - **回滚上一个版本**：每次 `deploy-v2.sh` 都会把旧镜像打成 `shadowquake-v2:rollback-<时间戳>`，
   `docker rm -f shadowsky-v2 && docker tag shadowquake-v2:rollback-<时间戳> shadowquake-v2:latest` 后重跑 run 命令。
 - **回到 v1**（2026-07-26 后已不是秒切）：先从 `_backups/v1-final-20260726-084131.tar.gz`
