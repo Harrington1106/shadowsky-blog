@@ -237,6 +237,21 @@ $env:AUTH_SECRET='dev'; $env:ADMIN_PASSWORD='devpass'; npm run dev
 不收紧的话，哪天在 Cloudflare 开个 "Cache Everything" 规则就会重演，
 而且更糟：旧 HTML 引用的 chunk 早已随部署删除，用户直接白屏。
 
+### 前端零跨境依赖（2026-08-01 起）
+
+源站压到 0.7s 后，页面真正的等待全在外部域名上（大陆实测）：`fonts.loli.net` TTFB 4.89s、
+`cdnjs.cloudflare.com` 3.66s、`images.unsplash.com` 整图下载 3.98–15.19s。已全部清除：
+
+| 原依赖 | 现在 | 维护方式 |
+|--------|------|----------|
+| 4 套 Google 字体 | **删除**（查证从未被使用，`--font-sans` 是系统栈） | 要上字体请用 `next/font` 自托管 |
+| cdnjs 的 hljs 主题 | 内联进 `app/hljs-theme.css`，按 `html.dark` 作用域 | `node scripts/gen-hljs-css.mjs` |
+| unsplash 封面 | 镜像到 `public/img/covers/*.webp`（文件名=URL 的 sha1，`immutable`） | `node scripts/mirror-covers.mjs` |
+| 分类默认图（已 404） | 本地星空兜底图 | `node scripts/gen-fallback-cover.mjs` |
+
+**新文章用了外链封面 → 部署前跑一次 `mirror-covers.mjs`**；不跑不会坏，只是那张图仍走外链。
+封面镜像同时作用于文章头图、列表缩略图和 og:image。
+
 ### Cloudflare 边缘缓存与清缓存（2026-08-01 起）
 
 Cache Rule「边缘缓存页面 HTML」+ Tiered Cache（Smart）已开启，页面 HTML 边缘缓 1 小时。

@@ -18,6 +18,12 @@
   渲染结果按文件 mtime 缓存，改文件即失效，别加固定 TTL（会破坏「发文即时可见」）
 - 后台接口一律套 `lib/requireAuth.js`；`/admin` 页面由 `middleware.js` 拦截
 - 图标用 `lucide-react` 组件，不用 CDN 版 Lucide
+- **不要引入任何跨境外部资源**（字体 CDN、cdnjs、图床外链）。大陆实测这些域名
+  TTFB 3.7–4.9s、图片下载能抖到 15s，比自家源站慢一个量级。已有的三条都已清除：
+  字体（本来就没用上，删了）、代码高亮主题（`scripts/gen-hljs-css.mjs` 内联）、
+  封面图（`scripts/mirror-covers.mjs` 镜像到 `public/img/covers/`）。
+  **新文章若用了外链封面，跑一次 `cd web && node scripts/mirror-covers.mjs` 再部署**，
+  不跑也不会坏，只是那张图仍走外链。
 - Server Component 优先，需要交互再 `'use client'`
 - **页面一律是「服务端 `page.js` + 同目录 `XxxContent.js`」**：`page.js` 只导出 `metadata`
   （或 `generateMetadata`）和一个渲染 `<XxxContent />` 的默认函数，交互逻辑全在 Content 里。
