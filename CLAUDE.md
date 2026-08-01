@@ -71,6 +71,9 @@ D:\Projects\shadowsky-blog\
 ├── web/                        ★ v2 全栈应用（几乎所有开发都在这里）
 │   ├── app/                    Next App Router
 │   │   ├── (页面) blog post moments bookmarks rss acg anime manga edits about
+│   │   │        每页两个文件：page.js（服务端，只出 metadata）
+│   │   │        + XxxContent.js（'use client'，实际 UI）
+│   │   ├── sitemap.js robots.js  /sitemap.xml（静态页+文章+日报，实时生成）与 /robots.txt
 │   │   ├── admin/              后台 UI（login posts moments bookmarks media feeds
 │   │   │                       videos social greetings notice settings stats）
 │   │   └── api/                Route Handlers（读写 API + 代理类 API）

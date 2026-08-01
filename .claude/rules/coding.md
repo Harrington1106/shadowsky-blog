@@ -17,6 +17,12 @@
 - 后台接口一律套 `lib/requireAuth.js`；`/admin` 页面由 `middleware.js` 拦截
 - 图标用 `lucide-react` 组件，不用 CDN 版 Lucide
 - Server Component 优先，需要交互再 `'use client'`
+- **页面一律是「服务端 `page.js` + 同目录 `XxxContent.js`」**：`page.js` 只导出 `metadata`
+  （或 `generateMetadata`）和一个渲染 `<XxxContent />` 的默认函数，交互逻辑全在 Content 里。
+  客户端组件不能导出 metadata —— 直接把 `'use client'` 写在 `page.js` 顶部会让整页丢标题、
+  描述和 OG 卡片。新增页面照抄 `app/blog/page.js`。
+- 站名/站点地址等常量从 `lib/site.js` 取，别在各处重写；新增公开页记得同步
+  `app/sitemap.js` 的 `STATIC_ROUTES`
 
 ### shadcn 统一规范（不要再手写这些）
 
