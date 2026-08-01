@@ -98,8 +98,10 @@ function ArticleRow({ post, refHash }) {
     );
 }
 
-export default function BlogPage() {
-    const [posts, setPosts] = useState([]);
+// initialPosts 由服务端 page.js 直接传进来(见那边的注释),所以首屏 HTML 里就有文章;
+// 只有拿不到时(比如 basePath 预览环境)才退回客户端拉一次。
+export default function BlogPage({ initialPosts = [] }) {
+    const [posts, setPosts] = useState(initialPosts);
     const [loadError, setLoadError] = useState(null);
     const [view, setView] = useState('grid');
     const [page, setPage] = useState(1);
@@ -119,7 +121,9 @@ export default function BlogPage() {
         applyHash();
         window.addEventListener('hashchange', applyHash);
 
-        fetchPosts().then(setPosts).catch((e) => setLoadError(e.message));
+        if (initialPosts.length === 0) {
+            fetchPosts().then(setPosts).catch((e) => setLoadError(e.message));
+        }
         return () => window.removeEventListener('hashchange', applyHash);
     }, []);
 
