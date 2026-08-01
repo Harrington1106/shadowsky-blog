@@ -159,13 +159,20 @@ export default function BlogPage() {
                     <div className="mt-5 mb-2 text-xs font-semibold text-muted-foreground uppercase">分类</div>
                     <div className="flex flex-col gap-1">
                         {cats.map(([cat, n]) => (
-                            <button
+                            // 这里原本是手写 <button> + 一串 class,与规范(统一用 shadcn Button)不符
+                            <Button
                                 key={cat}
+                                variant="ghost"
+                                size="sm"
                                 onClick={() => toggleCat(cat)}
-                                className={`flex items-center justify-between rounded-md px-2 py-1.5 text-left text-sm transition-colors ${activeCat === cat ? 'bg-accent font-semibold text-accent-foreground' : 'text-muted-foreground hover:bg-accent/50'}`}
+                                aria-pressed={activeCat === cat}
+                                className={cn(
+                                    'h-auto justify-between px-2 py-1.5 text-sm font-normal',
+                                    activeCat === cat ? 'bg-accent font-semibold text-accent-foreground' : 'text-muted-foreground'
+                                )}
                             >
                                 {cat}<span className="text-xs opacity-60">{n}</span>
-                            </button>
+                            </Button>
                         ))}
                     </div>
                     <div className="mt-5 mb-2 text-xs font-semibold text-muted-foreground uppercase">标签</div>

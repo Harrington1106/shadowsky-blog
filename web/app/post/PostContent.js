@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { ArrowLeft, Calendar, Folder, Clock, Eye, Edit3, List, X, Bot } from 'lucide-react';
+import { ArrowLeft, Calendar, Folder, Clock, Eye, Edit3, List, X, Bot, Share2, Check } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
@@ -166,11 +166,10 @@ export default function PostContent({ article, backRef }) {
                             <PostMetaRow meta={postMeta} visitCount={visitCount} />
                         </div>
                         <h1 className="text-2xl leading-tight font-extrabold tracking-tight sm:text-4xl">{title}</h1>
-                        {tags.length > 0 && (
-                            <div className="mt-4 flex flex-wrap gap-1.5">
-                                {tags.map((t) => <Badge key={t} variant="secondary">#{t}</Badge>)}
-                            </div>
-                        )}
+                        <div className="mt-4 flex flex-wrap items-center gap-1.5">
+                            {tags.map((t) => <Badge key={t} variant="secondary">#{t}</Badge>)}
+                            <ShareButton title={title} className={tags.length > 0 ? 'ml-1' : ''} />
+                        </div>
                     </div>
                 </header>
 
@@ -299,6 +298,37 @@ export default function PostContent({ article, backRef }) {
 
             <BackToTop />
         </>
+    );
+}
+
+/**
+ * 分享按钮。之前文章页没有任何分享入口 —— 想转发只能手动抄地址栏。
+ * 手机上走系统分享面板(navigator.share),桌面退回复制链接。
+ */
+function ShareButton({ title, className }) {
+    const [copied, setCopied] = useState(false);
+
+    async function onShare() {
+        const url = window.location.href;
+        if (navigator.share) {
+            try {
+                await navigator.share({ title, url });
+                return;
+            } catch {
+                // 用户取消分享,或系统不给用 —— 继续走复制
+            }
+        }
+        try {
+            await navigator.clipboard.writeText(url);
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
+        } catch { /* 剪贴板被拒就什么都不做,不弹错 */ }
+    }
+
+    return (
+        <Button variant="ghost" size="sm" onClick={onShare} className={cn('h-6 gap-1 px-2 text-xs text-muted-foreground', className)}>
+            {copied ? <><Check size={12} /> 已复制</> : <><Share2 size={12} /> 分享</>}
+        </Button>
     );
 }
 

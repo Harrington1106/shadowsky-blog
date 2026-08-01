@@ -18,10 +18,16 @@ export default function AcgPage() {
     const [videos, setVideos] = useState([]);
     const [favorites, setFavorites] = useState([]);
     const [modalVideo, setModalVideo] = useState(null);
+    // 之前四个区块都用 length===0 当"加载中",于是某类真的为空(或接口挂了)时
+    // 骨架屏永远转下去。两个请求各记一个 loaded 标记。
+    const [mediaLoaded, setMediaLoaded] = useState(false);
+    const [videosLoaded, setVideosLoaded] = useState(false);
 
     useEffect(() => {
-        fetchMedia().then(({ anime: a, manga: m }) => { setAnime(a); setManga(m); }).catch(() => {});
-        fetchVideos().then(({ videos: v, favorites: f }) => { setVideos(v); setFavorites(f); }).catch(() => {});
+        fetchMedia().then(({ anime: a, manga: m }) => { setAnime(a); setManga(m); })
+            .catch(() => {}).finally(() => setMediaLoaded(true));
+        fetchVideos().then(({ videos: v, favorites: f }) => { setVideos(v); setFavorites(f); })
+            .catch(() => {}).finally(() => setVideosLoaded(true));
     }, []);
 
     return (
@@ -34,19 +40,19 @@ export default function AcgPage() {
                 </header>
 
                 <Section title="我的追番" href="/anime">
-                    <MediaGrid items={anime} type="anime" />
+                    <MediaGrid items={anime} type="anime" loaded={mediaLoaded} empty="还没有追番记录" />
                 </Section>
 
                 <Section title="我的漫画" href="/manga">
-                    <MediaGrid items={manga} type="manga" />
+                    <MediaGrid items={manga} type="manga" loaded={mediaLoaded} empty="还没有漫画记录" />
                 </Section>
 
                 <Section title="最新剪辑" href="/edits">
-                    <VideoGrid videos={videos} onPlay={setModalVideo} />
+                    <VideoGrid videos={videos} onPlay={setModalVideo} loaded={videosLoaded} empty="还没有剪辑作品" />
                 </Section>
 
                 <Section title="收藏视频">
-                    <VideoGrid videos={favorites} onPlay={setModalVideo} limit={favorites.length || 3} />
+                    <VideoGrid videos={favorites} onPlay={setModalVideo} limit={favorites.length || 3} loaded={videosLoaded} empty="还没有收藏视频" />
                 </Section>
             </main>
 
@@ -74,13 +80,16 @@ function Section({ title, href, children }) {
     );
 }
 
-function MediaGrid({ items, type }) {
-    if (items.length === 0) {
+function MediaGrid({ items, type, loaded, empty }) {
+    if (!loaded) {
         return (
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-6">
                 {Array.from({ length: 6 }, (_, i) => <Skeleton key={i} className="aspect-2/3 w-full" />)}
             </div>
         );
+    }
+    if (items.length === 0) {
+        return <div className="py-10 text-center text-sm text-muted-foreground">{empty}</div>;
     }
     return (
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-6">
@@ -89,13 +98,16 @@ function MediaGrid({ items, type }) {
     );
 }
 
-function VideoGrid({ videos, onPlay, limit = 6 }) {
-    if (videos.length === 0) {
+function VideoGrid({ videos, onPlay, limit = 6, loaded, empty }) {
+    if (!loaded) {
         return (
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {Array.from({ length: 3 }, (_, i) => <Skeleton key={i} className="aspect-video w-full" />)}
             </div>
         );
+    }
+    if (videos.length === 0) {
+        return <div className="py-10 text-center text-sm text-muted-foreground">{empty}</div>;
     }
     return (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
