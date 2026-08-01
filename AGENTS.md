@@ -228,7 +228,7 @@ $env:AUTH_SECRET='dev'; $env:ADMIN_PASSWORD='devpass'; npm run dev
 
 | 内容 | 头 | 谁在缓存 |
 |------|-----|---------|
-| 页面 HTML | `max-age=0, s-maxage=60, stale-while-revalidate=86400` | CDN 最多 60 秒；浏览器每次校验 |
+| 页面 HTML | `max-age=0, s-maxage=3600, stale-while-revalidate=86400` | CDN 最多 1 小时；浏览器每次校验 |
 | `/_next/static/*` | `max-age=31536000, immutable` | 文件名带 hash，可以放心长缓存 |
 | `/api/*` | 不设 | 实时数据，不缓存 |
 
@@ -236,6 +236,27 @@ $env:AUTH_SECRET='dev'; $env:ADMIN_PASSWORD='devpass'; npm run dev
 `s-maxage=31536000`（共享缓存可存**一年**），正是它让 nginx 在部署后继续发旧 HTML。
 不收紧的话，哪天在 Cloudflare 开个 "Cache Everything" 规则就会重演，
 而且更糟：旧 HTML 引用的 chunk 早已随部署删除，用户直接白屏。
+
+### Cloudflare 边缘缓存与清缓存（2026-08-01 起）
+
+Cache Rule「边缘缓存页面 HTML」+ Tiered Cache（Smart）已开启，页面 HTML 边缘缓 1 小时。
+**TTL 敢拉长的前提是内容一变就清边缘**，三条路径都已接好，缺凭据时全部静默跳过：
+
+| 时机 | 清什么 | 代码 |
+|------|--------|------|
+| 部署后 | 全站 | `deploy-v2.sh` 换完容器即调用（旧 HTML 引用的 chunk 已删，不清会白屏） |
+| 后台改/删文章 | 该文 + `/` + `/blog` + `/sitemap.xml` | `web/lib/cfPurge.js`（挂在 `/api/posts` 的 PUT/DELETE） |
+| cron 出日报 | `/` `/blog` `/ai-daily/<date>` `/sitemap.xml` | `run-digest-v2.sh` |
+
+凭据：`/www/wwwroot/shadowquake-v2/tools/cf.env`（600，只有 `CF_ZONE_ID` + `CF_PURGE_TOKEN`，
+token 权限仅 `Zone → Cache Purge`）。容器不抄一份，`docker run` 再挂一个 `--env-file`。
+手工清：`ssh shadowsky 'bash /www/wwwroot/shadowquake-v2/tools/cf-purge.sh [/路径 …]'`
+
+只有 `/post/*` 与 `/ai-daily/*` 是服务端渲染正文，靠 purge 保新鲜；`/blog`、`/moments`、
+ACG 各页是壳 + 客户端读 `/api`（`/api` 从不缓存），壳缓 1 小时也不影响数据实时性。
+
+实测（大陆本机，全部命中后）：TTFB 0.66–1.53s，中位约 0.70s；改造前 0.82–3.3s。
+剩下的延迟是大陆↔LAX 那一跳，缓存已经无能为力。
 
 ### ⚠️ RSC 与边缘缓存（2026-08-01 踩过，出过线上事故）
 
