@@ -88,6 +88,8 @@ function ArticleRow({ post, refHash }) {
                 <h3 className="line-clamp-1 text-sm font-semibold">{post.title}</h3>
                 <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">{trimTitlePrefix(post.excerpt, post.title)}</p>
                 <div className="mt-2 flex flex-wrap items-center gap-1.5">
+                    {/* 左侧那列日期在 <sm 是隐藏的,窄屏原本一个日期都看不到 —— 这里补回来 */}
+                    <span className="font-mono text-[0.65rem] text-muted-foreground sm:hidden">{ys}/{ds}</span>
                     <Badge variant="secondary" className="text-[0.65rem]">{post.category || '笔记'}</Badge>
                     {tags.map((t) => <Badge key={t} variant="outline" className="text-[0.65rem]">#{t}</Badge>)}
                     <span className="text-[0.65rem] text-muted-foreground">{post.readTime || 5} min</span>
@@ -99,14 +101,16 @@ function ArticleRow({ post, refHash }) {
 
 // initialPosts 由服务端 page.js 直接传进来(见那边的注释),所以首屏 HTML 里就有文章;
 // 只有拿不到时(比如 basePath 预览环境)才退回客户端拉一次。
-export default function BlogPage({ initialPosts = [] }) {
+export default function BlogPage({ initialPosts = [], initialFilter = {} }) {
     const [posts, setPosts] = useState(initialPosts);
     const [loadError, setLoadError] = useState(null);
     const [view, setView] = useState('grid');
-    const [page, setPage] = useState(1);
-    const [activeCat, setActiveCat] = useState(null);
-    const [activeTag, setActiveTag] = useState(null);
-    const [search, setSearch] = useState('');
+    // 筛选状态由服务端从 query 解析好传进来(见 page.js),客户端不再挂载后补读 URL ——
+    // 否则分享出去的 ?tag=xxx 链接会先闪一屏无关文章。视图仍走 hash,服务端读不到。
+    const [page, setPage] = useState(initialFilter.page || 1);
+    const [activeCat, setActiveCat] = useState(initialFilter.cat || null);
+    const [activeTag, setActiveTag] = useState(initialFilter.tag || null);
+    const [search, setSearch] = useState(initialFilter.search || '');
     const [aiDailyIndex, setAiDailyIndex] = useState(null);
     const [aiDailyError, setAiDailyError] = useState(null);
 
@@ -122,17 +126,6 @@ export default function BlogPage({ initialPosts = [] }) {
         };
         applyHash();
         window.addEventListener('hashchange', applyHash);
-
-        // 从 URL 恢复筛选:之前搜完/筛完地址栏一点不变,结果分享不出去、刷新就丢
-        const sp = new URLSearchParams(window.location.search);
-        const q = sp.get('q');
-        const cat = sp.get('cat');
-        const tag = sp.get('tag');
-        const p = parseInt(sp.get('p') || '1', 10);
-        if (q) setSearch(q);
-        if (cat) setActiveCat(cat);
-        if (tag) setActiveTag(tag);
-        if (Number.isFinite(p) && p > 1) setPage(p);
         urlReady.current = true;
 
         if (initialPosts.length === 0) {
@@ -155,10 +148,15 @@ export default function BlogPage({ initialPosts = [] }) {
         window.history.replaceState(null, '', window.location.pathname + (qs ? `?${qs}` : '') + window.location.hash);
     }, [search, activeCat, activeTag, page]);
 
-    // 搜索词一变就回到第 1 页 —— 否则在第 2 页搜一个只有 3 条结果的词,会停在空白页
+    // 搜索词一变就回到第 1 页 —— 否则在第 2 页搜一个只有 3 条结果的词,会停在空白页。
+    //
+    // ⚠ 必须跳过挂载时那一次。effect 按声明顺序跑,上面那个已经把 urlReady 置 true,
+    //   于是这里会在挂载时立刻 setPage(1),把 ?p=2 带进来的页码盖掉 ——
+    //   「分享第 2 页的链接」以前一直是坏的,打开永远停在第 1 页。
+    const searchSettled = useRef(false);
     useEffect(() => {
-        if (urlReady.current) setPage(1);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+        if (!searchSettled.current) { searchSettled.current = true; return; }
+        setPage(1);
     }, [search]);
 
     useEffect(() => {
@@ -382,8 +380,9 @@ export default function BlogPage({ initialPosts = [] }) {
                       是全站总数、不跟着变 —— 用户不知道自己筛出了几条。
                       顺带给一个「清除」出口:原本只能再点一次那个已选中的分类才能取消。
                     */}
+                    {/* aria-live:筛选/搜索后条数是静默变化的,读屏用户完全不知道筛出了几条 */}
                     {hasFilter && (
-                        <div className="mb-4 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                        <div className="mb-4 flex flex-wrap items-center gap-2 text-xs text-muted-foreground" aria-live="polite">
                             <span>共 <strong className="text-foreground">
                                 {view === 'aidaily' ? (filteredAiDaily?.length ?? 0) : filteredPosts.length}
                             </strong> 篇</span>
@@ -599,7 +598,9 @@ function AiDailyView({ index, error, page, setPage, filtered }) {
                         <div className="min-w-0 flex-1">
                             <h3 className="line-clamp-1 text-sm font-semibold"><Badge className="mr-1.5 align-middle text-[0.6rem]">AI</Badge>{cleanTitle}</h3>
                             <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">{(d.summary || '').replace(/\*\*/g, '').replace(/🥇|🥈|🥉/g, '')}</p>
-                            <div className="mt-2">
+                            <div className="mt-2 flex flex-wrap items-center gap-1.5">
+                                {/* 同 ArticleRow:左列日期 <sm 隐藏,窄屏补一个行内日期 */}
+                                <span className="text-[0.65rem] text-muted-foreground sm:hidden">{md} {wd}</span>
                                 <Badge variant="secondary" className="text-[0.65rem]">{d.articleCount || '—'} 篇</Badge>
                             </div>
                         </div>
