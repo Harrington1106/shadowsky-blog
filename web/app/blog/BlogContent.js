@@ -20,6 +20,25 @@ import { postHref, aiDailyHref } from '@/lib/links';
 import { mirrorCover } from '@/lib/coverMirror';
 
 const PER_PAGE = 12;
+
+/**
+ * 可点的筛选胶囊（侧栏标签 / 窄屏筛选 / 标签云）的交互态。
+ *
+ * ⚠ 必须显式写 hover —— Badge 基类里 outline/secondary 的 hover 规则全是
+ * `[a]:hover:*`，只对渲染成 <a> 的 Badge 生效。这几处都是 render={<button>}，
+ * 于是鼠标划过去一条规则都不匹配，看着像死控件。
+ * 选中态（default variant，底色已经是 primary）不能套同一份，否则一悬停就变成
+ * accent 底 —— 看着像「已取消选中」，正好把状态说反。
+ */
+function chipInteractive(active) {
+    return cn(
+        'cursor-pointer transition-all duration-200 motion-safe:hover:-translate-y-px',
+        active
+            ? 'hover:bg-primary/85 hover:shadow-sm'
+            : 'hover:border-primary/50 hover:bg-accent hover:text-accent-foreground hover:shadow-sm'
+    );
+}
+
 const VIEWS = [
     { id: 'grid', label: '文章' },
     { id: 'directory', label: '目录' },
@@ -410,8 +429,8 @@ export default function BlogPage({ initialPosts = [], initialFilter = {} }) {
                             <Badge
                                 key={tag}
                                 variant={activeTag === tag ? 'default' : 'outline'}
-                                className="cursor-pointer"
-                                render={<button type="button" onClick={() => toggleTag(tag)} />}
+                                className={chipInteractive(activeTag === tag)}
+                                render={<button type="button" aria-pressed={activeTag === tag} onClick={() => toggleTag(tag)} />}
                             >
                                 {tag} <span className="opacity-60">{n}</span>
                             </Badge>
@@ -497,8 +516,8 @@ function MobileFilters({ cats, topTags, activeCat, activeTag, toggleCat, toggleT
                     <Badge
                         key={cat}
                         variant={activeCat === cat ? 'default' : 'outline'}
-                        className="cursor-pointer"
-                        render={<button type="button" onClick={() => toggleCat(cat)} />}
+                        className={chipInteractive(activeCat === cat)}
+                        render={<button type="button" aria-pressed={activeCat === cat} onClick={() => toggleCat(cat)} />}
                     >
                         {cat} <span className="opacity-60">{n}</span>
                     </Badge>
@@ -509,8 +528,8 @@ function MobileFilters({ cats, topTags, activeCat, activeTag, toggleCat, toggleT
                     <Badge
                         key={tag}
                         variant={activeTag === tag ? 'default' : 'outline'}
-                        className="cursor-pointer text-[0.7rem]"
-                        render={<button type="button" onClick={() => toggleTag(tag)} />}
+                        className={cn(chipInteractive(activeTag === tag), 'text-[0.7rem]')}
+                        render={<button type="button" aria-pressed={activeTag === tag} onClick={() => toggleTag(tag)} />}
                     >
                         {tag} <span className="opacity-60">{n}</span>
                     </Badge>
@@ -695,7 +714,7 @@ function TagsView({ posts, activeTag, onPick }) {
                           「文章多 = 标签大」这个唯一的视觉信息毁掉。
                           内边距用 em,让胶囊跟着字号一起缩放,而不是大字配小框。
                         */
-                        className="h-auto cursor-pointer py-0 leading-normal"
+                        className={cn('h-auto py-0 leading-normal', chipInteractive(activeTag === t))}
                         style={{ fontSize: `${size}rem`, padding: '0.3em 0.75em' }}
                         render={<button type="button" onClick={() => onPick(t)} />}
                     >
