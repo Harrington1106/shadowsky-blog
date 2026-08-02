@@ -200,6 +200,26 @@ html.dark .light-only { display: none !important; }
     .nav-glass::after { display: none; }
   }
 
+  /* ── 标签云：鼠标进入云区后其余标签淡出，只留指针下这一个 ──
+     每个 chip 的基础不透明度由 --chip-o 给出（按文章数，多的更实），
+     所以这里是在它之上再乘一个系数压暗，而不是写死一个值，
+     否则「文章多 = 标签实」这层信息在悬停时会被抹平。
+     用 :has 而不是 .tag-cloud:hover —— 后者在指针停在标签之间的空隙时
+     会把所有标签一起压暗、却没有任何一个被点亮。
+     不支持 :has 的浏览器整条规则失效，退回「无淡出」，不会坏。 */
+  .tag-cloud .tag-chip { opacity: var(--chip-o, 1); }
+  /* ⚠ 压暗规则必须用 :not() 把当前这个排除掉，不能靠后面再写一条 :hover 覆盖回来 ——
+     :has() 会把参数的特异性算进去，`.tag-cloud:has(.tag-chip:hover) .tag-chip` 是 (0,4,0)，
+     反而压过 `.tag-cloud .tag-chip:hover` 的 (0,3,0)，结果指针下那个也跟着变暗。 */
+  .tag-cloud:has(.tag-chip:hover) .tag-chip:not(:hover),
+  .tag-cloud:has(.tag-chip:focus-visible) .tag-chip:not(:focus-visible) {
+    opacity: calc(var(--chip-o, 1) * 0.45);
+  }
+  /* 指针/焦点下的那个反过来给到全实 —— 文章少的标签基础值只有 0.78，不提上来不够跳。
+     和第一条规则同为 (0,3,0)，靠书写顺序取胜；上面那条 :not 规则本就不匹配它，不冲突。 */
+  .tag-cloud .tag-chip:hover,
+  .tag-cloud .tag-chip:focus-visible { opacity: 1; }
+
   .code-header { position: absolute; top: 0; left: 0; right: 0; height: 2.6em; display: flex; align-items: center; justify-content: space-between; padding: 0 14px; background: var(--muted); border-bottom: 1px solid var(--border); z-index: 1; }
   .window-controls { display: flex; gap: 6px; }
   .window-dot { width: 9px; height: 9px; border-radius: 999px; }

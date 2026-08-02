@@ -22,11 +22,19 @@ import { mirrorCover } from '@/lib/coverMirror';
 const PER_PAGE = 12;
 
 /**
+ * 卡片行的交互态（文章列表与 AI 日报共用）。
+ * 原来只换一个底色 —— 12 行卡片紧挨着时几乎看不出鼠标停在哪一行。
+ * 现在多一层轻微抬起 + 投影，位移用 motion-safe 包住，尊重系统的「减少动态效果」。
+ */
+const rowInteractive = 'transition-all duration-200 hover:bg-accent/40 hover:ring-primary/40 '
+    + 'hover:shadow-lg hover:shadow-foreground/5 motion-safe:hover:-translate-y-0.5';
+
+/**
  * 可点的筛选胶囊（侧栏标签 / 窄屏筛选 / 标签云）的交互态。
  *
  * ⚠ 必须显式写 hover —— Badge 基类里 outline/secondary 的 hover 规则全是
  * `[a]:hover:*`，只对渲染成 <a> 的 Badge 生效。这几处都是 render={<button>}，
- * 于是鼠标划过去一条规则都不匹配，看着像死控件。
+ * 于是鼠标划过去完全没有反应，看着像死控件。
  * 选中态（default variant，底色已经是 primary）不能套同一份，否则一悬停就变成
  * accent 底 —— 看着像「已取消选中」，正好把状态说反。
  */
@@ -108,7 +116,7 @@ function ArticleRow({ post, refHash }) {
     // 新地址 /post/<slug> 本身不带 query,所以这里是 ?ref= 而不是 &ref=
     const ref = refHash ? `?ref=${encodeURIComponent(refHash)}` : '';
     return (
-        <a href={withBase(postHref(post.file) + ref)} className={cn(cardSurface, 'group/row flex gap-4 p-3 transition-colors hover:bg-accent/40 hover:ring-primary/40')}>
+        <a href={withBase(postHref(post.file) + ref)} className={cn(cardSurface, rowInteractive, 'group/row flex gap-4 p-3')}>
             {/* w-12(48px)装不下「12月28日」,会把最后那个「日」挤到第三行去。
                 加宽到 w-14 并 whitespace-nowrap,让日期永远一行。 */}
             <div className="hidden w-14 shrink-0 text-center font-mono text-xs whitespace-nowrap text-muted-foreground sm:block">
@@ -117,7 +125,9 @@ function ArticleRow({ post, refHash }) {
             </div>
             <Thumb post={post} />
             <div className="min-w-0 flex-1">
-                <h3 className="line-clamp-1 text-sm font-semibold">{post.title}</h3>
+                {/* 整行都是链接，但视觉上没有任何「这是链接」的信号；hover 时给标题描下划线。
+                    decoration-* 单独调细调淡，免得压过标题本身 */}
+                <h3 className="line-clamp-1 text-sm font-semibold decoration-foreground/30 decoration-1 underline-offset-2 group-hover/row:underline">{post.title}</h3>
                 <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">{trimTitlePrefix(post.excerpt, post.title)}</p>
                 <div className="mt-2 flex flex-wrap items-center gap-1.5">
                     {/* 左侧那列日期在 <sm 是隐藏的,窄屏原本一个日期都看不到 —— 这里补回来 */}
@@ -699,13 +709,17 @@ function TagsView({ posts, activeTag, onPick }) {
     if (sorted.length === 0) return <EmptyMsg>没有标签</EmptyMsg>;
     const max = sorted[0]?.[1] || 1;
     return (
-        <div className="flex flex-wrap gap-2 py-4">
+        // tag-cloud / tag-chip 这对类名有 CSS 撑腰(globals.css):鼠标进云后其余标签淡出。
+        // 纯 CSS 实现,不给 66 个标签各挂一个 mouseenter。
+        <div className="tag-cloud flex flex-wrap items-center gap-2 py-4">
             {sorted.map(([t, n]) => {
-                const size = 0.7 + (n / max) * 0.9;
+                const strength = n / max;                       // 0..1,这个标签有多"重"
+                const size = 0.7 + strength * 0.9;              // 字号:0.7rem ~ 1.6rem
+                const active = activeTag === t;
                 return (
                     <Badge
                         key={t}
-                        variant={activeTag === t ? 'default' : 'outline'}
+                        variant={active ? 'default' : 'outline'}
                         /*
                           h-auto / py-0 是必须的:Badge 基类写死了 h-5(20px)且 overflow-hidden,
                           它是给固定小尺寸设计的。标签云却按文章数把字号放大到 1.6rem ——
@@ -714,9 +728,23 @@ function TagsView({ posts, activeTag, onPick }) {
                           「文章多 = 标签大」这个唯一的视觉信息毁掉。
                           内边距用 em,让胶囊跟着字号一起缩放,而不是大字配小框。
                         */
-                        className={cn('h-auto py-0 leading-normal', chipInteractive(activeTag === t))}
-                        style={{ fontSize: `${size}rem`, padding: '0.3em 0.75em' }}
-                        render={<button type="button" onClick={() => onPick(t)} />}
+                        className={cn(
+                            'tag-chip h-auto py-0 leading-normal select-none',
+                            chipInteractive(active),
+                            // 单靠位移在大字号标签上看不出来,云里再加一点放大。
+                            // 用 transform 不动布局,邻居不会被推开。
+                            'motion-safe:hover:scale-105'
+                        )}
+                        style={{
+                            fontSize: `${size}rem`,
+                            padding: '0.3em 0.75em',
+                            // 字号之外再叠一层"实/虚"和字重,让文章多的标签一眼更突出。
+                            // --chip-o 同时是淡出效果的基准值,见 globals.css 的 .tag-cloud。
+                            '--chip-o': active ? 1 : (0.78 + strength * 0.22).toFixed(2),
+                            fontWeight: strength > 0.6 ? 600 : strength > 0.25 ? 500 : 400,
+                        }}
+                        title={`${t} · ${n} 篇文章`}
+                        render={<button type="button" aria-label={`标签 ${t}，${n} 篇文章`} onClick={() => onPick(t)} />}
                     >
                         {t} <span className="opacity-60">{n}</span>
                     </Badge>
@@ -751,16 +779,21 @@ function AiDailyView({ index, error, page, setPage, filtered, hrefFor }) {
                     .replace(/^(AI|📰)\s*[-—]?\s*/i, '')
                     .trim();
                 return (
-                    <a key={d.date} href={withBase(aiDailyHref(d.date))} className={cn(cardSurface, 'flex gap-4 p-3 transition-colors hover:ring-primary/40 hover:bg-accent/40')}>
+                    <a key={d.date} href={withBase(aiDailyHref(d.date))} className={cn(cardSurface, rowInteractive, 'group/row flex gap-4 p-3')}>
                         <div className="hidden w-14 shrink-0 text-center text-xs whitespace-nowrap text-muted-foreground sm:block">
                             <div className="font-medium text-foreground">{md}</div>
                             <div className="mt-0.5 opacity-70">{wd}</div>
                         </div>
-                        <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground">
+                        {/* 文章行的封面 hover 会放大,日报这列是固定图标 —— 让它跟着动一下,两个列表手感才一致 */}
+                        <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground transition-transform duration-300 motion-safe:group-hover/row:scale-105">
                             <Bot size={20} />
                         </div>
                         <div className="min-w-0 flex-1">
-                            <h3 className="line-clamp-1 text-sm font-semibold"><Badge className="mr-1.5 align-middle text-[0.6rem]">AI</Badge>{cleanTitle}</h3>
+                            {/* 下划线只加在标题文字上 —— 挂到 h3 会把前面那个「AI」药丸也划穿 */}
+                            <h3 className="line-clamp-1 text-sm font-semibold">
+                                <Badge className="mr-1.5 align-middle text-[0.6rem]">AI</Badge>
+                                <span className="decoration-foreground/30 decoration-1 underline-offset-2 group-hover/row:underline">{cleanTitle}</span>
+                            </h3>
                             <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">{(d.summary || '').replace(/\*\*/g, '').replace(/🥇|🥈|🥉/g, '')}</p>
                             <div className="mt-2 flex flex-wrap items-center gap-1.5">
                                 {/* 同 ArticleRow:左列日期 <sm 隐藏,窄屏补一个行内日期 */}
