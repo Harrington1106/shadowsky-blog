@@ -71,7 +71,20 @@ const nextConfig = {
                     // 另外只有 /post/* 与 /ai-daily/* 是服务端渲染正文;/blog、/moments、
                     // /bookmarks、ACG 各页都是壳 + 客户端读 /api(/api 从不缓存),
                     // 所以那些页面即使壳被缓存 1 小时,数据依然是实时的。
-                    { key: 'Cache-Control', value: 'public, max-age=0, s-maxage=3600, stale-while-revalidate=86400' },
+                    //
+                    // ⚠ 末尾的 no-transform 是用来挡 Cloudflare 注入 RUM beacon 的。
+                    //   免费版**默认**给你开 Real User Monitoring(Speed → Observatory,
+                    //   文档原话:"Free customers have RUM enabled automatically … can switch it off"),
+                    //   CF 会在 HTML 流过边缘时插一段
+                    //     <script src="https://static.cloudflareinsights.com/beacon.min.js" …>
+                    //   —— 我们源码里没有它,但每个访客都要多打一次美国域名,
+                    //   与「前端零跨境依赖」直接冲突。而且它只对像浏览器的请求注入
+                    //   (curl 默认 UA 看不到),所以扫源码、扫 SSR HTML 都发现不了,
+                    //   只有在真浏览器里看 network 才会露出来。
+                    //   CF 文档:响应带 no-transform 时边缘不会改写 payload,注入即失效。
+                    //   代价:同时关掉 CF 的 Polish/Mirage/Rocket Loader/HTML 压缩改写 ——
+                    //   这些我们本来就没用(图片是自己镜像的 webp)。gzip/br 传输压缩不受影响。
+                    { key: 'Cache-Control', value: 'public, max-age=0, s-maxage=3600, stale-while-revalidate=86400, no-transform' },
                 ],
             },
             {
