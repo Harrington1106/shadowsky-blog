@@ -26,7 +26,15 @@ import { renderMarkdown } from '../lib/renderMarkdown.js';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const WEB = path.join(__dirname, '..');
 const DRAFTS_DIR = process.env.DRAFTS_DIR || path.join(WEB, '..', 'content', 'drafts');
+const LOCAL_POSTS = path.join(WEB, '..', 'content', 'posts');
 const PORT = Number(process.env.PORT_UI || 4000);
+
+/**
+ * 站上是否已有同名文章 —— 决定这次是「新发」还是「更新」。
+ * 看的是本地镜像 content/posts（服务器内容的副本），够用：
+ * 它唯一的作用是给个提示，真正的覆盖判断在服务器那边。
+ */
+const alreadyLive = (file) => fs.existsSync(path.join(LOCAL_POSTS, path.basename(file)));
 
 // ─────────────── 预览样式 ───────────────
 
@@ -62,8 +70,15 @@ function listDrafts() {
         .filter((f) => f.endsWith('.md'))
         .map((f) => {
             const full = path.join(DRAFTS_DIR, f);
-            const { fm } = parseFrontMatter(fs.readFileSync(full, 'utf8'));
-            return { file: f, title: fm.title || f, mtime: fs.statSync(full).mtimeMs };
+            const raw = fs.readFileSync(full, 'utf8');
+            const { fm, body } = parseFrontMatter(raw);
+            return {
+                file: f,
+                title: fm.title || f,
+                mtime: fs.statSync(full).mtimeMs,
+                live: alreadyLive(f),
+                words: (body.match(/[一-龥]/g) || []).length,
+            };
         })
         .sort((a, b) => b.mtime - a.mtime);
 }
@@ -84,6 +99,7 @@ function inspect(file) {
         file,
         slug: path.basename(file).replace(/\.md$/, ''),
         mtime: fs.statSync(full).mtimeMs,
+        live: alreadyLive(file),
         meta: out,
         raw: fm,                       // 编辑表单要回填「作者原本写了什么」，不能拿自动值
         excerptAuto: !fm.excerpt,
@@ -129,21 +145,37 @@ const PAGE = (css) => `<!doctype html>
   * { box-sizing: border-box; }
   body { margin:0; font: 14px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
          background: var(--background); color: var(--foreground); }
-  .wrap { display:grid; grid-template-columns: 230px 1fr 310px; height:100vh; }
-  .col { overflow:auto; padding:16px; }
+  /* 三栏是固定宽度，窗口一窄（或浏览器缩放拉大）中间的预览栏就被挤成一条。
+     给个下限：宁可整体横向滚动，也不让预览塌掉 —— 预览塌了这个工具就没意义了。 */
+  .wrap { display:grid; grid-template-columns: 244px minmax(520px, 1fr) 320px; height:100vh; min-width:1084px; }
+  .col { overflow:auto; padding:16px; min-width:0; }
   .col + .col { border-left:1px solid var(--border); }
   .col:nth-child(2) > div { max-width: 724px; margin: 0 auto; }
+  /* 右栏改成「可滚动内容 + 吸底操作区」。
+     ⚠ 展开「改字段」后表单很长，操作区原来跟着被推到屏幕外 ——
+       最重要的按钮要滚动才找得到。现在它永远贴在底部。 */
+  .col.side { display:flex; flex-direction:column; overflow:hidden; padding-bottom:0; }
+  .side-scroll { flex:1; overflow:auto; min-height:0; margin:0 -16px; padding:0 16px; }
+  .side-foot { border-top:1px solid var(--border); margin:0 -16px; padding:12px 16px 16px;
+               background: var(--background); }
   .head { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
   h2 { font-size:11px; text-transform:uppercase; letter-spacing:.08em; color:var(--muted-foreground);
        margin:0; font-weight:600; }
   .mini { font-size:11px; padding:2px 8px; border-radius:6px; border:1px solid var(--border);
           background:transparent; color:var(--muted-foreground); cursor:pointer; }
   .mini:hover { background: var(--muted); color: var(--foreground); }
-  .draft { padding:9px 10px; border-radius:8px; cursor:pointer; border:1px solid transparent; }
+  .brand { font-size:13px; font-weight:700; letter-spacing:-.01em; margin-bottom:2px; }
+  .brand + p { color:var(--muted-foreground); font-size:11px; margin:0 0 16px; }
+  .draft { padding:10px 11px; border-radius:9px; cursor:pointer; border:1px solid transparent; margin-bottom:4px;
+           transition: background .15s, border-color .15s; }
   .draft:hover { background: var(--muted); }
   .draft.on { background: var(--muted); border-color: var(--border); }
-  .draft b { display:block; font-weight:600; font-size:13px; }
-  .draft span { color: var(--muted-foreground); font-size:11px; }
+  .draft b { display:block; font-weight:600; font-size:13px; line-height:1.4; margin-bottom:3px; }
+  .draft .sub { color: var(--muted-foreground); font-size:11px; display:flex; gap:6px; align-items:center; flex-wrap:wrap; }
+  .dot { width:5px; height:5px; border-radius:999px; background: var(--muted-foreground); opacity:.45; flex:none; }
+  .pill { font-size:10px; padding:1px 6px; border-radius:999px; border:1px solid var(--border); }
+  .pill.live { border-color: color-mix(in oklch, green 45%, transparent);
+               background: color-mix(in oklch, green 12%, transparent); }
   .empty { color: var(--muted-foreground); font-size:13px; padding:8px 0; }
   .row { display:flex; justify-content:space-between; gap:10px; padding:7px 0; border-bottom:1px solid var(--border); font-size:12px; }
   .row span:first-child { color: var(--muted-foreground); white-space:nowrap; flex:none; }
@@ -153,20 +185,39 @@ const PAGE = (css) => `<!doctype html>
   .warn { background: color-mix(in oklch, orange 14%, transparent); border:1px solid color-mix(in oklch, orange 40%, transparent);
           border-radius:8px; padding:9px 11px; font-size:12px; margin-bottom:10px; }
   .bad { background: color-mix(in oklch, red 14%, transparent); border-color: color-mix(in oklch, red 45%, transparent); }
-  input, textarea { width:100%; padding:6px 8px; margin:3px 0 8px; border-radius:6px; border:1px solid var(--border);
-                    background: var(--background); color: var(--foreground); font: inherit; font-size:12px; }
+  input, textarea { width:100%; padding:7px 9px; margin:3px 0 10px; border-radius:7px; border:1px solid var(--border);
+                    background: var(--background); color: var(--foreground); font: inherit; font-size:12px;
+                    outline:none; transition: border-color .15s, box-shadow .15s; }
+  input:focus, textarea:focus { border-color: var(--foreground);
+                                box-shadow: 0 0 0 3px color-mix(in oklch, var(--foreground) 12%, transparent); }
   textarea { resize:vertical; min-height:52px; }
   label { font-size:11px; color: var(--muted-foreground); }
+  /* 分区标题：状态 / 字段 / 操作三段，之前是一路平铺，什么都一样重 */
+  .sect { font-size:10px; text-transform:uppercase; letter-spacing:.09em; color:var(--muted-foreground);
+          margin:18px 0 6px; font-weight:600; }
+  .sect:first-child { margin-top:0; }
   button.act { width:100%; padding:9px; border-radius:8px; border:1px solid var(--border); background:var(--foreground);
                color:var(--background); font-size:13px; font-weight:600; cursor:pointer; margin-top:12px; }
   button.act.ghost { background:transparent; color:var(--foreground); font-weight:400; margin-top:7px; }
   button.act:disabled { opacity:.45; cursor:not-allowed; }
   pre.log { background: var(--muted); border:1px solid var(--border); border-radius:8px; padding:10px;
             font-size:11px; line-height:1.5; white-space:pre-wrap; max-height:34vh; overflow:auto; margin-top:12px; }
+  .cover { height:170px; border-radius:12px; background-size:cover; background-position:center;
+           margin-bottom:18px; border:1px solid var(--border); }
+  .cover.nocover { display:flex; align-items:center; justify-content:center; height:76px;
+                   color:var(--muted-foreground); font-size:12px; background:var(--muted); }
   .hero { font-size:22px; font-weight:800; letter-spacing:-.01em; margin:0 0 4px; }
   .herometa { color:var(--muted-foreground); font-size:12px; margin-bottom:22px; padding-bottom:14px; border-bottom:1px solid var(--border); }
-  details.edit { margin-top:12px; border-top:1px solid var(--border); padding-top:10px; }
-  details.edit summary { font-size:11px; color:var(--muted-foreground); cursor:pointer; text-transform:uppercase; letter-spacing:.08em; }
+  details.edit { margin-top:10px; }
+  details.edit summary, details.imgs summary { font-size:11px; color:var(--muted-foreground); cursor:pointer; padding:5px 0; }
+  details.edit summary:hover, details.imgs summary:hover { color: var(--foreground); }
+  .url { font-size:10px; color:var(--muted-foreground); word-break:break-all; padding:3px 0; }
+  .excerpt { font-size:12px; color:var(--muted-foreground); padding:7px 0 2px; line-height:1.65; }
+  /* 三个次要动作并排，省掉两行高度，也把「删除」压得比发布轻 */
+  .foot-row { display:flex; gap:6px; }
+  .foot-row .act { margin-top:7px; font-size:12px; padding:7px 4px; }
+  .act.danger { color: color-mix(in oklch, red 65%, var(--foreground)); }
+  .act.danger:hover { border-color: color-mix(in oklch, red 50%, transparent); }
   .flash { position:fixed; right:14px; bottom:14px; background:var(--foreground); color:var(--background);
            padding:7px 13px; border-radius:8px; font-size:12px; opacity:0; transition:opacity .2s; pointer-events:none; }
   .flash.on { opacity:1; }
@@ -174,6 +225,8 @@ const PAGE = (css) => `<!doctype html>
 <body>
 <div class="wrap">
   <div class="col">
+    <div class="brand">发布台</div>
+    <p>写作在 Obsidian，这里只管发布</p>
     <div class="head"><h2>草稿</h2>
       <div><button class="mini" id="newBtn">+ 新建</button></div>
     </div>
@@ -191,8 +244,10 @@ const PAGE = (css) => `<!doctype html>
     <div class="head"><h2>预览</h2><button class="mini" id="theme">深色</button></div>
     <div id="preview"><p class="empty">左边选一篇。</p></div>
   </div>
-  <div class="col">
-    <h2>发布信息</h2><div id="side"><p class="empty">—</p></div>
+  <div class="col side">
+    <h2 style="margin-bottom:10px">发布信息</h2>
+    <div class="side-scroll" id="side"><p class="empty">—</p></div>
+    <div class="side-foot" id="foot"></div>
   </div>
 </div>
 <div class="flash" id="flash"></div>
@@ -216,8 +271,21 @@ $('theme').onclick = () => applyTheme(!document.documentElement.classList.contai
 // ── 草稿列表 ──
 async function loadDrafts() {
     const list = await (await fetch('/api/drafts')).json();
+    const ago = (ms) => {
+        const m = Math.floor((Date.now() - ms) / 60000);
+        if (m < 1) return '刚刚';
+        if (m < 60) return m + ' 分钟前';
+        const h = Math.floor(m / 60);
+        return h < 24 ? h + ' 小时前' : Math.floor(h / 24) + ' 天前';
+    };
     $('drafts').innerHTML = list.length ? list.map(d =>
-        \`<div class="draft" data-f="\${esc(d.file)}"><b>\${esc(d.title)}</b><span>\${esc(d.file)}</span></div>\`
+        \`<div class="draft" data-f="\${esc(d.file)}">
+           <b>\${esc(d.title)}</b>
+           <div class="sub">
+             <span>\${ago(d.mtime)}</span><i class="dot"></i><span>\${d.words} 字</span>
+             \${d.live ? '<i class="pill live">站上已有</i>' : '<i class="pill">新文章</i>'}
+           </div>
+         </div>\`
     ).join('') : '<p class="empty">还没有草稿，点右上角新建。</p>';
     document.querySelectorAll('.draft').forEach(el => {
         el.onclick = () => select(el.dataset.f);
@@ -238,8 +306,14 @@ async function select(file, keepScroll) {
 
     const col = document.querySelectorAll('.col')[1];
     const keep = keepScroll ? col.scrollTop : 0;
+    // 站点文章页顶部是一整块 hero 封面，预览里原来完全没有 ——
+    // 刚用 PicList 配好的封面看不到，等于这一步白配。
+    const cover = d.meta.coverImage
+        ? \`<div class="cover" style="background-image:url('\${esc(d.meta.coverImage)}')"></div>\`
+        : '<div class="cover nocover">未设封面 · 线上会用分类默认图</div>';
     $('preview').innerHTML =
-        \`<div class="hero">\${esc(d.meta.title)}</div>
+        \`\${cover}
+         <div class="hero">\${esc(d.meta.title)}</div>
          <div class="herometa">\${esc(d.meta.date)} · \${esc(d.meta.category)} · \${d.meta.readTime} 分钟阅读</div>
          <div class="post-prose">\${d.html}</div>\`;
     col.scrollTop = keep;
@@ -250,16 +324,21 @@ async function select(file, keepScroll) {
     if (!d.meta.excerpt) warn.push('<div class="warn">没能自动抽出摘要，在下面「改字段」里补一句。</div>');
 
     $('side').innerHTML = warn.join('') + \`
+      <div class="sect">这次发布</div>
+      <div class="row"><span>动作</span><span>\${d.live ? '更新站上已有的文章' : '新发一篇'}</span></div>
       <div class="row"><span>地址</span><span>/post/\${esc(d.slug)}</span></div>
-      <div class="row"><span>阅读时长</span><span>\${d.meta.readTime} 分钟<span class="auto">自动</span></span></div>
-      <div class="row"><span>最后修改</span><span>\${esc(d.meta.lastModified)}<span class="auto">自动</span></span></div>
+      <div class="row"><span>待镜像图片</span><span>\${d.images.length ? d.images.length + ' 张' : '无跨境图片 ✓'}</span></div>
+      \${d.images.length ? \`<details class="imgs"><summary>看图片地址</summary>\${d.images.map(u => \`<div class="url">\${esc(u)}</div>\`).join('')}</details>\` : ''}
+
+      <div class="sect">自动算的</div>
+      <div class="row"><span>阅读时长</span><span>\${d.meta.readTime} 分钟</span></div>
+      <div class="row"><span>最后修改</span><span>\${esc(d.meta.lastModified)}</span></div>
+      <div class="row"><span>摘要</span><span>\${d.excerptAuto ? '自动抽取' : '你写的'}</span></div>
+      <div class="excerpt">\${esc(d.meta.excerpt) || '（空）'}</div>
+
+      <div class="sect">字段</div>
       <div class="row"><span>分类</span><span>\${esc(d.meta.category)}</span></div>
       <div class="row"><span>标签</span><span>\${(d.meta.tags||[]).map(t=>\`<i class="tag">\${esc(t)}</i>\`).join('')}</span></div>
-      <div class="row"><span>摘要\${d.excerptAuto?'<span class="auto">自动</span>':''}</span><span></span></div>
-      <div style="font-size:12px;color:var(--muted-foreground);padding:6px 0 10px">\${esc(d.meta.excerpt) || '（空）'}</div>
-      <div class="row"><span>待镜像图片</span><span>\${d.images.length ? d.images.length + ' 张' : '无跨境图片 ✓'}</span></div>
-      \${d.images.map(u => \`<div style="font-size:10px;color:var(--muted-foreground);word-break:break-all;padding:3px 0">\${esc(u)}</div>\`).join('')}
-
       <details class="edit"><summary>改字段</summary>
         <label>标题</label><input id="eTitle" value="\${esc(d.raw.title||'')}">
         <label>分类</label><input id="eCat" value="\${esc(d.raw.category||'')}">
@@ -268,13 +347,17 @@ async function select(file, keepScroll) {
         <label>摘要（留空=自动抽）</label><textarea id="eExcerpt">\${esc(d.raw.excerpt||'')}</textarea>
         <button class="act ghost" id="eSave">保存到草稿文件</button>
       </details>
-
-      \${d.duplicateH1 ? '<label style="display:block;font-size:12px;margin-top:10px"><input type="checkbox" id="striph1" checked> 发布时删掉重复的 H1</label>' : ''}
-      \${d.images.length ? '<button class="act ghost" id="chk">先试抓一遍图片</button>' : ''}
-      <button class="act" id="pub" \${d.problems.length ? 'disabled' : ''}>发布到线上</button>
-      <button class="act ghost" id="prev">本地预览（写入 content/posts）</button>
-      <button class="act ghost" id="del" style="color:var(--muted-foreground)">删除这篇草稿</button>
       <pre class="log" id="log" style="display:none"></pre>\`;
+
+    // 操作区吸底，永远看得见（展开改字段后也不会被推走）
+    $('foot').innerHTML = \`
+      \${d.duplicateH1 ? '<label style="display:block;font-size:12px;margin-bottom:8px"><input type="checkbox" id="striph1" checked style="width:auto;margin:0 5px 0 0"> 发布时删掉重复的 H1</label>' : ''}
+      <button class="act" id="pub" \${d.problems.length ? 'disabled' : ''}>\${d.live ? '更新线上文章' : '发布到线上'}</button>
+      <div class="foot-row">
+        \${d.images.length ? '<button class="act ghost" id="chk">试抓图片</button>' : ''}
+        <button class="act ghost" id="prev">本地预览</button>
+        <button class="act ghost danger" id="del">删除</button>
+      </div>\`;
 
     // 发布是对外动作、而且立刻公开，不该一次点击就发生。
     // 用行内二次确认而不是 confirm() 弹窗：弹窗会挡住后面的日志，也没法带上下文。
@@ -282,13 +365,14 @@ async function select(file, keepScroll) {
     $('pub').onclick = () => {
         if (!armed) {
             armed = true;
-            $('pub').textContent = \`确认发布到 shadowquake.top/post/\${d.slug}\`;
+            const label = d.live ? '更新线上文章' : '发布到线上';
+            $('pub').textContent = \`确认\${d.live ? '覆盖' : '发布'} shadowquake.top/post/\${d.slug}\`;
             $('pub').style.background = 'crimson';
             $('pub').style.color = '#fff';
             setTimeout(() => {   // 5 秒不点就复位，免得下次误触
                 if (!armed) return;
                 armed = false;
-                $('pub').textContent = '发布到线上';
+                $('pub').textContent = label;
                 $('pub').style.background = ''; $('pub').style.color = '';
             }, 5000);
             return;
