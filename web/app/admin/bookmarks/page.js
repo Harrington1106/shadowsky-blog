@@ -2,24 +2,47 @@
 
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
-import { Plus, Pencil, Trash2, ExternalLink, Wand2, Languages } from 'lucide-react';
+import { Plus, Pencil, Trash2, ExternalLink, Wand2, Languages, FolderTree } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Card } from '@/components/ui/card';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useConfirm } from '@/components/useConfirm';
 import { apiGet, apiCreate, apiUpdate, apiDelete } from '@/lib/adminApi';
 import { aiGuessTitleDesc, aiTranslate, hasAiKey } from '@/lib/aiClient';
 import AdminHeader from '@/components/admin/AdminHeader';
+import BookmarkCategoryDialog from '@/components/admin/BookmarkCategoryDialog';
 
 const EMPTY = { url: '', title: '', category: '', subcategory: '', tags: '', description: '' };
 
+const NONE = '__none__'; // base-ui 的 Select 不接受空字符串作为选项值
+
+/**
+ * 拼下拉选项:已登记的分类 + 当前这条收藏用的老 slug(可能没登记过,不能让它在编辑时丢掉)。
+ *
+ * 起过中文名的就只显示中文名 —— 弹层宽度锁死等于触发器宽度(components/ui/select.jsx
+ * 的 w-(--anchor-width)),再拼上 slug 会被截断成半个词。slug 对应关系在分类管理里看。
+ */
+function buildOptions(entries, current) {
+    const opts = [{ value: NONE, label: '— 不分类 —' }];
+    for (const [slug, name] of entries) {
+        opts.push({ value: slug, label: name || slug });
+    }
+    if (current && !entries.some(([slug]) => slug === current)) {
+        opts.push({ value: current, label: `${current}(未登记)` });
+    }
+    return opts;
+}
+
 export default function BookmarksAdmin() {
     const [items, setItems] = useState([]);
+    const [categories, setCategories] = useState({});
     const [open, setOpen] = useState(false);
+    const [catOpen, setCatOpen] = useState(false);
     const [form, setForm] = useState(EMPTY);
     const [editing, setEditing] = useState(null);
     const [saving, setSaving] = useState(false);
@@ -28,10 +51,23 @@ export default function BookmarksAdmin() {
     const [confirm, confirmDialog] = useConfirm();
 
     async function load() {
-        try { setItems((await apiGet('/api/bookmarks')).bookmarks); }
-        catch (e) { toast.error(e.message); }
+        try {
+            const data = await apiGet('/api/bookmarks');
+            setItems(data.bookmarks);
+            setCategories(data.categories || {});
+        } catch (e) { toast.error(e.message); }
     }
     useEffect(() => { load(); }, []);
+
+    // 下拉选项:分类来自 categories,子分类跟着当前选中的分类走
+    const catOptions = buildOptions(
+        Object.entries(categories).map(([slug, c]) => [slug, c.name]),
+        form.category,
+    );
+    const subOptions = buildOptions(
+        Object.entries(categories[form.category]?.subcategories || {}),
+        form.subcategory,
+    );
 
     // 自动获取标题+简介:先服务端抓网页元信息,抓不到再用 AI 按域名推测
     async function autoFetch() {
@@ -93,7 +129,14 @@ export default function BookmarksAdmin() {
     return (
         <div className="mx-auto max-w-5xl px-8 py-10">
             {confirmDialog}
-            <AdminHeader title="收藏管理" count={items.length} action={<Button size="sm" onClick={openNew}><Plus className="size-4" /> 新增</Button>} />
+            <AdminHeader title="收藏管理" count={items.length} action={
+                <div className="flex gap-2">
+                    <Button size="sm" variant="outline" onClick={() => setCatOpen(true)}><FolderTree className="size-4" /> 分类管理</Button>
+                    <Button size="sm" onClick={openNew}><Plus className="size-4" /> 新增</Button>
+                </div>
+            } />
+
+            <BookmarkCategoryDialog open={catOpen} onOpenChange={setCatOpen} onSaved={load} />
 
             <Card className="mt-6 overflow-hidden py-0">
                 <Table>
@@ -114,7 +157,10 @@ export default function BookmarksAdmin() {
                                         <ExternalLink className="size-3 shrink-0" />{b.url}
                                     </a>
                                 </TableCell>
-                                <TableCell className="text-muted-foreground">{b.category || '—'}{b.subcategory ? ` / ${b.subcategory}` : ''}</TableCell>
+                                <TableCell className="text-muted-foreground">
+                                    {categories[b.category]?.name || b.category || '—'}
+                                    {b.subcategory ? ` / ${categories[b.category]?.subcategories?.[b.subcategory] || b.subcategory}` : ''}
+                                </TableCell>
                                 <TableCell>
                                     <div className="flex flex-wrap gap-1">
                                         {(b.tags || []).slice(0, 3).map((t) => <Badge key={t} variant="outline" className="text-[0.65rem]">{t}</Badge>)}
@@ -147,8 +193,21 @@ export default function BookmarksAdmin() {
                         </div>
                         <Input placeholder="标题 *" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} />
                         <div className="grid grid-cols-2 gap-3">
-                            <Input placeholder="分类 slug" value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} />
-                            <Input placeholder="子分类 slug" value={form.subcategory} onChange={(e) => setForm({ ...form, subcategory: e.target.value })} />
+                            {/* 换分类时清掉子分类 —— 子分类是挂在分类下面的,留着就成了跨分类的孤儿 slug */}
+                            <Select items={catOptions} value={form.category || NONE}
+                                onValueChange={(v) => setForm({ ...form, category: v === NONE ? '' : v, subcategory: '' })}>
+                                <SelectTrigger><SelectValue placeholder="分类" /></SelectTrigger>
+                                <SelectContent>
+                                    {catOptions.map((o) => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}
+                                </SelectContent>
+                            </Select>
+                            <Select items={subOptions} value={form.subcategory || NONE}
+                                onValueChange={(v) => setForm({ ...form, subcategory: v === NONE ? '' : v })}>
+                                <SelectTrigger><SelectValue placeholder="子分类" /></SelectTrigger>
+                                <SelectContent>
+                                    {subOptions.map((o) => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}
+                                </SelectContent>
+                            </Select>
                         </div>
                         <Input placeholder="标签(逗号分隔)" value={form.tags} onChange={(e) => setForm({ ...form, tags: e.target.value })} />
                         <div className="relative">
