@@ -165,17 +165,23 @@ export default function BlogPage({ initialPosts = [], initialFilter = {} }) {
         }
     }, [view, aiDailyIndex]);
 
-    const { cats, topTags } = useMemo(() => {
-        const c = {};
-        const t = {};
+    const { cats, topTags, tagTotal } = useMemo(() => {
+        const c = Object.create(null);
+        const t = Object.create(null);
         posts.forEach((p) => {
             const cat = p.category || '其他';
             c[cat] = (c[cat] || 0) + 1;
             (p.tags || []).forEach((tag) => { t[tag] = (t[tag] || 0) + 1; });
         });
+        const allTags = Object.entries(t).sort((a, b) => b[1] - a[1]);
         return {
             cats: Object.entries(c),
-            topTags: Object.entries(t).sort((a, b) => b[1] - a[1]).slice(0, 15),
+            // 侧栏只放得下前 15 个,但**总数必须单独算** ——
+            // 原来统计那行写的是 topTags.length,而 topTags 是截断后的,
+            // 于是不管站上有多少标签都永远显示「15 个标签」,
+            // 而标签云(全量)显示 66,两个数字自相矛盾。
+            topTags: allTags.slice(0, 15),
+            tagTotal: allTags.length,
         };
     }, [posts]);
 
@@ -298,7 +304,7 @@ export default function BlogPage({ initialPosts = [], initialFilter = {} }) {
                     <div className="mt-4 flex flex-wrap gap-x-4 gap-y-1.5 text-xs text-muted-foreground lg:block lg:space-y-1.5">
                         <div className="flex items-center gap-1.5"><FileText size={13} className="opacity-50" /><strong className="text-foreground">{posts.length}</strong> 篇文章</div>
                         <div className="flex items-center gap-1.5"><FolderTree size={13} className="opacity-50" /><strong className="text-foreground">{cats.length}</strong> 个分类</div>
-                        <div className="flex items-center gap-1.5"><Tags size={13} className="opacity-50" /><strong className="text-foreground">{topTags.length}</strong> 个标签</div>
+                        <div className="flex items-center gap-1.5"><Tags size={13} className="opacity-50" /><strong className="text-foreground">{tagTotal}</strong> 个标签</div>
                     </div>
 
                     {/* 订阅入口。/feed.xml 早就有了,但只写在 <head> 的 <link rel=alternate> 里 ——
@@ -353,7 +359,21 @@ export default function BlogPage({ initialPosts = [], initialFilter = {} }) {
                             </Button>
                         ))}
                     </div>
-                    <div className="mt-5 mb-2 hidden text-xs font-semibold text-muted-foreground uppercase lg:block">标签</div>
+                    {/* 这里只有前 15 个,标题必须说清楚,否则和统计里的 66 看着像矛盾;
+                        剩下的 51 个在标签云里,给个直达入口 */}
+                    <div className="mt-5 mb-2 hidden items-center justify-between text-xs font-semibold text-muted-foreground uppercase lg:flex">
+                        <span>常用标签</span>
+                        {tagTotal > topTags.length && (
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => switchView('tags')}
+                                className="h-auto px-1.5 py-0.5 text-[0.65rem] font-normal normal-case"
+                            >
+                                全部 {tagTotal}
+                            </Button>
+                        )}
+                    </div>
                     <div className="hidden flex-wrap gap-1.5 lg:flex">
                         {topTags.map(([tag, n]) => (
                             <Badge
