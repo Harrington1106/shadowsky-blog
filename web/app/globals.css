@@ -118,6 +118,15 @@
   * {
     @apply border-border outline-ring/50;
   }
+  /*
+    永远给滚动条留位置。否则内容一变短(筛选、切视图、翻页到最后一页)滚动条就消失,
+    文档宽度突然多出 15px,所有居中元素——包括顶部导航栏——集体右移半个滚动条宽度。
+    实测:/blog 从 12 篇筛到 1 篇时,导航栏跳了 7px。
+    scrollbar-gutter 现代浏览器都支持;老浏览器忽略它,只是回到原来的行为,不会坏。
+  */
+  html {
+    scrollbar-gutter: stable;
+  }
   body {
     @apply bg-background text-foreground;
   }
