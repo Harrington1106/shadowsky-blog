@@ -12,13 +12,14 @@
  * 只监听 127.0.0.1，不对外。所有真正的动作都转交 publish-post.mjs 执行。
  */
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import http from 'node:http';
 import { spawn, execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import {
     parseFrontMatter, buildFrontMatter, computeExcerpt, computeReadTime,
-    collectImageUrls, validate, duplicateH1,
+    collectImageUrls, validate, duplicateH1, mirrorImage,
 } from './lib/post-meta.mjs';
 import { renderMarkdown } from '../lib/renderMarkdown.js';
 
@@ -269,13 +270,70 @@ async function select(file, keepScroll) {
       </details>
 
       \${d.duplicateH1 ? '<label style="display:block;font-size:12px;margin-top:10px"><input type="checkbox" id="striph1" checked> 发布时删掉重复的 H1</label>' : ''}
+      \${d.images.length ? '<button class="act ghost" id="chk">先试抓一遍图片</button>' : ''}
       <button class="act" id="pub" \${d.problems.length ? 'disabled' : ''}>发布到线上</button>
       <button class="act ghost" id="prev">本地预览（写入 content/posts）</button>
+      <button class="act ghost" id="del" style="color:var(--muted-foreground)">删除这篇草稿</button>
       <pre class="log" id="log" style="display:none"></pre>\`;
 
-    $('pub').onclick = () => act('publish');
+    // 发布是对外动作、而且立刻公开，不该一次点击就发生。
+    // 用行内二次确认而不是 confirm() 弹窗：弹窗会挡住后面的日志，也没法带上下文。
+    let armed = false;
+    $('pub').onclick = () => {
+        if (!armed) {
+            armed = true;
+            $('pub').textContent = \`确认发布到 shadowquake.top/post/\${d.slug}\`;
+            $('pub').style.background = 'crimson';
+            $('pub').style.color = '#fff';
+            setTimeout(() => {   // 5 秒不点就复位，免得下次误触
+                if (!armed) return;
+                armed = false;
+                $('pub').textContent = '发布到线上';
+                $('pub').style.background = ''; $('pub').style.color = '';
+            }, 5000);
+            return;
+        }
+        armed = false;
+        act('publish');
+    };
     $('prev').onclick = () => act('preview');
     $('eSave').onclick = saveMeta;
+    if ($('chk')) $('chk').onclick = checkImages;
+
+    // 删除同样两步
+    let delArmed = false;
+    $('del').onclick = async () => {
+        if (!delArmed) {
+            delArmed = true;
+            $('del').textContent = '真的删除？再点一次';
+            setTimeout(() => { delArmed = false; $('del').textContent = '删除这篇草稿'; }, 5000);
+            return;
+        }
+        await fetch('/api/delete', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ file: cur }) });
+        cur = null;
+        $('side').innerHTML = '<p class="empty">—</p>';
+        $('preview').innerHTML = '<p class="empty">左边选一篇。</p>';
+        await loadDrafts();
+        flash('草稿已删除');
+    };
+}
+
+/**
+ * 试抓图片。
+ * 镜像失败现在会中止发布（见 publish-post.mjs），但那是点了发布之后才知道 ——
+ * 跨境图床要不要走代理是环境问题，值得提前一步试出来。
+ */
+async function checkImages() {
+    const btn = $('chk');
+    btn.disabled = true; btn.textContent = '抓取中…';
+    const r = await (await fetch('/api/check-images?file=' + encodeURIComponent(cur))).json();
+    btn.disabled = false;
+    const bad = r.filter(x => !x.ok);
+    btn.textContent = bad.length ? \`\${bad.length}/\${r.length} 张抓不到\` : \`\${r.length} 张都能抓 ✓\`;
+    const log = $('log');
+    log.style.display = 'block';
+    log.textContent = r.map(x => (x.ok ? '✓ ' : '✗ ') + x.url + (x.ok ? \`  (\${x.kb}KB)\` : \`\\n    \${x.msg}\`)).join('\\n')
+        + (bad.length ? '\\n\\n跨境图床多半要过代理。关掉发布台，带上代理再启动：\\n  HTTPS_PROXY=http://127.0.0.1:7890 npm run post:ui' : '');
 }
 
 // ── 改 frontmatter ──
@@ -373,6 +431,29 @@ const server = http.createServer(async (req, res) => {
         }
         if (url.pathname === '/api/drafts') return json(res, listDrafts());
         if (url.pathname === '/api/inspect') return json(res, inspect(url.searchParams.get('file') || ''));
+
+        // 试抓：用和发布时同一条路径（curl，会读 HTTPS_PROXY），才测得准
+        if (url.pathname === '/api/check-images') {
+            const d = inspect(url.searchParams.get('file') || '');
+            const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'sq-check-'));
+            const out = [];
+            for (const u of d.images) {
+                try {
+                    const r = await mirrorImage(u, tmp);
+                    out.push({ url: u, ok: true, kb: Math.round(r.bytes / 1024) });
+                } catch (e) {
+                    out.push({ url: u, ok: false, msg: String(e.message).split('\n')[0] });
+                }
+            }
+            fs.rmSync(tmp, { recursive: true, force: true });
+            return json(res, out);
+        }
+
+        if (url.pathname === '/api/delete' && req.method === 'POST') {
+            const b = await readBody(req);
+            fs.unlinkSync(draftPath(b.file));
+            return json(res, { ok: true });
+        }
 
         if (url.pathname === '/api/meta' && req.method === 'POST') {
             const b = await readBody(req);

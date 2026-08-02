@@ -6,6 +6,9 @@ node scripts/publish-post.mjs <文件名> --dry-run   # 先看会做什么
 node scripts/publish-post.mjs <文件名>             # 确认后真发
 ```
 
+用户想看着排版决定发不发时，让他跑 `npm run post:ui`（本地发布台，网页界面，
+可深浅色预览、改 frontmatter、试抓图片、两步确认发布）。
+
 **发文章不需要部署**。文章正文在挂载卷里（`content/posts`），不在 Docker 镜像里；
 `lib/posts.js` 的索引只缓存 30s，正文按文件 mtime 失效。所以**不要**跑 `deploy-v2.sh`，
 那是改了 `web/` 代码才需要的。
@@ -19,6 +22,8 @@ scp 到服务器 → 清 CF 缓存 → 验证线上 200。
 - `--strip-h1` 删掉正文里与标题重复的 H1（页面顶部已有大标题）
 - `--keep-remote-images` 不镜像图片，自担跨境代价
 
-跨境图床在大陆多半要过代理，下载失败时提示用户带上 `HTTPS_PROXY` 重跑。
+跨境图床在大陆多半要过代理。**镜像失败会中止发布**（文章不上线，退出码 1）——
+这时提示用户带上 `HTTPS_PROXY` 重跑，别劝他用 `--keep-remote-images` 绕过，
+那等于让站点带着跨境外链上线。
 
 发完提醒用户归档：`bash scripts/pull-content.sh --commit`。

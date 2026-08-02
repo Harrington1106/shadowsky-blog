@@ -121,6 +121,7 @@ if (!out.excerpt) console.warn('⚠ 没能自动抽出摘要，建议在 frontma
 // ── 图片镜像 ──
 const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'sq-publish-'));
 const mirrored = [];
+const failed = [];
 if (!args.flags.has('keep-remote-images')) {
     const urls = collectImageUrls(finalBody, out.coverImage);
     for (const url of urls) {
@@ -132,11 +133,26 @@ if (!args.flags.has('keep-remote-images')) {
             if (out.coverImage === url) out.coverImage = localUrl;
             mirrored.push({ url, localUrl, kb: Math.round(r.bytes / 1024), file: r.out });
         } catch (e) {
-            console.warn(`⚠ 镜像失败,保持外链: ${url}`);
-            console.warn(`  ${String(e.message).split('\n')[0]}`);
-            console.warn('  跨境图床多半要过代理,试试 HTTPS_PROXY=http://127.0.0.1:7890 再跑');
+            failed.push({ url, msg: String(e.message).split('\n')[0] });
         }
     }
+}
+
+/*
+  镜像失败必须中止，不能「保持外链继续发」。
+  原来是 warn 一句就往下走 —— 文章照样上线，只是带着跨境外链，
+  而那条警告淹在一堆输出里（发布台的日志框里更看不见）。
+  结果就是站点那条「前端零跨境依赖」的硬约束被静默破坏，
+  等你发现时已经是大陆用户加载 4.5 秒了。
+  真要带外链发，得自己明写 --keep-remote-images，把这个决定说出口。
+*/
+if (failed.length) {
+    console.error(`\n✗ ${failed.length} 张图片镜像失败，已中止发布（文章没有上线）:`);
+    for (const f of failed) console.error(`    ${f.url}\n      ${f.msg}`);
+    console.error('\n  跨境图床多半要过代理，带上代理再跑:');
+    console.error(`    HTTPS_PROXY=http://127.0.0.1:7890 node scripts/publish-post.mjs ${fileName}`);
+    console.error('  确实想带着外链发（大陆会很慢）: 加 --keep-remote-images');
+    process.exit(1);
 }
 
 const finalDoc = buildFrontMatter(out) + '\n' + finalBody.replace(/^\n+/, '');
