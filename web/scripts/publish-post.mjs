@@ -37,7 +37,7 @@ import { fileURLToPath } from 'node:url';
 import {
     REQUIRED_FIELDS, parseFrontMatter, buildFrontMatter,
     computeExcerpt, computeReadTime, collectImageUrls, mirrorImage,
-    validate, duplicateH1,
+    validate, duplicateH1, lintBody,
 } from './lib/post-meta.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -95,6 +95,13 @@ const problems = validate(fileName, fm);
 if (problems.length) {
     for (const p of problems) console.error(`✗ ${p}`);
     process.exit(1);
+}
+
+// 正文写法体检：渲染管线只有一套，各篇看起来不一样全是写法差异造成的
+for (const issue of lintBody(body, fm.title)) {
+    if (issue.kind === 'dup-h1') continue;   // 下面单独处理，因为它可以自动修
+    console.warn(`⚠ ${issue.msg}`);
+    console.warn(`  建议：${issue.fix}`);
 }
 
 // 正文里与标题重复的 H1：页面顶部已经有大标题，这里再来一个等于每篇两个 h1

@@ -19,7 +19,7 @@ import { spawn, execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import {
     parseFrontMatter, buildFrontMatter, computeExcerpt, computeReadTime,
-    collectImageUrls, validate, duplicateH1, mirrorImage,
+    collectImageUrls, validate, duplicateH1, mirrorImage, lintBody,
 } from './lib/post-meta.mjs';
 import { renderMarkdown } from '../lib/renderMarkdown.js';
 
@@ -105,6 +105,7 @@ function inspect(file) {
         excerptAuto: !fm.excerpt,
         problems: validate(path.basename(file), fm),
         duplicateH1: duplicateH1(body, fm.title),
+        lint: lintBody(body, fm.title).filter((i) => i.kind !== 'dup-h1'),
         images: collectImageUrls(body, fm.coverImage),
         html: renderMarkdown(body, { imageBaseDir: '/api/posts/' }),
     };
@@ -321,6 +322,8 @@ async function select(file, keepScroll) {
     const warn = [];
     d.problems.forEach(p => warn.push(\`<div class="warn bad">\${esc(p)}</div>\`));
     if (d.duplicateH1) warn.push(\`<div class="warn">正文第一个 H1「\${esc(d.duplicateH1)}」和标题重复，页面会有两个 h1。发布时可勾选删掉。</div>\`);
+    // 写法体检：渲染管线只有一套，各篇看起来不一样全是这些差异造成的
+    d.lint.forEach(i => warn.push(\`<div class="warn">\${esc(i.msg)}<br><span style="opacity:.75">建议：\${esc(i.fix)}</span></div>\`));
     if (!d.meta.excerpt) warn.push('<div class="warn">没能自动抽出摘要，在下面「改字段」里补一句。</div>');
 
     $('side').innerHTML = warn.join('') + \`

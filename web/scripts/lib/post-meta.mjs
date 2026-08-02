@@ -170,6 +170,47 @@ export function validate(fileName, fm) {
     return problems;
 }
 
+/**
+ * 正文写法体检 —— 回答「为什么每篇文章的渲染效果不一样」。
+ *
+ * 渲染管线只有一套（lib/renderMarkdown.js），所以差异 100% 来自源文件写法。
+ * 实测 19 篇的结构差异很大，这里挑出**会造成可见渲染差异**的三类：
+ *
+ *  1. 正文重复标题的 H1（19 篇里 7 篇有）：页面顶部已经有大标题，
+ *     有的文章又来一个，于是有的文章一进去是两个大标题、有的直接是正文。
+ *  2. 「假标题」——整行只有 **粗体** 的段落被当成小标题用（picgo 那篇 14 处）。
+ *     它渲染出来是加粗的正文：没有标题样式、没有章节锚点、**不进目录**。
+ *     同一篇里往往还混着真的 ### 标题，于是目录忽深忽浅、缺一大截。
+ *  3. 跳级标题（## 直接到 ####）：层级断了，目录缩进会错乱。
+ *
+ * 只报告，不自动改 —— 正文是作者的东西。
+ */
+export function lintBody(body, title) {
+    const issues = [];
+    const lines = body.replace(/```[\s\S]*?```/g, '').split('\n');
+
+    const dup = duplicateH1(body, title);
+    if (dup) issues.push({ kind: 'dup-h1', msg: `正文开头的 H1「${dup}」和标题重复，页面会出现两个大标题`, fix: '发布时加 --strip-h1' });
+
+    const fake = lines.filter((l) => /^\*\*[^*]+\*\*[:：]?\s*$/.test(l.trim()));
+    if (fake.length) {
+        issues.push({
+            kind: 'fake-heading',
+            msg: `${fake.length} 处整行粗体被当成小标题用（如「${fake[0].trim().slice(0, 24)}」）—— 它不是标题：没有标题样式、没有锚点、不进目录`,
+            fix: '改成 ### 小标题',
+        });
+    }
+
+    const levels = lines.map((l) => (l.match(/^(#{1,6})\s/) || [])[1]?.length).filter(Boolean);
+    for (let i = 1; i < levels.length; i++) {
+        if (levels[i] - levels[i - 1] > 1) {
+            issues.push({ kind: 'skip-level', msg: `标题层级跳级（h${levels[i - 1]} 直接到 h${levels[i]}），目录缩进会错乱`, fix: '补上中间那一级' });
+            break;
+        }
+    }
+    return issues;
+}
+
 /** 正文第一个 H1 是否与标题重复（页面顶部已有大标题，重复会导致每篇两个 h1） */
 export function duplicateH1(body, title) {
     const h1 = body.match(/^#\s+(.+)$/m);

@@ -229,7 +229,15 @@ export default function PostContent({ article, backRef }) {
                         「返回文章列表」和那行元信息直接压在图的亮部上，几乎读不出来。
                         加重遮罩 + 顶部再补一层，正文信息优先于装饰图。 */}
                     <div className="absolute inset-0 bg-gradient-to-t from-background via-background/88 to-background/45" />
-                    <div className="relative z-10 mx-auto w-full max-w-3xl px-4 pt-28 pb-10 sm:px-6">
+                    {/*
+                      容器宽度必须和下面正文那块一致（max-w-5xl），否则标题会比正文
+                      往右缩进 (1024-768)/2 = 128px —— 两块都居中、但宽度不同，
+                      左边缘就对不齐，桌面端看着标题莫名其妙地"飘"在正文右边。
+                      文字块再单独限成正文列的宽度（260px 侧栏 + 40px gap），
+                      这样既左对齐，行宽也和正文一致。
+                    */}
+                    <div className="relative z-10 mx-auto w-full max-w-5xl px-4 pt-28 pb-10 sm:px-6">
+                      <div className="lg:max-w-[calc(100%-300px)]">
                         <a href={backHref} className="group/back mb-5 inline-flex items-center gap-1.5 text-sm text-foreground/75 transition-colors hover:text-foreground">
                             <ArrowLeft size={14} className="transition-transform duration-200 motion-safe:group-hover/back:-translate-x-0.5" /> 返回文章列表
                         </a>
@@ -252,6 +260,7 @@ export default function PostContent({ article, backRef }) {
                             ))}
                             <ShareButton title={title} className={tags.length > 0 ? 'ml-1' : ''} />
                         </div>
+                      </div>
                     </div>
                 </header>
 
