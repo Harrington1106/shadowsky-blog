@@ -2,6 +2,7 @@
   "name": "shadowsky-blog-web",
   "private": true,
   "scripts": {
+    "post": "node scripts/post.mjs",
     "dev": "next dev",
     "build": "next build",
     "build:preview": "cross-env NEXT_PUBLIC_BASE_PATH=/preview next build",

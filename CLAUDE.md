@@ -350,9 +350,19 @@ frontmatter），所以「保存时记一笔」只覆盖一半。git 无论从�
 `lib/posts.js` 的索引只缓存 30s，正文按文件 mtime 失效。丢一个 `.md` 上去 + 清 CF 缓存就生效。
 `deploy-v2.sh` 只在改了 `web/` 代码时才需要。
 
+**日常只需要记一条命令：**
+
+```bash
+cd web && npm run post
+```
+
+不带参数。草稿箱空的就问你标题、建一篇；有草稿就列出来选，先跑预检给你看，再问预览还是发布。
+
+底层的两个脚本仍可单独用（自动化 / CI 走这条）：
+
 ```
 content/drafts/<file>.md          写作区（本地，不同步到服务器）
-   │  cd web && node scripts/new-post.mjs "标题" --slug xxx --category 教程
+   │  node scripts/new-post.mjs "标题" --slug xxx --category 教程 --tags a,b
    ↓
 node scripts/publish-post.mjs <file> --dry-run    看会做什么，不碰服务器
 node scripts/publish-post.mjs <file> --preview    写进本地 content/posts 用真实列表看排版（未上线）
@@ -364,6 +374,10 @@ bash scripts/pull-content.sh --commit             归档进 git
 ```
 
 也可以 `/publish <文件名>`。
+
+⚠ `post.mjs` 里的交互提示是自己拉 stdin 行的，没用 `rl.question` ——
+后者在 stdin 不是 TTY（管道 / CI）时会挂住不返回，最后抛一个看不懂的
+"unsettled top-level await"。改脚本时别换回去。
 
 **只写人才知道的字段**：`title` `date` `category` `tags`（`coverImage` 可留空，会落到分类默认图）。
 `excerpt` / `readTime` / `lastModified` 一律由脚本算 —— 手写这三个是上一版工作流最容易出错的地方，
