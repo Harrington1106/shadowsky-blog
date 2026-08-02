@@ -324,12 +324,33 @@ ssh shadowsky 'grep -n "proxy_cache" /www/server/panel/vhost/nginx/shadowquake.t
 但 `gnz48.html` / `app.js` / `data.js` 的源头在另一个项目 `D:\Projects\GNZ48-Calendar`，
 改那边再上传，别直接改线上文件（cron 3:00 会覆盖 data.js/schedule.json/team-g.ics）。
 
+### 单篇修订记录（2026-08-02 起）
+
+服务器上的 `content/` 是一个 **git 仓库**，`tools/content-snapshot.sh` 每 10 分钟提交一次变化，
+并生成 `content/.revisions.json`（每篇最近 20 条修订：时间 + 增删行数 + commit）。
+
+为什么要这样：文章正文在 Obsidian 里写完、由脚本推上服务器，**不经过站点**（后台编辑器只能改
+frontmatter），所以「保存时记一笔」只覆盖一半。git 无论从哪条路进来的改动都能抓到，还自带 diff 与回滚。
+容器里没有 git（`node:22-slim`），所以脚本跑在宿主，站点只读那个 JSON。
+
+⚠ 两处联动，改的时候别漏：
+- `pull-content.sh` 必须排除 `.git` / `.gitignore` / `.revisions.json` —— 整目录 tar 回本仓库会套出
+  嵌套 git，内容镜像直接失效
+- `.revisions.json` 是派生文件，服务器上的 `content/.gitignore` 已把它排除，否则每次生成都算一次变化，
+  会无限自我提交
+
+手工查看：`ssh shadowsky 'git -C /www/wwwroot/shadowquake-v2/content log --oneline'`
+某篇的历史：`git -C …/content log --follow -p -- posts/<file>.md`
+
+**页面上还没有展示** —— 先让它攒一段时间真实数据，内容太少时露出「修订 N 次」反而显得空。
+
 ## 定时任务（服务器 crontab）
 
 | 时间 | 任务 |
 |------|------|
 | 2:30 | Bangumi 同步 → 写 SQLite（`docker run --rm … node jobs/bangumi-sync.cjs`，日志 `/var/log/bangumi-sync-v2.log`） |
 | 3:00 | GNZ48 日程更新 `/usr/local/bin/gnz48-update.sh`（跑 `/opt/gnz48-calendar`，产物 cp 到 `legacy-static/`） |
+| */10 | 内容修订快照 `tools/content-snapshot.sh`（git 提交 + 重建 `.revisions.json`，无变化即退出，日志 `/var/log/content-snapshot.log`） |
 | 4:45 | v2 备份 `backup-v2.sh` → `/www/wwwroot/_backups/v2/`，保留 14 份 |
 | 9:03 | AI 日报 `run-digest-v2.sh`（宿主 tsx 跑 `shadowquake-v2/tools/ai-daily-digest`，密钥读 `tools/digest.env`，输出到 `content/ai-daily` 并重建 index.json，日志 `/var/log/ai-daily-v2.log`） |
 

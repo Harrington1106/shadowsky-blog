@@ -23,7 +23,10 @@ cd "$(dirname "$0")/.."
 echo "==> 从服务器拉取 content/ …"
 mkdir -p content
 # 用 tar over ssh:不依赖 rsync(Windows Git Bash 一般没有)
-ssh "$SSH_HOST" "tar czf - -C $REMOTE_CONTENT ." | tar xzf - -C content
+# ⚠ 必须排除 .git 与 .revisions.json:服务器上的 content/ 现在是个 git 仓库
+#   (见 scripts/content-snapshot.sh —— 单篇修订记录)。整目录拉回来会在本仓库里
+#   套一个嵌套 .git,git 会把 content/ 当成另一个仓库,镜像直接失效。
+ssh "$SSH_HOST" "tar czf - --exclude=./.git --exclude=./.gitignore --exclude=./.revisions.json -C $REMOTE_CONTENT ." | tar xzf - -C content
 
 # 统一成 LF,避免 Windows 端换行差异把整个文件标记为改动
 find content -type f \( -name '*.md' -o -name '*.json' \) -print0 \
