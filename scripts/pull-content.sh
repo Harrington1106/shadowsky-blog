@@ -32,6 +32,20 @@ ssh "$SSH_HOST" "tar czf - --exclude=./.git --exclude=./.gitignore --exclude=./.
 find content -type f \( -name '*.md' -o -name '*.json' \) -print0 \
     | xargs -0 -I{} sh -c 'tmp=$(mktemp); tr -d "\r" < "{}" > "$tmp" && mv "$tmp" "{}"'
 
+# ⚠ 本地有、服务器没有的文章 = 还没发布的本地副本
+#   (多半是 publish-post.mjs --preview 留下的)。tar 解包只覆盖同名文件、不会删,
+#   所以它们会一直躺在镜像目录里,看着像已上线的文章。这里点名提醒。
+remote_list=$(ssh "$SSH_HOST" "ls $REMOTE_CONTENT/posts 2>/dev/null" | tr -d '\r' | sort)
+local_list=$(ls content/posts 2>/dev/null | sort)
+only_local=$(comm -23 <(echo "$local_list") <(echo "$remote_list") || true)
+if [ -n "$only_local" ]; then
+    echo "⚠ 以下文章只在本地、线上没有(未发布的预览副本?):"
+    echo "$only_local" | sed 's/^/    /'
+    echo "    发布: cd web && node scripts/publish-post.mjs <文件名>"
+    echo "    丢弃: rm content/posts/<文件名>"
+    echo
+fi
+
 echo "==> 文件统计"
 printf "    文章    %s 篇\n" "$(find content/posts -name '*.md' 2>/dev/null | wc -l)"
 printf "    AI 日报 %s 篇\n" "$(find content/ai-daily -name '*.md' 2>/dev/null | wc -l)"
@@ -46,7 +60,9 @@ echo
 git diff --stat -- content | tail -5
 
 if [ "${1:-}" = "--commit" ]; then
-    git add content
+    # 只提交从服务器同步下来的部分。content/drafts/ 是本地写作区,
+    # 跟「同步线上内容」不是一回事,混进来会让这条提交名不副实。
+    git add content/posts content/ai-daily
     git commit -m "content: 同步线上文章与 AI 日报($(date +%Y-%m-%d))
 
 由 scripts/pull-content.sh 从服务器单向同步。服务器是权威副本,

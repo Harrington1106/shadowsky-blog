@@ -344,6 +344,48 @@ frontmatter），所以「保存时记一笔」只覆盖一半。git 无论从�
 
 **页面上还没有展示** —— 先让它攒一段时间真实数据，内容太少时露出「修订 N 次」反而显得空。
 
+## 写文章工作流（2026-08-02 起）
+
+**发文章不需要部署。** 文章正文是挂载卷里的文件（`content/posts`），不在 Docker 镜像里；
+`lib/posts.js` 的索引只缓存 30s，正文按文件 mtime 失效。丢一个 `.md` 上去 + 清 CF 缓存就生效。
+`deploy-v2.sh` 只在改了 `web/` 代码时才需要。
+
+```
+content/drafts/<file>.md          写作区（本地，不同步到服务器）
+   │  cd web && node scripts/new-post.mjs "标题" --slug xxx --category 教程
+   ↓
+node scripts/publish-post.mjs <file> --dry-run    看会做什么，不碰服务器
+node scripts/publish-post.mjs <file> --preview    写进本地 content/posts 用真实列表看排版（未上线）
+node scripts/publish-post.mjs <file>              真发
+   ↓
+校验 frontmatter → 补 excerpt/readTime/lastModified → 镜像跨境图片 → scp → 清 CF → 验证 200
+   ↓
+bash scripts/pull-content.sh --commit             归档进 git
+```
+
+也可以 `/publish <文件名>`。
+
+**只写人才知道的字段**：`title` `date` `category` `tags`（`coverImage` 可留空，会落到分类默认图）。
+`excerpt` / `readTime` / `lastModified` 一律由脚本算 —— 手写这三个是上一版工作流最容易出错的地方，
+现有 19 篇的 `excerpt` 几乎全是把标题又抄了一遍（`BlogContent.js` 的 `trimTitlePrefix` 就是为此打的补丁）。
+
+**图片：PicList 照常用。** 发布时脚本会把正文与封面里所有**跨境**图片地址抓下来、转 webp、
+传到服务器 `data/uploads/covers/`（挂载卷，不进镜像），并把地址改写成 `/uploads/covers/<sha1>.webp`。
+这是在守「前端零跨境依赖」那条约束 —— GitHub/jsDelivr 在大陆 TTFB 3.7–4.9s，而封面基本就是 LCP 元素。
+文件名取源 URL 的 sha1 前 8 位，换图即换名，不用为图片清缓存。
+跨境图床下载多半要过代理：`HTTPS_PROXY=http://127.0.0.1:7890 node scripts/publish-post.mjs …`。
+
+⚠ 几个约束，改脚本时别踩：
+- frontmatter 每个值**必须单行**，且不能含 `---` —— 线上解析器是 `raw.split('---', 3)` +
+  逐行 `indexOf(':')`，值里一个换行就能把后面所有字段冲掉
+- `tags` 必须是单行合法 JSON 数组（`JSON.parse` 直接吃）
+- 文件名就是线上地址 `/post/<slug>`，发布后再改等于换地址、丢外链
+- `--preview` 会在本地 `content/posts/` 留一个服务器上没有的文件，
+  `pull-content.sh` 会把这类文件单独列出来提醒
+
+`mirror-covers.mjs` 仍然保留，管的是**已经在镜像里**的那批 unsplash 封面和代码里写死的图；
+新文章走上面这条路，不再需要它。
+
 ## 定时任务（服务器 crontab）
 
 | 时间 | 任务 |
