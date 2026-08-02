@@ -144,25 +144,109 @@ html.dark .light-only { display: none !important; }
     font-weight: 700; letter-spacing: -0.01em; margin-top: 2em; margin-bottom: .6em; line-height: 1.3;
     scroll-margin-top: 90px;
   }
-  .post-prose h1 { font-size: 1.6rem; }
-  .post-prose h2 { font-size: 1.35rem; border-bottom: 1px solid var(--border); padding-bottom: .35em; }
-  .post-prose h3 { font-size: 1.12rem; }
-  .post-prose a { color: var(--primary); text-underline-offset: 3px; }
-  .post-prose a:hover { opacity: .8; }
-  .post-prose img { max-width: 100%; border-radius: var(--radius-lg); margin: 1.5em auto; display: block; box-shadow: 0 4px 20px rgba(0,0,0,.08); }
+  /* 层级原来是 1.6 / 1.35 / 1.12rem，配 1.05rem 的正文——h3 只比正文大 7%，
+     一眼扫过去分不出这是标题还是加粗的一句话。拉开到 1.75 / 1.45 / 1.18，
+     并让 h3 只加粗不改色，靠字号和上方留白建立节奏。 */
+  .post-prose h1 { font-size: 1.75rem; }
+  .post-prose h2 { font-size: 1.45rem; border-bottom: 1px solid var(--border); padding-bottom: .35em; margin-top: 2.4em; }
+  .post-prose h3 { font-size: 1.18rem; margin-top: 1.9em; }
+  /* ⚠ 链接不能只靠颜色区分。灰度主题下 --primary 是 oklch(0.205)、正文 --foreground
+     是 oklch(0.145)，肉眼几乎同色 —— 正文里的链接此前**完全看不出是链接**。
+     加下划线（默认淡、hover 变实），颜色只作为辅助。 */
+  .post-prose a {
+    color: var(--primary);
+    text-decoration: underline;
+    text-decoration-color: color-mix(in oklch, var(--primary) 35%, transparent);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+    transition: text-decoration-color .15s;
+  }
+  .post-prose a:hover { text-decoration-color: var(--primary); }
+  /* 正文图片点一下会开灯箱(PostContent 的 onContentClick),但此前光标还是默认箭头 ——
+     能点这件事完全没有提示。zoom-in 是这个交互的标准光标。 */
+  .post-prose img { max-width: 100%; border-radius: var(--radius-lg); margin: 1.5em auto; display: block; box-shadow: 0 4px 20px rgba(0,0,0,.08); cursor: zoom-in; transition: box-shadow .2s, transform .2s; }
   .dark .post-prose img { box-shadow: 0 4px 20px rgba(0,0,0,.4); }
-  .post-prose blockquote { border-left: 3px solid var(--primary); padding: .75em 1.25em; margin: 1.5em 0; background: var(--muted); border-radius: 0 var(--radius-md) var(--radius-md) 0; color: var(--muted-foreground); }
-  .post-prose code:not(pre code) { font-size: .88em; background: var(--muted); padding: 2px 6px; border-radius: var(--radius-sm); font-family: ui-monospace, monospace; }
-  .post-prose pre { border-radius: var(--radius-lg); overflow: hidden; border: 1px solid var(--border); margin: 1.5em 0; position: relative; background: var(--muted); }
-  .post-prose pre code { display: block; padding: 3.2em 1.1em 1.1em; overflow-x: auto; font-size: .88em; line-height: 1.6; background: transparent; }
-  .post-prose ul, .post-prose ol { padding-left: 1.4em; margin: 1em 0; }
-  .post-prose li { margin: .3em 0; }
+  .post-prose img:hover { box-shadow: 0 8px 30px rgba(0,0,0,.16); }
+  .dark .post-prose img:hover { box-shadow: 0 8px 30px rgba(0,0,0,.55); }
+  @media (prefers-reduced-motion: reduce) { .post-prose img { transition: none; } }
+
+  /* 章节锚点：hover 标题时在右边露一个 #，点了地址栏就是该节地址。
+     由 lib/renderMarkdown.js 在服务端产出（aria-hidden + tabindex="-1"，纯鼠标 affordance）。 */
+  .post-prose .heading-anchor {
+    margin-left: .35em; font-weight: 400; font-size: .8em; color: var(--muted-foreground);
+    text-decoration: none; opacity: 0; transition: opacity .15s, color .15s;
+  }
+  .post-prose h1:hover .heading-anchor, .post-prose h2:hover .heading-anchor,
+  .post-prose h3:hover .heading-anchor, .post-prose h4:hover .heading-anchor { opacity: .55; }
+  .post-prose .heading-anchor:hover { opacity: 1; color: var(--primary); }
+  /* 引用块此前 background 用的是 var(--muted)，跟代码块**一模一样**——
+     两种完全不同的东西长着同一张脸。改成不填色，只留左边框，靠留白区分。 */
+  .post-prose blockquote {
+    border-left: 3px solid color-mix(in oklch, var(--foreground) 25%, transparent);
+    padding: .2em 0 .2em 1.15em; margin: 1.5em 0; background: none;
+    color: var(--muted-foreground);
+  }
+  .post-prose blockquote > *:first-child { margin-top: 0; }
+  .post-prose blockquote > *:last-child { margin-bottom: 0; }
+  /* 行内代码加一圈描边：只靠淡灰底的话，深色模式下几乎和正文融在一起 */
+  .post-prose code:not(pre code) {
+    font-size: .875em; background: var(--muted); padding: .15em .4em; border-radius: var(--radius-sm);
+    border: 1px solid var(--border); font-family: ui-monospace, monospace;
+  }
+
+  /* ── 代码块 ──
+     ⚠ 头部曾经是 position:absolute + 给 code 留 3.2em 上内边距来避让。
+     但未分层的 hljs 主题里有 `pre code.hljs { padding: 1em }`，分层的 .post-prose
+     规则打不过它，于是当初用了 `padding: 0 !important` 压制 —— 连那 3.2em 一起清零，
+     结果**每个代码块的头一两行都被头部盖住**（实测某块 56 字符的代码整个藏在头部底下）。
+     现在改成 flex 纵向排列、头部走正常文档流，不再需要任何避让魔数。 */
+  .post-prose pre {
+    display: flex; flex-direction: column;
+    border-radius: var(--radius-lg); overflow: hidden; border: 1px solid var(--border);
+    margin: 1.5em 0; background: var(--muted);
+  }
+  .post-prose pre code { display: block; overflow-x: auto; font-size: .875em; line-height: 1.7; background: transparent; }
+
+  /* ── 列表 ──
+     ⚠ Tailwind preflight 把 ul/ol 的 list-style 重置成 none，而 .post-prose 从没加回来 ——
+     **全站文章的项目符号和序号一个都不显示**。这个博客通篇是分步教程，
+     「1. 2. 3.」丢掉之后每篇的操作步骤都散成了没有编号的独立句子。 */
+  .post-prose ul { list-style: disc; }
+  .post-prose ol { list-style: decimal; }
+  .post-prose ul ul { list-style: circle; }
+  .post-prose ul ul ul { list-style: square; }
+  .post-prose ul, .post-prose ol { padding-left: 1.6em; margin: 1.1em 0; }
+  .post-prose li { margin: .35em 0; padding-left: .15em; }
+  .post-prose li::marker { color: var(--muted-foreground); }
+  .post-prose ol > li::marker { font-variant-numeric: tabular-nums; font-weight: 600; }
+  /* 嵌套列表和「列表项里套段落」不要再撑开一整段的行距 */
+  .post-prose li > ul, .post-prose li > ol { margin: .35em 0; }
+  .post-prose li > p { margin: .35em 0; }
+
   .post-prose strong { font-weight: 600; }
-  .post-prose hr { border: 0; border-top: 1px solid var(--border); margin: 2.5em 0; }
-  .post-prose table { width: 100%; border-collapse: collapse; margin: 1.5em 0; font-size: .9em; }
-  .post-prose th, .post-prose td { border: 1px solid var(--border); padding: 8px 12px; text-align: left; }
-  .post-prose th { background: var(--muted); font-weight: 600; }
-  .post-prose .hljs { background: transparent !important; padding: 0 !important; }
+  /* 作者习惯用 --- 分节，但 h2 自己已经有下划线了，两条线叠在一起显得很吵。
+     把 hr 压淡、拉开间距，让它只做「气口」而不是又一条分割线。 */
+  .post-prose hr { border: 0; border-top: 1px solid color-mix(in oklch, var(--border) 60%, transparent); margin: 3em auto; width: 60%; }
+
+  /* 表格：去掉竖线，只保留横向分隔 —— 全网格线在中文长表格里像张报表。
+     表头用底色 + 一条略重的下边框，隔行淡底帮眼睛横向对齐。 */
+  .post-prose table { width: 100%; border-collapse: collapse; margin: 1.5em 0; font-size: .92em; }
+  .post-prose th, .post-prose td { padding: .55em .8em; text-align: left; border: 0; border-bottom: 1px solid var(--border); }
+  .post-prose th { background: var(--muted); font-weight: 600; border-bottom: 2px solid var(--border); white-space: nowrap; }
+  .post-prose tbody tr:nth-child(even) { background: color-mix(in oklch, var(--muted) 45%, transparent); }
+  .post-prose tbody tr:last-child td { border-bottom: 0; }
+  /* 19 篇里 8 篇有表格,最宽的一行 145 个字符 —— 手机上表格撑破正文列,
+     整个页面跟着能横向拖。代码块早就有自己的 overflow-x,表格一直没有。
+     只在窄屏改成可横滚的块:宽屏保持 width:100% 的原样子(display:block 会让它按内容收缩)。 */
+  @media (max-width: 640px) {
+    .post-prose table { display: block; overflow-x: auto; }
+  }
+  /* 正文里的长 URL / 长路径不换行时同样会顶破列宽 */
+  .post-prose p, .post-prose li, .post-prose td, .post-prose th { overflow-wrap: anywhere; }
+  /* 背景必须压掉（hljs 主题自带浅色底，会盖住 pre 的底色）；
+     padding 交还给 hljs 主题的 `pre code.hljs { padding: 1em }` ——
+     原来这里连 padding 一起 `!important` 清零，正是首行被头部盖住的原因。 */
+  .post-prose .hljs { background: transparent !important; }
 
   /* ── 导航栏液态玻璃(自 v1 unified.css 移植)：滑动激活 pill + 光标跟随镜面高光 ── */
   .nav-pill {
@@ -220,12 +304,21 @@ html.dark .light-only { display: none !important; }
   .tag-cloud .tag-chip:hover,
   .tag-cloud .tag-chip:focus-visible { opacity: 1; }
 
-  .code-header { position: absolute; top: 0; left: 0; right: 0; height: 2.6em; display: flex; align-items: center; justify-content: space-between; padding: 0 14px; background: var(--muted); border-bottom: 1px solid var(--border); z-index: 1; }
-  .window-controls { display: flex; gap: 6px; }
-  .window-dot { width: 9px; height: 9px; border-radius: 999px; }
-  .window-dot.red { background: #ff5f56; } .window-dot.yellow { background: #ffbd2e; } .window-dot.green { background: #27c93f; }
-  .lang-label { font-size: .68rem; color: var(--muted-foreground); font-family: monospace; text-transform: uppercase; letter-spacing: .04em; }
-  .code-copy-btn { display: inline-flex; align-items: center; gap: 4px; padding: 3px 9px; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--background); color: var(--muted-foreground); font-size: .68rem; cursor: pointer; transition: all .15s; }
-  .code-copy-btn:hover { border-color: var(--primary); color: var(--primary); }
-  .code-copy-btn.copied { color: var(--primary); border-color: var(--primary); }
+  /* 头部走正常文档流（不再 absolute，见上面 .post-prose pre 的说明）。
+     红黄绿圆点已随 renderMarkdown 一起去掉：那套 macOS 拟物件跟站上其余
+     灰度 shadcn 的克制风格不是一个语言，还占着本该给语言名的位置。 */
+  .code-header {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    padding: .4em .7em .4em .9em;
+    background: color-mix(in oklch, var(--foreground) 4%, transparent);
+    border-bottom: 1px solid var(--border);
+  }
+  .lang-label { font-size: .68rem; color: var(--muted-foreground); font-family: ui-monospace, monospace; text-transform: uppercase; letter-spacing: .06em; }
+  /* 复制按钮平时压得很淡，鼠标进代码块才浮起来 —— 它是辅助操作，不该跟代码抢注意力 */
+  .code-copy-btn { display: inline-flex; align-items: center; gap: 4px; padding: 3px 9px; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--background); color: var(--muted-foreground); font-size: .68rem; cursor: pointer; opacity: .55; transition: opacity .15s, color .15s, border-color .15s; }
+  .post-prose pre:hover .code-copy-btn, .code-copy-btn:focus-visible { opacity: 1; }
+  .code-copy-btn:hover { border-color: var(--primary); color: var(--primary); opacity: 1; }
+  .code-copy-btn.copied { color: var(--primary); border-color: var(--primary); opacity: 1; }
+  /* 触屏没有 hover，按钮不能靠 hover 才出现 */
+  @media (hover: none) { .code-copy-btn { opacity: 1; } }
 }

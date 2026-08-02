@@ -23,3 +23,14 @@ export function withBase(path) {
  */
 export const cardSurface = 'rounded-xl bg-card text-card-foreground ring-1 ring-foreground/10 '
     + 'outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background';
+
+/**
+ * 可点卡片的悬停态，配合 cardSurface 使用。
+ * 只换底色的话，卡片一多就看不出鼠标停在哪一张；加一层轻微抬起 + 投影。
+ * 位移用 motion-safe 包住，尊重系统的「减少动态效果」。
+ *
+ * 放在这里而不是各页自己写：/blog 的列表行、/post 的上下篇是同一种「一张可点的卡」，
+ * 手感不一致时来回跳转很容易察觉。
+ */
+export const cardInteractive = 'transition-all duration-200 hover:bg-accent/40 hover:ring-primary/40 '
+    + 'hover:shadow-lg hover:shadow-foreground/5 motion-safe:hover:-translate-y-0.5';

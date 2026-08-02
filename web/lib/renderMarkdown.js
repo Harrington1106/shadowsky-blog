@@ -47,7 +47,9 @@ const SANITIZE_POLICY = {
         'button', 'svg', 'path', 'rect', 'circle', 'line', 'polyline', 'polygon', 'g',
     ],
     allowedAttributes: {
-        '*': ['class', 'id', 'title', 'aria-label', 'aria-hidden', 'role'],
+        // tabindex 是给章节锚点用的(heading 渲染器里的 tabindex="-1"):
+        // 那个 # 是纯鼠标 affordance,37 个标题就是 37 个多余的 Tab 停靠点
+        '*': ['class', 'id', 'title', 'aria-label', 'aria-hidden', 'role', 'tabindex'],
         a: ['href', 'target', 'rel', 'name'],
         img: ['src', 'alt', 'width', 'height', 'loading', 'decoding'],
         iframe: ['src', 'width', 'height', 'allowfullscreen', 'frameborder', 'framespacing', 'border', 'scrolling', 'allow', 'loading', 'sandbox'],
@@ -118,7 +120,17 @@ export function renderMarkdown(md, { imageBaseDir = '' } = {}) {
             heading({ tokens, depth }) {
                 const text = this.parser.parseInline(tokens);
                 const id = `heading-${headingSeq++}`;
-                return `<h${depth} id="${id}">${text}</h${depth}>`;
+                /*
+                  章节锚点(hover 标题时右边露出的 #)必须在**服务端**产出。
+                  一开始是在客户端 appendChild 进去的,结果 hydration 之后的第一次渲染
+                  把 dangerouslySetInnerHTML 整段重灌,注入的节点当场全没
+                  (实测 t+0 还有 37 个,t+50 变 0,而容器节点本身没被换掉)——
+                  那块 DOM 归 React 管,别在里面塞东西。
+                  aria-hidden + tabindex="-1":纯鼠标 affordance,不进读屏也不占 Tab 焦点,
+                  标题的可访问名也就不会被拖上一个「#」。
+                */
+                const anchor = `<a class="heading-anchor" href="#${id}" aria-hidden="true" tabindex="-1">#</a>`;
+                return `<h${depth} id="${id}">${text}${anchor}</h${depth}>`;
             },
             code({ text, lang }) {
                 const language = lang && hljs.getLanguage(lang) ? lang : 'plaintext';
@@ -128,7 +140,11 @@ export function renderMarkdown(md, { imageBaseDir = '' } = {}) {
                 } catch {
                     highlighted = escapeHtml(text);
                 }
-                return `<pre class="group"><div class="code-header"><div class="window-controls"><div class="window-dot red"></div><div class="window-dot yellow"></div><div class="window-dot green"></div></div><div class="flex items-center gap-2"><div class="lang-label">${language}</div><button class="code-copy-btn" title="复制代码"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span>复制</span></button></div></div><code class="hljs language-${language}">${highlighted}</code></pre>`;
+                // 头部不再有 macOS 红黄绿圆点 —— 那套拟物装饰跟站上其余部分
+                // (灰度 shadcn)不是一个语言,而且占掉了本该给语言标签的位置。
+                // 现在只留「语言 + 复制」,并且是正常文档流里的一行(不再 absolute),
+                // 见 globals.css:绝对定位那版会把代码首行盖在头部底下。
+                return `<pre class="group"><div class="code-header"><span class="lang-label">${language}</span><button class="code-copy-btn" title="复制代码"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span>复制</span></button></div><code class="hljs language-${language}">${highlighted}</code></pre>`;
             },
         },
     });

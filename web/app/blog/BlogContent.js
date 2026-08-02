@@ -15,19 +15,11 @@ import {
 import Footer from '@/components/Footer';
 import BackToTop from '@/components/BackToTop';
 import { fetchPosts, fetchAiDailyIndex } from '@/lib/api';
-import { cardSurface, cn, withBase } from '@/lib/utils';
+import { cardSurface, cardInteractive, cn, withBase } from '@/lib/utils';
 import { postHref, aiDailyHref } from '@/lib/links';
 import { mirrorCover } from '@/lib/coverMirror';
 
 const PER_PAGE = 12;
-
-/**
- * 卡片行的交互态（文章列表与 AI 日报共用）。
- * 原来只换一个底色 —— 12 行卡片紧挨着时几乎看不出鼠标停在哪一行。
- * 现在多一层轻微抬起 + 投影，位移用 motion-safe 包住，尊重系统的「减少动态效果」。
- */
-const rowInteractive = 'transition-all duration-200 hover:bg-accent/40 hover:ring-primary/40 '
-    + 'hover:shadow-lg hover:shadow-foreground/5 motion-safe:hover:-translate-y-0.5';
 
 /**
  * 可点的筛选胶囊（侧栏标签 / 窄屏筛选 / 标签云）的交互态。
@@ -116,7 +108,7 @@ function ArticleRow({ post, refHash }) {
     // 新地址 /post/<slug> 本身不带 query,所以这里是 ?ref= 而不是 &ref=
     const ref = refHash ? `?ref=${encodeURIComponent(refHash)}` : '';
     return (
-        <a href={withBase(postHref(post.file) + ref)} className={cn(cardSurface, rowInteractive, 'group/row flex gap-4 p-3')}>
+        <a href={withBase(postHref(post.file) + ref)} className={cn(cardSurface, cardInteractive, 'group/row flex gap-4 p-3')}>
             {/* w-12(48px)装不下「12月28日」,会把最后那个「日」挤到第三行去。
                 加宽到 w-14 并 whitespace-nowrap,让日期永远一行。 */}
             <div className="hidden w-14 shrink-0 text-center font-mono text-xs whitespace-nowrap text-muted-foreground sm:block">
@@ -779,7 +771,7 @@ function AiDailyView({ index, error, page, setPage, filtered, hrefFor }) {
                     .replace(/^(AI|📰)\s*[-—]?\s*/i, '')
                     .trim();
                 return (
-                    <a key={d.date} href={withBase(aiDailyHref(d.date))} className={cn(cardSurface, rowInteractive, 'group/row flex gap-4 p-3')}>
+                    <a key={d.date} href={withBase(aiDailyHref(d.date))} className={cn(cardSurface, cardInteractive, 'group/row flex gap-4 p-3')}>
                         <div className="hidden w-14 shrink-0 text-center text-xs whitespace-nowrap text-muted-foreground sm:block">
                             <div className="font-medium text-foreground">{md}</div>
                             <div className="mt-0.5 opacity-70">{wd}</div>
