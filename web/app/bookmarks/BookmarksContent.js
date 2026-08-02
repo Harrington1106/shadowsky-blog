@@ -38,6 +38,11 @@ const CAT_FALLBACKS = {
     r18: 'R18',
 };
 
+/**
+ * 子分类名的最后兜底。
+ * 正常情况下名字来自 API 的 categories[父分类].subcategories，
+ * 这里只覆盖不属于任何分类的伪子分类,以及库里万一缺失时的常见项。
+ */
 const SUB_FALLBACKS = {
     aitool: 'AI工具',
     gjgj: '工具集合',
@@ -64,12 +69,17 @@ function catName(key, categories) {
     return CAT_FALLBACKS[key] || key;
 }
 
+/**
+ * 取子分类的显示名。
+ * ⚠ API 返回的是 categories[父分类].subcategories —— 一个 {slug: 中文名} 的对象。
+ *   这里原本读的是 v1 时代的 children 数组([{id,name}]),字段名对不上,
+ *   于是永远走到兜底、页面上直接显示 slug(fwq / vibe / syzn …)。
+ * 兜底里再找不到就退回 slug,至少不会变成 undefined。
+ */
 function subName(key, parentCat, categories) {
     const c = categories[parentCat];
-    if (c && c.children) {
-        const found = c.children.find((ch) => ch.id === key);
-        if (found) return found.name;
-    }
+    const name = c && c.subcategories && c.subcategories[key];
+    if (name) return name;
     return SUB_FALLBACKS[key] || key;
 }
 
