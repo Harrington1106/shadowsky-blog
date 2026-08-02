@@ -179,23 +179,35 @@ export default function BlogPage({ initialPosts = [], initialFilter = {} }) {
         };
     }, [posts]);
 
-    const filteredPosts = useMemo(() => {
-        let list = posts;
+    /**
+     * 只按搜索词过滤的中间结果 —— 标签云要用它。
+     *
+     * 为什么要拆:标签云是**导航索引**,原来它吃的是 filteredPosts,于是
+     * 「点云里的标签 → 跳文章视图筛选 → 再切回云」时,云只剩那几篇文章的标签
+     * (实测 66 个 → 10 个),而且再也回不去,除非手动清除筛选。自己产生的筛选
+     * 又喂回给自己,索引就废了。
+     * 但搜索框在标签云视图里是可见的,云要是完全不响应搜索,它又成了死控件。
+     * 所以:搜索照样收窄云(当场输入,要有即时反馈),分类/标签只做高亮不做过滤。
+     */
+    const searchedPosts = useMemo(() => {
         const term = search.toLowerCase().trim();
-        if (term) {
-            // 也搜分类名 —— 之前只搜标题/摘要/标签,「博客运维」这种只存在于分类的词
-            // 一条都搜不到,而它就明晃晃列在左边侧栏里
-            list = list.filter((p) =>
-                (p.title || '').toLowerCase().includes(term) ||
-                (p.excerpt || '').toLowerCase().includes(term) ||
-                (p.category || '').toLowerCase().includes(term) ||
-                (p.tags || []).some((t) => t.toLowerCase().includes(term))
-            );
-        }
+        if (!term) return posts;
+        // 也搜分类名 —— 之前只搜标题/摘要/标签,「博客运维」这种只存在于分类的词
+        // 一条都搜不到,而它就明晃晃列在左边侧栏里
+        return posts.filter((p) =>
+            (p.title || '').toLowerCase().includes(term) ||
+            (p.excerpt || '').toLowerCase().includes(term) ||
+            (p.category || '').toLowerCase().includes(term) ||
+            (p.tags || []).some((t) => t.toLowerCase().includes(term))
+        );
+    }, [posts, search]);
+
+    const filteredPosts = useMemo(() => {
+        let list = searchedPosts;
         if (activeCat) list = list.filter((p) => (p.category || '其他') === activeCat);
         if (activeTag) list = list.filter((p) => (p.tags || []).includes(activeTag));
         return list;
-    }, [posts, search, activeCat, activeTag]);
+    }, [searchedPosts, activeCat, activeTag]);
 
     /**
      * 日报也跟着搜索框走。
@@ -390,9 +402,15 @@ export default function BlogPage({ initialPosts = [], initialFilter = {} }) {
                     {/* aria-live:筛选/搜索后条数是静默变化的,读屏用户完全不知道筛出了几条 */}
                     {hasFilter && (
                         <div className="mb-4 flex flex-wrap items-center gap-2 text-xs text-muted-foreground" aria-live="polite">
-                            <span>共 <strong className="text-foreground">
-                                {view === 'aidaily' ? (filteredAiDaily?.length ?? 0) : filteredPosts.length}
-                            </strong> 篇</span>
+                            {/* 标签云展示的是全部标签、不受分类/标签筛选影响,
+                                这里再报「共 N 篇」会和眼前看到的东西对不上,换成说明这个筛选通向哪里 */}
+                            {view === 'tags' ? (
+                                <span>已选，切到<strong className="text-foreground">文章</strong>查看 <strong className="text-foreground">{filteredPosts.length}</strong> 篇</span>
+                            ) : (
+                                <span>共 <strong className="text-foreground">
+                                    {view === 'aidaily' ? (filteredAiDaily?.length ?? 0) : filteredPosts.length}
+                                </strong> 篇</span>
+                            )}
                             {/* 分类/标签只筛文章,在日报视图下标成"不生效",免得用户以为筛了没反应 */}
                             {activeCat && <Badge variant="secondary" className={cn(view === 'aidaily' && 'opacity-50')}>分类：{activeCat}</Badge>}
                             {activeTag && <Badge variant="secondary" className={cn(view === 'aidaily' && 'opacity-50')}>标签：{activeTag}</Badge>}
@@ -408,7 +426,7 @@ export default function BlogPage({ initialPosts = [], initialFilter = {} }) {
                         {loadError && <EmptyMsg>加载失败: {loadError}</EmptyMsg>}
                         {!loadError && view === 'grid' && <GridView posts={filteredPosts} page={page} setPage={setPage} />}
                         {!loadError && view === 'directory' && <DirectoryView posts={filteredPosts} />}
-                        {!loadError && view === 'tags' && <TagsView posts={filteredPosts} onPick={pickTagFromCloud} />}
+                        {!loadError && view === 'tags' && <TagsView posts={searchedPosts} activeTag={activeTag} onPick={pickTagFromCloud} />}
                         {!loadError && view === 'aidaily' && <AiDailyView index={filteredAiDaily} error={aiDailyError} page={page} setPage={setPage} filtered={Boolean(search.trim())} />}
                     </div>
                 </section>
@@ -544,8 +562,10 @@ function DirectoryView({ posts }) {
     ));
 }
 
-function TagsView({ posts, onPick }) {
-    const tags = {};
+// posts 传的是 searchedPosts(只过搜索,不过分类/标签)—— 见上面 searchedPosts 的注释。
+// 当前选中的标签在这里只做高亮,不参与过滤,否则云会被自己的选择吃掉。
+function TagsView({ posts, activeTag, onPick }) {
+    const tags = Object.create(null);   // 用无原型对象:万一有标签叫 constructor/toString,普通 {} 会算错
     posts.forEach((p) => (p.tags || []).forEach((t) => { tags[t] = (tags[t] || 0) + 1; }));
     const sorted = Object.entries(tags).sort((a, b) => b[1] - a[1]);
     if (sorted.length === 0) return <EmptyMsg>没有标签</EmptyMsg>;
@@ -557,7 +577,7 @@ function TagsView({ posts, onPick }) {
                 return (
                     <Badge
                         key={t}
-                        variant="outline"
+                        variant={activeTag === t ? 'default' : 'outline'}
                         className="cursor-pointer"
                         style={{ fontSize: `${size}rem` }}
                         render={<button type="button" onClick={() => onPick(t)} />}
