@@ -3,6 +3,7 @@
   "private": true,
   "scripts": {
     "post": "node scripts/post.mjs",
+    "post:ui": "node scripts/post-ui.mjs",
     "dev": "next dev",
     "build": "next build",
     "build:preview": "cross-env NEXT_PUBLIC_BASE_PATH=/preview next build",
