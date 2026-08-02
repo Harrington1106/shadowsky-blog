@@ -1,11 +1,17 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { FileText, FolderTree, Tags, Bot, Search, Filter, ChevronDown, ChevronLeft, ChevronRight, Rss, X } from 'lucide-react';
+import { FileText, FolderTree, Tags, Bot, Search, SearchX, TriangleAlert, Filter, ChevronDown, Rss, X } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Separator } from '@/components/ui/separator';
+import { Skeleton } from '@/components/ui/skeleton';
+import {
+    Pagination, PaginationContent, PaginationItem,
+    PaginationLink, PaginationPrevious, PaginationNext, PaginationEllipsis,
+} from '@/components/ui/pagination';
 import Footer from '@/components/Footer';
 import BackToTop from '@/components/BackToTop';
 import { fetchPosts, fetchAiDailyIndex } from '@/lib/api';
@@ -59,7 +65,14 @@ function Thumb({ post }) {
     if (post.coverImage) {
         return (
             <div className="h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-muted sm:h-20 sm:w-20">
-                <img src={mirrorCover(post.coverImage)} loading="lazy" alt="" className="h-full w-full object-cover" onError={(e) => { e.currentTarget.parentElement.style.display = 'none'; }} />
+                {/* hover 时封面轻微放大。只动 transform,不改盒子尺寸 —— 用宽高做动画会挤动整行 */}
+                <img
+                    src={mirrorCover(post.coverImage)}
+                    loading="lazy"
+                    alt=""
+                    className="h-full w-full object-cover transition-transform duration-300 motion-safe:group-hover/row:scale-105"
+                    onError={(e) => { e.currentTarget.parentElement.style.display = 'none'; }}
+                />
             </div>
         );
     }
@@ -76,7 +89,7 @@ function ArticleRow({ post, refHash }) {
     // 新地址 /post/<slug> 本身不带 query,所以这里是 ?ref= 而不是 &ref=
     const ref = refHash ? `?ref=${encodeURIComponent(refHash)}` : '';
     return (
-        <a href={withBase(postHref(post.file) + ref)} className={cn(cardSurface, 'flex gap-4 p-3 transition-colors hover:ring-primary/40 hover:bg-accent/40')}>
+        <a href={withBase(postHref(post.file) + ref)} className={cn(cardSurface, 'group/row flex gap-4 p-3 transition-colors hover:bg-accent/40 hover:ring-primary/40')}>
             {/* w-12(48px)装不下「12月28日」,会把最后那个「日」挤到第三行去。
                 加宽到 w-14 并 whitespace-nowrap,让日期永远一行。 */}
             <div className="hidden w-14 shrink-0 text-center font-mono text-xs whitespace-nowrap text-muted-foreground sm:block">
@@ -271,6 +284,20 @@ export default function BlogPage({ initialPosts = [], initialFilter = {} }) {
 
     const hasFilter = Boolean(search.trim() || activeCat || activeTag);
 
+    /**
+     * 给分页条拼真实 href。只用 state 拼、不读 window —— 服务端和客户端必须拼出同一个字符串,
+     * 否则 hydration 会报 mismatch。
+     */
+    function pageHref(n) {
+        const sp = new URLSearchParams();
+        if (search.trim()) sp.set('q', search.trim());
+        if (activeCat) sp.set('cat', activeCat);
+        if (activeTag) sp.set('tag', activeTag);
+        if (n > 1) sp.set('p', String(n));
+        const qs = sp.toString();
+        return withBase(`/blog${qs ? `?${qs}` : ''}`);
+    }
+
     function clearFilters() {
         setSearch('');
         setActiveCat(null);
@@ -340,7 +367,9 @@ export default function BlogPage({ initialPosts = [], initialFilter = {} }) {
                         />
                     </details>
 
-                    <div className="mt-5 mb-2 hidden text-xs font-semibold text-muted-foreground uppercase lg:block">分类</div>
+                    <Separator className="mt-4 hidden lg:block" />
+
+                    <div className="mt-4 mb-2 hidden text-xs font-semibold text-muted-foreground uppercase lg:block">分类</div>
                     <div className="hidden flex-col gap-1 lg:flex">
                         {cats.map(([cat, n]) => (
                             // 这里原本是手写 <button> + 一串 class,与规范(统一用 shadcn Button)不符
@@ -361,7 +390,9 @@ export default function BlogPage({ initialPosts = [], initialFilter = {} }) {
                     </div>
                     {/* 这里只有前 15 个,标题必须说清楚,否则和统计里的 66 看着像矛盾;
                         剩下的 51 个在标签云里,给个直达入口 */}
-                    <div className="mt-5 mb-2 hidden items-center justify-between text-xs font-semibold text-muted-foreground uppercase lg:flex">
+                    <Separator className="mt-4 hidden lg:block" />
+
+                    <div className="mt-4 mb-2 hidden items-center justify-between text-xs font-semibold text-muted-foreground uppercase lg:flex">
                         <span>常用标签</span>
                         {tagTotal > topTags.length && (
                             <Button
@@ -443,11 +474,11 @@ export default function BlogPage({ initialPosts = [], initialFilter = {} }) {
                     )}
 
                     <div style={{ minHeight: '60vh' }}>
-                        {loadError && <EmptyMsg>加载失败: {loadError}</EmptyMsg>}
-                        {!loadError && view === 'grid' && <GridView posts={filteredPosts} page={page} setPage={setPage} />}
-                        {!loadError && view === 'directory' && <DirectoryView posts={filteredPosts} />}
+                        {loadError && <EmptyMsg icon={TriangleAlert}>加载失败: {loadError}</EmptyMsg>}
+                        {!loadError && view === 'grid' && <GridView posts={filteredPosts} page={page} setPage={setPage} hrefFor={pageHref} onClear={clearFilters} hasFilter={hasFilter} />}
+                        {!loadError && view === 'directory' && <DirectoryView posts={filteredPosts} onClear={clearFilters} hasFilter={hasFilter} />}
                         {!loadError && view === 'tags' && <TagsView posts={searchedPosts} activeTag={activeTag} onPick={pickTagFromCloud} />}
-                        {!loadError && view === 'aidaily' && <AiDailyView index={filteredAiDaily} error={aiDailyError} page={page} setPage={setPage} filtered={Boolean(search.trim())} />}
+                        {!loadError && view === 'aidaily' && <AiDailyView index={filteredAiDaily} error={aiDailyError} page={page} setPage={setPage} filtered={Boolean(search.trim())} hrefFor={pageHref} />}
                     </div>
                 </section>
             </main>
@@ -489,8 +520,45 @@ function MobileFilters({ cats, topTags, activeCat, activeTag, toggleCat, toggleT
     );
 }
 
-function EmptyMsg({ children }) {
-    return <div className="py-16 text-center text-sm text-muted-foreground">{children}</div>;
+/**
+ * 空状态。原来是一行灰字扔在中间,信息量和观感都太薄。
+ * 现在给个图标 + 说明,并且**可操作** —— 空结果多半是筛过头了,
+ * 直接把「清除筛选」放在这里,不用回头去找上面那个小按钮。
+ */
+function EmptyMsg({ icon: Icon = SearchX, children, action }) {
+    return (
+        <div className="flex flex-col items-center gap-3 py-20 text-center">
+            <div className="flex size-12 items-center justify-center rounded-full bg-muted text-muted-foreground">
+                <Icon size={22} />
+            </div>
+            <p className="text-sm text-muted-foreground">{children}</p>
+            {action}
+        </div>
+    );
+}
+
+/** 列表骨架屏 —— 尺寸照抄 ArticleRow,免得数据到位时高度突变 */
+function RowSkeleton({ count = 5 }) {
+    return (
+        <div className="flex flex-col gap-2">
+            {Array.from({ length: count }, (_, i) => (
+                <div key={i} className={cn(cardSurface, 'flex gap-4 p-3')}>
+                    <Skeleton className="hidden h-10 w-14 shrink-0 sm:block" />
+                    <Skeleton className="h-16 w-16 shrink-0 rounded-lg sm:h-20 sm:w-20" />
+                    <div className="min-w-0 flex-1 space-y-2 py-0.5">
+                        <Skeleton className="h-4 w-2/3" />
+                        <Skeleton className="h-3 w-full" />
+                        <Skeleton className="h-3 w-4/5" />
+                        <div className="flex gap-1.5 pt-1">
+                            <Skeleton className="h-4 w-12 rounded-full" />
+                            <Skeleton className="h-4 w-14 rounded-full" />
+                            <Skeleton className="h-4 w-10 rounded-full" />
+                        </div>
+                    </div>
+                </div>
+            ))}
+        </div>
+    );
 }
 
 /**
@@ -511,43 +579,64 @@ function pageWindow(page, totalPages) {
     return out;
 }
 
-/** 翻页条(文章列表与 AI 日报共用) */
-function Pager({ page, totalPages, setPage }) {
+/**
+ * 翻页条(文章列表与 AI 日报共用),用 shadcn 的 Pagination。
+ *
+ * 每一项都是**真链接**:筛选状态本来就在 URL 里(?q=/?cat=/?tag=/?p=),
+ * 所以 href 能直接拼出来 —— 中键能在新标签打开、能复制、爬虫能跟。
+ * 同时拦截左键走客户端翻页,不真的重新加载。
+ * href 只由 React state 拼,不读 window,否则服务端/客户端拼出来的不一样会 hydration 报错。
+ */
+function Pager({ page, totalPages, setPage, hrefFor }) {
     if (totalPages <= 1) return null;
     // 翻页后回到顶部;跟随系统的"减少动态效果"设置,免得晕动症用户被强制平滑滚动
-    const smooth = typeof window !== 'undefined'
-        && !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const go = (n) => { setPage(n); window.scrollTo({ top: 0, behavior: smooth ? 'smooth' : 'auto' }); };
+    const go = (e, n) => {
+        e.preventDefault();
+        if (n < 1 || n > totalPages || n === page) return;
+        setPage(n);
+        const smooth = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        window.scrollTo({ top: 0, behavior: smooth ? 'smooth' : 'auto' });
+    };
 
     return (
-        <nav className="mt-6 flex flex-wrap items-center justify-center gap-1.5" aria-label="分页">
-            <Button variant="outline" size="icon" disabled={page <= 1} aria-label="上一页" onClick={() => go(page - 1)}>
-                <ChevronLeft size={16} />
-            </Button>
-            {pageWindow(page, totalPages).map((n, i) => (
-                n === null
-                    ? <span key={`gap-${i}`} className="px-1 text-sm text-muted-foreground select-none">…</span>
-                    : (
-                        <Button
-                            key={n}
-                            variant={n === page ? 'default' : 'outline'}
-                            size="icon"
-                            aria-current={n === page ? 'page' : undefined}
-                            onClick={() => go(n)}
-                        >
-                            {n}
-                        </Button>
-                    )
-            ))}
-            <Button variant="outline" size="icon" disabled={page >= totalPages} aria-label="下一页" onClick={() => go(page + 1)}>
-                <ChevronRight size={16} />
-            </Button>
-        </nav>
+        <Pagination className="mt-8">
+            <PaginationContent>
+                <PaginationItem>
+                    <PaginationPrevious
+                        text="上一页"
+                        href={hrefFor(Math.max(1, page - 1))}
+                        aria-disabled={page <= 1}
+                        className={cn(page <= 1 && 'pointer-events-none opacity-40')}
+                        onClick={(e) => go(e, page - 1)}
+                    />
+                </PaginationItem>
+
+                {pageWindow(page, totalPages).map((n, i) => (
+                    <PaginationItem key={n === null ? `gap-${i}` : n}>
+                        {n === null ? <PaginationEllipsis /> : (
+                            <PaginationLink isActive={n === page} href={hrefFor(n)} onClick={(e) => go(e, n)}>
+                                {n}
+                            </PaginationLink>
+                        )}
+                    </PaginationItem>
+                ))}
+
+                <PaginationItem>
+                    <PaginationNext
+                        text="下一页"
+                        href={hrefFor(Math.min(totalPages, page + 1))}
+                        aria-disabled={page >= totalPages}
+                        className={cn(page >= totalPages && 'pointer-events-none opacity-40')}
+                        onClick={(e) => go(e, page + 1)}
+                    />
+                </PaginationItem>
+            </PaginationContent>
+        </Pagination>
     );
 }
 
-function GridView({ posts, page, setPage }) {
-    if (posts.length === 0) return <EmptyMsg>没有匹配的文章</EmptyMsg>;
+function GridView({ posts, page, setPage, hrefFor, onClear, hasFilter }) {
+    if (posts.length === 0) return <EmptyMsg action={hasFilter && <Button variant="outline" size="sm" onClick={onClear}><X size={14} /> 清除筛选</Button>}>没有匹配的文章</EmptyMsg>;
     const totalPages = Math.ceil(posts.length / PER_PAGE);
     const start = (page - 1) * PER_PAGE;
     const pagePosts = posts.slice(start, start + PER_PAGE);
@@ -556,14 +645,14 @@ function GridView({ posts, page, setPage }) {
             <div className="flex flex-col gap-2">
                 {pagePosts.map((p) => <ArticleRow key={p.file} post={p} />)}
             </div>
-            <Pager page={page} totalPages={totalPages} setPage={setPage} />
+            <Pager page={page} totalPages={totalPages} setPage={setPage} hrefFor={hrefFor} />
         </>
     );
 }
 
 
-function DirectoryView({ posts }) {
-    if (posts.length === 0) return <EmptyMsg>没有匹配的文章</EmptyMsg>;
+function DirectoryView({ posts, onClear, hasFilter }) {
+    if (posts.length === 0) return <EmptyMsg action={hasFilter && <Button variant="outline" size="sm" onClick={onClear}><X size={14} /> 清除筛选</Button>}>没有匹配的文章</EmptyMsg>;
     const groups = {};
     posts.forEach((p) => {
         const cat = p.category || '其他';
@@ -598,8 +687,16 @@ function TagsView({ posts, activeTag, onPick }) {
                     <Badge
                         key={t}
                         variant={activeTag === t ? 'default' : 'outline'}
-                        className="cursor-pointer"
-                        style={{ fontSize: `${size}rem` }}
+                        /*
+                          h-auto / py-0 是必须的:Badge 基类写死了 h-5(20px)且 overflow-hidden,
+                          它是给固定小尺寸设计的。标签云却按文章数把字号放大到 1.6rem ——
+                          高度不跟着长,字就被从上下切掉。实测 66 个标签**全部**被裁,
+                          「教程 10」需要 28px 只给 18px,越大的标签裁得越狠,正好把
+                          「文章多 = 标签大」这个唯一的视觉信息毁掉。
+                          内边距用 em,让胶囊跟着字号一起缩放,而不是大字配小框。
+                        */
+                        className="h-auto cursor-pointer py-0 leading-normal"
+                        style={{ fontSize: `${size}rem`, padding: '0.3em 0.75em' }}
                         render={<button type="button" onClick={() => onPick(t)} />}
                     >
                         {t} <span className="opacity-60">{n}</span>
@@ -612,12 +709,13 @@ function TagsView({ posts, activeTag, onPick }) {
 
 // 日报每天由 cron 加一条,只增不减 —— 文章列表早就分页了,这里一直是全量渲染,
 // 一年后就是 300 多条一次性铺出来。用同一套翻页。
-function AiDailyView({ index, error, page, setPage, filtered }) {
-    if (error) return <EmptyMsg>AI 日报加载失败: {error}</EmptyMsg>;
-    if (index === null) return <EmptyMsg>加载中...</EmptyMsg>;
+function AiDailyView({ index, error, page, setPage, filtered, hrefFor }) {
+    if (error) return <EmptyMsg icon={TriangleAlert}>AI 日报加载失败: {error}</EmptyMsg>;
+    // 原来是一行「加载中...」灰字,列表出现时高度突然撑开;换成同尺寸骨架屏
+    if (index === null) return <RowSkeleton count={6} />;
     // 分清「一条都还没生成」和「搜索没搜到」—— 两者提示同一句话会让人以为日报没了
     if (!index.length) {
-        return <EmptyMsg>{filtered ? '没有匹配的日报' : '暂无 AI 日报，等待每日自动生成...'}</EmptyMsg>;
+        return <EmptyMsg icon={filtered ? SearchX : Bot}>{filtered ? '没有匹配的日报' : '暂无 AI 日报，等待每日自动生成...'}</EmptyMsg>;
     }
     const totalPages = Math.ceil(index.length / PER_PAGE);
     const start = (page - 1) * PER_PAGE;
@@ -654,7 +752,7 @@ function AiDailyView({ index, error, page, setPage, filtered }) {
                     </a>
                 );
             })}
-            <Pager page={page} totalPages={totalPages} setPage={setPage} />
+            <Pager page={page} totalPages={totalPages} setPage={setPage} hrefFor={hrefFor} />
         </div>
     );
 }
