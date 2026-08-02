@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { FileText, FolderTree, Tags, Bot, Search, Filter, ChevronDown, Rss, X } from 'lucide-react';
+import { FileText, FolderTree, Tags, Bot, Search, Filter, ChevronDown, ChevronLeft, ChevronRight, Rss, X } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -199,12 +199,46 @@ export default function BlogPage({ initialPosts = [] }) {
         return list;
     }, [posts, search, activeCat, activeTag]);
 
+    /**
+     * 日报也跟着搜索框走。
+     * 之前搜索框在日报视图下是个**死控件**:输进去什么都不会发生,
+     * 因为它只过滤 filteredPosts,而日报走的是另一份 aiDailyIndex。
+     * 分类/标签是文章的属性,对日报无意义,所以只接搜索这一项。
+     */
+    const filteredAiDaily = useMemo(() => {
+        if (!aiDailyIndex) return aiDailyIndex;
+        const term = search.toLowerCase().trim();
+        if (!term) return aiDailyIndex;
+        return aiDailyIndex.filter((d) =>
+            (d.title || '').toLowerCase().includes(term) ||
+            (d.summary || '').toLowerCase().includes(term) ||
+            (d.date || '').includes(term)
+        );
+    }, [aiDailyIndex, search]);
+
+    /**
+     * 切视图。筛选条件**保留** —— 原来一切视图就清空分类/标签,
+     * 「筛出分类再换个视图看看」这个很自然的动作会莫名其妙丢掉筛选。
+     * 之所以当初要清,是因为侧栏在标签云/日报视图里是隐藏的、筛选变得不可见;
+     * 现在筛选条在所有视图都显示(见下面 hasFilter 那块),就没有隐身问题了。
+     */
     function switchView(id) {
         setView(id);
         setPage(1);
-        setActiveCat(null);
-        setActiveTag(null);
         window.location.hash = id === 'grid' ? '' : '#' + id;
+    }
+
+    /**
+     * 从标签云点一个标签。
+     * 原来只是 setActiveTag,视图仍停在标签云 —— 用户点标签是想「看这个标签下的文章」,
+     * 结果留在原地看着标签云自己缩水一圈,文章一篇都看不到。这里直接跳到文章视图。
+     */
+    function pickTagFromCloud(tag) {
+        setActiveTag(tag);
+        setActiveCat(null);
+        setPage(1);
+        setView('grid');
+        window.location.hash = '';
     }
 
     function toggleCat(cat) {
@@ -328,7 +362,9 @@ export default function BlogPage({ initialPosts = [] }) {
                     <div className="relative mb-4">
                         <Search className="absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-muted-foreground" />
                         <Input
-                            placeholder="搜索笔记..."
+                            type="search"
+                            aria-label={view === 'aidaily' ? '搜索 AI 日报' : '搜索笔记'}
+                            placeholder={view === 'aidaily' ? '搜索日报...' : '搜索笔记...'}
                             value={search}
                             onChange={(e) => { setSearch(e.target.value); setPage(1); }}
                             className="pl-8"
@@ -346,12 +382,16 @@ export default function BlogPage({ initialPosts = [] }) {
                       是全站总数、不跟着变 —— 用户不知道自己筛出了几条。
                       顺带给一个「清除」出口:原本只能再点一次那个已选中的分类才能取消。
                     */}
-                    {hasFilter && showSidebar && (
+                    {hasFilter && (
                         <div className="mb-4 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-                            <span>共 <strong className="text-foreground">{filteredPosts.length}</strong> 篇</span>
-                            {activeCat && <Badge variant="secondary">分类：{activeCat}</Badge>}
-                            {activeTag && <Badge variant="secondary">标签：{activeTag}</Badge>}
+                            <span>共 <strong className="text-foreground">
+                                {view === 'aidaily' ? (filteredAiDaily?.length ?? 0) : filteredPosts.length}
+                            </strong> 篇</span>
+                            {/* 分类/标签只筛文章,在日报视图下标成"不生效",免得用户以为筛了没反应 */}
+                            {activeCat && <Badge variant="secondary" className={cn(view === 'aidaily' && 'opacity-50')}>分类：{activeCat}</Badge>}
+                            {activeTag && <Badge variant="secondary" className={cn(view === 'aidaily' && 'opacity-50')}>标签：{activeTag}</Badge>}
                             {search.trim() && <Badge variant="secondary">搜索：{search.trim()}</Badge>}
+                            {view === 'aidaily' && (activeCat || activeTag) && <span className="opacity-70">（分类/标签不筛日报）</span>}
                             <Button variant="ghost" size="sm" onClick={clearFilters} className="h-6 gap-1 px-2 text-xs">
                                 <X size={12} /> 清除
                             </Button>
@@ -362,8 +402,8 @@ export default function BlogPage({ initialPosts = [] }) {
                         {loadError && <EmptyMsg>加载失败: {loadError}</EmptyMsg>}
                         {!loadError && view === 'grid' && <GridView posts={filteredPosts} page={page} setPage={setPage} />}
                         {!loadError && view === 'directory' && <DirectoryView posts={filteredPosts} />}
-                        {!loadError && view === 'tags' && <TagsView posts={filteredPosts} onPick={toggleTag} />}
-                        {!loadError && view === 'aidaily' && <AiDailyView index={aiDailyIndex} error={aiDailyError} page={page} setPage={setPage} />}
+                        {!loadError && view === 'tags' && <TagsView posts={filteredPosts} onPick={pickTagFromCloud} />}
+                        {!loadError && view === 'aidaily' && <AiDailyView index={filteredAiDaily} error={aiDailyError} page={page} setPage={setPage} filtered={Boolean(search.trim())} />}
                     </div>
                 </section>
             </main>
@@ -409,23 +449,56 @@ function EmptyMsg({ children }) {
     return <div className="py-16 text-center text-sm text-muted-foreground">{children}</div>;
 }
 
+/**
+ * 算出要显示哪些页码:首页、末页、当前页 ±1,中间断开处用 null 表示省略号。
+ * 7 页以内直接全列(补省略号反而更长)。
+ *
+ * 为什么需要:日报每天 cron 加一条、只增不减,原来是把页码全铺出来 ——
+ * 现在 25 条(3 个按钮)看不出问题,一年后 390 条就是 33 个按钮糊满一行。
+ */
+function pageWindow(page, totalPages) {
+    if (totalPages <= 7) return Array.from({ length: totalPages }, (_, i) => i + 1);
+    const keep = new Set([1, totalPages, page, page - 1, page + 1]);
+    const out = [];
+    for (let n = 1; n <= totalPages; n++) {
+        if (keep.has(n)) out.push(n);
+        else if (out[out.length - 1] !== null) out.push(null);
+    }
+    return out;
+}
+
 /** 翻页条(文章列表与 AI 日报共用) */
 function Pager({ page, totalPages, setPage }) {
     if (totalPages <= 1) return null;
+    // 翻页后回到顶部;跟随系统的"减少动态效果"设置,免得晕动症用户被强制平滑滚动
+    const smooth = typeof window !== 'undefined'
+        && !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const go = (n) => { setPage(n); window.scrollTo({ top: 0, behavior: smooth ? 'smooth' : 'auto' }); };
+
     return (
-        <div className="mt-6 flex flex-wrap justify-center gap-1.5">
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((n) => (
-                <Button
-                    key={n}
-                    variant={n === page ? 'default' : 'outline'}
-                    size="icon"
-                    aria-current={n === page ? 'page' : undefined}
-                    onClick={() => { setPage(n); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-                >
-                    {n}
-                </Button>
+        <nav className="mt-6 flex flex-wrap items-center justify-center gap-1.5" aria-label="分页">
+            <Button variant="outline" size="icon" disabled={page <= 1} aria-label="上一页" onClick={() => go(page - 1)}>
+                <ChevronLeft size={16} />
+            </Button>
+            {pageWindow(page, totalPages).map((n, i) => (
+                n === null
+                    ? <span key={`gap-${i}`} className="px-1 text-sm text-muted-foreground select-none">…</span>
+                    : (
+                        <Button
+                            key={n}
+                            variant={n === page ? 'default' : 'outline'}
+                            size="icon"
+                            aria-current={n === page ? 'page' : undefined}
+                            onClick={() => go(n)}
+                        >
+                            {n}
+                        </Button>
+                    )
             ))}
-        </div>
+            <Button variant="outline" size="icon" disabled={page >= totalPages} aria-label="下一页" onClick={() => go(page + 1)}>
+                <ChevronRight size={16} />
+            </Button>
+        </nav>
     );
 }
 
@@ -493,10 +566,13 @@ function TagsView({ posts, onPick }) {
 
 // 日报每天由 cron 加一条,只增不减 —— 文章列表早就分页了,这里一直是全量渲染,
 // 一年后就是 300 多条一次性铺出来。用同一套翻页。
-function AiDailyView({ index, error, page, setPage }) {
+function AiDailyView({ index, error, page, setPage, filtered }) {
     if (error) return <EmptyMsg>AI 日报加载失败: {error}</EmptyMsg>;
     if (index === null) return <EmptyMsg>加载中...</EmptyMsg>;
-    if (!index.length) return <EmptyMsg>暂无 AI 日报，等待每日自动生成...</EmptyMsg>;
+    // 分清「一条都还没生成」和「搜索没搜到」—— 两者提示同一句话会让人以为日报没了
+    if (!index.length) {
+        return <EmptyMsg>{filtered ? '没有匹配的日报' : '暂无 AI 日报，等待每日自动生成...'}</EmptyMsg>;
+    }
     const totalPages = Math.ceil(index.length / PER_PAGE);
     const start = (page - 1) * PER_PAGE;
     return (
