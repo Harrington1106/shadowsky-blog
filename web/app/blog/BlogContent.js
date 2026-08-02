@@ -357,6 +357,13 @@ export default function BlogPage({ initialPosts = [], initialFilter = {} }) {
                 </aside>
 
                 <section className="min-w-0">
+                    {/*
+                      页面此前没有任何 h1,标题层级从 h2 直接起跳(实测 /blog 的 h1 数量 = 0)。
+                      不能简单地把侧栏那个「星空笔记」升成 h1 —— 侧栏在标签云/日报视图里是
+                      hidden(display:none),那两个视图会连一个 h1 都不剩。
+                      所以在主区放一个 sr-only 的,四个视图都在,视觉零变化。
+                    */}
+                    <h1 className="sr-only">星空笔记 — 文章列表</h1>
                     <div className="relative mb-4">
                         <Search className="absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-muted-foreground" />
                         <Input
