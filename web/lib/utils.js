@@ -34,3 +34,21 @@ export const cardSurface = 'rounded-xl bg-card text-card-foreground ring-1 ring-
  */
 export const cardInteractive = 'transition-all duration-200 hover:bg-accent/40 hover:ring-primary/40 '
     + 'hover:shadow-lg hover:shadow-foreground/5 motion-safe:hover:-translate-y-0.5';
+
+/**
+ * 可点筛选胶囊（标签 / 分类 chip）的交互态。
+ *
+ * ⚠ 必须显式写 hover —— Badge 基类里 outline/secondary 的 hover 规则全是
+ * `[a]:hover:*`，只对渲染成 <a> 的 Badge 生效。这些 chip 都是 render={<button>}，
+ * 于是鼠标划过去完全没有反应，看着像死控件。
+ * 选中态（default variant，底色已经是 primary）不能套同一份，否则一悬停就变成
+ * accent 底 —— 看着像「已取消选中」，正好把状态说反。
+ */
+export function chipInteractive(active) {
+    return cn(
+        'cursor-pointer transition-all duration-200 motion-safe:hover:-translate-y-px',
+        active
+            ? 'hover:bg-primary/85 hover:shadow-sm'
+            : 'hover:border-primary/50 hover:bg-accent hover:text-accent-foreground hover:shadow-sm'
+    );
+}
