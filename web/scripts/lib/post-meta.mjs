@@ -158,27 +158,33 @@ export function thumbName(name) {
  * 下载走 curl 而不是 fetch:PicList 常用的 GitHub/jsDelivr 在大陆多半要过代理,
  * curl 会读 HTTPS_PROXY,Node 22 的全局 fetch 不会。
  *
- * 同时出一张 <hash>.thumb.webp 给列表用。为什么必须有:
- *   封面存的是 1000px 级别的原图(23–127KB),而 /blog 的缩略图框只有 64–80px ——
+ * `opts.thumb` 为真时额外出一张 <hash>.thumb.webp 给 /blog 列表用。为什么需要它:
+ *   封面存的是 1000px 级别的原图(23–127KB),而列表的缩略图框只有 64–80px ——
  *   按面积算下载的像素是用到的 150 倍。首屏 11 张就是 664KB,每一张还都要跨太平洋,
  *   浏览器的转圈要等它们全部结束(2026-08-04 实测)。缩略图一张只有几 KB。
  *   文章页头图和 og:image 仍然用原图,那里是真的要大图。
+ *
+ * ⚠ 只有**封面**要 thumb。正文图不进列表,给它生成就是白占空间白传一趟。
+ *   探活用途(发布台的"试抓一遍图片")同样不用,所以默认不出。
  */
-export async function mirrorImage(url, tmpDir) {
+export async function mirrorImage(url, tmpDir, { thumb: wantThumb = false } = {}) {
     const hash = crypto.createHash('sha1').update(url).digest('hex').slice(0, 8);
     const name = `${hash}.webp`;
     const src = path.join(tmpDir, `${hash}.src`);
     const out = path.join(tmpDir, name);
-    const thumb = path.join(tmpDir, thumbName(name));
 
     execFileSync('curl', ['-fsSL', '--max-time', '40', '-o', src, url], { stdio: ['ignore', 'pipe', 'pipe'] });
     await sharp(src).resize({ width: 1600, withoutEnlargement: true }).webp({ quality: 82 }).toFile(out);
-    await sharp(src).resize({ width: THUMB_WIDTH, withoutEnlargement: true }).webp({ quality: 72 }).toFile(thumb);
 
-    return {
-        name, out, bytes: fs.statSync(out).size,
-        thumbName: thumbName(name), thumbOut: thumb, thumbBytes: fs.statSync(thumb).size,
-    };
+    const r = { name, out, bytes: fs.statSync(out).size };
+    if (wantThumb) {
+        const thumb = path.join(tmpDir, thumbName(name));
+        await sharp(src).resize({ width: THUMB_WIDTH, withoutEnlargement: true }).webp({ quality: 72 }).toFile(thumb);
+        r.thumbName = thumbName(name);
+        r.thumbOut = thumb;
+        r.thumbBytes = fs.statSync(thumb).size;
+    }
+    return r;
 }
 
 /** 校验文件名/必填字段，返回问题列表（空数组=没问题） */

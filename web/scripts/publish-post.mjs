@@ -133,14 +133,16 @@ if (!args.flags.has('keep-remote-images')) {
     const urls = collectImageUrls(finalBody, out.coverImage);
     for (const url of urls) {
         try {
-            const r = await mirrorImage(url, tmpDir);
+            // 只有封面进列表，也就只有它需要缩略图（此时 coverImage 还是原始外链）
+            const isCover = out.coverImage === url;
+            const r = await mirrorImage(url, tmpDir, { thumb: isCover });
             const localUrl = `/uploads/covers/${r.name}`;
             // 全文替换该 URL（封面 frontmatter 与正文里的引用一起换掉）
             finalBody = finalBody.split(url).join(localUrl);
-            if (out.coverImage === url) out.coverImage = localUrl;
+            if (isCover) out.coverImage = localUrl;
             mirrored.push({
                 url, localUrl, kb: Math.round(r.bytes / 1024), file: r.out,
-                thumbFile: r.thumbOut, thumbKb: Math.round(r.thumbBytes / 1024),
+                thumbFile: r.thumbOut, thumbKb: r.thumbBytes ? Math.round(r.thumbBytes / 1024) : 0,
             });
         } catch (e) {
             failed.push({ url, msg: String(e.message).split('\n')[0] });
@@ -176,7 +178,7 @@ console.log(`  摘要      ${out.excerpt || '（空）'}`);
 console.log(`  封面      ${out.coverImage || '（无）'}`);
 if (mirrored.length) {
     console.log(`  镜像图片  ${mirrored.length} 张`);
-    for (const m of mirrored) console.log(`    ${m.url}\n      → ${m.localUrl}  (${m.kb}KB，列表缩略图 ${m.thumbKb}KB)`);
+    for (const m of mirrored) console.log(`    ${m.url}\n      → ${m.localUrl}  (${m.kb}KB${m.thumbKb ? `，列表缩略图 ${m.thumbKb}KB` : ''})`);
 } else if (!args.flags.has('keep-remote-images')) {
     console.log('  镜像图片  无跨境图片 ✓');
 }
@@ -213,9 +215,10 @@ fs.writeFileSync(stagedMd, finalDoc, 'utf8');
 if (mirrored.length) {
     run('ssh', [SSH_HOST, `mkdir -p ${REMOTE_COVERS}`]);
     for (const m of mirrored) {
-        // 原图和缩略图一起上,少一个就是列表回落到原图(还能看,但白下载 100 多 KB)
-        run('scp', ['-q', m.file, m.thumbFile, `${SSH_HOST}:${REMOTE_COVERS}/`]);
-        console.log(`    图片 ${path.basename(m.file)} + 缩略图 ✓`);
+        // 封面要连缩略图一起上,少一个就是列表回落到原图(还能看,但白下载 100 多 KB);
+        // 正文图没有缩略图,只传一个
+        run('scp', ['-q', ...[m.file, m.thumbFile].filter(Boolean), `${SSH_HOST}:${REMOTE_COVERS}/`]);
+        console.log(`    图片 ${path.basename(m.file)}${m.thumbFile ? ' + 缩略图' : ''} ✓`);
     }
 }
 run('scp', ['-q', stagedMd, `${SSH_HOST}:${REMOTE_POSTS}/`]);

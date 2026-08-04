@@ -113,7 +113,13 @@ export function renderMarkdown(md, { imageBaseDir = '' } = {}) {
                 if (cleanHref && !cleanHref.startsWith('http') && !cleanHref.startsWith('//') && !cleanHref.startsWith('/')) {
                     cleanHref = imageBaseDir + cleanHref;
                 }
-                return `<img src="${cleanHref}" alt="${text || ''}" title="${title || ''}" class="rounded-lg shadow-md max-w-full h-auto my-6 mx-auto">`;
+                /*
+                  loading="lazy" 不能省:一篇多图教程会在打开时把所有图一次性拉完,
+                  而正文图基本都在首屏之外。图片本身还都要跨太平洋(大陆 → LAX → 杭州),
+                  浏览器的转圈要等视口内的图全部结束 —— 观感就是"页面一直在加载"。
+                  头图不走这里(那是 PostContent 单独渲染的 LCP 元素,必须 eager)。
+                */
+                return `<img src="${cleanHref}" alt="${text || ''}" title="${title || ''}" loading="lazy" decoding="async" class="rounded-lg shadow-md max-w-full h-auto my-6 mx-auto">`;
             },
             // 标题在服务端就带上 id,目录锚点在 JS 执行前就能用;
             // 客户端那段 `if (!h.id)` 会原样保留这里给的 id。
