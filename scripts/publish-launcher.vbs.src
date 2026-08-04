@@ -1,0 +1,102 @@
+' 发布台桌面启动器
+'
+' 双击后：确认 dev server 在不在 → 不在就隐藏启动 → 用 Edge 的 app 模式
+' 开一个没有地址栏、没有标签页的独立窗口，指向后台的发布台页面。
+'
+' 为什么用 VBS 而不是 .bat/.ps1：只有 WScript.Shell.Run 的 windowStyle=0
+' 能做到**完全不闪黑窗**。.bat 会留一个控制台，powershell -WindowStyle Hidden
+' 仍会闪一下。
+'
+' ⚠ 本文件必须存成 UTF-16LE + BOM。WSH 按 ANSI 读，存成 UTF-8 会把中文字符串
+'   撑断，报 "Unterminated string constant"；UTF-8 BOM 也不行，会被当成非法字符。
+'   仓库里另存了一份 .vbs.src（UTF-8，好做 diff），改完用 scripts/build-launcher.mjs 生成。
+'
+' dev server 起来后会一直挂着，下次双击就是秒开。
+' 要停：taskkill /F /IM node.exe（注意这会杀掉所有 node 进程）
+
+Option Explicit
+
+Dim shell, fso, repoRoot, url, edgePath, i
+
+Set shell = CreateObject("WScript.Shell")
+Set fso = CreateObject("Scripting.FileSystemObject")
+
+' 本脚本在 <仓库>/scripts/ 下，往上两级就是仓库根
+repoRoot = fso.GetParentFolderName(fso.GetParentFolderName(WScript.ScriptFullName))
+url = "http://127.0.0.1:3000/admin/publish"
+
+If Not fso.FileExists(repoRoot & "\web\app\admin\publish\page.js") Then
+    MsgBox "找不到发布台页面：" & vbCrLf & repoRoot & "\web\app\admin\publish\page.js" & vbCrLf & vbCrLf & _
+           "这个快捷方式是按仓库位置生成的，仓库移动过就要重新生成。", 16, "发布台"
+    WScript.Quit 1
+End If
+
+' 已经在跑就别重复起
+If Not ServerAlive() Then
+    ' 后台登录要 AUTH_SECRET + ADMIN_PASSWORD。
+    ' ⚠ 这两个**不能**放 web/.env —— Next standalone 会把它打进生产镜像（见 CLAUDE.md）。
+    '   所以读仓库 scripts/dev-admin.env（已 gitignore），用 set 注进子进程环境。
+    Dim envFile, envCmd
+    envFile = repoRoot & "\scripts\dev-admin.env"
+    envCmd = ""
+    If fso.FileExists(envFile) Then
+        Dim ts, line, eq
+        Set ts = fso.OpenTextFile(envFile, 1)
+        Do Until ts.AtEndOfStream
+            line = Trim(ts.ReadLine)
+            eq = InStr(line, "=")
+            If eq > 1 And Left(line, 1) <> "#" Then
+                envCmd = envCmd & "set """ & line & """ && "
+            End If
+        Loop
+        ts.Close
+    End If
+
+    Dim runCmd
+    runCmd = "cmd /c cd /d """ & repoRoot & "\web"" && " & envCmd & "npm run dev"
+    shell.Run runCmd, 0, False
+
+    ' 等它起来，最多 60 秒（Next 首次编译这一页要好几秒）
+    For i = 1 To 120
+        WScript.Sleep 500
+        If ServerAlive() Then Exit For
+    Next
+End If
+
+If Not ServerAlive() Then
+    MsgBox "发布台没能在 60 秒内启动。" & vbCrLf & vbCrLf & _
+           "手工看一眼报什么错：" & vbCrLf & "  cd " & repoRoot & "\web" & vbCrLf & "  npm run dev", 16, "发布台"
+    WScript.Quit 1
+End If
+
+' Edge 的 --app 模式：独立窗口、无地址栏无标签页、任务栏单独图标
+edgePath = "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe"
+If Not fso.FileExists(edgePath) Then
+    edgePath = "C:\Program Files\Microsoft\Edge\Application\msedge.exe"
+End If
+
+If fso.FileExists(edgePath) Then
+    shell.Run """" & edgePath & """ --app=" & url, 1, False
+Else
+    ' 没有 Edge 就退回默认浏览器，功能一样，只是多了地址栏
+    shell.Run url, 1, False
+End If
+
+' dev server 活着吗。探首页而不是 /admin/publish —— 后者会 307 跳登录页。
+' ⚠ setProxy 1 = 直连，绕过系统代理。本机挂着 127.0.0.1:7890 的代理，
+'   不绕过的话对 127.0.0.1 的探测也可能被它接管，结果就不准了。
+Function ServerAlive()
+    Dim http
+    ServerAlive = False
+    On Error Resume Next
+    Set http = CreateObject("MSXML2.ServerXMLHTTP.6.0")
+    http.setProxy 1
+    http.setTimeouts 800, 800, 800, 3000
+    http.open "GET", "http://127.0.0.1:3000/", False
+    http.send
+    If Err.Number = 0 Then
+        If http.status > 0 Then ServerAlive = True
+    End If
+    Err.Clear
+    On Error GoTo 0
+End Function

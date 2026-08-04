@@ -25,3 +25,6 @@ docs/superpowers/
 
 # 本机异地备份副本(pull-backup.sh 拉取)
 _backups/
+
+# 本地 dev 后台凭据（桌面发布台用），不进 git
+scripts/dev-admin.env

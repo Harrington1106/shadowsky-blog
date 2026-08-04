@@ -131,6 +131,43 @@ D:\Projects\shadowsky-blog\
 - **运行**：Docker 容器 `shadowsky-v2`（`node:22-slim`），`restart=unless-stopped`，约 100MB 内存
 - **CDN/代理**：Cloudflare（DNS + Worker）
 
+## 片刻 / 收藏两页（2026-08-03 UI 改版）
+
+结构仍是常规的「`page.js` 只出 metadata + `XxxContent.js` 客户端拉 `/api` 渲染」。
+下面几条是改版时踩出来的，动这两页之前先看一眼。
+
+**片刻（`web/app/moments/MomentsContent.js`）**
+
+- 三个视图走 `?view=` 深链：`feed`（瀑布，默认）/ `wall`（照片墙）/ `timeline`（时间线）；
+  单条仍是 `?id=`，另有 `?tag=` `?q=`
+- **`/api/moments` 不返回图片尺寸**（库里就没存），所以瀑布的占位框先按 4:5 撑开，
+  `onLoad` 量出 `naturalWidth/Height` 再写回真实比例。首屏 8 张必须 `eager` ——
+  懒加载会让比例陆续填进来、分列跟着重算，用户正读的那张卡会左右跳
+- 分列**不能**按 `i % cols` 轮流塞：一条长文案就能把某一列拉长半屏、右边几列早早见底。
+  现在按 `estimateHeight()` 往当前最矮的列填，高度相同时留在最左，保住「横着读是倒序」
+- 文案 / 日期 / 地点 / 标签**常驻可见**，别再改回「只在 hover 浮出」——
+  触屏没有 hover，改版前那套在手机上等于一条信息都不给
+- 灯箱有 `DialogTitle`（`sr-only`）。base-ui 的 Dialog 少了它，屏读器读不出这是什么对话框；
+  另外 `DialogContent` 基类是 `grid`，要盖成 flex 必须显式写 `flex`（tw-merge 只在同组内去重）
+
+**收藏（`web/app/bookmarks/BookmarksContent.js`）**
+
+- 列表容器是 `grid`，**别换回 `columns-*`**：CSS 多列是列优先排版，阅读顺序会变成
+  「一列到底再换下一列」，各列长度也没法平衡
+- 分类导航宽屏在左侧吸顶栏、窄屏降级成横滚胶囊（`lg:hidden`），两边同一份 `catCounts`
+- 子分类名取自 `categories[父分类].subcategories`（`{slug: 中文名}`），查不到才落
+  `SUB_FALLBACKS`，再查不到直接显示 slug —— 库里分类元信息不全时页面上会看见英文 slug，
+  那是数据问题不是显示 bug
+- 站点图标只查 `lib/iconMirror` 的本地镜像，查不到就显示域名首字母块。
+  **不允许**回退到任何在线 favicon 服务（见「前端零跨境依赖」）
+
+**两页共用**
+
+- 筛选胶囊的交互态统一走 `lib/utils.js` 的 `chipInteractive()`（`/blog` 也在用，改一处三页都变）
+- ⚠ 胶囊横滚条上的 `py-1 -my-1` 不能删：CSS 规定一个轴非 `visible` 时，另一个轴的
+  `visible` 会被算成 `auto` —— 横向滚动区在**纵向同样是裁剪区**，胶囊 hover 上移的那 1px
+  连同投影会被整齐切掉。内边距留余量、负外边距抵消回去，视觉间距不变
+
 ## 数据存储
 
 | 数据 | 位置（服务器） | 容器内路径 |
@@ -350,13 +387,53 @@ frontmatter），所以「保存时记一笔」只覆盖一半。git 无论从�
 `lib/posts.js` 的索引只缓存 30s，正文按文件 mtime 失效。丢一个 `.md` 上去 + 清 CF 缓存就生效。
 `deploy-v2.sh` 只在改了 `web/` 代码时才需要。
 
-**三个入口，按场景挑：**
+**四个入口，按场景挑：**
 
 | 场景 | 用什么 |
 |------|--------|
-| 想看着排版决定发不发 | `cd web && npm run post:ui` — 本地发布台（网页） |
+| 开写一篇新的 | Obsidian 命令面板 → **Templater: 新建：新文章**（`content/drafts` 就是库，见下） |
+| 想看着排版决定发不发 | 双击桌面「发布台」图标，或 `cd web && npm run post:ui` |
 | 就想快速发一篇 | `cd web && npm run post` — 交互式命令行 |
 | 脚本 / 自动化 | `node scripts/publish-post.mjs <文件>` |
+
+**`content/` 本身就是一个 Obsidian 库**（2026-08-03 起，库根就在 `content/`），所以
+Obsidian 存盘 = 草稿箱立刻可见，中间没有复制/同步。库里：`drafts/` 写作区、
+`_templates/新文章.md`（Templater 模板，问标题/slug/分类/标签/封面，自动改名成
+`<日期>-<slug>.md`）、`_docs/使用说明.md`，以及只读的 `posts/` `ai-daily/` 两份线上镜像。
+分类清单与「slug 是否已被占用」都从 `content/posts` 现读，不写死。
+只有 **`drafts/` 这一层**的 `*.md` 会被发布台列出来（`DRAFTS_DIR`），
+`_templates` / `_docs` 不在这一层，所以不会混进去。
+主题是 Phycat 0.2.9（从别的库搬来）：**只拷 `manifest.json` + `theme.css`**，
+原目录里的 `.git` 千万别带 —— 会在本仓库里套出嵌套 git，和 `pull-content.sh` 那条坑同源。
+
+⚠ 库里 `propertiesInDocument` 特意设成 `source`（不是默认的 `visible`）：
+Obsidian 的属性编辑器会把 `tags: ["a","b"]` 重排成多行 YAML，而线上解析器只认单行 JSON
+数组，改回去就是「文章标签全空」。插件二进制与主题本体不进 git（见 `content/.gitignore`），
+但库配置和模板进 —— 换机器时重装 Templater 即可，设置是现成的。
+Templater **2.24.3**（2026-08-03 从 2.20.6 升上来，Obsidian 已自动升到 1.13.4）。
+
+**插件汉化**：`node scripts/obsidian-i18n.mjs`（`--check` 体检 / `--restore` 还原）。
+只有 Templater 需要它 —— 那个插件没有任何 i18n，只能替换打包后的字面量；
+`Image auto upload` 自带 zh-cn 词典，跟 Obsidian 界面语言走，别去改它的 `main.js`。
+脚本每次都从 `main.js.orig` 重新生成（幂等），译文表在 `scripts/obsidian-i18n.templater.json`。
+它会校验三件事：键在源码里真实存在、译文引号闭合、**键值的代码骨架逐字符相同**
+（`setTooltip("x")` 不能被翻成 `setToolTip("译")`，`` `Insert ${i}` `` 里的 `${i}` 不能丢），
+最后过一遍 `node --check`，不通过就不写盘。
+⚠ **插件升级会覆盖汉化**，升完重跑一次；`--check` 会列出新增的、表里还没有的英文文案。
+2.20 → 2.24 就是个例子：设置页从 `setName()/setDesc()` 改成了声明式的 `{name, desc, heading}`，
+163 条里当时有 59 条对不上，全靠 `--check` 报出来。译文表里的 `_skip` 是**故意不翻**的清单
+（tp.* 那套自动补全文档是 API 说明，翻了反而和官方文档对不上）。
+
+**桌面启动器**（2026-08-03 起）：双击「发布台」→ 隐藏启动 node 服务 → 用 Edge 的
+`--app=` 模式开一个没有地址栏/标签页的独立窗口。三个件在 `scripts/`：
+`post-ui-launcher.vbs`（启动器）、`post-ui.ico`（`make-ico.mjs` 从站点 favicon 生成，手写 ICO
+因为 sharp 不输出 ico）、`install-post-ui-shortcut.ps1`（建桌面+开始菜单快捷方式，`-Uninstall` 删）。
+**仓库换位置要重跑一次 install 脚本**（快捷方式里是绝对路径）。
+
+⚠ **两个文件的编码不能改**：`.vbs` 必须是 **UTF-16LE + BOM**（WSH 按 ANSI 读，UTF-8 会把
+中文字符串撑断报 "Unterminated string constant"；UTF-8 BOM 也不行，它当成非法字符）；
+`.ps1` 必须带 **UTF-8 BOM**（Windows PowerShell 5.1 否则按 ANSI 读，同样啃中文）。
+服务起来后会一直挂着（约 76MB），下次双击秒开；要停就杀占 4000 端口的那个 node。
 
 **发布台**（`post:ui`，只绑 127.0.0.1）摆在 Obsidian 旁边用：左栏草稿、中间用
 **站点自己的渲染管线和样式**做的正文预览（深浅色可切）、右栏自动算好的字段与待镜像图片。
@@ -390,6 +467,12 @@ bash scripts/pull-content.sh --commit             归档进 git
 后者在 stdin 不是 TTY（管道 / CI）时会挂住不返回，最后抛一个看不懂的
 "unsettled top-level await"。改脚本时别换回去。
 
+**正文写法体检**（`lintBody`，发布台与 CLI 共用，只警告不拦发布）：正文 H1 重复标题、
+整行粗体当小标题、标题跳级、**代码块没标语言**、**图片缺 alt**、**用了站点不认的语法**
+（callout / `==高亮==` / `[[双链]]` / `![[嵌入]]` / 脚注 —— 站点是纯 GFM，这些全是字面量）、
+**段落超 180 字**。⚠ 除代码块语言那条外都跑在**剥掉代码块与行内代码**的正文上，
+否则讲 Obsidian 语法的教程会把自己报成问题。阈值是拿现有 19 篇量出来的（段落最长 132 字）。
+
 **只写人才知道的字段**：`title` `date` `category` `tags`（`coverImage` 可留空，会落到分类默认图）。
 `excerpt` / `readTime` / `lastModified` 一律由脚本算 —— 手写这三个是上一版工作流最容易出错的地方，
 现有 19 篇的 `excerpt` 几乎全是把标题又抄了一遍（`BlogContent.js` 的 `trimTitlePrefix` 就是为此打的补丁）。
@@ -403,6 +486,9 @@ bash scripts/pull-content.sh --commit             归档进 git
 ⚠ **镜像失败会中止发布**（文章不上线），不再「保持外链继续发」。
 原来那样会让「零跨境依赖」被静默破坏 —— 警告淹在输出里，等发现时已经是大陆用户加载 4.5 秒了。
 真要带外链发得自己写 `--keep-remote-images`。发布台里可以先点「试抓一遍图片」提前试出来。
+`collectImageUrls` 扫的是**剥掉代码块与行内代码**的正文（和 `lintBody` 同一条理由）——
+讲前端的教程里 ```html 代码块中的 `<img src="…/YOUR_COVER_IMAGE.jpg">` 是示例不是图片，
+不剥就会去抓这个占位地址、404、整篇发不出去。
 
 ⚠ 几个约束，改脚本时别踩：
 - frontmatter 每个值**必须单行**，且不能含 `---` —— 线上解析器是 `raw.split('---', 3)` +
