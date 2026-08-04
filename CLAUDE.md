@@ -237,10 +237,13 @@ bash scripts/deploy-v2.sh --skip-build               # 复用现有 .next
 bash scripts/deploy-v2.sh --skip-build --skip-upload # 包已经在服务器 /tmp,别再传 28MB
 ```
 
-⚠ **上传这一跳会抽风**：2026-08-04 实测连续两次 `Connection reset`，手工重传成功但只有
-78KB/s（28MB 传了 6 分钟）。脚本现在自动重试 3 次，传完一律比对 md5 才继续
+⚠ **上传断了不一定是服务器的锅**：2026-08-04 连续两次 `Connection reset`、78KB/s，
+一度以为是跨境链路，**后来确认是本机网络当时出了问题**。所以排查顺序是先测本机
+（`ssh shadowsky 'echo ok'` 通不通、`curl -s -o /dev/null -w "%{time_starttransfer}"` 多少），
+别急着改脚本或怀疑服务器。
+不管成因是哪边，脚本现在自动重试 3 次，传完一律比对 md5 才继续
 （scp 断在半路也可能返回 0，拿半个 tar 去 `docker build` 只会报一堆看不懂的错）。
-链路实在不行就先手工 `scp web/deploy.tgz shadowsky:/tmp/`，回头 `--skip-upload` 接着跑。
+真断了就先手工 `scp web/deploy.tgz shadowsky:/tmp/`，回头 `--skip-upload` 接着跑。
 ⚠ `--skip-upload` **同时跳过打包** —— tar 不是字节可复现的，重打一次 md5 就变了，
 那样永远和服务器上那个包对不上，flag 等于白给。它的语义是「服务器上那个包正是我要部署的」。
 
