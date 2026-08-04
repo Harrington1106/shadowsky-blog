@@ -1,7 +1,7 @@
 'use client';
 
 import { usePathname, useRouter } from 'next/navigation';
-import { LayoutDashboard, Bookmark, Camera, Clapperboard, Film, Rss, Bell, FileText, Settings, BarChart3, Link2, Hand, LogOut } from 'lucide-react';
+import { LayoutDashboard, Bookmark, Camera, Clapperboard, Film, Rss, Bell, FileText, Settings, BarChart3, Link2, Hand, LogOut, Rocket } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Toaster } from '@/components/ui/sonner';
@@ -9,6 +9,9 @@ import { Toaster } from '@/components/ui/sonner';
 const NAV = [
     { href: '/admin', label: '概览', icon: LayoutDashboard, exact: true },
     { href: '/admin/posts', label: '文章', icon: FileText },
+    // 发布台只在本机 dev 有意义：发布要 ssh/scp，线上容器没有私钥。
+    // 后端 route 也各自有 devOnly() 守卫，这里只是不给入口。
+    ...(process.env.NODE_ENV === 'production' ? [] : [{ href: '/admin/publish', label: '发布台', icon: Rocket }]),
     { href: '/admin/bookmarks', label: '收藏', icon: Bookmark },
     { href: '/admin/moments', label: '随手拍', icon: Camera },
     { href: '/admin/media', label: '追番/追漫', icon: Clapperboard },

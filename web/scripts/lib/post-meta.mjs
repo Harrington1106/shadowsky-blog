@@ -118,7 +118,14 @@ export function computeExcerpt(body, title) {
     return '';
 }
 
-/** 收集正文与封面里的所有跨境 http(s) 图片地址 */
+/**
+ * 收集正文与封面里的所有跨境 http(s) 图片地址。
+ *
+ * ⚠ 扫描前必须剥掉代码块与行内代码，理由和 lintBody 那条一样：
+ *   讲前端的教程里，```html 代码块中的 `<img src="…/YOUR_COVER_IMAGE.jpg">` 是**示例**，
+ *   不是真图片。不剥就会去抓这个占位地址，404 → 镜像失败 → 整篇发不出去。
+ *   （2026-08-04 bilibili-embedding 那篇就是这么卡住的）
+ */
 export function collectImageUrls(body, coverImage) {
     const urls = new Set();
     const add = (u) => {
@@ -128,9 +135,10 @@ export function collectImageUrls(body, coverImage) {
         } catch { return; }
         urls.add(u);
     };
+    const prose = body.replace(/```[\s\S]*?```/g, '').replace(/`[^`\n]*`/g, '');
     add(coverImage);
-    for (const m of body.matchAll(/!\[[^\]]*\]\(([^)\s]+)/g)) add(m[1]);
-    for (const m of body.matchAll(/<img[^>]+src=["']([^"']+)["']/gi)) add(m[1]);
+    for (const m of prose.matchAll(/!\[[^\]]*\]\(([^)\s]+)/g)) add(m[1]);
+    for (const m of prose.matchAll(/<img[^>]+src=["']([^"']+)["']/gi)) add(m[1]);
     return [...urls];
 }
 
@@ -171,23 +179,38 @@ export function validate(fileName, fm) {
 }
 
 /**
+ * 站点不认的 Markdown 语法。
+ *
+ * 渲染管线是**纯 GFM**（renderMarkdown.js 里 `new Marked({breaks:true, gfm:true})`，
+ * 没挂任何扩展），而草稿是在 Obsidian 里写的 —— Obsidian 的自有语法在编辑器里好看，
+ * 发出去全是字面量。这是「本地看着对、线上不对」最容易中招的一类。
+ */
+const UNSUPPORTED_SYNTAX = [
+    { name: 'callout（> [!NOTE]）', re: /^>\s*\[!\w+\]/gm, effect: '渲染成普通引用块，还带着字面的 [!NOTE]' },
+    { name: '嵌入（![[图片]]）', re: /!\[\[[^\]\n]+\]\]/g, effect: '整段原样显示，图片不出现' },
+    { name: '双链（[[页面]]）', re: /(?<!!)\[\[[^\]\n]+\]\]/g, effect: '原样显示方括号' },
+    { name: '高亮（==文字==）', re: /==[^=\n]+==/g, effect: '原样显示等号' },
+    { name: '脚注（[^1]:）', re: /^\[\^[^\]\n]+\]:/gm, effect: 'marked 不支持脚注，定义行会当成普通段落' },
+];
+
+/** 段落中文字数上限。现有 19 篇最长 132 字（99 分位 103），180 只拦真正的大段。 */
+const LONG_PARAGRAPH_CJK = 180;
+
+/**
  * 正文写法体检 —— 回答「为什么每篇文章的渲染效果不一样」。
  *
  * 渲染管线只有一套（lib/renderMarkdown.js），所以差异 100% 来自源文件写法。
- * 实测 19 篇的结构差异很大，这里挑出**会造成可见渲染差异**的三类：
- *
- *  1. 正文重复标题的 H1（19 篇里 7 篇有）：页面顶部已经有大标题，
- *     有的文章又来一个，于是有的文章一进去是两个大标题、有的直接是正文。
- *  2. 「假标题」——整行只有 **粗体** 的段落被当成小标题用（picgo 那篇 14 处）。
- *     它渲染出来是加粗的正文：没有标题样式、没有章节锚点、**不进目录**。
- *     同一篇里往往还混着真的 ### 标题，于是目录忽深忽浅、缺一大截。
- *  3. 跳级标题（## 直接到 ####）：层级断了，目录缩进会错乱。
- *
  * 只报告，不自动改 —— 正文是作者的东西。
+ *
+ * ⚠ 除「代码块没标语言」外，所有规则都跑在**剥掉代码块与行内代码**的正文上。
+ *   站里有讲 Obsidian、讲 Markdown 的教程，正文里出现 `[[双链]]` 这类示例是内容不是错误；
+ *   不剥就会把教程本身报成问题。
  */
 export function lintBody(body, title) {
     const issues = [];
-    const lines = body.replace(/```[\s\S]*?```/g, '').split('\n');
+    const codeBlocks = body.match(/```[\s\S]*?```/g) || [];
+    const prose = body.replace(/```[\s\S]*?```/g, '').replace(/`[^`\n]*`/g, '');
+    const lines = prose.split('\n');
 
     const dup = duplicateH1(body, title);
     if (dup) issues.push({ kind: 'dup-h1', msg: `正文开头的 H1「${dup}」和标题重复，页面会出现两个大标题`, fix: '发布时加 --strip-h1' });
@@ -208,6 +231,58 @@ export function lintBody(body, title) {
             break;
         }
     }
+
+    // 代码块没标语言：hljs 认不出语言就退化成没有配色的纯文本，
+    // 而代码块是技术文章里视觉分量最重的元素，缺高亮一眼就能看出来。
+    const unlabeled = codeBlocks.filter((b) => !/^```[A-Za-z0-9+#._-]+/.test(b));
+    if (unlabeled.length) {
+        issues.push({
+            kind: 'code-no-lang',
+            msg: `${unlabeled.length}/${codeBlocks.length} 个代码块没标语言 —— 高亮不生效，渲染成没有配色的纯文本`,
+            fix: '开头写 ```bash / ```js / ```nginx 等；纯命令输出用 ```text',
+        });
+    }
+
+    // 图片缺 alt：图挂了就是一片空白，读屏软件也读不出来。封面镜像后文件名是 sha1，
+    // 更没有任何可读信息。
+    const imgs = prose.match(/!\[([^\]]*)\]\(/g) || [];
+    const noAlt = imgs.filter((m) => m === '![](');
+    if (noAlt.length) {
+        issues.push({
+            kind: 'img-no-alt',
+            msg: `${noAlt.length}/${imgs.length} 张图片没有 alt 文本 —— 图加载不出来时是一片空白，读屏软件也读不出来`,
+            fix: '写成 ![宝塔面板的网站列表](/uploads/covers/xxx.webp)',
+        });
+    }
+
+    // Obsidian 自有语法：本地好看、线上是字面量
+    const found = UNSUPPORTED_SYNTAX
+        .map((s) => ({ ...s, n: (prose.match(s.re) || []).length }))
+        .filter((s) => s.n > 0);
+    if (found.length) {
+        issues.push({
+            kind: 'obsidian-syntax',
+            msg: `用了 ${found.length} 种站点不认的语法：${found.map((s) => `${s.name}×${s.n}（${s.effect}）`).join('；')}`,
+            fix: '站点是纯 GFM。要提示框就写 > **TL;DR**：…；要强调用 **粗体**；链接写成 [文字](地址)',
+        });
+    }
+
+    // 段落过长：手机上一屏 20 字左右一行，180 字就是连着 9 行没有喘息
+    const longParas = prose
+        .split(/\n\s*\n/)
+        .map((p) => p.trim())
+        .filter((p) => p && !/^[#>|\-*+\d]/.test(p) && !p.startsWith('<'))
+        .map((p) => ({ p, cjk: (p.match(/[一-龥]/g) || []).length }))
+        .filter((x) => x.cjk > LONG_PARAGRAPH_CJK);
+    if (longParas.length) {
+        const worst = longParas.reduce((a, b) => (b.cjk > a.cjk ? b : a));
+        issues.push({
+            kind: 'long-paragraph',
+            msg: `${longParas.length} 个段落超过 ${LONG_PARAGRAPH_CJK} 字（最长 ${worst.cjk} 字，开头「${worst.p.slice(0, 20)}…」）—— 手机上是一堵墙`,
+            fix: '按意群拆成几段，或改写成列表',
+        });
+    }
+
     return issues;
 }
 

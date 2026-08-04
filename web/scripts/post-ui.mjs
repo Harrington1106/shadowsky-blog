@@ -64,6 +64,45 @@ function draftPath(file) {
     return path.join(DRAFTS_DIR, name);
 }
 
+/**
+ * 解析「哪一篇」。src 只有两种：
+ *   draft —— content/drafts，写作区
+ *   post  —— content/posts，**服务器内容的本地镜像**（改了不发布不生效）
+ * 一律 basename，挡路径穿越。
+ */
+function resolveFile(file, src) {
+    const name = path.basename(String(file || ''));
+    if (!name.endsWith('.md')) throw new Error('只接受 .md');
+    if (src === 'post') return path.join(LOCAL_POSTS, name);
+    return path.join(DRAFTS_DIR, name);
+}
+
+/**
+ * 已发布文章列表。
+ * 库上移到 content/ 之后，Obsidian 里能看到这 19 篇了，发布台却只列草稿 ——
+ * 「翻出旧文改一处再发」是真实需求（比如补代码块的语言标注），所以这里也列出来。
+ */
+function listPublished() {
+    if (!fs.existsSync(LOCAL_POSTS)) return [];
+    return fs.readdirSync(LOCAL_POSTS)
+        .filter((f) => f.endsWith('.md'))
+        .map((f) => {
+            const full = path.join(LOCAL_POSTS, f);
+            const raw = fs.readFileSync(full, 'utf8');
+            const { fm, body } = parseFrontMatter(raw);
+            return {
+                file: f,
+                src: 'post',
+                title: fm.title || f,
+                date: fm.date || '',
+                category: fm.category || '',
+                mtime: fs.statSync(full).mtimeMs,
+                words: (body.match(/[一-龥]/g) || []).length,
+            };
+        })
+        .sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+}
+
 function listDrafts() {
     if (!fs.existsSync(DRAFTS_DIR)) return [];
     return fs.readdirSync(DRAFTS_DIR)
@@ -84,8 +123,8 @@ function listDrafts() {
 }
 
 /** 发布预检 + 渲染预览。和 publish-post.mjs 用同一套函数算，不会出现两个答案。 */
-function inspect(file) {
-    const full = draftPath(file);
+function inspect(file, src) {
+    const full = resolveFile(file, src);
     const raw = fs.readFileSync(full, 'utf8').replace(/\r\n/g, '\n');
     const { fm, body } = parseFrontMatter(raw);
 
@@ -97,6 +136,7 @@ function inspect(file) {
 
     return {
         file,
+        src: src === 'post' ? 'post' : 'draft',
         slug: path.basename(file).replace(/\.md$/, ''),
         mtime: fs.statSync(full).mtimeMs,
         live: alreadyLive(file),
@@ -117,8 +157,8 @@ function inspect(file) {
  *   否则不落盘 —— 一旦写进草稿，它们就变成手写值，以后即使正文改了也不会再重算，
  *   正好退回这套工作流当初要解决的那个问题。
  */
-function writeMeta(file, fields) {
-    const full = draftPath(file);
+function writeMeta(file, fields, src) {
+    const full = resolveFile(file, src);
     const raw = fs.readFileSync(full, 'utf8').replace(/\r\n/g, '\n');
     const { fm, body } = parseFrontMatter(raw);
 
@@ -146,12 +186,28 @@ const PAGE = (css) => `<!doctype html>
   * { box-sizing: border-box; }
   body { margin:0; font: 14px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
          background: var(--background); color: var(--foreground); }
-  /* 三栏是固定宽度，窗口一窄（或浏览器缩放拉大）中间的预览栏就被挤成一条。
-     给个下限：宁可整体横向滚动，也不让预览塌掉 —— 预览塌了这个工具就没意义了。 */
-  .wrap { display:grid; grid-template-columns: 244px minmax(520px, 1fr) 320px; height:100vh; min-width:1084px; }
-  .col { overflow:auto; padding:16px; min-width:0; }
+  /* 布局分三档。原来是固定三栏 + min-width:1084px —— 窗口一窄就整体横向滚动，
+     而这个界面跑在一个可以随便拉大拉小的 app 窗口里，横向滚动是最糟的退化方式。
+     现在：宽 → 三栏；中 → 两栏，右边的信息/操作栏落到底部；窄 → 全部竖着堆。
+     无论哪一档，预览都保持完整宽度，发布按钮都够得到。 */
+  .wrap { display:grid; grid-template-columns: 244px minmax(0,1fr) 320px; height:100vh; overflow:hidden; }
+  .col { overflow:auto; padding:16px; min-width:0; min-height:0; }
   .col + .col { border-left:1px solid var(--border); }
-  .col:nth-child(2) > div { max-width: 724px; margin: 0 auto; }
+  .col.main > div { max-width: 724px; margin: 0 auto; }
+
+  @media (max-width: 1080px) {
+    /* 两栏：列表 + 预览在上，信息/操作横跨底部 */
+    .wrap { grid-template-columns: 216px minmax(0,1fr); grid-template-rows: minmax(0,1fr) auto; }
+    .col.side { grid-column: 1 / -1; border-left:none; border-top:1px solid var(--border); max-height: 44vh; }
+  }
+  @media (max-width: 760px) {
+    /* 单栏：列表收成一条可横向滑的胶囊行，把高度让给预览 */
+    .wrap { grid-template-columns: minmax(0,1fr); grid-template-rows: auto minmax(0,1fr) auto; }
+    .col.list { max-height: 33vh; border-bottom:1px solid var(--border); }
+    .col + .col { border-left:none; }
+    .col { padding:12px; }
+    .hero { font-size:19px; }
+  }
   /* 右栏改成「可滚动内容 + 吸底操作区」。
      ⚠ 展开「改字段」后表单很长，操作区原来跟着被推到屏幕外 ——
        最重要的按钮要滚动才找得到。现在它永远贴在底部。 */
@@ -220,12 +276,32 @@ const PAGE = (css) => `<!doctype html>
   .act.danger { color: color-mix(in oklch, red 65%, var(--foreground)); }
   .act.danger:hover { border-color: color-mix(in oklch, red 50%, transparent); }
   .flash { position:fixed; right:14px; bottom:14px; background:var(--foreground); color:var(--background);
-           padding:7px 13px; border-radius:8px; font-size:12px; opacity:0; transition:opacity .2s; pointer-events:none; }
+           padding:7px 13px; border-radius:8px; font-size:12px; opacity:0; transition:opacity .2s; pointer-events:none;
+           z-index:30; }
   .flash.on { opacity:1; }
+
+  /* 列表分区：草稿在上、已发布在下。已发布那段默认折起来，19 篇平铺会把草稿挤没。 */
+  .group { margin-top:18px; }
+  .group > summary { list-style:none; cursor:pointer; display:flex; align-items:center; justify-content:space-between;
+                     font-size:11px; text-transform:uppercase; letter-spacing:.08em; font-weight:600;
+                     color:var(--muted-foreground); padding:5px 0; border-radius:6px; }
+  .group > summary::-webkit-details-marker { display:none; }
+  .group > summary:hover { color: var(--foreground); }
+  .group > summary .count { font-size:10px; opacity:.7; letter-spacing:0; }
+  .draft .when { font-variant-numeric: tabular-nums; }
+  /* 已发布的条目压得比草稿轻一档 —— 主角是草稿 */
+  .draft.pub b { font-weight:500; }
+
+  /* 键盘可达：整个界面都能 Tab，焦点必须看得见 */
+  :focus-visible { outline:2px solid var(--foreground); outline-offset:2px; border-radius:6px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition:none !important; animation:none !important; }
+  }
 </style></head>
 <body>
 <div class="wrap">
-  <div class="col">
+  <div class="col list">
     <div class="brand">发布台</div>
     <p>写作在 Obsidian，这里只管发布</p>
     <div class="head"><h2>草稿</h2>
@@ -240,8 +316,12 @@ const PAGE = (css) => `<!doctype html>
       <button class="act ghost" id="nCancel">取消</button>
     </div>
     <div id="drafts"></div>
+    <details class="group" id="pubGroup">
+      <summary><span>已发布</span><span class="count" id="pubCount"></span></summary>
+      <div id="published"></div>
+    </details>
   </div>
-  <div class="col">
+  <div class="col main">
     <div class="head"><h2>预览</h2><button class="mini" id="theme">深色</button></div>
     <div id="preview"><p class="empty">左边选一篇。</p></div>
   </div>
@@ -253,7 +333,7 @@ const PAGE = (css) => `<!doctype html>
 </div>
 <div class="flash" id="flash"></div>
 <script>
-let cur = null, curMtime = 0, busy = false;
+let cur = null, curSrc = 'draft', curMtime = 0, busy = false;
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const flash = (msg) => { const f = $('flash'); f.textContent = msg; f.classList.add('on'); setTimeout(() => f.classList.remove('on'), 1600); };
@@ -280,32 +360,50 @@ async function loadDrafts() {
         return h < 24 ? h + ' 小时前' : Math.floor(h / 24) + ' 天前';
     };
     $('drafts').innerHTML = list.length ? list.map(d =>
-        \`<div class="draft" data-f="\${esc(d.file)}">
+        \`<div class="draft" tabindex="0" data-f="\${esc(d.file)}" data-src="draft">
            <b>\${esc(d.title)}</b>
            <div class="sub">
-             <span>\${ago(d.mtime)}</span><i class="dot"></i><span>\${d.words} 字</span>
+             <span class="when">\${ago(d.mtime)}</span><i class="dot"></i><span>\${d.words} 字</span>
              \${d.live ? '<i class="pill live">站上已有</i>' : '<i class="pill">新文章</i>'}
            </div>
          </div>\`
     ).join('') : '<p class="empty">还没有草稿，点右上角新建。</p>';
+
+    // 已发布的那 19 篇：能翻出来改一处再重发（补代码块语言标注之类）
+    const pub = await (await fetch('/api/published')).json();
+    $('pubCount').textContent = pub.length ? pub.length + ' 篇' : '';
+    $('published').innerHTML = pub.length ? pub.map(d =>
+        \`<div class="draft pub" tabindex="0" data-f="\${esc(d.file)}" data-src="post">
+           <b>\${esc(d.title)}</b>
+           <div class="sub">
+             <span class="when">\${esc(d.date)}</span>\${d.category ? '<i class="dot"></i><span>' + esc(d.category) + '</span>' : ''}
+             <i class="dot"></i><span>\${d.words} 字</span>
+           </div>
+         </div>\`
+    ).join('') : '<p class="empty">还没有已发布的文章镜像。</p>';
+
     document.querySelectorAll('.draft').forEach(el => {
-        el.onclick = () => select(el.dataset.f);
-        el.classList.toggle('on', el.dataset.f === cur);
+        const pick = () => select(el.dataset.f, false, el.dataset.src);
+        el.onclick = pick;
+        el.onkeydown = (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pick(); } };
+        el.classList.toggle('on', el.dataset.f === cur && el.dataset.src === curSrc);
     });
     // ⚠ 只在还没选过时自动选第一篇。无条件 select 会在每次发布结束后把右栏重绘，
     //   连带把刚跑完的日志擦掉 —— 真人点完按钮只会看到日志一闪而过。
-    if (list.length && !cur) select(list[0].file);
+    if (list.length && !cur) select(list[0].file, false, 'draft');
     return list;
 }
 
 // ── 选中并渲染 ──
-async function select(file, keepScroll) {
+async function select(file, keepScroll, src) {
     cur = file;
-    document.querySelectorAll('.draft').forEach(el => el.classList.toggle('on', el.dataset.f === file));
-    const d = await (await fetch('/api/inspect?file=' + encodeURIComponent(file))).json();
+    if (src) curSrc = src;
+    document.querySelectorAll('.draft').forEach(el =>
+        el.classList.toggle('on', el.dataset.f === file && el.dataset.src === curSrc));
+    const d = await (await fetch('/api/inspect?file=' + encodeURIComponent(file) + '&src=' + curSrc)).json();
     curMtime = d.mtime;
 
-    const col = document.querySelectorAll('.col')[1];
+    const col = document.querySelector('.col.main');
     const keep = keepScroll ? col.scrollTop : 0;
     // 站点文章页顶部是一整块 hero 封面，预览里原来完全没有 ——
     // 刚用 PicList 配好的封面看不到，等于这一步白配。
@@ -326,7 +424,13 @@ async function select(file, keepScroll) {
     d.lint.forEach(i => warn.push(\`<div class="warn">\${esc(i.msg)}<br><span style="opacity:.75">建议：\${esc(i.fix)}</span></div>\`));
     if (!d.meta.excerpt) warn.push('<div class="warn">没能自动抽出摘要，在下面「改字段」里补一句。</div>');
 
-    $('side').innerHTML = warn.join('') + \`
+    // 打开的是已发布文章时把话说在前面：content/posts 是服务器的单向镜像，
+    // 在这儿改只动本地副本，不重发线上就是没变。
+    const mirrorNote = d.src === 'post'
+        ? '<div class="warn">这是<b>已发布文章的本地镜像</b>。在这里改只动本地副本 —— 要线上生效，改完必须点下面的「更新线上文章」。</div>'
+        : '';
+
+    $('side').innerHTML = mirrorNote + warn.join('') + \`
       <div class="sect">这次发布</div>
       <div class="row"><span>动作</span><span>\${d.live ? '更新站上已有的文章' : '新发一篇'}</span></div>
       <div class="row"><span>地址</span><span>/post/\${esc(d.slug)}</span></div>
@@ -358,8 +462,8 @@ async function select(file, keepScroll) {
       <button class="act" id="pub" \${d.problems.length ? 'disabled' : ''}>\${d.live ? '更新线上文章' : '发布到线上'}</button>
       <div class="foot-row">
         \${d.images.length ? '<button class="act ghost" id="chk">试抓图片</button>' : ''}
-        <button class="act ghost" id="prev">本地预览</button>
-        <button class="act ghost danger" id="del">删除</button>
+        \${d.src === 'draft' ? '<button class="act ghost" id="prev">本地预览</button>' : ''}
+        \${d.src === 'draft' ? '<button class="act ghost danger" id="del">删除</button>' : ''}
       </div>\`;
 
     // 发布是对外动作、而且立刻公开，不该一次点击就发生。
@@ -383,20 +487,20 @@ async function select(file, keepScroll) {
         armed = false;
         act('publish');
     };
-    $('prev').onclick = () => act('preview');
+    if ($('prev')) $('prev').onclick = () => act('preview');
     $('eSave').onclick = saveMeta;
     if ($('chk')) $('chk').onclick = checkImages;
 
-    // 删除同样两步
+    // 删除同样两步（已发布的没有这个按钮）
     let delArmed = false;
-    $('del').onclick = async () => {
+    if ($('del')) $('del').onclick = async () => {
         if (!delArmed) {
             delArmed = true;
             $('del').textContent = '真的删除？再点一次';
             setTimeout(() => { delArmed = false; $('del').textContent = '删除这篇草稿'; }, 5000);
             return;
         }
-        await fetch('/api/delete', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ file: cur }) });
+        await fetch('/api/delete', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ file: cur, src: curSrc }) });
         cur = null;
         $('side').innerHTML = '<p class="empty">—</p>';
         $('preview').innerHTML = '<p class="empty">左边选一篇。</p>';
@@ -413,7 +517,7 @@ async function select(file, keepScroll) {
 async function checkImages() {
     const btn = $('chk');
     btn.disabled = true; btn.textContent = '抓取中…';
-    const r = await (await fetch('/api/check-images?file=' + encodeURIComponent(cur))).json();
+    const r = await (await fetch('/api/check-images?file=' + encodeURIComponent(cur) + '&src=' + curSrc)).json();
     btn.disabled = false;
     const bad = r.filter(x => !x.ok);
     btn.textContent = bad.length ? \`\${bad.length}/\${r.length} 张抓不到\` : \`\${r.length} 张都能抓 ✓\`;
@@ -428,7 +532,7 @@ async function saveMeta() {
     await fetch('/api/meta', {
         method: 'POST', headers: { 'content-type': 'application/json' },
         body: JSON.stringify({
-            file: cur,
+            file: cur, src: curSrc,
             title: $('eTitle').value, category: $('eCat').value, tags: $('eTags').value,
             coverImage: $('eCover').value, excerpt: $('eExcerpt').value,
         }),
@@ -444,11 +548,11 @@ async function act(mode) {
     const log = $('log');
     log.style.display = 'block';
     log.textContent = '执行中…\\n';
-    $('pub').disabled = true; $('prev').disabled = true;
+    $('pub').disabled = true; if ($('prev')) $('prev').disabled = true;
     const stripH1 = $('striph1')?.checked ? '1' : '';
     const res = await fetch('/api/run', {
         method: 'POST', headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ file: cur, mode, stripH1 }),
+        body: JSON.stringify({ file: cur, mode, stripH1, src: curSrc }),
     });
     const reader = res.body.getReader(); const dec = new TextDecoder();
     log.textContent = '';
@@ -458,7 +562,7 @@ async function act(mode) {
         log.textContent += dec.decode(value);
         log.scrollTop = log.scrollHeight;
     }
-    $('pub').disabled = false; $('prev').disabled = false;
+    $('pub').disabled = false; if ($('prev')) $('prev').disabled = false;
     busy = false;
     loadDrafts();
 }
@@ -517,11 +621,14 @@ const server = http.createServer(async (req, res) => {
             return res.end(PAGE(previewCss()));
         }
         if (url.pathname === '/api/drafts') return json(res, listDrafts());
-        if (url.pathname === '/api/inspect') return json(res, inspect(url.searchParams.get('file') || ''));
+        if (url.pathname === '/api/published') return json(res, listPublished());
+        if (url.pathname === '/api/inspect') {
+            return json(res, inspect(url.searchParams.get('file') || '', url.searchParams.get('src')));
+        }
 
         // 试抓：用和发布时同一条路径（curl，会读 HTTPS_PROXY），才测得准
         if (url.pathname === '/api/check-images') {
-            const d = inspect(url.searchParams.get('file') || '');
+            const d = inspect(url.searchParams.get('file') || '', url.searchParams.get('src'));
             const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'sq-check-'));
             const out = [];
             for (const u of d.images) {
@@ -538,13 +645,16 @@ const server = http.createServer(async (req, res) => {
 
         if (url.pathname === '/api/delete' && req.method === 'POST') {
             const b = await readBody(req);
+            // 只允许删草稿。content/posts 是线上内容的镜像，从这里删等于把留档也弄没了，
+            // 而且线上照样还在 —— 是个只有坏处的操作。
+            if (b.src === 'post') return json(res, { error: '已发布的文章不能在这里删' });
             fs.unlinkSync(draftPath(b.file));
             return json(res, { ok: true });
         }
 
         if (url.pathname === '/api/meta' && req.method === 'POST') {
             const b = await readBody(req);
-            writeMeta(b.file, b);
+            writeMeta(b.file, b, b.src);
             return json(res, { ok: true });
         }
 
@@ -565,8 +675,11 @@ const server = http.createServer(async (req, res) => {
         }
 
         if (url.pathname === '/api/run' && req.method === 'POST') {
-            const { file, mode, stripH1 } = await readBody(req);
-            const argv = [path.join(__dirname, 'publish-post.mjs'), path.basename(file)];
+            const { file, mode, stripH1, src } = await readBody(req);
+            // publish-post.mjs 认「存在的路径」也认「草稿箱里的裸文件名」——
+            // 重发已发布的文章就把 content/posts 下的完整路径传给它
+            const target = src === 'post' ? resolveFile(file, 'post') : path.basename(file);
+            const argv = [path.join(__dirname, 'publish-post.mjs'), target];
             if (mode === 'preview') argv.push('--preview');
             if (stripH1) argv.push('--strip-h1');
 
@@ -588,6 +701,8 @@ server.listen(PORT, '127.0.0.1', () => {
     const url = `http://localhost:${PORT}`;
     console.log(`发布台  ${url}`);
     console.log(`草稿箱  ${DRAFTS_DIR}\n`);
+    // 桌面启动器会自己用 Edge 的 app 模式开一个独立窗口，这时候别再弹一个普通标签页
+    if (process.env.POST_UI_NO_OPEN) return;
     const open = process.platform === 'win32' ? ['cmd', ['/c', 'start', '', url]]
         : process.platform === 'darwin' ? ['open', [url]] : ['xdg-open', [url]];
     try { execFileSync(open[0], open[1], { stdio: 'ignore' }); } catch { /* 打不开就自己点上面那个地址 */ }
