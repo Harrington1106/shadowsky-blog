@@ -202,7 +202,19 @@ function RssPageInner() {
                 </Button>
             )}
 
-            <main className="mx-auto flex h-[calc(100dvh-3.5rem)] w-full max-w-7xl flex-col px-2 pt-3 pb-16 sm:px-4 md:pb-3">
+            {/*
+              桌面上整块是「视口高的一屏」：wrapper 定高、main 占满剩余、Footer 收在底部，
+              于是**页面本身不滚动**。原来 main 自己就是 100dvh-3.5rem，Footer 又接在后面，
+              文档比视口高出 52px —— 鼠标不在阅读区上时滚的就是这 52px，
+              页面晃一下、文章一动不动，用起来就是「鼠标滚不动」。
+            */}
+            <div className="md:flex md:h-[calc(100dvh-3.5rem)] md:flex-col">
+            {/*
+              max-w-7xl(1280px) 太窄:1447 的窗口上左右白丢 199px,三栏分完阅读区只剩 574px,
+              正文真正放字的宽度只有 481px —— 站内文章页是 720px。放宽到 1800px 后
+              阅读区能拿到 740+,正文才够得着 720px 这个舒服的行宽。
+            */}
+            <main className="mx-auto flex h-[calc(100dvh-3.5rem)] w-full max-w-[1800px] flex-col px-2 pt-3 pb-16 sm:px-4 md:h-auto md:min-h-0 md:flex-1 md:pb-3">
                 <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border bg-card md:flex-row">
                     <aside
                         className={cn(
@@ -230,7 +242,7 @@ function RssPageInner() {
                             <Inbox size={16} /> 全部文章
                         </button>
 
-                        <div className="min-h-0 flex-1 overflow-y-auto px-2 pb-2">
+                        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-2 pb-2">
                             {!feedsLoaded && <PanelLoading text="正在加载订阅源…" />}
                             {feedsLoaded && feedsError && (
                                 <PanelEmpty icon={AlertCircle} title="加载失败">
@@ -287,7 +299,8 @@ function RssPageInner() {
                                 </Button>
                             </div>
                         </div>
-                        <div className="min-h-0 flex-1 overflow-y-auto p-2">
+                        {/* overscroll-contain：滚到列表尽头时不要把剩下的滚动量甩给整个页面 */}
+                        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-2">
                             {articlesLoading && (
                                 <PanelLoading text={activeFeedUrl === 'all' ? '正在聚合所有文章…' : '正在获取文章…'}>
                                     {progress && <p className="mt-1 text-xs text-muted-foreground">{progress.completed}/{progress.total}</p>}
@@ -366,6 +379,7 @@ function RssPageInner() {
             </main>
 
             <Footer pageId="rss" />
+            </div>
             <BackToTop />
 
             <AiSettingsModal open={settingsOpen} onClose={() => setSettingsOpen(false)} />
@@ -611,7 +625,7 @@ function ArticleReader({ article, fontSize, onFontSize, focusMode, onToggleFocus
     }
 
     return (
-        <div className="min-h-0 flex-1 overflow-y-auto" ref={contentRef}>
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain" ref={contentRef}>
             {confirmDialog}
             <article className={cn('mx-auto w-full px-6 py-8 sm:px-10', focusMode ? 'max-w-[860px]' : 'max-w-[720px]')}>
                 <header className="mb-8 border-b pb-6">
