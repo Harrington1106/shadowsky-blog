@@ -246,6 +246,21 @@ try {
     console.log(`    ${url}  ${code}${hasTitle ? ' ✓ 标题在' : ' ⚠ 页面里没找到标题'}`);
     console.log(`    /api/posts 索引  ${inIndex ? '已收录 ✓' : '⚠ 未收录（索引缓存 30s，稍后再看）'}`);
     if (code !== '200') process.exitCode = 1;
+
+    /*
+      封面必须单独拉一次 —— 页面 200 不代表图片出得来。
+      2026-08-04 就是这么漏掉的：镜像下来的 16 张封面全 404 了一整天，
+      而每次发布这里都显示「200 ✓ 标题在」。
+      （当时的成因是 Next standalone 只认启动时扫到的 public/ 文件；
+      现在 /uploads/ 由 nginx 直接发，但这条验证仍要留着 —— 它管的是「图到底能不能看」，
+      不是某一个具体成因。）
+    */
+    if (out.coverImage?.startsWith('/')) {
+        const c = run('curl', ['-s', '-o', os.devNull, '-w', '%{http_code} %{content_type}', '--noproxy', '*', `${SITE}${out.coverImage}`]).trim();
+        const ok = c.startsWith('200') && c.includes('image/');
+        console.log(`    封面 ${out.coverImage}  ${c}${ok ? ' ✓' : ' ⚠ 图片没出来'}`);
+        if (!ok) process.exitCode = 1;
+    }
 } catch {
     console.warn('⚠ 验证请求失败，手工开一下上面那个地址');
 }

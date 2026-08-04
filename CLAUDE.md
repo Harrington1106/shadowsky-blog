@@ -26,6 +26,9 @@
         │     /ai-daily/YYYY-MM-DD.html → /post?ai=YYYY-MM-DD
         │     /ai-daily/ 及其余         → /blog#aidaily
         │
+        ├── /uploads/*  → alias /www/wwwroot/shadowquake-v2/data/uploads/（2026-08-04 起）
+        │                 nginx 直接发，不进 v2。见下方「⚠ /uploads 必须由 nginx 发」
+        │
         └── 其余全部 /  → proxy_pass 127.0.0.1:3001
                           → Docker 容器 shadowsky-v2（Next standalone，容器内 :3000）
 
@@ -175,9 +178,25 @@ D:\Projects\shadowsky-blog\
 | 结构化数据（书签/随手拍/媒体/订阅/视频/统计/设置…） | `/www/wwwroot/shadowquake-v2/db/shadowquake.db` | `/app/db/shadowquake.db` |
 | 文章 Markdown | `/www/wwwroot/shadowquake-v2/content/posts` | `/app/content/posts` |
 | AI 日报 Markdown + index.json | `/www/wwwroot/shadowquake-v2/content/ai-daily` | `/app/content/ai-daily` |
-| 上传图片 | `/www/wwwroot/shadowquake-v2/data/uploads` | `/app/public/uploads` |
+| 上传图片 | `/www/wwwroot/shadowquake-v2/data/uploads` | `/app/public/uploads`（挂着，但**不由它对外发**） |
 
 这三个目录是**容器的 volume 挂载**，即全部生产数据。备份脚本打包 `db` + `content` 两项。
+
+### ⚠ `/uploads` 必须由 nginx 直接发（2026-08-04 踩过，全站封面消失一整天）
+
+**Next standalone 在启动时把 `public/` 递归扫成一个 Set，之后只查这个 Set** ——
+容器启动后新增的文件一律 404，哪怕它就躺在挂载卷里、`docker exec ls` 看得见。
+而「发文章镜像封面」正是往这个卷里丢新文件，于是每张新封面都要等下次重启容器才出得来。
+
+诊断姿势（三步就能定位，别一上来怀疑 CF）：
+```bash
+ssh shadowsky 'docker exec shadowsky-v2 ls -la /app/public/uploads/covers/<x>.webp   # 文件在
+               curl -s -o /dev/null -w "%{http_code}\n" http://127.0.0.1:3001/uploads/covers/<x>.webp
+               docker inspect -f "{{.State.StartedAt}}" shadowsky-v2'   # 文件比它新 → 就是这个
+```
+现在 nginx 有 `location ^~ /uploads/`（alias 到宿主目录 + `immutable`），发文即可见、不用重启，
+也省掉一趟 Node 转发。文件名本来就是内容唯一的（封面=源 URL 的 sha1，随手拍=时间戳+随机），
+所以敢上 30 天 immutable。**别把这条 location 删掉退回给 v2**。
 
 文章正文只在服务器上被写入（后台编辑器写文件、cron 生成日报），git 里原本没有 → 改错只能翻备份。
 现在用 `bash scripts/pull-content.sh --commit` 把内容同步回仓库 `content/` 留档，
