@@ -531,6 +531,30 @@ function ArticleReader({ article, fontSize, onFontSize, focusMode, onToggleFocus
         return () => { cancelled = true; };
     }, [article]);
 
+    /*
+      源只给了个摘要就自动去抓原文正文。
+
+      为什么必须自动:大多数源根本不发全文 —— 实测少数派正文中位 57 字、
+      Solidot 286 字(阮一峰 6513、美团 2508 才是发全文的)。57 个字放进
+      728×750 的阅读区连半屏都填不满,于是「打开一篇文章,滚轮毫无反应」,
+      用起来就是「鼠标滚不动」(用户连着反馈两次的正是这个)。
+      「加载全文」按钮一直都在,但要手点,而且没人知道该点它。
+
+      阈值 600 字:低于它基本可以断定是摘要,而发全文的源都在 2000 字以上,
+      不会被误触发、白白多打一次抓取。
+      每篇只自动试一次(autoFullFor 记住已试过的链接),失败就安静留着摘要。
+    */
+    const autoFullFor = useRef(null);
+    useEffect(() => {
+        if (!safeContent) return;
+        if (autoFullFor.current === article.link) return;
+        const textLen = stripTags(safeContent).trim().length;
+        if (textLen >= 600) return;
+        autoFullFor.current = article.link;
+        handleFullArticle({ silent: true });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [safeContent, article]);
+
     // 阅读进度 + 回顶按钮显隐
     useEffect(() => {
         const el = contentRef.current;
@@ -599,7 +623,11 @@ function ArticleReader({ article, fontSize, onFontSize, focusMode, onToggleFocus
         }
     }
 
-    async function handleFullArticle() {
+    /**
+     * 抓原文正文。silent=true 是自动触发的那条路径 —— 失败就安静地留着摘要,
+     * 不弹 toast:用户并没有点任何东西,冒出一个错误提示只会莫名其妙。
+     */
+    async function handleFullArticle({ silent = false } = {}) {
         setFullLoading(true);
         try {
             const resp = await fetch('/api/article-content?url=' + encodeURIComponent(article.link));
@@ -609,11 +637,11 @@ function ArticleReader({ article, fontSize, onFontSize, focusMode, onToggleFocus
                 setShowTranslated(false);
                 setTranslatedHtml('');
                 setSafeContent(data.content);
-            } else {
+            } else if (!silent) {
                 toast.error('未能提取完整文章，请尝试打开原文阅读。');
             }
         } catch (e) {
-            toast.error('加载失败: ' + e.message, { description: '请尝试直接打开原文。' });
+            if (!silent) toast.error('加载失败: ' + e.message, { description: '请尝试直接打开原文。' });
         } finally {
             setFullLoading(false);
         }
@@ -637,7 +665,7 @@ function ArticleReader({ article, fontSize, onFontSize, focusMode, onToggleFocus
                         <Button variant="outline" size="sm" className={PILL_BTN} nativeButton={false} render={<a href={article.link} target="_blank" rel="noopener noreferrer" />}>
                             <ExternalLink size={13} /> 原文
                         </Button>
-                        <Button variant="outline" size="sm" className={PILL_BTN} title="通过服务器加载完整文章" onClick={handleFullArticle} disabled={fullLoading}>
+                        <Button variant="outline" size="sm" className={PILL_BTN} title="通过服务器加载完整文章" onClick={() => handleFullArticle()} disabled={fullLoading}>
                             {fullLoading ? <Loader2 size={13} className="animate-spin" /> : <ScrollText size={13} />} 加载全文
                         </Button>
                         <Button variant="outline" size="sm" className={PILL_BTN} title="分享这篇文章" onClick={handleShare}>
@@ -668,7 +696,17 @@ function ArticleReader({ article, fontSize, onFontSize, focusMode, onToggleFocus
                     dangerouslySetInnerHTML={{ __html: showTranslated ? translatedHtml : safeContent }}
                 />
 
-                <p className="mt-10 text-center text-xs text-muted-foreground">— 完 —</p>
+                {/*
+                  自动抓全文时给个明确交代:否则用户面对的就是「一段摘要 + 毫无动静」,
+                  分不清是这篇本来就这么短、还是页面卡住了。
+                */}
+                {fullLoading ? (
+                    <p className="mt-10 flex items-center justify-center gap-2 text-center text-xs text-muted-foreground">
+                        <Loader2 size={13} className="animate-spin" /> 这个源只给了摘要，正在抓取原文…
+                    </p>
+                ) : (
+                    <p className="mt-10 text-center text-xs text-muted-foreground">— 完 —</p>
+                )}
             </article>
 
             <button
