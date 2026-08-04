@@ -138,7 +138,10 @@ if (!args.flags.has('keep-remote-images')) {
             // 全文替换该 URL（封面 frontmatter 与正文里的引用一起换掉）
             finalBody = finalBody.split(url).join(localUrl);
             if (out.coverImage === url) out.coverImage = localUrl;
-            mirrored.push({ url, localUrl, kb: Math.round(r.bytes / 1024), file: r.out });
+            mirrored.push({
+                url, localUrl, kb: Math.round(r.bytes / 1024), file: r.out,
+                thumbFile: r.thumbOut, thumbKb: Math.round(r.thumbBytes / 1024),
+            });
         } catch (e) {
             failed.push({ url, msg: String(e.message).split('\n')[0] });
         }
@@ -173,7 +176,7 @@ console.log(`  摘要      ${out.excerpt || '（空）'}`);
 console.log(`  封面      ${out.coverImage || '（无）'}`);
 if (mirrored.length) {
     console.log(`  镜像图片  ${mirrored.length} 张`);
-    for (const m of mirrored) console.log(`    ${m.url}\n      → ${m.localUrl}  (${m.kb}KB)`);
+    for (const m of mirrored) console.log(`    ${m.url}\n      → ${m.localUrl}  (${m.kb}KB，列表缩略图 ${m.thumbKb}KB)`);
 } else if (!args.flags.has('keep-remote-images')) {
     console.log('  镜像图片  无跨境图片 ✓');
 }
@@ -210,8 +213,9 @@ fs.writeFileSync(stagedMd, finalDoc, 'utf8');
 if (mirrored.length) {
     run('ssh', [SSH_HOST, `mkdir -p ${REMOTE_COVERS}`]);
     for (const m of mirrored) {
-        run('scp', ['-q', m.file, `${SSH_HOST}:${REMOTE_COVERS}/`]);
-        console.log(`    图片 ${path.basename(m.file)} ✓`);
+        // 原图和缩略图一起上,少一个就是列表回落到原图(还能看,但白下载 100 多 KB)
+        run('scp', ['-q', m.file, m.thumbFile, `${SSH_HOST}:${REMOTE_COVERS}/`]);
+        console.log(`    图片 ${path.basename(m.file)} + 缩略图 ✓`);
     }
 }
 run('scp', ['-q', stagedMd, `${SSH_HOST}:${REMOTE_POSTS}/`]);

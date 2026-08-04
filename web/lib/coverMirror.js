@@ -14,3 +14,18 @@ export function mirrorCover(url) {
     if (!url) return url;
     return coverMap[url] || url;
 }
+
+/**
+ * 列表缩略图地址。发布时每张封面都会顺手生成一张 240px 宽的
+ * `<hash>.thumb.webp`（见 scripts/lib/post-meta.mjs 的 mirrorImage）。
+ *
+ * 为什么要单独一张：封面原图是 1000px 级别（23–127KB），而列表框只有 64–80px，
+ * 按面积算下载的像素是用到的 150 倍 —— 首屏 11 张 664KB，每张还都要跨太平洋。
+ *
+ * 只对 /uploads/covers/ 下的图做替换：public/img/covers/ 那批是 mirror-covers.mjs
+ * 的产物，没有 thumb 变体。拿不准就返回空，调用方照旧用原图。
+ */
+export function coverThumb(url) {
+    if (!url || !url.startsWith('/uploads/covers/') || !url.endsWith('.webp')) return '';
+    return url.replace(/\.webp$/, '.thumb.webp');
+}

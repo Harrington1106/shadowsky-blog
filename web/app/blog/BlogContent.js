@@ -17,7 +17,7 @@ import BackToTop from '@/components/BackToTop';
 import { fetchPosts, fetchAiDailyIndex } from '@/lib/api';
 import { cardSurface, cardInteractive, chipInteractive, cn, withBase } from '@/lib/utils';
 import { postHref, aiDailyHref } from '@/lib/links';
-import { mirrorCover } from '@/lib/coverMirror';
+import { mirrorCover, coverThumb } from '@/lib/coverMirror';
 
 const PER_PAGE = 12;
 
@@ -64,15 +64,28 @@ function formatDate(dateStr) {
 
 function Thumb({ post }) {
     if (post.coverImage) {
+        const full = mirrorCover(post.coverImage);
+        const thumb = coverThumb(full);
         return (
             <div className="h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-muted sm:h-20 sm:w-20">
                 {/* hover 时封面轻微放大。只动 transform,不改盒子尺寸 —— 用宽高做动画会挤动整行 */}
                 <img
-                    src={mirrorCover(post.coverImage)}
+                    src={thumb || full}
                     loading="lazy"
+                    decoding="async"
+                    width={80}
+                    height={80}
                     alt=""
                     className="h-full w-full object-cover transition-transform duration-300 motion-safe:group-hover/row:scale-105"
-                    onError={(e) => { e.currentTarget.parentElement.style.display = 'none'; }}
+                    /*
+                      缩略图缺失就退回原图（老封面、或发布时 thumb 没传上去）——
+                      能看，只是白下载 100 多 KB。两张都挂了才把整个框藏掉。
+                    */
+                    onError={(e) => {
+                        const img = e.currentTarget;
+                        if (thumb && img.src.endsWith('.thumb.webp')) { img.src = full; return; }
+                        img.parentElement.style.display = 'none';
+                    }}
                 />
             </div>
         );

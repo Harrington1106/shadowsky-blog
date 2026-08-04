@@ -317,6 +317,15 @@ $env:AUTH_SECRET='dev'; $env:ADMIN_PASSWORD='devpass'; npm run dev
 **新文章用了外链封面 → 部署前跑一次 `mirror-covers.mjs`**；不跑不会坏，只是那张图仍走外链。
 封面镜像同时作用于文章头图、列表缩略图和 og:image。
 
+**封面是两张，不是一张**（2026-08-04 起）：`mirrorImage` 一次出 `<hash>.webp`（宽 1600 内，
+给文章头图和 og:image）和 `<hash>.thumb.webp`（宽 240，给 `/blog` 列表）。
+起因是列表那个 64–80px 的小方框一直在拉 1000px 的原图 —— 按面积算下载的像素是用到的
+150 倍，首屏 11 张 664KB，每张还都要跨太平洋，浏览器的转圈要等它们全部结束。
+换成缩略图后同样 11 张只有 55KB。
+前端按 `lib/coverMirror.js` 的 `coverThumb()` 拼地址（只对 `/uploads/covers/` 生效），
+拿不到就回落原图，两张都挂才隐藏。**改文件名规则要三处一起改**：`post-meta.mjs` 的
+`thumbName()`、`coverThumb()`、以及补历史欠账的 `gen-cover-thumbs.mjs`。
+
 ### Cloudflare 边缘缓存与清缓存（2026-08-01 起）
 
 Cache Rule「边缘缓存页面 HTML」+ Tiered Cache（Smart）已开启，页面 HTML 边缘缓 1 小时。
