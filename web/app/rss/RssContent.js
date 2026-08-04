@@ -177,6 +177,13 @@ function RssPageInner() {
     }, [feeds]);
 
     const catCount = useMemo(() => new Set(feeds.map((f) => f.category || '未分类')).size, [feeds]);
+
+    /*
+      每个分类都只有一个源时,分组不传达任何信息 —— 只是把 N 个源拆成 N 个
+      标题 + N 个单元素列表,垂直空间白白多花一倍。这种情况下平铺。
+      源多起来、真出现「一个分类几个源」时会自动恢复分组。
+    */
+    const showCategories = catCount > 1 && catCount < feeds.length;
     const [lastUpdated, setLastUpdated] = useState('—');
     useEffect(() => {
         if (feedsLoaded) setLastUpdated(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
@@ -237,27 +244,18 @@ function RssPageInner() {
                             )}
                             {feedsLoaded && !feedsError && categorized.map(([cat, list]) => (
                                 <div key={cat}>
-                                    <div className="px-2 pt-3 pb-1 text-[0.65rem] font-semibold tracking-wide text-muted-foreground uppercase">{cat}</div>
-                                    {list.map((feed) => {
-                                        const active = activeFeedUrl === feed.xmlUrl;
-                                        const letter = (feed.title || '?')[0].toUpperCase();
-                                        return (
-                                            <button
-                                                key={feed.xmlUrl}
-                                                onClick={() => selectFeed(feed.xmlUrl)}
-                                                className={cn(
-                                                    'flex w-full items-center gap-2.5 rounded-lg px-2 py-2 text-left transition-colors',
-                                                    active ? 'bg-accent text-accent-foreground' : 'hover:bg-accent/50'
-                                                )}
-                                            >
-                                                <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-muted text-xs font-semibold">{letter}</span>
-                                                <span className="min-w-0 flex-1">
-                                                    <span className="block truncate text-sm font-medium">{feed.title}</span>
-                                                    <span className="block truncate text-[0.68rem] text-muted-foreground">{feed.xmlUrl}</span>
-                                                </span>
-                                            </button>
-                                        );
-                                    })}
+                                    {showCategories && (
+                                        <div className="px-2 pt-3 pb-1 text-[0.65rem] font-semibold tracking-wide text-muted-foreground uppercase">{cat}</div>
+                                    )}
+                                    {list.map((feed) => (
+                                        <FeedRow
+                                            key={feed.xmlUrl}
+                                            feed={feed}
+                                            category={showCategories ? null : cat}
+                                            active={activeFeedUrl === feed.xmlUrl}
+                                            onClick={() => selectFeed(feed.xmlUrl)}
+                                        />
+                                    ))}
                                 </div>
                             ))}
                         </div>
@@ -334,11 +332,14 @@ function RssPageInner() {
                                 onToggleFocus={() => setFocusMode((v) => !v)}
                             />
                         ) : (
-                            <div className="flex flex-1 items-center justify-center">
-                                <PanelEmpty icon={BookOpen} title="准备阅读">
-                                    <p className="max-w-56 text-center text-sm text-muted-foreground">选择左侧的文章开始阅读，让知识在指尖流淌。</p>
-                                </PanelEmpty>
-                            </div>
+                            <ReaderPlaceholder
+                                feedTitle={feedTitle}
+                                count={articles.length}
+                                // 订阅源还没加载完时也算「加载中」—— 否则会先闪一句
+                                // 「这个源暂时没有文章」，而那时候我们根本还不知道有没有
+                                loading={articlesLoading || !feedsLoaded}
+                                onOpenFirst={() => articles.length && openArticle(0)}
+                            />
                         )}
                     </section>
                 </div>
@@ -372,6 +373,70 @@ function RssPageInner() {
     );
 }
 
+/**
+ * 还没选文章时的阅读区。
+ *
+ * 桌面上这一栏占了整页约 40% 的宽度，原来只放一句「选择左侧的文章开始阅读」——
+ * 首屏最大的一块什么也不做。现在至少告诉用户当前看的是哪个源、有多少篇，
+ * 并给一个直接开读的入口（新访客最常见的下一步就是"看第一篇"）。
+ */
+function ReaderPlaceholder({ feedTitle, count, loading, onOpenFirst }) {
+    return (
+        <div className="flex flex-1 flex-col items-center justify-center gap-5 px-6 text-center">
+            <span className="flex size-14 items-center justify-center rounded-2xl bg-muted text-muted-foreground">
+                <BookOpen size={26} />
+            </span>
+            <div className="space-y-1.5">
+                <h2 className="text-lg font-bold">{feedTitle}</h2>
+                <p className="text-sm text-muted-foreground">
+                    {loading ? '正在获取文章…' : count > 0 ? `${count} 篇待读，从左侧挑一篇` : '这个源暂时没有文章'}
+                </p>
+            </div>
+            {!loading && count > 0 && (
+                <Button size="sm" className="gap-1.5" onClick={onOpenFirst}>
+                    <BookOpen size={14} /> 读第一篇
+                </Button>
+            )}
+            <p className="max-w-64 text-xs leading-relaxed text-muted-foreground/70">
+                打开文章后可以调字号、开专注模式，也能让 AI 翻译整篇——右上角那排按钮。
+            </p>
+        </div>
+    );
+}
+
+/**
+ * 侧栏里的一个订阅源。
+ *
+ * 副标题显示**域名**而不是完整 xmlUrl：整条地址在 264px 宽的侧栏里必然被截断，
+ * 截出来的还都是没有信息量的前缀（`https://rss-hub-teal-delta.vercel.app/zhihu/…`
+ * 你看不出这是知乎日报）。域名短、认得出、也不会被截。
+ * 不分组时把分类名挪到这里，免得分类信息整个丢掉。
+ */
+function FeedRow({ feed, category, active, onClick }) {
+    const letter = (feed.title || '?')[0].toUpperCase();
+    let host = feed.xmlUrl;
+    try { host = new URL(feed.xmlUrl).hostname.replace(/^www\./, ''); } catch (e) { /* 地址不合法就原样显示 */ }
+
+    return (
+        <button
+            onClick={onClick}
+            title={feed.xmlUrl}
+            className={cn(
+                'flex w-full items-center gap-2.5 rounded-lg px-2 py-2 text-left transition-colors',
+                active ? 'bg-accent text-accent-foreground' : 'hover:bg-accent/50'
+            )}
+        >
+            <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-muted text-xs font-semibold">{letter}</span>
+            <span className="min-w-0 flex-1">
+                <span className="block truncate text-sm font-medium">{feed.title}</span>
+                <span className="block truncate text-[0.68rem] text-muted-foreground">
+                    {category ? `${category} · ${host}` : host}
+                </span>
+            </span>
+        </button>
+    );
+}
+
 function PanelLoading({ text, children }) {
     return (
         <div className="flex flex-col items-center gap-2 py-12 text-center text-muted-foreground">
@@ -393,7 +458,8 @@ function PanelEmpty({ icon: Icon, title, children }) {
 }
 
 function ArticleCard({ article, feedTitle, active, onClick }) {
-    const relativeTime = getRelativeTime(article.pubDate);
+    // 源没给日期时 pubDate 是 null —— 那就不显示时间，别编一个
+    const relativeTime = article.pubDate ? getRelativeTime(article.pubDate) : null;
     const readingTime = getReadingTime(article.content || article.description || '');
     const sourceLabel = article.feedTitle || feedTitle;
     const desc = article.description ? article.description.substring(0, 120).trim() + '…' : '暂无描述';
@@ -410,7 +476,7 @@ function ArticleCard({ article, feedTitle, active, onClick }) {
             <h3 className="mt-0.5 line-clamp-2 text-sm font-semibold">{article.title}</h3>
             <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">{desc}</p>
             <div className="mt-1.5 flex flex-wrap items-center gap-2 text-[0.65rem] text-muted-foreground">
-                <span className="inline-flex items-center gap-1"><Clock size={10} />{relativeTime}</span>
+                {relativeTime && <span className="inline-flex items-center gap-1"><Clock size={10} />{relativeTime}</span>}
                 <span className="inline-flex items-center gap-1"><BookOpen size={10} />{readingTime}</span>
                 {article.author && <span>{article.author}</span>}
             </div>
@@ -473,8 +539,9 @@ function ArticleReader({ article, fontSize, onFontSize, focusMode, onToggleFocus
         return () => el.removeEventListener('scroll', onScroll);
     }, [article, safeContent]);
 
-    const dateStr = article.pubDate.toLocaleString();
-    const relativeTime = getRelativeTime(article.pubDate);
+    // pubDate 可能是 null(源没给日期)—— 直接 .toLocaleString() 会整页白屏
+    const dateStr = article.pubDate ? article.pubDate.toLocaleString() : '';
+    const relativeTime = article.pubDate ? getRelativeTime(article.pubDate) : null;
     const readingTime = getReadingTime(article.content || article.description || '');
 
     async function handleTranslate() {
@@ -550,7 +617,7 @@ function ArticleReader({ article, fontSize, onFontSize, focusMode, onToggleFocus
                 <header className="mb-8 border-b pb-6">
                     <h1 className="text-2xl leading-tight font-bold sm:text-3xl">{article.title}</h1>
                     <div className="mt-4 flex flex-wrap items-center gap-1.5">
-                        <span className={PILL} title={dateStr}><Calendar size={13} />{relativeTime}</span>
+                        {relativeTime && <span className={PILL} title={dateStr}><Calendar size={13} />{relativeTime}</span>}
                         <span className={PILL}><Clock size={13} />{readingTime}</span>
                         {article.author && <span className={PILL}><User size={13} />{article.author}</span>}
                         <Button variant="outline" size="sm" className={PILL_BTN} nativeButton={false} render={<a href={article.link} target="_blank" rel="noopener noreferrer" />}>

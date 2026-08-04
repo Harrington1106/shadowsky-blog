@@ -134,22 +134,41 @@ export async function fetchFeedXml(url) {
     }
 }
 
+/**
+ * 取一个元素里的 HTML。
+ *
+ * ⚠ 不能直接用 innerHTML:在 **XML** 文档里 CDATA 节点会被原样序列化成
+ * `<![CDATA[…]]>`,包装符跟着一起吐出来,后面剥标签时就剥出「]]>…」这种残渣
+ * (Solidot 的 description 全是 CDATA,线上摘要一整列都是这个,2026-08-04 实测)。
+ *
+ * 正确做法看子节点:
+ *   只有文本 / CDATA → textContent。两种情况它都给出正确结果 ——
+ *     转义过的 HTML(`&lt;p&gt;`)会被还原成 `<p>`,CDATA 直接给里面的内容。
+ *   有真正的元素子节点(Atom 的 type="xhtml" 会这样)→ 才用 innerHTML,
+ *     否则 textContent 会把标签结构丢掉。
+ */
+function nodeHtml(el) {
+    if (!el) return '';
+    const hasElementChild = Array.from(el.childNodes).some((n) => n.nodeType === 1);
+    if (hasElementChild) return el.innerHTML || el.textContent || '';
+    return el.textContent || '';
+}
+
 function getTagHtml(node, tagName) {
     if (tagName.includes(':')) {
         const [, localName] = tagName.split(':');
         let els = node.getElementsByTagName(tagName);
-        if (els.length > 0) return els[0].innerHTML || els[0].textContent || '';
+        if (els.length > 0) return nodeHtml(els[0]);
         els = node.getElementsByTagNameNS('*', localName);
-        if (els.length > 0) return els[0].innerHTML || els[0].textContent || '';
+        if (els.length > 0) return nodeHtml(els[0]);
         els = node.getElementsByTagName(localName);
-        if (els.length > 0) return els[0].innerHTML || els[0].textContent || '';
+        if (els.length > 0) return nodeHtml(els[0]);
         try {
             const el = node.querySelector(tagName.replace(':', '\\:'));
-            if (el) return el.innerHTML || el.textContent || '';
+            if (el) return nodeHtml(el);
         } catch (e) { /* ignore */ }
     } else {
-        const el = node.querySelector(tagName);
-        return el ? (el.innerHTML || el.textContent || '') : '';
+        return nodeHtml(node.querySelector(tagName));
     }
     return '';
 }
@@ -195,21 +214,50 @@ export function parseRSSContent(xmlString) {
     const items = Array.from(doc.querySelectorAll('item, entry'));
 
     return items.map((item) => {
-        const title = getTagValue(item, 'title');
+        /*
+          标题也要解一次实体:很多源把标题**双重转义**(`&amp;apos;`),XML 解析器只还原
+          外面那层,剩下的 `&apos;` 会原样显示成「ACL&apos;26 杰出论文」(美团实测)。
+          description/content 一直有解,唯独标题漏了。
+          React 里标题是当文本渲染的,解完不会引入 XSS。
+        */
+        const title = decodeEntities(getTagValue(item, 'title'));
         const link = getTagValue(item, 'link');
-        const pubDate = getTagValue(item, 'pubDate') || getTagValue(item, 'updated') || getTagValue(item, 'dc:date');
+        // Atom 的 published 是「发表时间」,updated 是「最后修改」—— 优先前者,
+        // 否则一篇老文章改个错别字就会跳到列表最前面
+        const pubDate = getTagValue(item, 'pubDate') || getTagValue(item, 'published')
+            || getTagValue(item, 'updated') || getTagValue(item, 'dc:date');
         const descriptionHtml = getTagHtml(item, 'description') || getTagHtml(item, 'content') || getTagHtml(item, 'summary');
 
         let fullContent = getTagHtml(item, 'content:encoded');
         if (!fullContent) fullContent = getTagHtml(item, 'content');
         if (!fullContent) fullContent = descriptionHtml;
 
-        const author = getTagValue(item, 'author') || getTagValue(item, 'dc:creator');
+        /*
+          Atom 的 <author> 是个容器(<name>/<uri>/<email>),直接取 textContent 会把
+          子元素**全部拼在一起** —— 列表里就会出现
+          「joyjoke2001 https://www.v2ex.com/member/joyjoke2001」这种东西(V2EX 实测)。
+          有 <name> 子元素就只取它;RSS 2.0 的 <author> 才是纯文本。
+        */
+        const authorEl = item.getElementsByTagName('author')[0];
+        const authorName = authorEl && getTagValue(authorEl, 'name');
+        const author = decodeEntities(authorName || getTagValue(item, 'author') || getTagValue(item, 'dc:creator') || '').trim();
 
         return {
             title,
             link,
-            pubDate: pubDate ? new Date(pubDate) : new Date(),
+            /*
+              没有日期就是 null,**不能**回落到 new Date()。
+              有的源(如 tech.meituan.com/feed)整个 item 里一个日期字段都没有,
+              伪造成「现在」的后果是:每条都显示「刚刚」、而且页面开着越久这个假时间
+              还会跟着漂(5 分钟后变成「5分钟前」);更糟的是聚合视图按时间倒序排，
+              这个源会把全部位置占满,其他源一条都露不出来(2026-08-04 线上就是这样)。
+              日期不合法(解析成 Invalid Date)同样按没有处理。
+            */
+            pubDate: (() => {
+                if (!pubDate) return null;
+                const d = new Date(pubDate);
+                return isNaN(d.getTime()) ? null : d;
+            })(),
             description: cleanHtml(decodeEntities(descriptionHtml)),
             content: decodeEntities(fullContent),
             author,
@@ -245,8 +293,17 @@ export async function fetchAllFeedsArticles(feeds, onProgress) {
     for (let i = 0; i < Math.min(CONCURRENCY_LIMIT, feeds.length); i++) workers.push(worker());
     await Promise.all(workers);
 
-    allArticles.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
-    return allArticles;
+    /*
+      有日期的按时间倒序在前;没日期的一律排在后面,并保持它在各自源里的原始顺序
+      (RSS 惯例是源内自上而下即新到旧,这是我们对它们仅有的顺序信息)。
+      不能把无日期的当成 0 或 now:当成 now 会让它霸占整个列表顶部,
+      当成 0 则会让一个正常源因为缺字段被永久埋底 —— 现在是「未知时间」，
+      排在已知时间之后，不假装知道。
+    */
+    const dated = allArticles.filter((a) => a.pubDate);
+    const undated = allArticles.filter((a) => !a.pubDate);
+    dated.sort((a, b) => b.pubDate - a.pubDate);
+    return [...dated, ...undated];
 }
 
 const DEFAULT_SYSTEM_PROMPT = '你是一个专业的翻译助手，请将以下内容翻译成简体中文，保持原文格式和语气。';
