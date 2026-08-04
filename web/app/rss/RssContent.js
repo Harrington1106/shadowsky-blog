@@ -633,7 +633,14 @@ function ArticleReader({ article, fontSize, onFontSize, focusMode, onToggleFocus
             const resp = await fetch('/api/article-content?url=' + encodeURIComponent(article.link));
             if (!resp.ok) throw new Error('HTTP ' + resp.status);
             const data = await resp.json();
-            if (data.success && data.content) {
+            /*
+              抓回来的必须**确实比摘要长**才替换。
+              抽取再怎么加启发式也会有失手的站点,而「用更差的内容盖掉本来好好的摘要」
+              是比「没抓到」糟糕得多的结果 —— 用户看到的是一页导航垃圾。
+            */
+            const better = data.success && data.content
+                && stripTags(data.content).trim().length > stripTags(safeContent).trim().length;
+            if (better) {
                 setShowTranslated(false);
                 setTranslatedHtml('');
                 setSafeContent(data.content);
