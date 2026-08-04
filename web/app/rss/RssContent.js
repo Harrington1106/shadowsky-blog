@@ -90,7 +90,45 @@ function RssPageInner() {
       scrollTop。真滚动了才 preventDefault,没滚动(到顶/到底)就放行,
       不影响页面其它默认行为。
     */
+    const wheelAnim = useRef({ el: null, target: 0, raf: 0 });
+
     useEffect(() => {
+        const st = wheelAnim.current;
+
+        /*
+          缓出动画。接管滚轮就等于关掉了浏览器自带的平滑滚动,
+          直接 scrollTop += delta 是「一格一跳」,看着很硬。
+          这里每帧向目标位置逼近固定比例(指数缓出),手感接近原生:
+          连续滚时目标不断往前推、动画一直跟着走,松手后自然减速停下。
+        */
+        function animate() {
+            const el = st.el;
+            if (!el) { st.raf = 0; return; }
+            const diff = st.target - el.scrollTop;
+            if (Math.abs(diff) < 0.5) {
+                el.scrollTop = st.target;
+                st.raf = 0;
+                return;
+            }
+            /*
+              ⚠ 必须检查「这一帧到底动没动」。步进小到被取整吃掉时(高 DPI 下
+              scrollTop 是小数,浏览器会归整),scrollTop 不再变化,而 |diff|<0.5
+              这个退出条件永远等不到 —— rAF 就会 60fps 空转下去,页面一直是忙的。
+              没动就直接落到目标位置收工。
+            */
+            // 每帧走掉剩余距离的 1/4,并保底 1px —— 没有保底的话尾巴会拖很久
+            // (指数逼近的最后几像素要花掉一半的帧数),看起来就是「粘住了」
+            const before = el.scrollTop;
+            const step = Math.max(1, Math.abs(diff) * 0.25);
+            el.scrollTop = before + Math.sign(diff) * step;
+            if (el.scrollTop === before) {
+                el.scrollTop = st.target;
+                st.raf = 0;
+                return;
+            }
+            st.raf = requestAnimationFrame(animate);
+        }
+
         function onWheel(e) {
             if (e.ctrlKey) return;                      // 缩放手势，不管
             const card = cardRef.current;
@@ -106,14 +144,35 @@ function RssPageInner() {
             }
             if (!node || node === document.body) return;
 
+            /*
+              浏览器已经把事件送进了这一栏 —— 它自己会滚,别插手。
+              这样绝大多数人拿到的仍是**原生滚动**(带原生的平滑与惯性,最舒服),
+              我们只在事件被送到别处(比如 body)时才兜底。
+            */
+            if (node.contains(e.target)) return;
+
             // Firefox 用「行」为单位,换算成像素
             const delta = e.deltaMode === 1 ? e.deltaY * 16 : e.deltaY;
-            const before = node.scrollTop;
-            node.scrollTop = before + delta;
-            if (node.scrollTop !== before) e.preventDefault();
+            const max = node.scrollHeight - node.clientHeight;
+            // 连续滚动时从**动画目标**继续累加,而不是从当前位置 ——
+            // 否则每一格都会把还没走完的动画拽回去,越滚越迟钝
+            const from = (st.el === node && st.raf) ? st.target : node.scrollTop;
+            const next = Math.max(0, Math.min(from + delta, max));
+            if (next === from) return;                  // 已到顶/到底，放行给外层
+
+            e.preventDefault();
+            if (st.el !== node) { st.el = node; }
+            st.target = next;
+            if (!st.raf) st.raf = requestAnimationFrame(animate);
         }
+
         window.addEventListener('wheel', onWheel, { passive: false });
-        return () => window.removeEventListener('wheel', onWheel);
+        return () => {
+            window.removeEventListener('wheel', onWheel);
+            if (st.raf) cancelAnimationFrame(st.raf);
+            st.raf = 0;
+            st.el = null;
+        };
     }, []);
 
     // ── 加载订阅源列表 ──
