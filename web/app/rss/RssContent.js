@@ -145,11 +145,13 @@ function RssPageInner() {
             if (!node || node === document.body) return;
 
             /*
-              浏览器已经把事件送进了这一栏 —— 它自己会滚,别插手。
-              这样绝大多数人拿到的仍是**原生滚动**(带原生的平滑与惯性,最舒服),
-              我们只在事件被送到别处(比如 body)时才兜底。
+              ⚠ 这里**不能**加「事件已经送进这一栏就放行给原生滚动」的优化。
+              试过,站主那边立刻又滚不动了 —— 说明事件确实送到了栏内,
+              但原生滚动本身就没生效(有东西 preventDefault 掉了 wheel:
+              线上探针里 window 冒泡阶段拿到的 defaultPrevented 就是 true)。
+              所以判断依据只能是「指针在哪」,不能是「事件送给了谁」,
+              也不能指望原生滚动会替我们完成。
             */
-            if (node.contains(e.target)) return;
 
             // Firefox 用「行」为单位,换算成像素
             const delta = e.deltaMode === 1 ? e.deltaY * 16 : e.deltaY;
