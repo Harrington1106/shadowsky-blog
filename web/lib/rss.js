@@ -104,34 +104,37 @@ export async function fetchFeeds() {
 
 /** 抓取订阅源 XML：CF Worker → 自家 /api/rss-proxy(带 SSRF 防护) → 直连兜底 */
 export async function fetchFeedXml(url) {
-    try {
-        const cfUrl = `https://bangumi.shadowquake.top/fetch?url=${encodeURIComponent(url)}`;
-        const controller = new AbortController();
-        const timer = setTimeout(() => controller.abort(), 10000);
-        const cfResp = await fetch(cfUrl, { signal: controller.signal });
-        clearTimeout(timer);
-        if (cfResp.ok) return await cfResp.text();
-    } catch (e) { /* 尝试下一级 */ }
+    /*
+      顺序是「同源代理 → CF Worker → 直连」,不能反过来。
 
-    try {
-        const proxyUrl = `/api/rss-proxy?url=${encodeURIComponent(url)}`;
-        const controller = new AbortController();
-        const timer = setTimeout(() => controller.abort(), 8000);
-        const response = await fetch(proxyUrl, { signal: controller.signal });
-        clearTimeout(timer);
-        if (response.ok) return await response.text();
-    } catch (e) { /* 尝试直连 */ }
+      同源代理排第一是因为它**没有 CORS 问题**,而另外两级都有:
+      CF Worker 要它自己发对 Access-Control-Allow-Origin,直连则取决于对方站点 ——
+      绝大多数 RSS 源根本不发这个头,所以直连这一级基本注定失败,只能垫底。
 
-    try {
-        const controller = new AbortController();
-        const timer = setTimeout(() => controller.abort(), 8000);
-        const directResp = await fetch(url, { signal: controller.signal });
-        clearTimeout(timer);
-        if (!directResp.ok) throw new Error(`HTTP ${directResp.status}`);
-        return await directResp.text();
-    } catch (e) {
-        throw new Error(`加载失败: ${e.message}`);
+      超时也放宽到 20s:知乎日报那个源有 405KB,原来同源代理只给 8s,
+      走大陆 → LAX → 杭州这条链路根本传不完 —— 于是它掉到直连、撞 CORS、
+      整个源加载失败(2026-08-04 线上控制台实录)。这条链路的账见 CLAUDE.md。
+    */
+    const attempts = [
+        { url: `/api/rss-proxy?url=${encodeURIComponent(url)}`, timeout: 20000 },
+        { url: `https://bangumi.shadowquake.top/fetch?url=${encodeURIComponent(url)}`, timeout: 20000 },
+        { url, timeout: 10000 },
+    ];
+
+    let lastError = null;
+    for (const attempt of attempts) {
+        try {
+            const controller = new AbortController();
+            const timer = setTimeout(() => controller.abort(), attempt.timeout);
+            const resp = await fetch(attempt.url, { signal: controller.signal });
+            clearTimeout(timer);
+            if (resp.ok) return await resp.text();
+            lastError = new Error(`HTTP ${resp.status}`);
+        } catch (e) {
+            lastError = e;
+        }
     }
+    throw new Error(`加载失败: ${lastError ? lastError.message : '未知原因'}`);
 }
 
 /**
