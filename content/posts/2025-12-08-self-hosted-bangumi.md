@@ -1,62 +1,54 @@
 ---
-title: "打造最强私人追番中心：AutoBangumi + Jellyfin 全自动追番教程"
+title: "自建全自动追番：AutoBangumi + qBittorrent + Jellyfin"
 date: "2025-12-08"
 category: "技术"
 author: "Thoi"
-tags: ["自托管", "Jellyfin", "AutoBangumi", "番剧"]
-excerpt: "还在忍受视频网站的“圣光”、“暗牧”和超长广告？还在因为番剧版权分散在不同平台而烦恼？ 是时候利用你的服务器，搭建一套属于自己的全自动追番系统了！ 只需配置一次，系统就会自动订阅、下载、整理、刮削海报，你只需要躺在沙发上打开电视/手机，直接..."
-lastModified: "2026-06-26"
+tags: ["自托管","Jellyfin","AutoBangumi","番剧"]
+excerpt: "番剧版权分散在各个平台，画面还有删减和调色。这篇用 AutoBangumi 订阅 RSS、qBittorrent 下载、Jellyfin 刮削展示，搭一套配置一次就能一直自动更新的追番系统。"
+lastModified: "2026-08-03"
 readTime: 7
-coverImage: "https://images.unsplash.com/photo-1578632767115-351597cf2477?auto=format&fit=crop&q=80&w=1000"
+coverImage: "/uploads/covers/6d1a2a4d.webp"
 ---
 
-> **TL;DR**：告别圣光和广告。AutoBangumi 自动订阅 RSS → qBittorrent 下载 → Jellyfin 精美海报墙 → 全平台播放。配一次，永久自动追番。需要一台服务器/NAS + Docker 环境。
+在线看番有两个绕不开的问题：版权分散在不同平台，想追齐一季得开好几个会员；画面还常有删减和调色。
 
-还在忍受视频网站的“圣光”、“暗牧”和超长广告？还在因为番剧版权分散在不同平台而烦恼？
-是时候利用你的服务器，搭建一套属于自己的全自动追番系统了！
+如果手上有一台服务器或 NAS，可以把这件事自己接管过来。配置一次之后，系统会自动订阅、下载、重命名、刮削海报，你只需要打开播放器。
 
-只需配置一次，系统就会自动订阅、下载、整理、刮削海报，你只需要躺在沙发上打开电视/手机，直接观看最新一集的 4K 高画质新番。
+## 整套流水线
 
-## 系统架构图
+四个组件各管一段：
 
-我们的“追番流水线”由以下几个核心组件构成：
-
-1.  **资源站 (Mikan Project)**: 提供番剧的 RSS 订阅源。
-2.  **AutoBangumi**: 大脑。负责订阅 RSS，解析番剧信息，指挥下载器下载，并自动重命名文件。
-3.  **qBittorrent**: 苦力。负责高速下载番剧资源。
-4.  **Jellyfin / Emby / Plex**: 门面。负责展示精美的海报墙，提供全平台的播放服务。
+1. **Mikan Project（蜜柑计划）**：提供番剧的 RSS 订阅源
+2. **AutoBangumi**：订阅 RSS，解析番剧信息，指挥下载器，并把下载完的文件重命名成标准格式
+3. **qBittorrent**：实际下载
+4. **Jellyfin / Emby / Plex**：展示海报墙，提供各平台播放
 
 ## 准备工作
 
-*   **服务器**: 一台云服务器（建议带宽较大）或家里的 NAS/旧电脑。
-*   **存储空间**: 至少 50G 以上，取决于你想存多少番剧。
-*   **Docker 环境**: 确保已安装 Docker 和 Docker Compose。
+- 服务器一台，云服务器（带宽尽量大一些）或者家里的 NAS、旧电脑都行
+- 存储空间 50G 起步，具体看你想存多少
+- 已经装好 Docker 和 Docker Compose
 
----
+## 第一步：部署 AutoBangumi 和 qBittorrent
 
-## 第一步：一键部署 (Docker Compose)
+用 Docker Compose 一次把两个服务拉起来。Jellyfin 建议单独部署，或者直接装在本地设备上，这里只讲后端下载这部分。
 
-为了简化操作，我们将使用 Docker Compose 一次性启动 AutoBangumi 和 qBittorrent。
-(Jellyfin 建议单独部署或直接安装在本地设备上，这里主要讲后端下载部分)
-
-**1. 创建文件夹**
-
-在终端中输入以下命令，创建一个名为 `bangumi` 的文件夹并进入：
+### 创建文件夹
 
 ```bash
 mkdir bangumi
 cd bangumi
 ```
 
-**2. 创建并编辑配置文件**
+### 创建配置文件
 
-我们将使用 `nano` 编辑器来创建文件（这对新手最友好）。输入：
+用 `nano` 编辑器新建文件：
 
 ```bash
 nano docker-compose.yml
 ```
 
-此时你会进入一个黑色的编辑器界面。请**复制**下面的全部代码，然后在终端里点击**鼠标右键**进行粘贴：
+进入编辑器界面后，复制下面这段，在终端里点鼠标右键粘贴：
 
 ```yaml
 version: "3"
@@ -96,107 +88,87 @@ services:
       - WEBUI_PORT=8080
 ```
 
-**3. 保存并退出**
+两个容器的 `./data` 必须映射到同一个目录，否则 AutoBangumi 找不到 qBittorrent 下好的文件。
 
-粘贴完成后，请按键盘上的操作保存文件：
-1.  按 `Ctrl + X` (尝试退出)
-2.  按 `Y` (确认保存修改)
-3.  按 `Enter` (确认文件名)
+### 保存退出
 
-**4. 启动服务**
+依次按 `Ctrl + X`、`Y`、`Enter`。
 
-回到命令行界面后，运行以下命令启动服务：
+### 启动
+
 ```bash
 docker-compose up -d
 ```
 
----
-
 ## 第二步：配置 qBittorrent
 
-1.  打开浏览器访问 `http://你的IP:8080`。
-2.  默认账号 `admin`，默认密码 `adminadmin` (新版可能随机生成，请查看 docker logs)。
-3.  进入 **设置 (Options)** -> **Web UI**，建议修改语言为中文，并修改默认密码。
-4.  **关键步骤**：进入 **下载 (Downloads)**，确保保存路径为 `/downloads` (容器内路径)。
+1. 浏览器访问 `http://你的IP:8080`
+2. 默认账号 `admin`，密码 `adminadmin`。新版本可能是随机生成的，用 `docker logs qbittorrent` 查看
+3. 进入「设置 → Web UI」，改语言为中文，顺手把默认密码改掉
+4. 进入「下载」，确认保存路径是容器内的 `/downloads`
 
----
+第 4 步别跳过，路径不对后面整条链路都不通。
 
 ## 第三步：配置 AutoBangumi
 
-1.  打开浏览器访问 `http://你的IP:7892`。
-2.  默认账号 `admin`，密码 `adminadmin`。
-3.  **连接下载器**：
-    *   点击左侧设置，找到下载器设置。
-    *   **Host**: `qbittorrent` (因为在同一个 docker 网络下，直接用服务名即可)
-    *   **Port**: `8080`
-    *   **Username/Password**: 填你刚才在 qBittorrent 设置的。
-    *   点击“测试连接”，成功后保存。
+1. 浏览器访问 `http://你的IP:7892`
+2. 默认账号 `admin`，密码 `adminadmin`
+3. 在左侧设置里找到下载器设置，按下面填：
+   - Host：`qbittorrent`，两个容器在同一个 Docker 网络里，直接用服务名就行
+   - Port：`8080`
+   - Username / Password：填你刚才在 qBittorrent 里设的
+4. 点「测试连接」，通过之后保存
 
----
+## 第四步：添加订阅
 
-## 第四步：开始追番！
+1. 打开 [Mikan Project](https://mikanani.me/)，注册账号
+2. 把想追的当季新番点「订阅」
+3. 在首页点「RSS 订阅」图标，复制你的专属 RSS 链接
+4. 回到 AutoBangumi，点「添加订阅」，粘贴链接，确定
 
-配置完成后，最激动人心的时刻来了。
+之后 AutoBangumi 会解析 RSS 里的番剧，在 qBittorrent 里建好分类任务。下载完成后自动重命名成标准格式：
 
-1.  打开 [Mikan Project](https://mikanani.me/) (蜜柑计划)。
-2.  注册一个账号，把你喜欢的当季新番点击“订阅”。
-3.  在 Mikan 首页点击 **“RSS订阅”** 图标，复制你的专属 RSS 链接。
-4.  回到 **AutoBangumi** 面板：
-    *   点击 **“添加订阅”**。
-    *   粘贴刚才的 RSS 链接。
-    *   点击确定。
+```text
+Downloads/Anime/鬼灭之刃/Season 1/S01E01.mp4
+```
 
-**奇迹发生了！**
-AutoBangumi 会自动分析 RSS 里的番剧，自动在 qBittorrent 里创建分类任务。
-下载完成后，它会自动把文件重命名为标准格式：
-`Downloads/Anime/鬼灭之刃/Season 1/S01E01.mp4`
+这个命名格式是给刮削器看的，下一步 Jellyfin 能不能正确识别就取决于它。
 
----
+## 第五步：对接 Jellyfin
 
-## 第五步：对接媒体服务器 (Jellyfin)
+1. 在 Jellyfin 里添加媒体库
+2. 类型选「节目（Shows）」
+3. 文件夹指向前面挂载的 `./data/Anime`
+4. 打开刮削器，海报、简介和演员表会自动补上
 
-最后，安装 Jellyfin (或者 Emby/Plex)。
+## 第六步：从自己的网站访问
 
-1.  在 Jellyfin 中添加媒体库。
-2.  选择类型为 **“节目 (Shows)”**。
-3.  文件夹选择刚才挂载的 `./data/Anime` 目录。
-4.  开启刮削器，Jellyfin 会自动下载精美的海报、简介和演员表。
+### 方式一：加一个导航链接
 
----
+最省事的做法，在网站导航栏或侧边栏放一个跳转按钮：
 
-## 第六步：在自己的网站接入 (Web Integration)
-
-搭建好服务后，如何优雅地从你的个人网站（比如你的博客）访问它呢？
-
-### 方式一：添加导航链接（最简单）
-
-你可以在网站的导航栏或侧边栏添加一个直接跳转的按钮。
-
-**HTML 代码示例：**
 ```html
 <a href="http://你的服务器IP:8096" target="_blank" class="btn-anime">
-  📺 进入私人追番中心
+  进入追番中心
 </a>
 ```
 
-### 方式二：反向代理 + 域名访问（推荐）
+### 方式二：反向代理加域名
 
-如果你不想每次都输入 `IP:端口`，可以使用 **Nginx Proxy Manager** (在上一篇服务器玩法大全中提到过) 将服务映射到一个域名。
+不想每次都敲 `IP:端口` 的话，用 Nginx Proxy Manager 映射到域名：
 
-1.  **购买域名**：阿里云/腾讯云购买一个域名（如 `example.com`）。
-2.  **DNS 解析**：添加一条 `A` 记录，主机记录填 `bangumi`，记录值填你的服务器 IP。
-3.  **Nginx Proxy Manager 设置**：
-    *   Add Proxy Host
-    *   Domain Names: `bangumi.example.com`
-    *   Forward Hostname / IP: `qbittorrent` (容器名) 或 `172.17.0.1` (Docker网关IP)
-    *   Forward Port: `8096` (Jellyfin端口)
-4.  **SSL**: 勾选 `Force SSL` 和 `HTTP/2`，申请免费证书。
+1. 买一个域名
+2. 加一条 A 记录，主机记录填 `bangumi`，记录值填服务器 IP
+3. 在 Nginx Proxy Manager 里 Add Proxy Host：
+   - Domain Names：`bangumi.example.com`
+   - Forward Hostname / IP：容器名，或者 Docker 网关 IP `172.17.0.1`
+   - Forward Port：`8096`，Jellyfin 的端口
+4. 勾上 Force SSL 和 HTTP/2，申请免费证书
 
-现在，你就可以直接访问 `https://bangumi.example.com` 来追番了！看起来就像 Bilibili 一样专业。
+之后访问 `https://bangumi.example.com` 就行。
 
-## 总结
+## 小结
 
-现在，你拥有了一个全自动的追番中心：
-*   每周新番更新 -> Mikan 更新 RSS -> AutoBangumi 抓取 -> qBittorrent 下载 -> 自动重命名 -> Jellyfin 刮削展示。
+整条链路是这样跑的：每周新番更新，Mikan 的 RSS 跟着更新，AutoBangumi 抓到之后交给 qBittorrent 下载，下完自动重命名，Jellyfin 刮削出海报。
 
-你所要做的，只是准备好爆米花，享受这一刻！
+配置阶段最容易出错的是路径：两个容器的数据目录必须一致，qBittorrent 的保存路径必须是 `/downloads`。这两处对了，剩下的基本不用管。

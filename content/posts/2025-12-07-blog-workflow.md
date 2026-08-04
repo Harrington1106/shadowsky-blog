@@ -1,59 +1,40 @@
 ---
-title: "开源我的 Obsidian 自动化博客工作流"
+title: "我的 Obsidian 博客写作工作流"
 date: "2025-12-07"
 category: "博客运维"
 author: "Thoi"
-tags: ["工作流", "Obsidian", "自动化", "Node.js"]
-excerpt: "写博客最痛苦的不是写文章，而是繁琐的发布流程。今天我把这套基于 Obsidian + Templater + Node.js 的自动化工作流源代码完全开源，送给每一位热爱写作的朋友。"
-lastModified: "2026-06-26"
-readTime: 8
-coverImage: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&q=80&w=1000"
+tags: ["工作流","Obsidian","自动化","Node.js"]
+excerpt: "写博客真正耗时间的不是写，是发布前后的琐事：改文件名、填 frontmatter、更新索引、补封面。这篇把我用 Obsidian + Templater + Node.js 搭的这套流程和代码完整写出来。"
+lastModified: "2026-08-03"
+readTime: 5
+coverImage: "/uploads/covers/a402dfc0.webp"
 ---
 
-> **TL;DR**：Obsidian 写文章 → Templater 生成 frontmatter → Node.js 脚本解析 → 生成 posts.json → 前端自动渲染。全自动发布流水线，写完即发，不用碰代码。
+以前我发一篇博客要做这么几件事：
 
-# 开源我的 Obsidian 自动化博客工作流
+1. 新建一个 Markdown 文件
+2. 查今天的日期，把文件重命名成 `2023-xx-xx-title.md`
+3. 复制粘贴 frontmatter，改标题、日期、分类
+4. 写完之后更新 `posts.json` 索引，不然首页看不到
+5. 忘了配封面图的话，首页就是一片白
 
-## 👋 为什么要有这篇文章？
+真正在写字的时间可能十分钟，前后的杂活要花掉半小时。后来花了个周末把这些步骤全自动化了，现在的流程是：打开 Obsidian，按快捷键，写，最后跑一下发布脚本。
 
-作为一个程序员，最不能忍受的就是**重复劳动**。
+下面把三个环节的代码都放出来。
 
-以前我写博客的流程是这样的：
-1. 手动新建一个 Markdown 文件。
-2. 手动去查今天的日期，然后重命名文件 `2023-xx-xx-title.md`。
-3. 手动复制粘贴 Front Matter（就是文件头部的元数据），修改标题、日期、分类。
-4. 写完文章后，还得手动去更新 `posts.json` 索引文件，否则首页显示不出来。
-5. 如果忘了找封面图，首页就是一片白。
+## 一、Obsidian 里的写作环节
 
-**这也太痛苦了！** 🤯 写作的热情都在这些琐事中消磨殆尽。
+编辑器用的是 Obsidian，主要看中它的插件生态，尤其是 Templater。
 
-于是，我花了一个周末，打造了一套**全自动化的博客写作工作流**。现在，我的流程是：
+我写了一个 Templater 模板，它负责三件事：
 
-1. 打开 Obsidian。
-2. 按下快捷键。
-3. 开始写作。
-4. 点一下发布脚本。
+- 把文件名改成 `YYYY-MM-DD-slug.md` 的格式
+- 如果还没起名字，弹窗让我输入
+- 自动填好日期、作者这些固定字段
 
-完事！🎉
+### 模板代码
 
-今天，我就把这套系统的核心代码毫无保留地分享给大家。
-
----
-
-## ⚙️ 第一部分：Obsidian 里的“魔法” (The Writing Experience)
-
-我使用 **Obsidian** 作为我的编辑器。它最强大的地方在于插件生态，特别是 **Templater** 插件。
-
-### 1. 自动重命名与元数据填充
-
-我写了一个 Templater 脚本，它能做到：
-*   自动把文件名改成 `YYYY-MM-DD-slug.md` 的格式。
-*   如果我没起名字，它会弹窗让我输入。
-*   自动填好今天的日期、作者等信息。
-
-**📝 核心代码分享 (`templates/New Post.md`)：**
-
-把下面这段代码保存为 `New Post.md`，放在你的 Obsidian 模板文件夹里：
+把下面这段存成 `New Post.md`，放进 Obsidian 的模板文件夹：
 
 ```javascript
 <%*
@@ -73,7 +54,7 @@ if (filename.startsWith("未命名") || filename.startsWith("Untitled")) {
 // 4. 如果文件名还没有日期前缀，自动加上
 if (!filename.match(/^\d{4}-\d{2}-\d{2}/)) {
     const newFilename = `${date}-${filename}`;
-    // ✨ 魔法时刻：自动重命名当前文件
+    // 自动重命名当前文件
     await tp.file.rename(newFilename);
     filename = newFilename;
 }
@@ -96,28 +77,27 @@ coverImage:
 这里开始写正文...
 ```
 
-**怎么用？**
-1.  安装 **Templater** 插件。
-2.  新建一个文件 (`Ctrl+N`)。
-3.  点击一下空白处（激活光标）。
-4.  按 `Alt+E` 选择这个模板。
-5.  **Boom!** 文件名变了，内容填好了，你只需要专注于写作。
+### 用法
 
----
+1. 装 Templater 插件
+2. 新建文件（`Ctrl+N`）
+3. 点一下空白处激活光标
+4. 按 `Alt+E` 选这个模板
 
-## ⚙️ 第二部分：幕后的“大脑” (The Backend Logic)
+文件名和 frontmatter 就都好了，接下来只管写正文。
 
-文章写好了，怎么让博客系统（通常是 Next.js/React/Vue）知道多了一篇文章呢？
+## 二、后端的索引生成
 
-我们需要更新 `posts.json`。我写了一个 Node.js 脚本 `standardize_posts.js`，它不仅能生成索引，还能**自动修补**文章的缺陷。
+文章写完，博客系统还不知道多了一篇，需要更新 `posts.json`。
 
-它的功能包括：
-1.  **扫描所有 .md 文件**。
-2.  **自动计算阅读时间** (Read Time)。
-3.  **自动生成摘要** (Excerpt)（如果没写的话）。
-4.  **自动分配封面图** (Cover Image)（如果没配图，就根据标题哈希值随机分配一张，确保不单调）。
+这一步交给一个 Node.js 脚本 `standardize_posts.js`。它除了生成索引，还会把文章里缺的字段补上：
 
-**💻 核心逻辑片段 (`scripts/standardize_posts.js`)：**
+1. 扫描所有 `.md` 文件
+2. 计算阅读时间
+3. 没写摘要的自动截取正文开头
+4. 没配封面的，按标题哈希从图库里挑一张——同一个标题永远对应同一张图，不会每次构建都变
+
+### 核心逻辑
 
 ```javascript
 // ...前面的引入代码...
@@ -163,51 +143,39 @@ files.forEach(file => {
 
 // 最后生成 posts.json
 fs.writeFileSync(outputFile, JSON.stringify(allPosts, null, 2));
-console.log('✅ Post index updated!');
+console.log('Post index updated!');
 ```
 
-这个脚本确保了我的博客数据永远是**完整、标准**的，无论我写的时候多么粗心。
+这样一来，写的时候再怎么偷懒，索引里的数据都是齐的。
 
----
+## 三、一键发布
 
-## 🚀 第三部分：一键发布 (One-Click Deploy)
-
-最后，为了把这些步骤串起来，我写了一个简单的 PowerShell 脚本 `publish.ps1`。
-
-以后发布博客，我只需要双击这个图标，或者在终端敲一下：
+最后把上面这些串起来，用一个 PowerShell 脚本 `publish.ps1`：
 
 ```powershell
-./publish.ps1
-```
-
-**📜 脚本内容 (`publish.ps1`)：**
-
-```powershell
-Write-Host "🔄 Updating post index..."
+Write-Host "Updating post index..."
 
 # 1. 运行上面的 Node.js 脚本，标准化文章并更新索引
 npm run update-posts
 
-Write-Host "✅ Post index updated."
+Write-Host "Post index updated."
 
 # 2. (可选) Git 自动化提交
 # git add .
 # git commit -m "Update posts: $(Get-Date -Format 'yyyy-MM-dd')"
 # git push
 
-Write-Host "🚀 Ready to deploy!"
+Write-Host "Ready to deploy!"
 ```
 
----
+以后发布就是双击一下，或者在终端敲 `./publish.ps1`。
 
-## ⚙️ 总结
+## 小结
 
-通过这三个步骤，我把博客维护的时间从**30分钟**压缩到了**30秒**。
+三个环节各解决一件事：
 
-*   **Obsidian + Templater**: 解决了“开始写”的阻力。
-*   **Node.js 脚本**: 解决了“数据维护”的繁琐。
-*   **PowerShell**: 解决了“发布流程”的重复。
+- Obsidian 加 Templater，解决「开始写」之前的摩擦
+- Node.js 脚本，解决元数据维护的琐碎
+- PowerShell 脚本，解决发布流程的重复
 
-技术是为了让生活更美好，希望这套工作流的代码能给你带来灵感！如果你也想搭建这样的博客，欢迎参考我的源码。
-
-Happy Coding! Happy Writing! ✍️
+维护博客的时间从半小时压到了半分钟。代码都在上面，按自己的目录结构改改就能用。

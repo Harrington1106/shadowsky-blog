@@ -1,51 +1,37 @@
 ---
-title: "如何在个人网站优雅地嵌入 B 站视频（使用 iframe 或其他方式）"
+title: "在个人网站嵌入 B 站视频：响应式、参数与踩坑记录"
 date: "2025-12-28"
 category: "前端"
 author: "Thoi"
-tags: ["Bilibili", "嵌入", "前端", "iframe", "教程"]
-excerpt: "如何在个人网站优雅地嵌入 B 站视频（使用 iframe 或其他方式） 摘要：在个人博客或网站中嵌入 B 站（Bilibili）视频是丰富内容的绝佳方式。然而，官方提供的默认代码往往不具备响应式能力，且加载性能较差。本文将从基础的 ifra..."
-lastModified: "2026-07-26"
+tags: ["Bilibili","嵌入","前端","iframe","教程"]
+excerpt: "B 站官方给的嵌入代码不响应式，性能也差，而且 2026 年 7 月起 PC 外链播放器在第三方站点会被推广面板盖住画面。这篇讲怎么改成自适应、参数怎么调、以及那次遮挡问题的完整排查过程。"
+lastModified: "2026-08-04"
 readTime: 14
-coverImage: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&q=80&w=1000"
+coverImage: "/uploads/covers/a794b4ce.webp"
 ---
 
-> **TL;DR**：B 站外链播放器最佳实践。从基础 iframe 嵌入到响应式自适应、参数调优、React/Vue 组件封装、HTTPS 兼容性，本文全部覆盖。文末还有常见问题排查指南。
+> **2026-07-26 更新**：官方外链播放器 `player.bilibili.com/player.html` 现在在第三方站点内嵌时，画面区域会被「你感兴趣的视频都在B站」推广面板整块盖住。播放器本身是正常的——标题、进度条、时长都在，进度也在走，就是看不到画面。本文已把推荐做法换成 B 站的 H5 移动端播放器 `blackboard/html5mobileplayer.html`，第 2、4、8 节补上了实测过程。
 
-> **2026-07-26 更新**：官方外链播放器 `player.bilibili.com/player.html` 现在在第三方站点内嵌时，**画面区域会被「你感兴趣的视频都在B站」推广面板整块盖住**——播放器本身正常加载（标题、进度条、时长都在，进度也在走），就是看不到画面。本文已把推荐做法换成 B 站的 H5 移动端播放器 `blackboard/html5mobileplayer.html`，并在第 2、4、8 节补上了实测过程。
+直接复制 B 站分享按钮下面那段 iframe 代码，会遇到四个问题：手机端被截断或显示过小；iframe 阻塞主线程，拖慢 LCP；默认边框和滚动条跟页面设计不搭；没法控制自动播放、静音和清晰度。
 
-# 如何在个人网站优雅地嵌入 B 站视频（使用 iframe 或其他方式）
+下面从基础嵌入讲到框架封装，最后是那次画面被遮挡的排查记录。
 
-> **摘要**：在个人博客或网站中嵌入 B 站（Bilibili）视频是丰富内容的绝佳方式。然而，官方提供的默认代码往往不具备响应式能力，且加载性能较差。本文将从基础的 iframe 嵌入出发，深入探讨自适应布局、参数调优、HTTPS 兼容性以及 React/Vue 等框架中的最佳实践，助你打造丝滑的视频播放体验。
+## 一、基础嵌入
 
----
+### 拿到 BV 号
 
-## 1. 为什么需要“优雅”地嵌入？
+B 站现在主要用 BV 号，在视频 URL 里就能看到：
 
-B 站作为国内最大的视频平台，是个人站长引用视频的首选。但直接复制 B 站分享按钮下的 HTML 代码（iframe）通常会遇到以下问题：
-*   **非响应式**：在手机端会被截断或显示过小。
-*   **性能拖累**：iframe 会阻塞主线程，影响页面加载速度 (LCP)。
-*   **样式突兀**：默认边框和滚动条与现代网页设计格格不入。
-*   **控制受限**：无法自动播放或静音，清晰度不可控。
-
-本文旨在解决上述所有痛点。
-
----
-
-## 2. 基础篇：官方 iframe 嵌入
-
-### 2.1 获取视频 ID (BV 号 / AV 号)
-B 站目前主要使用 **BV 号**（如 `BV1xx411c7mD`）。你可以在视频 URL 中找到它：
 `https://www.bilibili.com/video/BV1xx411c7mD`
 
-### 2.2 构造标准嵌入代码
+### 选哪个播放器
 
-B 站有两个可用于外链的播放器地址，**2026 年 7 月起请优先用后者**：
+B 站有两个可以外链的播放器地址，**2026 年 7 月起优先用后者**：
 
 | 播放器 | 地址 | 现状 |
 | :--- | :--- | :--- |
-| PC 外链播放器 | `player.bilibili.com/player.html` | ⚠️ 第三方站点内嵌时画面被推广面板遮挡 |
-| H5 移动端播放器 | `www.bilibili.com/blackboard/html5mobileplayer.html` | ✅ 正常出画面，界面也更干净 |
+| PC 外链播放器 | `player.bilibili.com/player.html` | 第三方站点内嵌时画面被推广面板遮挡 |
+| H5 移动端播放器 | `www.bilibili.com/blackboard/html5mobileplayer.html` | 正常出画面，界面也更干净 |
 
 推荐的嵌入代码：
 
@@ -60,7 +46,7 @@ B 站有两个可用于外链的播放器地址，**2026 年 7 月起请优先�
 </iframe>
 ```
 
-传统写法（仍然可用，但会遇到上面说的遮挡问题）：
+传统写法仍然能用，只是会遇到上面说的遮挡：
 
 ```html
 <iframe
@@ -73,19 +59,15 @@ B 站有两个可用于外链的播放器地址，**2026 年 7 月起请优先�
 </iframe>
 ```
 
-**关键属性说明**：
-*   `scrolling="no"`: 禁止 iframe 内部滚动。
-*   `border="0" frameborder="no" framespacing="0"`: 去除丑陋的默认边框。
-*   `allowfullscreen="true"`: 允许全屏播放（非常重要，否则用户无法全屏）。
+几个属性的作用：`scrolling="no"` 禁止 iframe 内部滚动；`border="0" frameborder="no" framespacing="0"` 去掉默认边框；`allowfullscreen="true"` 允许全屏，漏了这个用户就没法全屏。
 
----
+## 二、响应式
 
-## 3. 进阶篇：自适应 / 响应式设计
+默认 iframe 要写死 `width` 和 `height`，在移动端会出问题。需要让容器随屏幕宽度缩放，同时保持 16:9。
 
-默认的 iframe 需要指定 `width` 和 `height`，这在移动端是灾难。我们需要让视频容器根据屏幕宽度自动缩放，并保持 **16:9** 的黄金比例。
+### 方案 A：padding-top 比例盒子
 
-### 方案 A：CSS 比例盒子 (Padding-Top Hack) - 兼容性最好
-利用 `padding-top` 百分比基于宽度的特性。16:9 的比例即 `9 / 16 = 56.25%`。
+利用 `padding-top` 百分比是基于宽度计算的特性，16:9 对应 `9 / 16 = 56.25%`。兼容性最好。
 
 ```html
 <div class="bilibili-aspect-ratio">
@@ -111,8 +93,9 @@ B 站有两个可用于外链的播放器地址，**2026 年 7 月起请优先�
 </style>
 ```
 
-### 方案 B：使用 `aspect-ratio` (现代浏览器推荐)
-如果你的网站只需支持现代浏览器，这是最简洁的方案。
+### 方案 B：aspect-ratio
+
+只需要支持现代浏览器的话，这个写法简洁得多。
 
 ```html
 <iframe 
@@ -130,67 +113,58 @@ B 站有两个可用于外链的播放器地址，**2026 年 7 月起请优先�
 </style>
 ```
 
----
+## 三、参数
 
-## 4. 参数详解：定制播放体验
+在 URL 后面拼 query 参数可以控制播放器行为。
 
-通过在 URL 后面拼接参数（Query Parameters），我们可以控制播放器的行为。
-
-**常用参数表**：
+两个播放器通用的：
 
 | 参数名 | 说明 | 推荐值 | 备注 |
 | :--- | :--- | :--- | :--- |
 | `bvid` | 视频 BV 号 | 必填 | 取代旧版 `aid` |
 | `p` | 分 P 索引 | `1` | 默认第一集 |
-| `danmaku` | 弹幕开关 | `0` (关) / `1` (开) | 个人博客建议关闭，减少干扰 |
-| `autoplay` | 自动播放 | `0` (关) / `1` (开) | **注意**：现代浏览器通常禁止带声音的自动播放 |
-| `muted` | 静音 | `1` | 配合 `autoplay=1` 可实现自动播放 |
-| `t` | 跳转时间 | 秒数 | 如 `t=120` 从 2 分钟开始播放 |
+| `danmaku` | 弹幕开关 | `0` 关 / `1` 开 | 个人博客建议关掉 |
+| `autoplay` | 自动播放 | `0` 关 / `1` 开 | 现代浏览器禁止带声音的自动播放 |
+| `muted` | 静音 | `1` | 配合 `autoplay=1` 才能真的自动播 |
+| `t` | 跳转时间 | 秒数 | `t=120` 从 2 分钟开始 |
 
-**两个播放器专有的参数**（写错了不会报错，只是静默失效）：
+下面这些是各自专有的，写错了不会报错，只是静默失效：
 
 | 参数名 | 属于哪个播放器 | 说明 |
 | :--- | :--- | :--- |
 | `high_quality=1` | `player.html` | 画质优先 |
-| `highQuality=1` | `html5mobileplayer.html` | 画质优先（注意是驼峰，和上面不通用） |
+| `highQuality=1` | `html5mobileplayer.html` | 画质优先，注意是驼峰，和上面不通用 |
 | `hideCoverInfo=1` | `html5mobileplayer.html` | 隐藏播放量等浮层信息 |
-| `fjw=0` | `html5mobileplayer.html` | 关掉「记忆你上次看到 xx:xx / 跳转」提示条，默认是开的 |
+| `fjw=0` | `html5mobileplayer.html` | 关掉「上次看到 xx:xx / 跳转」提示条，默认开着 |
 | `noFullScreenButton=1` | `html5mobileplayer.html` | 隐藏全屏按钮 |
 
-**组合示例**：
-自动播放、关闭弹幕、高清优先、不显示播放量与记忆播放提示：
-`//www.bilibili.com/blackboard/html5mobileplayer.html?bvid=BV1xx411c7mD&p=1&autoplay=1&danmaku=0&highQuality=1&hideCoverInfo=1&fjw=0`
+一个组合示例，自动播放、关弹幕、高清优先、不显示播放量和记忆播放提示：
 
----
+```text
+//www.bilibili.com/blackboard/html5mobileplayer.html?bvid=BV1xx411c7mD&p=1&autoplay=1&danmaku=0&highQuality=1&hideCoverInfo=1&fjw=0
+```
 
-## 5. HTTPS 与 Mixed Content 问题
+## 四、HTTPS 与 Mixed Content
 
-**现象**：
-如果你的网站是 HTTPS（现在绝大多数都是），而嵌入代码写的是 `http://player.bilibili.com...`，浏览器会报错 "Mixed Content" 并拦截加载。
+站点是 HTTPS 而嵌入代码写的是 `http://player.bilibili.com...` 的话，浏览器会报 Mixed Content 并直接拦掉。
 
-**解决方案**：
-1.  **始终使用 HTTPS**：`https://player.bilibili.com/...`
-2.  **使用协议自适应**：`//player.bilibili.com/...` （推荐，自动跟随主站协议）
+两个办法：写死 `https://`，或者用 `//player.bilibili.com/...` 让它跟随主站协议。后者更省事。
 
----
+## 五、性能优化
 
-## 6. 性能优化：Lazy Loading 与 封面点击加载
+iframe 会把 B 站那套庞大的播放器 JS 全下下来，对首屏影响很大。
 
-iframe 是页面性能杀手。直接加载 iframe 会下载 B 站庞大的播放器 JS 库，严重拖慢首屏时间。
+### 原生懒加载
 
-### 6.1 原生 Lazy Loading
-给 iframe 加上 `loading="lazy"` 属性。浏览器会在 iframe 进入视口附近时才开始加载。
+给 iframe 加 `loading="lazy"`，浏览器会等它快进入视口时才开始加载。
 
 ```html
 <iframe src="..." loading="lazy" ...></iframe>
 ```
 
-### 6.2 终极优化：封面图占位 + 点击加载 (Facade Pattern)
-这是性能最好的方案。
-1.  先只显示一张视频封面图（轻量）。
-2.  用户点击封面图上的“播放”按钮后，再动态创建 iframe 替换封面图。
+### 封面占位 + 点击加载
 
-**完整实现代码 (原生 JS)**：
+性能最好的做法：先只放一张封面图，用户点了再动态创建 iframe。这样首屏完全不碰播放器代码。
 
 ```html
 <div class="b-video-container" data-bvid="BV1xx411c7mD">
@@ -246,14 +220,14 @@ document.querySelectorAll('.b-video-container').forEach(container => {
 </script>
 ```
 
----
+## 六、各框架里的写法
 
-## 7. 不同框架中的实现指南
+### Hugo / Hexo
 
-### 7.1 Hugo / Hexo (Markdown)
-大多数静态博客支持直接在 Markdown 中写 HTML。如果不生效，可以创建 Shortcode。
+大多数静态博客支持直接在 Markdown 里写 HTML。不生效的话就做成 Shortcode。
 
-**Hugo Shortcode (`layouts/shortcodes/bilibili.html`)**:
+`layouts/shortcodes/bilibili.html`：
+
 ```html
 <div style="position: relative; width: 100%; padding-top: 56.25%;">
     <iframe src="//player.bilibili.com/player.html?bvid={{ .Get 0 }}&page={{ with .Get 1 }}{{ . }}{{ else }}1{{ end }}&high_quality=1" 
@@ -261,9 +235,10 @@ document.querySelectorAll('.b-video-container').forEach(container => {
     style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe>
 </div>
 ```
-使用：`{{< bilibili BV1xx411c7mD >}}`
 
-### 7.2 React / Next.js Component
+用法：`{{< bilibili BV1xx411c7mD >}}`
+
+### React / Next.js
 
 ```jsx
 import React from 'react';
@@ -284,7 +259,7 @@ const BilibiliPlayer = ({ bvid }) => {
 export default BilibiliPlayer;
 ```
 
-### 7.3 Vue / Nuxt Component
+### Vue / Nuxt
 
 ```vue
 <template>
@@ -325,41 +300,39 @@ defineProps({
 </style>
 ```
 
----
-
-## 8. 常见问题排查 (Troubleshooting)
+## 七、常见问题
 
 | 问题现象 | 可能原因 | 解决方案 |
 | :--- | :--- | :--- |
-| **画面被「你感兴趣的视频都在B站」盖住** | B 站对第三方站点内嵌 `player.html` 的限制（播放器本身是正常的，只是画面区被推广面板覆盖） | 换用 `blackboard/html5mobileplayer.html`。见下方「实测过什么没用」 |
-| **嵌入后黑屏 / 无法播放** | 1. 视频设置了“禁止转载”<br>2. 浏览器 Referrer 策略限制 | 1. 检查 B 站稿件设置<br>2. 添加 `<meta name="referrer" content="no-referrer">` (慎用，可能影响统计) |
-| **视频加载极慢** | 1. 未使用懒加载<br>2. B 站服务器拥堵 | 使用本文提到的“封面图占位”方案，避免首屏加载 iframe。 |
-| **宽度溢出 / 手机端显示不全** | 未使用响应式容器 | 使用 CSS `aspect-ratio` 或 `padding-top` 方案包裹 iframe。 |
-| **自动播放失效** | 浏览器策略禁止有声自动播放 | 必须同时设置 `autoplay=1` 和 `muted=1`。 |
-| **iOS Safari 全屏失效** | 缺少 `allowfullscreen` 属性 | 确保 iframe 标签包含 `allowfullscreen="true"`。 |
+| 画面被「你感兴趣的视频都在B站」盖住 | B 站对第三方站点内嵌 `player.html` 的限制，播放器本身正常，只是画面区被推广面板覆盖 | 换用 `blackboard/html5mobileplayer.html`，详见下一节 |
+| 嵌入后黑屏、无法播放 | 视频设了「禁止转载」；或浏览器 Referrer 策略限制 | 检查 B 站稿件设置；或加 `<meta name="referrer" content="no-referrer">`，慎用，会影响统计 |
+| 加载极慢 | 没用懒加载；或 B 站服务器拥堵 | 用上面的封面占位方案，首屏不加载 iframe |
+| 宽度溢出、手机端显示不全 | 没用响应式容器 | 用 `aspect-ratio` 或 `padding-top` 包一层 |
+| 自动播放失效 | 浏览器禁止有声自动播放 | `autoplay=1` 和 `muted=1` 要同时给 |
+| iOS Safari 全屏失效 | 缺 `allowfullscreen` | 确认 iframe 上有 `allowfullscreen="true"` |
 
-### 关于推广面板遮挡：实测过什么没用
+## 八、推广面板遮挡：排查记录
 
-2026-07-26 在本站上做过一轮排查，以下办法**都无效**，别再浪费时间：
+2026-07-26 在本站做了一轮排查。先说结论：以下办法**都没用**，不用再试了。
 
-*   给 `player.html` 加官方外链参数 `isOutside=true`
-*   移除 iframe 的 `sandbox` 属性
-*   给 iframe 加 `referrerPolicy="no-referrer"`（本文早期版本推荐过这条，对这个现象无效）
+- 给 `player.html` 加官方外链参数 `isOutside=true`
+- 移除 iframe 的 `sandbox` 属性
+- 给 iframe 加 `referrerPolicy="no-referrer"`（本文早期版本推荐过这条，对这个现象无效）
 
-同时可以排除「单个稿件设置了禁止转载」：换三个不同 BV 号，表现完全一致；而把同一个播放器 URL 在浏览器顶层直接打开，画面又是正常的——说明是 B 站针对第三方内嵌的策略，站内绕不过去。
+也可以排除「某个稿件设了禁止转载」这种可能：换三个不同的 BV 号，表现完全一致；而把同一个播放器 URL 在浏览器顶层直接打开，画面又是正常的。所以这是 B 站针对第三方内嵌的策略，站内绕不过去。
 
-**有效的只有一条**：把 iframe 地址换成 `blackboard/html5mobileplayer.html`。同一个页面里把两个播放器并排放，旧的仍是占位图，移动端播放器正常出画面。
+有效的只有一条：把 iframe 地址换成 `blackboard/html5mobileplayer.html`。在同一个页面里把两个播放器并排放，旧的仍然是占位图，移动端播放器正常出画面。
 
-需要提醒的是，这类策略随时可能再变。如果哪天移动端播放器也被限制，兜底方案是在播放器旁边放一个「在 B 站打开」的外链按钮，至少别让访客对着黑框发愣。
+这类策略随时可能再变。如果哪天移动端播放器也被限制，兜底方案是在播放器旁边放一个「在 B 站打开」的外链按钮，至少别让访客对着一个黑框发愣。
 
----
+## 小结
 
-## 9. 最佳实践总结
+五条实践：
 
-1.  **永远使用响应式容器**：不要写死 `width="600"`，使用 `aspect-ratio: 16/9`。
-2.  **性能优先**：尽量使用“点击加载”模式，或者至少加上 `loading="lazy"`。
-3.  **参数调优**：默认关闭弹幕 (`danmaku=0`) 和自动播放，开启高清（`player.html` 用 `high_quality=1`，移动端播放器用 `highQuality=1`），给用户最干净的体验。
-4.  **HTTPS**：确保 iframe `src` 使用 `//` 开头。
-5.  **播放器选型**：优先 `blackboard/html5mobileplayer.html`；并留一个「在 B 站打开」的外链按钮做兜底，B 站的外链策略是会变的。
+1. 用响应式容器，不要写死 `width="600"`
+2. 性能上优先「点击加载」，退一步至少加 `loading="lazy"`
+3. 参数上默认关弹幕、关自动播放、开高清（`player.html` 用 `high_quality=1`，移动端播放器用 `highQuality=1`）
+4. iframe 的 `src` 用 `//` 开头，跟随主站协议
+5. 播放器优先选 `blackboard/html5mobileplayer.html`，并留一个「在 B 站打开」的外链按钮兜底
 
-通过以上方法，你可以在任何个人网站中优雅、流畅地展示 B 站视频，既保留了内容的丰富性，又不牺牲网站的性能与美观。
+最后这条是这次排查最大的教训：B 站的外链策略会变，而且变的时候不会通知你。留个外链按钮，成本很低。

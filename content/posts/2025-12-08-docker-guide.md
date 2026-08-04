@@ -1,128 +1,111 @@
 ---
-title: "Docker 入门指南：从此告别「在我电脑上能跑啊」"
+title: "Docker 入门：把装软件变成一行命令"
 date: "2025-12-08"
 category: "技术"
 author: "Thoi"
-tags: ["Docker", "容器", "运维", "服务器", "教程"]
-excerpt: "装个 WordPress 要配 PHP + MySQL + Nginx，中间随便哪步报错就得 Google 半天。Docker 把这一切打包成一个镜像，一行命令搞定，删掉也干干净净。本文带你从零理解 Docker 是什么、怎么用、为什么它是服务器上最伟大的发明。"
-lastModified: "2026-06-26"
-readTime: 4
-coverImage: "https://images.unsplash.com/photo-1605745341112-85968b19335b?auto=format&fit=crop&q=80&w=1000"
+tags: ["Docker","容器","运维","服务器","教程"]
+excerpt: "在服务器上装 WordPress，得先配好 PHP、MySQL、Nginx，中间任何一步出错都要查上半天。Docker 把这些连同环境一起打包成镜像，一行命令装好，删掉也不留残渣。"
+lastModified: "2026-08-03"
+readTime: 5
+coverImage: "/uploads/covers/8f590be8.webp"
 ---
 
-> **TL;DR**：Docker = 手机应用商店。想装 Jellyfin？`docker run jellyfin/jellyfin`，3 秒搞定。不想用了？`docker rm -f jellyfin`，服务器干干净净。没有依赖冲突，没有环境报错，换服务器直接打包带走。
+Docker 是一种把软件连同它的运行环境一起打包的工具。打包出来的东西叫镜像（image），跑起来之后叫容器（container）。
 
----
+对个人服务器来说，它的好处很直接：装一个服务不用再自己配依赖，卸载也不会留下一堆残留。想装 Jellyfin，`docker run jellyfin/jellyfin` 就行；不想要了，`docker rm -f jellyfin`，服务器回到装之前的样子。
 
-## 安装软件：从"痛苦"到"一句话"
+下面分四件具体的事来说。
 
-没有 Docker 的时候，在服务器上装个 WordPress 的流程是这样的：
+## 一、装软件
 
-1. 装 PHP（版本要对，扩展要全）
-2. 装 MySQL（改密码、设权限、调编码）
-3. 装 Nginx（写反代规则、配 SSL）
-4. 中间任何一步报错 → Google → StackOverflow → 凌晨三点还没睡
+没有 Docker 的时候，在服务器上装 WordPress 大致是这个流程：
 
-**有了 Docker 之后：**
+1. 装 PHP，版本要对，扩展要全
+2. 装 MySQL，改密码、设权限、调编码
+3. 装 Nginx，写反代规则、配 SSL
+4. 中间任何一步报错，就去 Google 和 StackOverflow 里翻
+
+用 Docker 只需要一条命令：
 
 ```bash
 docker run -d --name wp -p 80:80 wordpress
 ```
 
-这一行命令做了什么？Docker 从云端拉下来一个打包好的"镜像"，里面 PHP、MySQL、Nginx、配置文件全齐了。**开箱即用，环境零报错。**
+Docker 会从云端拉下一个打包好的镜像，PHP、MySQL、Nginx 和配置文件都在里面，拉完就能用。
 
----
+## 二、环境隔离
 
-## 环境隔离：每个软件住单间
+传统方式装软件，配置文件散落在 `/etc`、`/var`、`/usr` 各处，卸载常常删不干净。
 
-以前装软件，各种配置文件散落在 `/etc`、`/var`、`/usr` 各个角落。卸载？永远删不干净。
+更麻烦的是依赖打架：软件 A 要 PHP 7.4，软件 B 要 PHP 8.2，同一台机器上你只能装一个。
 
-更头疼的是软件打架——软件 A 要 PHP 7.4，软件 B 要 PHP 8.2，你装哪个？
+容器解决的就是这件事。每个软件跑在自己的容器里，各带各的依赖，互不干涉。需要五个不同版本的 PHP，就开五个容器。不想用了，`docker rm -f 容器名`，宿主机上不留痕迹。
 
-Docker 的解法：**容器 = 独立房间**。
+日常有两个命令值得记住：`docker ps` 看当前跑着哪些容器，`docker stats` 实时看它们占了多少 CPU 和内存。
 
-- 每个软件跑在自己的容器里，互不干涉
-- 你要 5 个不同版本的 PHP？开 5 个容器，各用各的
-- 不想用了？`docker rm -f 容器名`，服务器回到安装前的状态，零残留
+## 三、Docker Hub
 
-> 💡 **实用技巧**：装新软件之前先用 `docker ps` 看看跑了哪些容器，用 `docker stats` 实时监控 CPU 和内存占用。
+[Docker Hub](https://hub.docker.com) 是官方的镜像仓库，想装什么先来这里搜。下面是几类常见的选择。
 
----
+### 影音
 
-## Docker Hub：300 万个现成的宝藏
+| 软件 | 用途 | 安装命令 |
+|------|------|----------|
+| Jellyfin | 私人影院，手机和电视都能看 | `docker run -d jellyfin/jellyfin` |
+| Plex | 界面比 Jellyfin 精致的媒体中心 | `docker run -d plexinc/pms-docker` |
+| Navidrome | 自建音乐流媒体服务 | `docker run -d deluan/navidrome` |
 
-[Docker Hub](https://hub.docker.com) 是 Docker 官方的镜像仓库，类似手机上的 App Store。想装什么，搜一下就有。
+### 生产力
 
-### 影音娱乐
-
-| 软件 | 能干什么 | 安装命令 |
-|------|----------|----------|
-| **Jellyfin** | 私人影院，手机/电视都能看 | `docker run -d jellyfin/jellyfin` |
-| **Plex** | 比 Jellyfin 更华丽的媒体中心 | `docker run -d plexinc/pms-docker` |
-| **Navidrome** | 自建 Spotify，随时随地听歌 | `docker run -d deluan/navidrome` |
-
-### 生产力工具
-
-| 软件 | 能干什么 |
-|------|----------|
-| **Bitwarden** | 自建密码管理器，密码存在自己服务器上 |
-| **Uptime Kuma** | 监控所有网站在线状态，挂了立刻通知你 |
-| **Nginx Proxy Manager** | 图形化管理域名、SSL 证书、反向代理 |
-| **Nextcloud** | 自建 Dropbox，文件/日历/联系人全掌握 |
-| **PhotoPrism** | AI 自动分类照片，Google Photos 的开源替代 |
+| 软件 | 用途 |
+|------|------|
+| Bitwarden | 自建密码管理器，密码存在自己服务器上 |
+| Uptime Kuma | 监控网站在线状态，挂了立刻通知 |
+| Nginx Proxy Manager | 图形化管理域名、SSL 证书和反向代理 |
+| Nextcloud | 自建网盘，文件、日历、联系人一起管 |
+| PhotoPrism | 照片自动分类，Google Photos 的开源替代 |
 
 ### 下载与存储
 
-| 软件 | 能干什么 |
-|------|----------|
-| **qBittorrent** | BT 下载器，Web 界面远程管理 |
-| **Transmission** | 轻量 BT 下载 |
-| **Alist** | 挂载阿里云盘/百度网盘/OneDrive 到本地 |
+| 软件 | 用途 |
+|------|------|
+| qBittorrent | BT 下载器，带 Web 界面，可远程管理 |
+| Transmission | 更轻量的 BT 下载器 |
+| Alist | 把阿里云盘、百度网盘、OneDrive 挂载到本地 |
 
-> ⚠️ **安全提醒**：Docker Hub 上的镜像谁都能上传，拉取前看一眼下载量和更新日期，别用 3 年没更新的冷门镜像。
+拉镜像之前建议看一眼下载量和最近更新日期。Docker Hub 上谁都能上传，三年没更新的冷门镜像不要用。
 
----
+## 四、迁移服务器
 
-## 迁移服务器：打包带走，一切如初
-
-换了新 VPS？以前你需要：
-1. 重装所有软件
-2. 一个一个搬配置文件
-3. 祈祷别出问题
-
-**用 Docker 的正确姿势：**
+换新 VPS 时，传统做法是把软件重装一遍，再一个个搬配置文件。用 Docker 的话，把数据卷搬过去就够了：
 
 ```bash
-# 老服务器上：导出数据卷
+# 老服务器：导出数据卷
 docker run --rm -v wp_data:/data alpine tar czf - -C /data . > backup.tar.gz
 
-# 新服务器上：导入
+# 新服务器：导入
 docker run --rm -v wp_data:/data alpine tar xzf - -C /data < backup.tar.gz
 
 # 启动容器
 docker run -d --name wp -v wp_data:/var/lib/mysql -p 80:80 wordpress
 ```
 
-连数据库登录状态都在，跟没搬过一样。
+数据卷带过去，连数据库里的登录状态都还在，跟没搬过一样。
 
----
-
-## 常用命令速查
+## 常用命令
 
 ```bash
-docker ps                  # 看看哪些容器在跑
-docker ps -a               # 包括已停止的
-docker images               # 本地有哪些镜像
-docker logs 容器名           # 看日志（排查问题第一步）
-docker exec -it 容器名 bash  # 进入容器内部
-docker-compose up -d        # 一键启动多容器应用
-docker system prune -a      # 清理所有没用的镜像和容器（慎用）
+docker ps                    # 看看哪些容器在跑
+docker ps -a                 # 包括已经停掉的
+docker images                # 本地有哪些镜像
+docker logs 容器名            # 看日志，排查问题的第一步
+docker exec -it 容器名 bash   # 进入容器内部
+docker compose up -d         # 一键启动多容器应用
+docker system prune -a       # 清理没用的镜像和容器，慎用
 ```
 
----
+## 小结
 
-## 总结
+Docker 解决的不只是安装麻烦，更是环境一致性：本地、测试和线上跑的是同一个镜像，不会再出现「我这儿明明是好的」。
 
-Docker 把服务器软件安装变成了"下载 App → 打开"这么简单。它解决的不只是安装问题，更是**环境一致性**问题：开发环境、测试环境、生产环境完全一致，再也没有"我这能跑啊"的尴尬。
-
-学 Docker 不需要成为 DevOps 专家。先会用 `docker run`、`docker ps`、`docker rm` 这三个命令，你就已经超越了 80% 的服务器小白。剩下的，边用边学。
+上手不需要先学完整套 DevOps。`docker run`、`docker ps`、`docker rm` 这三个命令够应付大部分日常，剩下的边用边查。
