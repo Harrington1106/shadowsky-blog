@@ -69,9 +69,51 @@ function RssPageInner() {
 
     const initialFeedHandled = useRef(false);
     const loadSeq = useRef(0);
+    const cardRef = useRef(null);
 
     useEffect(() => {
         setFontSize(getFontSizePreference());
+    }, []);
+
+    /*
+      按**指针位置**决定滚哪一栏,而不是听浏览器把 wheel 事件派给了谁。
+
+      为什么需要:这一页和站里其它页不一样 —— 文档本身正好一屏、不滚动,
+      能滚的只有三栏各自的容器。如果浏览器/鼠标驱动把滚轮事件送给的是
+      **焦点元素**而不是指针悬停的元素(Windows「悬停时滚动非活动窗口」关掉、
+      某些鼠标驱动、部分无障碍设置都是这个行为),事件就落到 body 上,
+      而 body 没得滚 —— 于是整页任何地方都滚不动,但 /blog 那种整文档滚动的
+      页面却完全正常。站主实测就是这个现象,而用 CDP 按坐标派发(走命中测试)
+      在同一台机器上一直是好的,两边对不上。
+
+      所以这里自己做一遍命中测试:找指针下最近的可滚动祖先,直接改它的
+      scrollTop。真滚动了才 preventDefault,没滚动(到顶/到底)就放行,
+      不影响页面其它默认行为。
+    */
+    useEffect(() => {
+        function onWheel(e) {
+            if (e.ctrlKey) return;                      // 缩放手势，不管
+            const card = cardRef.current;
+            if (!card) return;
+            const r = card.getBoundingClientRect();
+            if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) return;
+
+            let node = document.elementFromPoint(e.clientX, e.clientY);
+            while (node && node !== document.body) {
+                const canScroll = node.scrollHeight - node.clientHeight > 1;
+                if (canScroll && /(auto|scroll)/.test(getComputedStyle(node).overflowY)) break;
+                node = node.parentElement;
+            }
+            if (!node || node === document.body) return;
+
+            // Firefox 用「行」为单位,换算成像素
+            const delta = e.deltaMode === 1 ? e.deltaY * 16 : e.deltaY;
+            const before = node.scrollTop;
+            node.scrollTop = before + delta;
+            if (node.scrollTop !== before) e.preventDefault();
+        }
+        window.addEventListener('wheel', onWheel, { passive: false });
+        return () => window.removeEventListener('wheel', onWheel);
     }, []);
 
     // ── 加载订阅源列表 ──
@@ -215,7 +257,7 @@ function RssPageInner() {
               阅读区能拿到 740+,正文才够得着 720px 这个舒服的行宽。
             */}
             <main className="mx-auto flex h-[calc(100dvh-3.5rem)] w-full max-w-[1800px] flex-col px-2 pt-3 pb-16 sm:px-4 md:h-auto md:min-h-0 md:flex-1 md:pb-3">
-                <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border bg-card md:flex-row">
+                <div ref={cardRef} className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border bg-card md:flex-row">
                     <aside
                         className={cn(
                             'min-h-0 flex-1 flex-col border-b bg-background md:flex md:w-64 md:flex-none md:shrink-0 md:border-r md:border-b-0 lg:w-72',
