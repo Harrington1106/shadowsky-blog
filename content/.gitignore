@@ -1,0 +1,24 @@
+# content/ 既是线上内容的镜像，也是一个 Obsidian 库（库根就在这儿）：
+#   drafts/    写作区，发布台只认这一层的 *.md
+#   posts/     已发布文章的镜像（服务器单向同步下来的，改了要重发才生效）
+#   ai-daily/  AI 日报镜像
+# 库的**配置**（app.json / 插件设置 / 模板）进 git，好在换机器时照搬；
+# 插件二进制和本机窗口状态不进。
+
+.obsidian/workspace.json
+.obsidian/workspace-mobile.json
+
+# 主题本体（第三方产物，和插件本体同理，重装即可）；
+# 用了哪个主题记在 appearance.json 里，那个进 git
+.obsidian/themes/
+
+# 插件本体从 Obsidian 社区商店重装即可，data.json（我们的配置）保留。
+# *.orig 是汉化脚本留的官方原版副本（scripts/obsidian-i18n.mjs --restore 用它还原），
+# 属于插件产物的一部分，同样不进 git。
+.obsidian/plugins/*/main.js
+.obsidian/plugins/*/main.js.orig
+.obsidian/plugins/*/manifest.json
+.obsidian/plugins/*/styles.css
+
+# 拖进库里的本地图片（图片正常走 PicList，不该有东西落这儿）
+_attachments/
