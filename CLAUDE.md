@@ -232,9 +232,18 @@ MySQL 早已停用；旧的 `public/data/*.json`、`api/data/` 只属于 v1。
 
 **日常直接用脚本**（已内置下面两道防呆和部署后验证）：
 ```bash
-bash scripts/deploy-v2.sh              # 完整部署
-bash scripts/deploy-v2.sh --skip-build # 复用现有 .next
+bash scripts/deploy-v2.sh                            # 完整部署
+bash scripts/deploy-v2.sh --skip-build               # 复用现有 .next
+bash scripts/deploy-v2.sh --skip-build --skip-upload # 包已经在服务器 /tmp,别再传 28MB
 ```
+
+⚠ **上传这一跳会抽风**：2026-08-04 实测连续两次 `Connection reset`，手工重传成功但只有
+78KB/s（28MB 传了 6 分钟）。脚本现在自动重试 3 次，传完一律比对 md5 才继续
+（scp 断在半路也可能返回 0，拿半个 tar 去 `docker build` 只会报一堆看不懂的错）。
+链路实在不行就先手工 `scp web/deploy.tgz shadowsky:/tmp/`，回头 `--skip-upload` 接着跑。
+⚠ `--skip-upload` **同时跳过打包** —— tar 不是字节可复现的，重打一次 md5 就变了，
+那样永远和服务器上那个包对不上，flag 等于白给。它的语义是「服务器上那个包正是我要部署的」。
+
 下面是脚本内部做的事，手工排查时参考：
 
 ```bash

@@ -9,7 +9,10 @@
 #   2. 部署后同时比对「直连容器」与「经 nginx」的 md5 —— 不一致=命中 nginx
 #      proxy_cache,会让人误以为构建没生效
 #
-# 用法:bash scripts/deploy-v2.sh [--skip-build]
+# 用法:bash scripts/deploy-v2.sh [--skip-build] [--skip-upload]
+#   --skip-build   沿用现有 .next,只重新打包上传
+#   --skip-upload  产物已经在服务器 /tmp/deploy.tgz 时跳过上传(会先比对 md5,
+#                  对不上就拒绝 —— 否则会拿一个旧包去部署,比重传一次危险得多)
 # 数据(db/ content/ data/uploads)是容器挂载卷,不受重建影响。
 # ============================================================
 set -euo pipefail
@@ -20,7 +23,14 @@ IMAGE=shadowquake-v2
 CONTAINER=shadowsky-v2
 TS=$(date +%Y%m%d-%H%M%S)
 SKIP_BUILD=0
-[ "${1:-}" = "--skip-build" ] && SKIP_BUILD=1
+SKIP_UPLOAD=0
+for a in "$@"; do
+    case "$a" in
+        --skip-build)  SKIP_BUILD=1 ;;
+        --skip-upload) SKIP_UPLOAD=1 ;;
+        *) echo "✗ 不认识的参数:$a"; echo "  用法:bash scripts/deploy-v2.sh [--skip-build] [--skip-upload]"; exit 1 ;;
+    esac
+done
 
 cd "$(dirname "$0")/../web"
 
@@ -42,6 +52,13 @@ else
 fi
 
 # ── 2. 组装产物 ──────────────────────────────────────────
+# --skip-upload 时连打包一起跳过。tar 不是字节可复现的(时间戳/顺序每次都变),
+# 重打一次 md5 就变了 —— 那样第 3 步永远和服务器上那个包对不上,flag 等于白给。
+# 这个 flag 的语义就是「服务器 /tmp 上那个包正是我要部署的」,所以必须原样沿用本地这份。
+if [ "$SKIP_UPLOAD" = 1 ] && [ -f deploy.tgz ]; then
+    echo "==> 2/6 跳过打包(--skip-upload),沿用现有 deploy.tgz"
+else
+
 echo "==> 2/6 组装 _deploy/ 并打包…"
 rm -rf _deploy deploy.tgz
 mkdir -p _deploy/db
@@ -72,9 +89,41 @@ if tar tzf deploy.tgz | grep -qi "\.env"; then
 fi
 echo "    产物 $(du -h deploy.tgz | cut -f1),无 .env ✓"
 
+fi   # ← --skip-upload 的分支到此结束
+
 # ── 3. 上传 + 备份数据 ───────────────────────────────────
 echo "==> 3/6 上传并备份线上数据…"
-scp -q deploy.tgz "$SSH_HOST:/tmp/deploy.tgz"
+LOCAL_MD5=$(md5sum deploy.tgz | cut -d' ' -f1)
+
+# 上传要重试:这条上传链路会抽风(2026-08-04 实测连续两次 Connection reset,
+# 手工重传成功但只有 78KB/s,28MB 传了 6 分钟)。断在半路的包会留在 /tmp,
+# 所以每次重试都当作全新上传,最后一律以 md5 为准。
+uploaded=0
+if [ "$SKIP_UPLOAD" = 1 ]; then
+    REMOTE_MD5=$(ssh "$SSH_HOST" "md5sum /tmp/deploy.tgz 2>/dev/null | cut -d' ' -f1" || true)
+    if [ "$REMOTE_MD5" = "$LOCAL_MD5" ]; then
+        echo "    --skip-upload:服务器上的包与本地一致($LOCAL_MD5),跳过上传"
+        uploaded=1
+    else
+        echo "    --skip-upload 但 md5 对不上(服务器 ${REMOTE_MD5:-无}),照常上传"
+    fi
+fi
+
+if [ "$uploaded" = 0 ]; then
+    for i in 1 2 3; do
+        if scp -q deploy.tgz "$SSH_HOST:/tmp/deploy.tgz"; then uploaded=1; break; fi
+        echo "    上传第 $i 次失败,5 秒后重试…"
+        sleep 5
+    done
+    [ "$uploaded" = 1 ] || { echo "✗ 上传三次都失败。包在 web/deploy.tgz,链路恢复后可以:"; \
+        echo "    scp web/deploy.tgz $SSH_HOST:/tmp/ && bash scripts/deploy-v2.sh --skip-build --skip-upload"; exit 1; }
+fi
+
+# 传完必须校验:scp 断在半路也可能返回 0,拿半个 tar 去 docker build 会报一堆看不懂的错
+REMOTE_MD5=$(ssh "$SSH_HOST" "md5sum /tmp/deploy.tgz | cut -d' ' -f1")
+[ "$REMOTE_MD5" = "$LOCAL_MD5" ] || { echo "✗ 上传后 md5 不一致(本地 $LOCAL_MD5 / 服务器 $REMOTE_MD5),已中止"; exit 1; }
+echo "    产物已就位并校验 ✓ ($LOCAL_MD5)"
+
 ssh "$SSH_HOST" "bash $REMOTE_DIR/backup-v2.sh"
 
 # ── 4. 构建镜像 + 换容器 ─────────────────────────────────
