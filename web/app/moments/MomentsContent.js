@@ -15,6 +15,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import Footer from '@/components/Footer';
 import BackToTop from '@/components/BackToTop';
+import StatChip from '@/components/StatChip';
 import { fetchMoments } from '@/lib/api';
 import { cardSurface, cardInteractive, chipInteractive, cn } from '@/lib/utils';
 
@@ -338,16 +339,6 @@ function MomentsPageInner() {
                 onPrev={prevLB}
             />
         </>
-    );
-}
-
-function StatChip({ icon: Icon, value, label }) {
-    return (
-        <span className="inline-flex items-center gap-1.5 rounded-full bg-muted/60 px-2.5 py-1 text-xs text-muted-foreground">
-            <Icon size={12} className="opacity-60" />
-            <strong className="font-semibold text-foreground tabular-nums">{value}</strong>
-            {label}
-        </span>
     );
 }
 
