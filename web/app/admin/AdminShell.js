@@ -1,10 +1,13 @@
 'use client';
 
+import { useEffect } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 import { LayoutDashboard, Bookmark, Camera, Clapperboard, Film, Rss, Bell, FileText, Settings, BarChart3, Link2, Hand, LogOut, Rocket } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Toaster } from '@/components/ui/sonner';
+import { JUST_LOGGED_IN_KEY } from '@/lib/adminSession';
 
 const NAV = [
     { href: '/admin', label: '概览', icon: LayoutDashboard, exact: true },
@@ -27,24 +30,48 @@ const NAV = [
 export default function AdminLayout({ children }) {
     const pathname = usePathname();
     const router = useRouter();
+    const isLogin = pathname === '/admin/login';
 
-    // 登录页不套后台外壳
-    if (pathname === '/admin/login') return <>{children}</>;
+    // 登录成功后弹一次欢迎;标记读完即删,刷新不会重复弹
+    useEffect(() => {
+        if (isLogin) return;
+        try {
+            if (sessionStorage.getItem(JUST_LOGGED_IN_KEY)) {
+                sessionStorage.removeItem(JUST_LOGGED_IN_KEY);
+                toast.success('欢迎回来');
+            }
+        } catch { /* 隐私模式下没有 sessionStorage,忽略 */ }
+    }, [isLogin]);
+
+    // 登录页不套后台外壳(hooks 必须先跑完再 return)
+    if (isLogin) return <>{children}</>;
 
     async function logout() {
-        await fetch('/api/auth/logout', { method: 'POST' });
+        try {
+            await fetch('/api/auth/logout', { method: 'POST' });
+        } catch { /* 网络失败也照样跳登录页,cookie 过期后自然失效 */ }
         router.replace('/admin/login');
         router.refresh();
     }
 
     return (
-        <div className="flex min-h-screen">
-            <aside className="flex w-52 shrink-0 flex-col border-r bg-card">
+        // ⚠ 三处 3.5rem / top-14 都对应站点 NavBar 的 h-14,改导航栏高度这里要跟着改。
+        //   外层用 min-h-[calc(100vh-3.5rem)] 而不是 min-h-screen:后台是渲染在 NavBar
+        //   *下面*的,用满屏高会让页面凭空多出 56px 的滚动距离。
+        <div className="flex min-h-[calc(100vh-3.5rem)]">
+            {/*
+              侧栏吸顶。用 sticky 而不是自建滚动容器(把 main 设成 overflow-auto):
+              后者会夺走文档滚动,浏览器的滚动位置恢复、页内锚点、Ctrl+End 全都跟着失效。
+              sticky 需要元素高度不等于容器高度才有移动空间 —— 显式 h-[calc(...)] 配 self-start,
+              否则 flex 默认的 align-items:stretch 会把它拉满,看起来就像没生效。
+            */}
+            <aside className="sticky top-14 flex h-[calc(100vh-3.5rem)] w-52 shrink-0 flex-col self-start border-r bg-card">
                 <div className="border-b px-5 py-4">
                     <div className="text-sm font-bold">管理后台</div>
                     <div className="text-xs text-muted-foreground">ShadowQuake v2</div>
                 </div>
-                <nav className="flex flex-1 flex-col gap-1 p-3">
+                {/* 菜单 14 项,窄屏(或缩放大)时会超出一屏 —— 让它自己滚,把退出登录留在底部 */}
+                <nav className="flex flex-1 flex-col gap-1 overflow-y-auto p-3">
                     {NAV.map(({ href, label, icon: Icon, exact }) => {
                         const active = exact ? pathname === href : pathname.startsWith(href);
                         return (

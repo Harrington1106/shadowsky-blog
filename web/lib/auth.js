@@ -1,12 +1,15 @@
 /**
- * 会话鉴权 —— 替换旧的单一 ADMIN_TOKEN。
- * 登录:校验 ADMIN_PASSWORD → 签发 jose JWT → 写 httpOnly cookie。
+ * 会话鉴权 —— 签发/校验会话 JWT。
+ * 登录:口令校验在 lib/adminPassword.js → 本文件签发 jose JWT → 写 httpOnly cookie。
  * 校验:读 cookie → jwtVerify。中间件(edge)与 Route Handler(node)都能用,
  *       因为只依赖 jose,不碰 better-sqlite3。
  *
+ * ⚠ 本文件被 middleware.js(edge runtime)引用,**不要在这里 import 数据库或任何原生模块**
+ *   —— 会被打进 edge bundle 直接构建失败。要读库的逻辑放 lib/adminPassword.js。
+ *
  * 环境变量(.env,不进 git):
- *   ADMIN_PASSWORD  管理员口令(明文比对,timing-safe)
  *   AUTH_SECRET     JWT 签名密钥(随机长字符串)
+ *   ADMIN_PASSWORD  管理员口令兜底值,见 lib/adminPassword.js
  */
 import { SignJWT, jwtVerify } from 'jose';
 
@@ -18,19 +21,6 @@ function secret() {
     const s = process.env.AUTH_SECRET;
     if (!s) throw new Error('AUTH_SECRET 未配置');
     return new TextEncoder().encode(s);
-}
-
-/** 校验口令(长度无关的常量时间比较,避免 timing 泄露) */
-export function checkPassword(input) {
-    const expected = process.env.ADMIN_PASSWORD || '';
-    if (!expected || typeof input !== 'string') return false;
-    const a = new TextEncoder().encode(input);
-    const b = new TextEncoder().encode(expected);
-    // 长度不同直接 false,但仍走一遍比较避免早退
-    let diff = a.length ^ b.length;
-    const len = Math.max(a.length, b.length);
-    for (let i = 0; i < len; i++) diff |= (a[i] || 0) ^ (b[i] || 0);
-    return diff === 0;
 }
 
 /** 签发会话 JWT */

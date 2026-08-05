@@ -217,7 +217,7 @@ MySQL 早已停用；旧的 `public/data/*.json`、`api/data/` 只属于 v1。
 | `AI_DAILY_DIR` | `/app/content/ai-daily` |
 | `UPLOADS_DIR` | `/app/public/uploads` |
 | `AUTH_SECRET` | JWT 签名密钥（v2 切换时新生成） |
-| `ADMIN_PASSWORD` | 后台口令（沿用旧 `ADMIN_TOKEN` 的值） |
+| `ADMIN_PASSWORD` | 后台**初始/救援**口令；库里设过口令后它就不再生效，见「后台口令」 |
 | `BANGUMI_USERNAME` / `BANGUMI_TOKEN` | Bangumi 凭据 |
 | `BANGUMI_API_BASE` | `https://bangumi.shadowquake.top`（CF Worker） |
 | `FETCH_PROXY_BASE` | `https://bangumi.shadowquake.top`（出站抓取回退代理） |
@@ -560,8 +560,9 @@ bash scripts/pull-content.sh --commit             归档进 git
   跑 `scripts/pull-backup.sh`——校验 md5、自检包内容后落到 `_backups/`（保留 30 份），
   再提交推送到**私有仓库** `Harrington1106/shadowquake-backups`（恢复步骤见该仓库 README）。
   于是共三份：服务器 14 份、本机 30 份、GitHub 全量历史。
-  备份包**不含密钥**（`AUTH_SECRET`/`ADMIN_PASSWORD`/Bangumi token 都在服务器 `.env` 里，
-  数据库 `app_settings` 只有 `bangumi_username`），但含访客 IP 数据，仓库须保持 private。
+  备份包**不含明文密钥**（`AUTH_SECRET`/`ADMIN_PASSWORD` 在服务器 `.env` 里，不进包），
+  但数据库 `app_settings` 里有 Bangumi token 和后台口令的 **scrypt hash**
+  （2026-08-05 起，见「后台口令」），加上访客 IP 数据 —— 仓库必须保持 private。
 - **R2 异地备份：已评估并搁置，不要再提议**。卡在账户侧——Cloudflare 开通 R2 必须绑付款方式，
   且不收借记卡（可用国区 PayPal 绑银联储蓄卡）。**站主没有信用卡**，评估后认为为备份不值得走这一步。
   现有三份副本（服务器 14 / 本机 30 / 私有 GitHub 全量历史）已覆盖误删、掉盘、本机丢失三种情况。
@@ -651,5 +652,32 @@ Worker 正常但同步失败 → 查 `/var/log/bangumi-sync-v2.log` 和 `.env` �
 ### AI 日报没更新
 `tail -30 /var/log/ai-daily-v2.log`。脚本发现当天 md 已存在会直接跳过；缺 key 时看旧站 `.env` 的 `SILICONFLOW_API_KEY`。
 
-### 后台登录不上
-口令是 `.env` 的 `ADMIN_PASSWORD`；改了 `AUTH_SECRET` 会让所有已签发 cookie 失效，改完要重建容器。
+### 后台口令（2026-08-05 起可在后台自己改）
+
+口令有两个来源，**库里设过就只认库里的**：
+
+| 顺序 | 来源 | 怎么改 |
+|------|------|--------|
+| 1 | 数据库 `app_settings.admin_password_hash`（scrypt） | 后台「设置 → 管理员口令」，改完**立即生效，不用重建容器** |
+| 2 | `.env` 的 `ADMIN_PASSWORD` | 只在库里没设过时生效；改它要重建容器 |
+
+**忘了自己改的口令**（不用重建容器，删完立刻回落到 `.env` 那个）：
+```bash
+ssh shadowsky 'sqlite3 /www/wwwroot/shadowquake-v2/db/shadowquake.db \
+  "DELETE FROM app_settings WHERE key='"'"'admin_password_hash'"'"';"'
+```
+
+⚠ 几处联动，改鉴权时别踩：
+- **`lib/auth.js` 绝不能 import 数据库** —— `middleware.js` 跑在 edge runtime 且引用它，
+  一旦把 better-sqlite3 拖进 edge bundle 就直接构建失败。口令校验因此单独放 `lib/adminPassword.js`，
+  只被 Route Handler 引用。
+- `/api/settings` 是「任意 key 都能写」的接口，必须挡住 `PROTECTED_SETTING_KEYS`（口令 hash），
+  否则拿到会话的人不用知道旧口令就能改掉它。加新的敏感 key 时记得加进那个 Set。
+- 会话是**无状态 JWT**：改口令不会踢掉已签发的 cookie（最长 7 天）。要立刻踢掉所有设备，
+  只能换 `.env` 的 `AUTH_SECRET` 并重建容器。
+
+### 后台登录被锁住
+登录失败按**客户端 IP**限流（`lib/loginRateLimit.js`，纯内存）：连错 5 次锁 1 分钟、
+8 次锁 5 分钟、12 次锁 30 分钟，距上次失败超过 30 分钟自动清零，登录成功即解锁。
+不设全局锁 —— 那会被人拿来把站主自己关在门外。
+把自己锁了又等不及：`ssh shadowsky 'docker restart shadowsky-v2'`（计数在内存里，重启即清）。

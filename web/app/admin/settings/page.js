@@ -8,6 +8,7 @@ import { Card } from '@/components/ui/card';
 import { apiGet, apiCreate } from '@/lib/adminApi';
 import { getAiSettings, setAiSettings } from '@/lib/aiClient';
 import AdminHeader from '@/components/admin/AdminHeader';
+import ChangePassword from '@/components/admin/ChangePassword';
 
 export default function SettingsAdmin() {
     const [form, setForm] = useState({ bangumi_username: '', bangumi_token: '' });
@@ -76,6 +77,8 @@ export default function SettingsAdmin() {
                         <div><Button variant="outline" onClick={saveAi}>保存 AI 设置</Button></div>
                     </div>
                 </Card>
+
+                <ChangePassword />
             </div>
         </div>
     );
