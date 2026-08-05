@@ -7,22 +7,12 @@ import Typewriter from '@/components/Typewriter';
 import Footer from '@/components/Footer';
 import { withBase } from '@/lib/utils';
 import { FALLBACK_PHRASES } from '@/lib/hitokoto';
+import { INTEREST_TAGS } from '@/lib/site';
 
-// 这六个是站主自己定的(2026-08-01),偏兴趣/身份而不是内容索引 —— 首页是"我是谁",
-// 不负责概括文章主题。站上能对上的:
-//   AI   —— 每天 cron 生成的 AI 日报 + 订阅页的 AI 翻译
-//   ACG  —— 78 部番 + 59 部漫画 + 10 个剪辑
-//   追星 —— /gnz48.html 日程页 + 每天 3:00 的日历更新 cron
-//   天文 —— 站名与整站视觉基调
-// 换掉的:全栈(文章几乎不写编程,写的是运维,标签会造成预期错位)、香港(维度不一致)。
-const TAGS = [
-    { icon: Sparkles, label: 'AI' },
-    { icon: Film, label: 'ACG' },
-    { icon: Mic, label: '追星' },
-    { icon: Swords, label: 'LOL' },
-    { icon: Telescope, label: '天文' },
-    { icon: Moon, label: '夜猫子' },
-];
+// 六个标签是站主自己定的(2026-08-01),偏兴趣/身份而不是内容索引 —— 首页是"我是谁",
+// 不负责概括文章主题。换掉过的:全栈(文章几乎不写编程,写的是运维,标签会造成预期错位)、
+// 香港(维度不一致)。清单本身放 lib/site.js,关于页也在用,改一处两页都变。
+const ICONS = { Sparkles, Film, Mic, Swords, Telescope, Moon };
 
 // phrases 由服务端从一言取好传进来(见 lib/hitokoto.js);取不到时用兜底那批
 export default function HomeContent({ phrases = FALLBACK_PHRASES }) {
@@ -61,7 +51,9 @@ export default function HomeContent({ phrases = FALLBACK_PHRASES }) {
                 {/* 标签是纯展示,不可点 —— 所以不给 hover 效果,免得让人以为能点。
                     不要加 max-w:六个标签本来一行放得下,限宽会把最后一个挤到第二行落单。 */}
                 <div className="mt-8 flex flex-wrap justify-center gap-2">
-                    {TAGS.map(({ icon: Icon, label }) => (
+                    {INTEREST_TAGS.map(({ icon, label }) => {
+                        const Icon = ICONS[icon];
+                        return (
                         <Badge
                             key={label}
                             variant="outline"
@@ -69,7 +61,8 @@ export default function HomeContent({ phrases = FALLBACK_PHRASES }) {
                         >
                             <Icon className="size-3.5 opacity-60" /> {label}
                         </Badge>
-                    ))}
+                        );
+                    })}
                 </div>
             </main>
 
