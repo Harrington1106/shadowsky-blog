@@ -186,8 +186,11 @@ export default function NavBar() {
                                 {NAV_ITEMS.map(({ href, label, icon: Icon, match }) => {
                                     const active = match(pathname);
                                     return (
+                                        // nativeButton={false} 不能省:SheetClose 默认按原生 <button> 处理,
+                                        // 这里 render 成 <a>,不声明就报 Base UI 语义警告(手机上一开抽屉就有)
                                         <SheetClose
                                             key={href}
+                                            nativeButton={false}
                                             render={
                                                 <a
                                                     href={withBase(href)}
