@@ -13,6 +13,8 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { useConfirm } from '@/components/useConfirm';
 import { apiGet, apiCreate, apiUpdate, apiDelete } from '@/lib/adminApi';
 import AdminHeader from '@/components/admin/AdminHeader';
+import AdminPage from '@/components/admin/AdminPage';
+import { GridSkeleton } from '@/components/admin/AdminSkeleton';
 
 const EMPTY = { id: '', type: 'anime', title: '', cover: '', progress: 0, total: '', status: 'plan', tag: '' };
 
@@ -29,8 +31,12 @@ const STATUS_OPTIONS = [
     { value: 'dropped', label: '抛弃' },
 ];
 
+/** slug → 中文,列表卡片上用 */
+const STATUS_LABEL = Object.fromEntries(STATUS_OPTIONS.map((o) => [o.value, o.label]));
+
 export default function MediaAdmin() {
     const [data, setData] = useState({ anime: [], manga: [] });
+    const [loading, setLoading] = useState(true);
     const [tab, setTab] = useState('anime');
     const [open, setOpen] = useState(false);
     const [form, setForm] = useState(EMPTY);
@@ -41,7 +47,11 @@ export default function MediaAdmin() {
     const [searching, setSearching] = useState(false);
     const [confirm, confirmDialog] = useConfirm();
 
-    async function load() { try { setData(await apiGet('/api/media')); } catch (e) { toast.error(e.message); } }
+    async function load() {
+        try { setData(await apiGet('/api/media')); }
+        catch (e) { toast.error(e.message); }
+        finally { setLoading(false); }
+    }
     useEffect(() => { load(); }, []);
 
     async function search() {
@@ -89,7 +99,7 @@ export default function MediaAdmin() {
     const list = data[tab] || [];
 
     return (
-        <div className="mx-auto max-w-5xl px-8 py-10">
+        <AdminPage>
             {confirmDialog}
             <AdminHeader title="追番 / 追漫" count={data.anime.length + data.manga.length} action={<Button size="sm" onClick={openNew}><Plus className="size-4" /> 新增</Button>} />
 
@@ -104,7 +114,7 @@ export default function MediaAdmin() {
             </ToggleGroup>
 
             <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-                {list.map((m) => (
+                {loading ? <GridSkeleton count={8} aspect="poster" /> : list.map((m) => (
                     <Card key={m.id} className="gap-0 overflow-hidden py-0">
                         <div className="aspect-[2/3] bg-muted">
                             {m.cover && <img src={m.cover} alt="" className="size-full object-cover" />}
@@ -112,7 +122,8 @@ export default function MediaAdmin() {
                         <CardContent className="p-2.5">
                             <div className="truncate text-sm font-medium" title={m.title}>{m.title}</div>
                             <div className="mt-1 flex items-center justify-between">
-                                <span className="text-xs text-muted-foreground">{m.progress}/{m.total} · {m.status}</span>
+                                {/* 状态在库里是英文 slug,列表上得显示中文 —— 弹窗下拉里本来就是中文,两处不一致很别扭 */}
+                                <span className="text-xs text-muted-foreground">{m.progress}/{m.total} · {STATUS_LABEL[m.status] || m.status}</span>
                                 <div className="flex gap-0.5">
                                     <Button variant="ghost" size="icon" className="size-7" onClick={() => openEdit(m)}><Pencil className="size-3.5" /></Button>
                                     <Button variant="ghost" size="icon" className="size-7" onClick={() => remove(m)}><Trash2 className="size-3.5 text-destructive" /></Button>
@@ -121,7 +132,7 @@ export default function MediaAdmin() {
                         </CardContent>
                     </Card>
                 ))}
-                {list.length === 0 && <p className="col-span-full py-10 text-center text-sm text-muted-foreground">暂无条目</p>}
+                {!loading && list.length === 0 && <p className="col-span-full py-10 text-center text-sm text-muted-foreground">暂无条目</p>}
             </div>
 
             <Dialog open={open} onOpenChange={setOpen}>
@@ -153,7 +164,7 @@ export default function MediaAdmin() {
                                 )}
                             </div>
                         )}
-                        <div className="grid grid-cols-2 gap-3">
+                        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                             <Input placeholder="Bangumi ID *" value={form.id} onChange={(e) => setForm({ ...form, id: e.target.value })} disabled={!!editing} />
                             <Select items={TYPE_OPTIONS} value={form.type} onValueChange={(v) => setForm({ ...form, type: v })}>
                                 <SelectTrigger><SelectValue placeholder="类型" /></SelectTrigger>
@@ -164,7 +175,7 @@ export default function MediaAdmin() {
                         </div>
                         <Input placeholder="标题 *" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} />
                         <Input placeholder="封面 URL" value={form.cover} onChange={(e) => setForm({ ...form, cover: e.target.value })} />
-                        <div className="grid grid-cols-3 gap-3">
+                        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
                             <Input type="number" placeholder="进度" value={form.progress} onChange={(e) => setForm({ ...form, progress: e.target.value })} />
                             <Input placeholder="总数(? 未知)" value={form.total} onChange={(e) => setForm({ ...form, total: e.target.value })} />
                             <Select items={STATUS_OPTIONS} value={form.status} onValueChange={(v) => setForm({ ...form, status: v })}>
@@ -182,6 +193,6 @@ export default function MediaAdmin() {
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
-        </div>
+        </AdminPage>
     );
 }

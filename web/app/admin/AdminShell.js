@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { toast } from 'sonner';
-import { LayoutDashboard, Bookmark, Camera, Clapperboard, Film, Rss, Bell, FileText, Settings, BarChart3, Link2, Hand, LogOut, Rocket, Menu } from 'lucide-react';
+import { LayoutDashboard, Bookmark, Camera, Clapperboard, Film, Rss, FileText, Settings, BarChart3, Link2, Hand, LogOut, Rocket, Menu } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Toaster } from '@/components/ui/sonner';
@@ -22,7 +22,8 @@ const NAV = [
     { href: '/admin/videos', label: '视频', icon: Film },
     { href: '/admin/feeds', label: '订阅源', icon: Rss },
     { href: '/admin/social', label: '社交链接', icon: Link2 },
-    { href: '/admin/notice', label: '公告', icon: Bell },
+    // 「公告」于 2026-08-06 撤掉:前台从来没接过展示,后台写进去的内容没有任何读者。
+    // 表还在库里(见 lib/schema.js 的 notice),真要恢复从 git 里捞页面和路由即可。
     { href: '/admin/greetings', label: '打招呼', icon: Hand },
     { href: '/admin/stats', label: '统计', icon: BarChart3 },
     { href: '/admin/settings', label: '设置', icon: Settings },

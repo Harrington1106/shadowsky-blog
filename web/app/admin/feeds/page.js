@@ -5,21 +5,29 @@ import { toast } from 'sonner';
 import { Plus, Trash2, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Card } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { apiGet, apiCreate, apiDelete } from '@/lib/adminApi';
 import { useConfirm } from '@/components/useConfirm';
 import AdminHeader from '@/components/admin/AdminHeader';
+import AdminPage from '@/components/admin/AdminPage';
+import { ListSkeleton } from '@/components/admin/AdminSkeleton';
 
 const EMPTY = { title: '', url: '', category: '' };
 
 export default function FeedsAdmin() {
     const [items, setItems] = useState([]);
+    const [loading, setLoading] = useState(true);
     const [open, setOpen] = useState(false);
     const [form, setForm] = useState(EMPTY);
     const [saving, setSaving] = useState(false);
     const [confirm, confirmDialog] = useConfirm();
 
-    async function load() { try { setItems(await apiGet('/api/feeds')); } catch (e) { toast.error(e.message); } }
+    async function load() {
+        try { setItems(await apiGet('/api/feeds')); }
+        catch (e) { toast.error(e.message); }
+        finally { setLoading(false); }
+    }
     useEffect(() => { load(); }, []);
 
     async function save() {
@@ -36,13 +44,13 @@ export default function FeedsAdmin() {
     }
 
     return (
-        <div className="mx-auto max-w-3xl px-8 py-10">
+        <AdminPage width="3xl">
             {confirmDialog}
             <AdminHeader title="RSS 订阅源" count={items.length} action={<Button size="sm" onClick={() => { setForm(EMPTY); setOpen(true); }}><Plus className="size-4" /> 新增</Button>} />
 
             <div className="mt-6 flex flex-col gap-2">
-                {items.map((f) => (
-                    <div key={f.id} className="flex items-center gap-3 rounded-lg border p-3">
+                {loading ? <ListSkeleton rows={5} thumb={false} /> : items.map((f) => (
+                    <Card key={f.id} className="flex-row items-center gap-3 p-3">
                         <div className="min-w-0 flex-1">
                             <div className="text-sm font-medium">{f.title}</div>
                             <a href={f.url} target="_blank" rel="noreferrer" className="flex items-center gap-1 truncate text-xs text-muted-foreground hover:text-primary">
@@ -50,10 +58,10 @@ export default function FeedsAdmin() {
                             </a>
                         </div>
                         {f.category && <span className="shrink-0 text-xs text-muted-foreground">{f.category}</span>}
-                        <Button variant="ghost" size="icon" onClick={() => remove(f)}><Trash2 className="size-4 text-destructive" /></Button>
-                    </div>
+                        <Button variant="ghost" size="icon" aria-label="删除" onClick={() => remove(f)}><Trash2 className="size-4 text-destructive" /></Button>
+                    </Card>
                 ))}
-                {items.length === 0 && <p className="py-10 text-center text-sm text-muted-foreground">暂无订阅源</p>}
+                {!loading && items.length === 0 && <p className="py-10 text-center text-sm text-muted-foreground">暂无订阅源</p>}
             </div>
 
             <Dialog open={open} onOpenChange={setOpen}>
@@ -70,6 +78,6 @@ export default function FeedsAdmin() {
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
-        </div>
+        </AdminPage>
     );
 }

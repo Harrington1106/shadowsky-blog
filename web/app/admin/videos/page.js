@@ -11,11 +11,14 @@ import { apiGet, apiCreate, apiUpdate, apiDelete } from '@/lib/adminApi';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { useConfirm } from '@/components/useConfirm';
 import AdminHeader from '@/components/admin/AdminHeader';
+import AdminPage from '@/components/admin/AdminPage';
+import { GridSkeleton } from '@/components/admin/AdminSkeleton';
 
-const EMPTY = { title: '', thumbnail: '', duration: '', views: 0, category: '', type: 'bilibili', bvid: '', kind: 'video' };
+const EMPTY ={ title: '', thumbnail: '', duration: '', views: 0, category: '', type: 'bilibili', bvid: '', kind: 'video' };
 
 export default function VideosAdmin() {
     const [data, setData] = useState({ videos: [], favorites: [] });
+    const [loading, setLoading] = useState(true);
     const [tab, setTab] = useState('videos');
     const [open, setOpen] = useState(false);
     const [form, setForm] = useState(EMPTY);
@@ -23,7 +26,11 @@ export default function VideosAdmin() {
     const [saving, setSaving] = useState(false);
     const [confirm, confirmDialog] = useConfirm();
 
-    async function load() { try { setData(await apiGet('/api/videos')); } catch (e) { toast.error(e.message); } }
+    async function load() {
+        try { setData(await apiGet('/api/videos')); }
+        catch (e) { toast.error(e.message); }
+        finally { setLoading(false); }
+    }
     useEffect(() => { load(); }, []);
 
     function openNew() { setForm({ ...EMPTY, kind: tab === 'favorites' ? 'favorite' : 'video' }); setEditing(null); setOpen(true); }
@@ -48,7 +55,7 @@ export default function VideosAdmin() {
     const list = data[tab] || [];
 
     return (
-        <div className="mx-auto max-w-5xl px-8 py-10">
+        <AdminPage>
             {confirmDialog}
             <AdminHeader title="视频" count={data.videos.length + data.favorites.length} action={<Button size="sm" onClick={openNew}><Plus className="size-4" /> 新增</Button>} />
 
@@ -64,7 +71,7 @@ export default function VideosAdmin() {
             </ToggleGroup>
 
             <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                {list.map((v) => (
+                {loading ? <GridSkeleton count={6} aspect="video" /> : list.map((v) => (
                     <Card key={v.id} className="gap-0 overflow-hidden py-0">
                         <div className="aspect-video bg-muted">
                             {v.thumbnail && <img src={v.thumbnail} alt="" className="size-full object-cover" />}
@@ -74,14 +81,14 @@ export default function VideosAdmin() {
                             <div className="mt-1 flex items-center justify-between">
                                 <span className="text-xs text-muted-foreground">{v.duration || '—'} · {v.views} 播放</span>
                                 <div className="flex gap-0.5">
-                                    <Button variant="ghost" size="icon" className="size-7" onClick={() => openEdit(v)}><Pencil className="size-3.5" /></Button>
-                                    <Button variant="ghost" size="icon" className="size-7" onClick={() => remove(v)}><Trash2 className="size-3.5 text-destructive" /></Button>
+                                    <Button variant="ghost" size="icon" className="size-7" aria-label="编辑" onClick={() => openEdit(v)}><Pencil className="size-3.5" /></Button>
+                                    <Button variant="ghost" size="icon" className="size-7" aria-label="删除" onClick={() => remove(v)}><Trash2 className="size-3.5 text-destructive" /></Button>
                                 </div>
                             </div>
                         </CardContent>
                     </Card>
                 ))}
-                {list.length === 0 && <p className="col-span-full py-10 text-center text-sm text-muted-foreground">暂无视频</p>}
+                {!loading && list.length === 0 && <p className="col-span-full py-10 text-center text-sm text-muted-foreground">暂无视频</p>}
             </div>
 
             <Dialog open={open} onOpenChange={setOpen}>
@@ -90,11 +97,11 @@ export default function VideosAdmin() {
                     <div className="flex flex-col gap-3">
                         <Input placeholder="标题 *" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} />
                         <Input placeholder="缩略图 URL" value={form.thumbnail} onChange={(e) => setForm({ ...form, thumbnail: e.target.value })} />
-                        <div className="grid grid-cols-2 gap-3">
+                        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                             <Input placeholder="BV 号" value={form.bvid} onChange={(e) => setForm({ ...form, bvid: e.target.value })} />
                             <Input placeholder="时长 (如 01:31)" value={form.duration} onChange={(e) => setForm({ ...form, duration: e.target.value })} />
                         </div>
-                        <div className="grid grid-cols-2 gap-3">
+                        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                             <Input placeholder="分类" value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} />
                             <Input type="number" placeholder="播放量" value={form.views} onChange={(e) => setForm({ ...form, views: e.target.value })} />
                         </div>
@@ -105,6 +112,6 @@ export default function VideosAdmin() {
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
-        </div>
+        </AdminPage>
     );
 }

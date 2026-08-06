@@ -76,7 +76,14 @@ export const socialLinks = sqliteTable('social_links', {
     sort: integer('sort').default(0),
 });
 
-/** 站点公告(notice.json,单行) */
+/**
+ * 站点公告(notice.json,单行)—— **已退役,没有任何代码读写它**。
+ *
+ * 2026-08-06 撤掉了后台编辑页与 /api/notice:前台从来没接过公告展示,
+ * 写进去的内容没有读者。表定义故意留着,别顺手删:
+ * 删掉这段,下次 `npm run db:generate` 就会生成一条 DROP TABLE,
+ * 把线上库里这张表(和里面的旧数据)真的删掉 —— schema.js 得和实际的库保持一致。
+ */
 export const notice = sqliteTable('notice', {
     id: integer('id').primaryKey({ autoIncrement: true }),
     content: text('content').default(''),

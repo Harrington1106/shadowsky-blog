@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Lock, Eye, EyeOff, TriangleAlert } from 'lucide-react';
+import { Lock, Eye, EyeOff, TriangleAlert, MailCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { JUST_LOGGED_IN_KEY } from '@/lib/adminSession';
@@ -29,6 +29,36 @@ function LoginForm() {
 
     // 被 middleware 踢回来时的说明:带过 cookie 但验不过 = 会话过期
     const expired = params.get('expired') === '1';
+
+    // 找回口令:服务器没配 SMTP 就整个不显示,免得点了才知道用不了
+    const [mailAvailable, setMailAvailable] = useState(false);
+    const [sending, setSending] = useState(false);
+    const [sentHint, setSentHint] = useState('');
+
+    useEffect(() => {
+        fetch('/api/auth/forgot')
+            .then((r) => r.json())
+            .then((d) => setMailAvailable(!!d.available))
+            .catch(() => setMailAvailable(false));
+    }, []);
+
+    async function forgot() {
+        setSending(true);
+        setError('');
+        try {
+            const res = await fetch('/api/auth/forgot', { method: 'POST' });
+            const d = await res.json().catch(() => ({}));
+            if (res.ok) {
+                setSentHint(`临时口令已发到管理员邮箱,${d.expiresInMinutes} 分钟内有效。填进上面的口令框即可登录。`);
+            } else {
+                setError(d.error || '发送失败');
+            }
+        } catch {
+            setError('网络错误');
+        } finally {
+            setSending(false);
+        }
+    }
 
     // 锁定期间每秒重算一次剩余时间;没锁就不开定时器
     useEffect(() => {
@@ -64,7 +94,8 @@ function LoginForm() {
             if (res.ok) {
                 // 进入后台后由 AdminShell 弹一次「欢迎回来」,只在本标签页有效
                 try { sessionStorage.setItem(JUST_LOGGED_IN_KEY, '1'); } catch { /* 隐私模式下忽略 */ }
-                router.replace(safeFrom(params.get('from')));
+                // 拿临时口令进来的直接送去设置页:那个口令已经用掉了,不当场改就等于没找回
+                router.replace(d.viaReset ? '/admin/settings' : safeFrom(params.get('from')));
                 router.refresh();
                 return; // 跳转中,别把 loading 关掉造成按钮闪一下
             }
@@ -127,6 +158,27 @@ function LoginForm() {
                 <Button type="submit" className="w-full" disabled={loading || locked || !password}>
                     {locked ? `请等待 ${remain} 秒` : loading ? '登录中…' : '登录'}
                 </Button>
+
+                {/* 找回口令。SMTP 没配就整块不渲染 —— 给一个点了必然失败的按钮不如没有 */}
+                {mailAvailable && (
+                    sentHint ? (
+                        <p className="mt-4 flex items-start gap-2 rounded-md bg-muted px-3 py-2 text-xs text-muted-foreground">
+                            <MailCheck className="mt-px size-3.5 shrink-0" />
+                            {sentHint}
+                        </p>
+                    ) : (
+                        <div className="mt-4 text-center">
+                            <button
+                                type="button"
+                                onClick={forgot}
+                                disabled={sending}
+                                className="text-xs text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline disabled:opacity-50"
+                            >
+                                {sending ? '发送中…' : '忘记口令?发临时口令到我的邮箱'}
+                            </button>
+                        </div>
+                    )
+                )}
             </form>
         </main>
     );

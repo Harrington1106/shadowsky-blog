@@ -8,15 +8,19 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
+import { Card } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { apiGet, apiCreate, apiUpdate, apiDelete } from '@/lib/adminApi';
 import { useConfirm } from '@/components/useConfirm';
 import AdminHeader from '@/components/admin/AdminHeader';
+import AdminPage from '@/components/admin/AdminPage';
+import { ListSkeleton } from '@/components/admin/AdminSkeleton';
 
 const EMPTY = { content: '', image: '', location: '', tags: '' };
 
 export default function MomentsAdmin() {
     const [items, setItems] = useState([]);
+    const [loading, setLoading] = useState(true);
     const [open, setOpen] = useState(false);
     const [form, setForm] = useState(EMPTY);
     const [editing, setEditing] = useState(null);
@@ -26,7 +30,9 @@ export default function MomentsAdmin() {
     const fileRef = useRef(null);
 
     async function load() {
-        try { setItems(await apiGet('/api/moments')); } catch (e) { toast.error(e.message); }
+        try { setItems(await apiGet('/api/moments')); }
+        catch (e) { toast.error(e.message); }
+        finally { setLoading(false); }
     }
     useEffect(() => { load(); }, []);
 
@@ -68,13 +74,13 @@ export default function MomentsAdmin() {
     }
 
     return (
-        <div className="mx-auto max-w-5xl px-8 py-10">
+        <AdminPage>
             {confirmDialog}
             <AdminHeader title="随手拍" count={items.length} action={<Button size="sm" onClick={openNew}><Plus className="size-4" /> 发布</Button>} />
 
             <div className="mt-6 flex flex-col gap-2">
-                {items.map((m) => (
-                    <div key={m.id} className="flex gap-3 rounded-lg border p-3">
+                {loading ? <ListSkeleton rows={6} /> : items.map((m) => (
+                    <Card key={m.id} className="flex-row gap-3 p-3">
                         {m.image && <img src={m.image} alt="" className="size-16 shrink-0 rounded-md object-cover" />}
                         <div className="min-w-0 flex-1">
                             <div className="line-clamp-2 text-sm">{m.content || <span className="text-muted-foreground">（无文字）</span>}</div>
@@ -86,12 +92,12 @@ export default function MomentsAdmin() {
                             </div>
                         </div>
                         <div className="flex shrink-0 gap-1">
-                            <Button variant="ghost" size="icon" onClick={() => openEdit(m)}><Pencil className="size-4" /></Button>
-                            <Button variant="ghost" size="icon" onClick={() => remove(m)}><Trash2 className="size-4 text-destructive" /></Button>
+                            <Button variant="ghost" size="icon" aria-label="编辑" onClick={() => openEdit(m)}><Pencil className="size-4" /></Button>
+                            <Button variant="ghost" size="icon" aria-label="删除" onClick={() => remove(m)}><Trash2 className="size-4 text-destructive" /></Button>
                         </div>
-                    </div>
+                    </Card>
                 ))}
-                {items.length === 0 && <p className="py-10 text-center text-sm text-muted-foreground">暂无随手拍</p>}
+                {!loading && items.length === 0 && <p className="py-10 text-center text-sm text-muted-foreground">暂无随手拍</p>}
             </div>
 
             <Dialog open={open} onOpenChange={setOpen}>
@@ -107,7 +113,7 @@ export default function MomentsAdmin() {
                             </Button>
                         </div>
                         {form.image && <img src={form.image} alt="" className="h-24 w-auto rounded-md border object-cover" />}
-                        <div className="grid grid-cols-2 gap-3">
+                        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                             <Input placeholder="位置" value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })} />
                             <Input placeholder="标签(逗号分隔)" value={form.tags} onChange={(e) => setForm({ ...form, tags: e.target.value })} />
                         </div>
@@ -118,6 +124,6 @@ export default function MomentsAdmin() {
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
-        </div>
+        </AdminPage>
     );
 }

@@ -23,9 +23,17 @@ function secret() {
     return new TextEncoder().encode(s);
 }
 
-/** 签发会话 JWT */
-export async function createSession(subject = 'admin') {
-    return new SignJWT({ role: 'admin' })
+/**
+ * 签发会话 JWT
+ * @param {string} subject 主体,默认 admin
+ * @param {{pwreset?: boolean}} opts pwreset=true 表示「这次是拿邮件里的临时口令进来的」。
+ *   带这个标记的会话允许**不提供旧口令**就设新口令(旧口令正是忘掉的那个),
+ *   除此之外和普通会话一样。改完口令会换发一个不带标记的会话。
+ */
+export async function createSession(subject = 'admin', opts = {}) {
+    const claims = { role: 'admin' };
+    if (opts.pwreset) claims.pwreset = true;
+    return new SignJWT(claims)
         .setProtectedHeader({ alg: ALG })
         .setSubject(subject)
         .setIssuedAt()

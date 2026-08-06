@@ -89,7 +89,7 @@ D:\Projects\shadowsky-blog\
 │   │   │        + XxxContent.js（'use client'，实际 UI）
 │   │   ├── sitemap.js robots.js  /sitemap.xml（静态页+文章+日报，实时生成）与 /robots.txt
 │   │   ├── admin/              后台 UI（login posts moments bookmarks media feeds
-│   │   │                       videos social greetings notice settings stats）
+│   │   │                       videos social greetings settings stats）
 │   │   └── api/                Route Handlers（读写 API + 代理类 API）
 │   ├── components/             共用组件 + components/ui（shadcn）
 │   ├── lib/                    db.js schema.js auth.js posts.js content.js
@@ -221,6 +221,8 @@ MySQL 早已停用；旧的 `public/data/*.json`、`api/data/` 只属于 v1。
 | `BANGUMI_USERNAME` / `BANGUMI_TOKEN` | Bangumi 凭据 |
 | `BANGUMI_API_BASE` | `https://bangumi.shadowquake.top`（CF Worker） |
 | `FETCH_PROXY_BASE` | `https://bangumi.shadowquake.top`（出站抓取回退代理） |
+| `ADMIN_EMAIL` | 口令找回邮件的**唯一**收件地址，见「邮件找回口令」 |
+| `SMTP_HOST` / `SMTP_PORT` / `SMTP_USER` / `SMTP_PASS` / `SMTP_FROM` | 发信 SMTP；缺任一项则整个找回功能安静禁用 |
 
 > v1 时代「Bangumi 凭据双数据源（`api/settings.json` + `.env`）」的坑在 v2 已不存在，只有这一份 `.env`。
 > AI 日报的密钥（`SILICONFLOW_API_KEY` 等）单独放在 `/www/wwwroot/shadowquake-v2/tools/digest.env`（600），
@@ -661,7 +663,10 @@ Worker 正常但同步失败 → 查 `/var/log/bangumi-sync-v2.log` 和 `.env` �
 | 1 | 数据库 `app_settings.admin_password_hash`（scrypt） | 后台「设置 → 管理员口令」，改完**立即生效，不用重建容器** |
 | 2 | `.env` 的 `ADMIN_PASSWORD` | 只在库里没设过时生效；改它要重建容器 |
 
-**忘了自己改的口令**（不用重建容器，删完立刻回落到 `.env` 那个）：
+**忘了自己改的口令**，两条路：
+
+1. **邮件找回**（推荐，见下节）：登录页点「忘记口令」，邮箱收一个 15 分钟临时口令。
+2. **ssh 兜底**（不用重建容器，删完立刻回落到 `.env` 那个）：
 ```bash
 ssh shadowsky 'sqlite3 /www/wwwroot/shadowquake-v2/db/shadowquake.db \
   "DELETE FROM app_settings WHERE key='"'"'admin_password_hash'"'"';"'
@@ -670,11 +675,41 @@ ssh shadowsky 'sqlite3 /www/wwwroot/shadowquake-v2/db/shadowquake.db \
 ⚠ 几处联动，改鉴权时别踩：
 - **`lib/auth.js` 绝不能 import 数据库** —— `middleware.js` 跑在 edge runtime 且引用它，
   一旦把 better-sqlite3 拖进 edge bundle 就直接构建失败。口令校验因此单独放 `lib/adminPassword.js`，
-  只被 Route Handler 引用。
-- `/api/settings` 是「任意 key 都能写」的接口，必须挡住 `PROTECTED_SETTING_KEYS`（口令 hash），
-  否则拿到会话的人不用知道旧口令就能改掉它。加新的敏感 key 时记得加进那个 Set。
+  临时口令放 `lib/passwordReset.js`，两者只被 Route Handler 引用。
+- `/api/settings` 是「任意 key 都能写」的接口，必须挡住 `PROTECTED_SETTING_KEYS`
+  （口令 hash **与临时口令记录**），否则拿到会话的人不用知道旧口令就能改掉它。
+  加新的敏感 key 时记得加进那个 Set。
 - 会话是**无状态 JWT**：改口令不会踢掉已签发的 cookie（最长 7 天）。要立刻踢掉所有设备，
   只能换 `.env` 的 `AUTH_SECRET` 并重建容器。
+
+### 邮件找回口令（2026-08-06 起）
+
+登录页的「忘记口令」→ 往 `.env` 里的 `ADMIN_EMAIL` 发一个 15 分钟、单次有效的**临时口令**，
+直接填进登录框即可进后台，进去后 `/admin/settings` 会要求当场设新口令（这一次不问旧口令）。
+
+**最关键的一条设计：临时口令是并存的第二把钥匙，不覆盖现有口令。**
+如果它替换掉现有口令，那么任何人反复点这个公开按钮就能把站主锁在门外 ——
+现在最坏情况只是收到一封没用的邮件。相应地：用正式口令登录一次，会顺手作废还挂着的临时口令。
+
+| 环节 | 约束 |
+|------|------|
+| 收件地址 | 只从 `.env` 的 `ADMIN_EMAIL` 读，请求体带什么都没用 —— 否则这个公开接口就是台转发机 |
+| 频率 | 全局 5 分钟一封、一天 5 封（`lib/passwordReset.js`，纯内存，重启即清） |
+| 临时口令 | 31 进制 12 位（≈2^59），去掉 `0O1IL` 等易混字符，scrypt hash 入库，最多试 5 次 |
+| 失败计数 | 只对「形状对得上」的输入累加 —— 否则别人乱试几次就能废掉你刚收到的那个 |
+| 会话标记 | JWT 带 `pwreset`，只赋予「免旧口令改口令」这一项特权，改完立刻换发普通会话 |
+
+⚠ **收件地址和 SMTP 密钥只进 `.env`，不要做成后台可改**。
+`/api/settings` 是万能写接口，收件地址一旦可写，拿到会话的人把它改成自己的邮箱、
+再点一次「忘记口令」就拿到长期访问权 —— 和 `PROTECTED_SETTING_KEYS` 挡的是同一类漏洞。
+
+⚠ **阿里云 ECS 封禁出站 25 端口**（2026-08-06 实测：25 不通，465/587 通，
+QQ / 163 / Gmail 三家都试过）。所以只能走服务商的认证提交端口，不能直接投递到收件方 MX。
+推荐 QQ 邮箱：`SMTP_HOST=smtp.qq.com` `SMTP_PORT=465`，`SMTP_PASS` 填**授权码**不是登录密码。
+
+配好之后**一定要去 `/admin/settings` 点一次「发送测试邮件」**。这条路平时零使用，
+等真被锁在门外那天才发现授权码半年前就过期了，这套东西等于没有 —— 那个按钮是唯一的验证时机。
+没配 SMTP 时整个功能安静禁用（登录页不显示入口），回落到上面的 ssh 兜底。
 
 ### 后台登录被锁住
 登录失败按**客户端 IP**限流（`lib/loginRateLimit.js`，纯内存）：连错 5 次锁 1 分钟、

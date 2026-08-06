@@ -7,13 +7,16 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
 import { apiGet, apiCreate } from '@/lib/adminApi';
 import AdminHeader from '@/components/admin/AdminHeader';
+import AdminPage from '@/components/admin/AdminPage';
 
 export default function StatsAdmin() {
     const [stats, setStats] = useState({ total: 0, pages: {} });
     const [excluded, setExcluded] = useState([]);
     const [blocked, setBlocked] = useState([]);
+    const [loading, setLoading] = useState(true);
     const [newExcluded, setNewExcluded] = useState('');
     const [newBlocked, setNewBlocked] = useState('');
 
@@ -22,6 +25,7 @@ export default function StatsAdmin() {
             const [s, e, b] = await Promise.all([apiGet('/api/stats'), apiGet('/api/excluded-ips'), apiGet('/api/blocked-ips')]);
             setStats(s); setExcluded(e); setBlocked(b);
         } catch (err) { toast.error(err.message); }
+        finally { setLoading(false); }
     }
     useEffect(() => { loadAll(); }, []);
 
@@ -54,30 +58,34 @@ export default function StatsAdmin() {
     const maxCount = pageEntries[0]?.[1] || 1;
 
     return (
-        <div className="mx-auto max-w-3xl px-8 py-10">
+        <AdminPage width="3xl">
             <AdminHeader title="访问统计" />
 
             <section className="mt-6">
                 <Card className="mb-4 flex-row items-center gap-2 p-4">
                     <Eye className="size-5 text-muted-foreground" />
                     <div>
-                        <div className="text-2xl font-bold tabular-nums">{stats.total ?? 0}</div>
+                        {loading
+                            ? <Skeleton className="h-8 w-20" />
+                            : <div className="text-2xl font-bold tabular-nums">{stats.total ?? 0}</div>}
                         <div className="text-xs text-muted-foreground">总访问量</div>
                     </div>
                 </Card>
                 <h2 className="mb-2 text-sm font-semibold">分页面访问</h2>
                 <div className="flex flex-col gap-1.5">
-                    {pageEntries.map(([page, count]) => (
-                        <div key={page} className="flex items-center gap-3">
-                            <span className="w-24 shrink-0 truncate text-xs text-muted-foreground">{page}</span>
-                            <div className="h-5 flex-1 overflow-hidden rounded bg-muted">
-                                <div className="flex h-full items-center justify-end bg-primary/70 px-2 text-[0.6rem] text-primary-foreground" style={{ width: `${Math.max(8, (count / maxCount) * 100)}%` }}>
-                                    {count}
+                    {loading
+                        ? Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-5 w-full" />)
+                        : pageEntries.map(([page, count]) => (
+                            <div key={page} className="flex items-center gap-3">
+                                <span className="w-20 shrink-0 truncate text-xs text-muted-foreground sm:w-32" title={page}>{page}</span>
+                                <div className="h-5 flex-1 overflow-hidden rounded bg-muted">
+                                    <div className="h-full bg-primary/70" style={{ width: `${Math.max(2, (count / maxCount) * 100)}%` }} />
                                 </div>
+                                {/* 数字原来印在色条里,短条(占比小)那格宽度不够就被裁掉 —— 挪到条外,多长都读得到 */}
+                                <span className="w-12 shrink-0 text-right text-xs tabular-nums text-muted-foreground">{count}</span>
                             </div>
-                        </div>
-                    ))}
-                    {pageEntries.length === 0 && <p className="py-6 text-center text-sm text-muted-foreground">暂无访问数据</p>}
+                        ))}
+                    {!loading && pageEntries.length === 0 && <p className="py-6 text-center text-sm text-muted-foreground">暂无访问数据</p>}
                 </div>
             </section>
 
@@ -120,6 +128,6 @@ export default function StatsAdmin() {
                     {blocked.length === 0 && <span className="text-xs text-muted-foreground">无</span>}
                 </div>
             </section>
-        </div>
+        </AdminPage>
     );
 }

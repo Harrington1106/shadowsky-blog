@@ -25,6 +25,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { apiGet, apiUpdate, apiDelete } from '@/lib/adminApi';
 import { useConfirm } from '@/components/useConfirm';
 import AdminHeader from '@/components/admin/AdminHeader';
+import AdminPage from '@/components/admin/AdminPage';
 import { cn } from '@/lib/utils';
 
 const ago = (ms) => {
@@ -199,7 +200,8 @@ export default function PublishAdmin() {
     const d = detail;
 
     return (
-        <div className="space-y-4">
+        // 原来根节点只有 space-y-4,内容一路贴到视口边上,是全后台唯一没有留白的一页
+        <AdminPage width="full" className="space-y-4">
             <AdminHeader
                 title="发布台"
                 count={lists.drafts.length}
@@ -365,7 +367,7 @@ export default function PublishAdmin() {
                 </Card>
             </div>
             {confirmDialog}
-        </div>
+        </AdminPage>
     );
 }
 

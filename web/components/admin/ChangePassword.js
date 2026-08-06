@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
-import { KeyRound } from 'lucide-react';
+import { KeyRound, TriangleAlert } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
@@ -13,16 +13,20 @@ const MIN_LENGTH = 8; // 与 lib/adminPassword.js 的 MIN_PASSWORD_LENGTH 保持
 /** 修改管理员口令 —— 需要输入当前口令,改完存进数据库,即时生效不用重建容器 */
 export default function ChangePassword() {
     const [custom, setCustom] = useState(null); // null=还没查到,false=仍在用 .env 的兜底口令
+    // 拿邮件临时口令登录进来的会话:不要求旧口令(旧口令正是忘掉的那个)
+    const [viaReset, setViaReset] = useState(false);
     const [form, setForm] = useState({ current: '', next: '', confirm: '' });
     const [saving, setSaving] = useState(false);
 
     useEffect(() => {
-        apiGet('/api/auth/password').then((d) => setCustom(!!d.custom)).catch(() => setCustom(null));
+        apiGet('/api/auth/password')
+            .then((d) => { setCustom(!!d.custom); setViaReset(!!d.viaReset); })
+            .catch(() => setCustom(null));
     }, []);
 
     const mismatch = form.confirm.length > 0 && form.next !== form.confirm;
     const tooShort = form.next.length > 0 && form.next.length < MIN_LENGTH;
-    const ready = form.current && form.next.length >= MIN_LENGTH && form.next === form.confirm;
+    const ready = (viaReset || form.current) && form.next.length >= MIN_LENGTH && form.next === form.confirm;
 
     async function submit(e) {
         e.preventDefault();
@@ -32,6 +36,7 @@ export default function ChangePassword() {
             await apiCreate('/api/auth/password', { current: form.current, next: form.next });
             setForm({ current: '', next: '', confirm: '' });
             setCustom(true);
+            setViaReset(false);
             toast.success('口令已修改,下次登录请用新口令');
         } catch (err) {
             toast.error(err.message);
@@ -48,23 +53,37 @@ export default function ChangePassword() {
             <p className="mt-1 text-xs text-muted-foreground">
                 {custom === false
                     ? '当前用的还是服务器 .env 里的初始口令(一串随机 hex)。改一个记得住的吧 —— 新口令加密后存进数据库,立即生效,不用重建容器。'
-                    : '口令加密后存在数据库里,修改后立即生效。忘记了可以 ssh 上服务器删掉那条记录,回落到 .env 的初始口令。'}
+                    : '口令加密后存在数据库里,修改后立即生效。忘记了可以走登录页的邮件找回,或 ssh 上服务器删掉那条记录回落到 .env 的初始口令。'}
             </p>
+
+            {viaReset && (
+                <div className="mt-3 flex gap-2 rounded-lg border border-amber-500/40 bg-amber-500/10 p-3 text-xs text-amber-700 dark:text-amber-400">
+                    <TriangleAlert className="mt-px size-4 shrink-0" />
+                    <span>
+                        你是用邮件里的临时口令登录的,它已经作废。
+                        <strong>现在就设一个新口令</strong> —— 不设的话,这个浏览器的会话过期后就再也进不来了。
+                        (这次不用填旧口令)
+                    </span>
+                </div>
+            )}
 
             <form onSubmit={submit} className="mt-4 flex flex-col gap-3">
                 {/* 给密码管理器一个用户名锚点,否则 Chrome 存不下这组新旧口令 */}
                 <input type="text" name="username" autoComplete="username" value="admin" readOnly hidden />
-                <div>
-                    <label className="mb-1 block text-xs text-muted-foreground">当前口令</label>
-                    <Input
-                        type="password"
-                        name="current-password"
-                        autoComplete="current-password"
-                        value={form.current}
-                        onChange={(e) => setForm({ ...form, current: e.target.value })}
-                    />
-                </div>
-                <div className="grid grid-cols-2 gap-3">
+                {/* 临时口令进来的会话不问旧口令 —— 问了也没有意义,那正是忘掉的东西 */}
+                {!viaReset && (
+                    <div>
+                        <label className="mb-1 block text-xs text-muted-foreground">当前口令</label>
+                        <Input
+                            type="password"
+                            name="current-password"
+                            autoComplete="current-password"
+                            value={form.current}
+                            onChange={(e) => setForm({ ...form, current: e.target.value })}
+                        />
+                    </div>
+                )}
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                     <div>
                         <label className="mb-1 block text-xs text-muted-foreground">新口令</label>
                         <Input

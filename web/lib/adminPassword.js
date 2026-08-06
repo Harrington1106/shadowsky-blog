@@ -10,10 +10,13 @@
  *   1. 库里有 admin_password_hash → 只认它(env 里的旧口令即刻失效)
  *   2. 库里没有 → 回落到 .env 的 ADMIN_PASSWORD(首次部署 / 忘记口令后的救援口令)
  *
- * ⚠ 忘了自己改的口令怎么办(需要 ssh):
- *   sqlite3 /www/wwwroot/shadowquake-v2/db/shadowquake.db \
- *     "DELETE FROM app_settings WHERE key='admin_password_hash';"
- *   删掉后立刻回落到 .env 的 ADMIN_PASSWORD,不用重建容器。
+ * ⚠ 忘了自己改的口令怎么办,两条路:
+ *   1. 登录页「忘记口令」→ 邮箱收一个 15 分钟临时口令(见 lib/passwordReset.js);
+ *      服务器没配 SMTP 时这个入口不显示。
+ *   2. ssh 兜底:
+ *      sqlite3 /www/wwwroot/shadowquake-v2/db/shadowquake.db \
+ *        "DELETE FROM app_settings WHERE key='admin_password_hash';"
+ *      删掉后立刻回落到 .env 的 ADMIN_PASSWORD,不用重建容器。
  */
 import crypto from 'node:crypto';
 import { getDb, getSqlite } from './db.js';
@@ -24,11 +27,19 @@ import { eq } from 'drizzle-orm';
 export const PASSWORD_KEY = 'admin_password_hash';
 
 /**
+ * 临时口令(忘记口令时邮件发出的那个)在 app_settings 里的 key。
+ * 定义在这里而不是 lib/passwordReset.js:那边要 import 本文件的 hashPassword/verifyHash,
+ * 反过来再 import 就成了循环依赖(ESM 下常量会撞 TDZ,报错还很难看懂)。
+ */
+export const RESET_KEY = 'admin_reset_token';
+
+/**
  * 不允许经 /api/settings 读写的 key。
  * 口令 hash 不能出现在「读全部设置」的响应里,更不能被那个万能 POST 直接覆盖 ——
  * 否则拿到会话的人无需知道旧口令就能改掉它。改口令只走 /api/auth/password。
+ * 临时口令同理,而且更急:它是一把还没用掉的备用钥匙。
  */
-export const PROTECTED_SETTING_KEYS = new Set([PASSWORD_KEY]);
+export const PROTECTED_SETTING_KEYS = new Set([PASSWORD_KEY, RESET_KEY]);
 
 // scrypt 参数。N=16384 在这台小 VPS 上约 30–50ms,够慢又不至于拖垮登录。
 const SCRYPT = { N: 16384, r: 8, p: 1, keylen: 64 };

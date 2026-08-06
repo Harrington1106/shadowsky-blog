@@ -1,8 +1,8 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
-import { Plus, Pencil, Trash2, ExternalLink, Wand2, Languages, FolderTree } from 'lucide-react';
+import { Plus, Pencil, Trash2, ExternalLink, Wand2, Languages, FolderTree, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -15,6 +15,8 @@ import { useConfirm } from '@/components/useConfirm';
 import { apiGet, apiCreate, apiUpdate, apiDelete } from '@/lib/adminApi';
 import { aiGuessTitleDesc, aiTranslate, hasAiKey } from '@/lib/aiClient';
 import AdminHeader from '@/components/admin/AdminHeader';
+import AdminPage from '@/components/admin/AdminPage';
+import { TableSkeleton } from '@/components/admin/AdminSkeleton';
 import BookmarkCategoryDialog from '@/components/admin/BookmarkCategoryDialog';
 
 const EMPTY = { url: '', title: '', category: '', subcategory: '', tags: '', description: '' };
@@ -41,6 +43,8 @@ function buildOptions(entries, current) {
 export default function BookmarksAdmin() {
     const [items, setItems] = useState([]);
     const [categories, setCategories] = useState({});
+    const [loading, setLoading] = useState(true);
+    const [q, setQ] = useState('');
     const [open, setOpen] = useState(false);
     const [catOpen, setCatOpen] = useState(false);
     const [form, setForm] = useState(EMPTY);
@@ -56,8 +60,20 @@ export default function BookmarksAdmin() {
             setItems(data.bookmarks);
             setCategories(data.categories || {});
         } catch (e) { toast.error(e.message); }
+        finally { setLoading(false); }
     }
     useEffect(() => { load(); }, []);
+
+    // 标题/URL/标签/分类中文名一起搜 —— 收藏是后台条目最多的一页,靠肉眼翻已经不现实
+    const shown = useMemo(() => {
+        const kw = q.trim().toLowerCase();
+        if (!kw) return items;
+        return items.filter((b) => [
+            b.title, b.url, b.description,
+            categories[b.category]?.name, b.category,
+            ...(b.tags || []),
+        ].some((v) => String(v || '').toLowerCase().includes(kw)));
+    }, [items, q, categories]);
 
     // 下拉选项:分类来自 categories,子分类跟着当前选中的分类走
     const catOptions = buildOptions(
@@ -127,7 +143,7 @@ export default function BookmarksAdmin() {
     }
 
     return (
-        <div className="mx-auto max-w-5xl px-8 py-10">
+        <AdminPage>
             {confirmDialog}
             <AdminHeader title="收藏管理" count={items.length} action={
                 <div className="flex gap-2">
@@ -138,46 +154,61 @@ export default function BookmarksAdmin() {
 
             <BookmarkCategoryDialog open={catOpen} onOpenChange={setCatOpen} onSaved={load} />
 
-            <Card className="mt-6 overflow-hidden py-0">
+            <div className="relative mt-4">
+                <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
+                <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="搜索标题 / 链接 / 简介 / 分类 / 标签…" className="pl-9" />
+            </div>
+
+            <Card className="mt-4 overflow-hidden py-0">
                 <Table>
                     <TableHeader>
                         <TableRow>
                             <TableHead>标题</TableHead>
-                            <TableHead>分类</TableHead>
-                            <TableHead>标签</TableHead>
+                            {/* 窄屏只留标题和操作:四列塞进 375px 只会触发横滚,而横滚里最先看不见的正是操作按钮 */}
+                            <TableHead className="hidden md:table-cell">分类</TableHead>
+                            <TableHead className="hidden lg:table-cell">标签</TableHead>
                             <TableHead className="text-right">操作</TableHead>
                         </TableRow>
                     </TableHeader>
-                    <TableBody>
-                        {items.map((b) => (
-                            <TableRow key={b.id}>
-                                <TableCell className="max-w-xs">
-                                    <div className="truncate font-medium">{b.title}</div>
-                                    <a href={b.url} target="_blank" rel="noreferrer" className="flex items-center gap-1 truncate text-xs text-muted-foreground hover:text-primary">
-                                        <ExternalLink className="size-3 shrink-0" />{b.url}
-                                    </a>
-                                </TableCell>
-                                <TableCell className="text-muted-foreground">
-                                    {categories[b.category]?.name || b.category || '—'}
-                                    {b.subcategory ? ` / ${categories[b.category]?.subcategories?.[b.subcategory] || b.subcategory}` : ''}
-                                </TableCell>
-                                <TableCell>
-                                    <div className="flex flex-wrap gap-1">
-                                        {(b.tags || []).slice(0, 3).map((t) => <Badge key={t} variant="outline" className="text-[0.65rem]">{t}</Badge>)}
-                                    </div>
-                                </TableCell>
-                                <TableCell>
-                                    <div className="flex justify-end gap-1">
-                                        <Button variant="ghost" size="icon" onClick={() => openEdit(b)}><Pencil className="size-4" /></Button>
-                                        <Button variant="ghost" size="icon" onClick={() => remove(b)}><Trash2 className="size-4 text-destructive" /></Button>
-                                    </div>
-                                </TableCell>
-                            </TableRow>
-                        ))}
-                        {items.length === 0 && (
-                            <TableRow><TableCell colSpan={4} className="py-10 text-center text-muted-foreground">暂无收藏</TableCell></TableRow>
-                        )}
-                    </TableBody>
+                    {loading ? <TableSkeleton rows={6} cols={4} /> : (
+                        <TableBody>
+                            {shown.map((b) => (
+                                <TableRow key={b.id}>
+                                    <TableCell className="max-w-xs">
+                                        <div className="truncate font-medium">{b.title}</div>
+                                        <a href={b.url} target="_blank" rel="noreferrer" className="flex items-center gap-1 truncate text-xs text-muted-foreground hover:text-primary">
+                                            <ExternalLink className="size-3 shrink-0" />{b.url}
+                                        </a>
+                                        {/* 分类列在窄屏收起来了,那这行信息得在标题下面补回来,不能直接丢 */}
+                                        <div className="mt-1 text-xs text-muted-foreground md:hidden">
+                                            {categories[b.category]?.name || b.category || '未分类'}
+                                            {b.subcategory ? ` / ${categories[b.category]?.subcategories?.[b.subcategory] || b.subcategory}` : ''}
+                                        </div>
+                                    </TableCell>
+                                    <TableCell className="hidden text-muted-foreground md:table-cell">
+                                        {categories[b.category]?.name || b.category || '—'}
+                                        {b.subcategory ? ` / ${categories[b.category]?.subcategories?.[b.subcategory] || b.subcategory}` : ''}
+                                    </TableCell>
+                                    <TableCell className="hidden lg:table-cell">
+                                        <div className="flex flex-wrap gap-1">
+                                            {(b.tags || []).slice(0, 3).map((t) => <Badge key={t} variant="outline" className="text-[0.65rem]">{t}</Badge>)}
+                                        </div>
+                                    </TableCell>
+                                    <TableCell>
+                                        <div className="flex justify-end gap-1">
+                                            <Button variant="ghost" size="icon" aria-label="编辑" onClick={() => openEdit(b)}><Pencil className="size-4" /></Button>
+                                            <Button variant="ghost" size="icon" aria-label="删除" onClick={() => remove(b)}><Trash2 className="size-4 text-destructive" /></Button>
+                                        </div>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                            {shown.length === 0 && (
+                                <TableRow><TableCell colSpan={4} className="py-10 text-center text-muted-foreground">
+                                    {q ? `没有匹配「${q}」的收藏` : '暂无收藏'}
+                                </TableCell></TableRow>
+                            )}
+                        </TableBody>
+                    )}
                 </Table>
             </Card>
 
@@ -192,7 +223,7 @@ export default function BookmarksAdmin() {
                             </Button>
                         </div>
                         <Input placeholder="标题 *" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} />
-                        <div className="grid grid-cols-2 gap-3">
+                        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                             {/* 换分类时清掉子分类 —— 子分类是挂在分类下面的,留着就成了跨分类的孤儿 slug */}
                             <Select items={catOptions} value={form.category || NONE}
                                 onValueChange={(v) => setForm({ ...form, category: v === NONE ? '' : v, subcategory: '' })}>
@@ -223,6 +254,6 @@ export default function BookmarksAdmin() {
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
-        </div>
+        </AdminPage>
     );
 }
